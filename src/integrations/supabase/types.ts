@@ -726,6 +726,96 @@ export type Database = {
           },
         ]
       }
+      site_settings: {
+        Row: {
+          accent_color: string
+          button_border_radius: number
+          card_border_radius: number
+          footer_bg_color: string
+          footer_logo_size: number
+          footer_text_color: string
+          header_bg_color: string
+          header_border_color: string
+          header_logo_size: number
+          id: string
+          primary_color: string
+          secondary_color: string
+          show_social_links: boolean
+          social_border_style: string
+          social_icon_custom_color: string | null
+          social_icon_size: number
+          social_icon_style: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          accent_color?: string
+          button_border_radius?: number
+          card_border_radius?: number
+          footer_bg_color?: string
+          footer_logo_size?: number
+          footer_text_color?: string
+          header_bg_color?: string
+          header_border_color?: string
+          header_logo_size?: number
+          id?: string
+          primary_color?: string
+          secondary_color?: string
+          show_social_links?: boolean
+          social_border_style?: string
+          social_icon_custom_color?: string | null
+          social_icon_size?: number
+          social_icon_style?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          accent_color?: string
+          button_border_radius?: number
+          card_border_radius?: number
+          footer_bg_color?: string
+          footer_logo_size?: number
+          footer_text_color?: string
+          header_bg_color?: string
+          header_border_color?: string
+          header_logo_size?: number
+          id?: string
+          primary_color?: string
+          secondary_color?: string
+          show_social_links?: boolean
+          social_border_style?: string
+          social_icon_custom_color?: string | null
+          social_icon_size?: number
+          social_icon_style?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      social_links: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          platform: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          platform: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          platform?: string
+          url?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           assigned_to: string | null
