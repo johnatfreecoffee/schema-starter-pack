@@ -137,6 +137,66 @@ export type Database = {
           },
         ]
       }
+      ai_training: {
+        Row: {
+          brand_voice: string | null
+          certifications: string | null
+          competitive_advantages: string | null
+          competitive_positioning: string | null
+          created_at: string
+          customer_promise: string | null
+          emergency_response: string | null
+          id: string
+          mission_statement: string | null
+          payment_options: string | null
+          project_timeline: string | null
+          service_area_coverage: string | null
+          service_standards: string | null
+          target_audience: string | null
+          unique_selling_points: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          brand_voice?: string | null
+          certifications?: string | null
+          competitive_advantages?: string | null
+          competitive_positioning?: string | null
+          created_at?: string
+          customer_promise?: string | null
+          emergency_response?: string | null
+          id?: string
+          mission_statement?: string | null
+          payment_options?: string | null
+          project_timeline?: string | null
+          service_area_coverage?: string | null
+          service_standards?: string | null
+          target_audience?: string | null
+          unique_selling_points?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          brand_voice?: string | null
+          certifications?: string | null
+          competitive_advantages?: string | null
+          competitive_positioning?: string | null
+          created_at?: string
+          customer_promise?: string | null
+          emergency_response?: string | null
+          id?: string
+          mission_statement?: string | null
+          payment_options?: string | null
+          project_timeline?: string | null
+          service_area_coverage?: string | null
+          service_standards?: string | null
+          target_audience?: string | null
+          unique_selling_points?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       calendar_events: {
         Row: {
           created_at: string
