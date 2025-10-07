@@ -19,25 +19,34 @@ export type Database = {
           account_name: string
           created_at: string
           id: string
+          industry: string | null
+          notes: string | null
           source_lead_id: string | null
           status: Database["public"]["Enums"]["account_status"]
           updated_at: string
+          website: string | null
         }
         Insert: {
           account_name: string
           created_at?: string
           id?: string
+          industry?: string | null
+          notes?: string | null
           source_lead_id?: string | null
           status?: Database["public"]["Enums"]["account_status"]
           updated_at?: string
+          website?: string | null
         }
         Update: {
           account_name?: string
           created_at?: string
           id?: string
+          industry?: string | null
+          notes?: string | null
           source_lead_id?: string | null
           status?: Database["public"]["Enums"]["account_status"]
           updated_at?: string
+          website?: string | null
         }
         Relationships: [
           {
@@ -93,6 +102,7 @@ export type Database = {
       addresses: {
         Row: {
           account_id: string
+          address_type: string | null
           city: string
           created_at: string
           id: string
@@ -105,6 +115,7 @@ export type Database = {
         }
         Insert: {
           account_id: string
+          address_type?: string | null
           city: string
           created_at?: string
           id?: string
@@ -117,6 +128,7 @@ export type Database = {
         }
         Update: {
           account_id?: string
+          address_type?: string | null
           city?: string
           created_at?: string
           id?: string
@@ -305,6 +317,7 @@ export type Database = {
           is_primary: boolean
           last_name: string
           phone: string
+          title: string | null
           updated_at: string
         }
         Insert: {
@@ -316,6 +329,7 @@ export type Database = {
           is_primary?: boolean
           last_name: string
           phone: string
+          title?: string | null
           updated_at?: string
         }
         Update: {
@@ -327,6 +341,7 @@ export type Database = {
           is_primary?: boolean
           last_name?: string
           phone?: string
+          title?: string | null
           updated_at?: string
         }
         Relationships: [
