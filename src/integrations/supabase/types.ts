@@ -649,6 +649,45 @@ export type Database = {
           },
         ]
       }
+      service_area_services: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          service_area_id: string
+          service_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          service_area_id: string
+          service_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          service_area_id?: string
+          service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_area_services_service_area_id_fkey"
+            columns: ["service_area_id"]
+            isOneToOne: false
+            referencedRelation: "service_areas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_area_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_areas: {
         Row: {
           city_name: string
