@@ -2,6 +2,7 @@ import PublicLayout from '@/components/layout/PublicLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { Phone, Mail, MapPin } from 'lucide-react';
+import { LeadFormEmbed } from '@/components/lead-form/LeadFormEmbed';
 
 const Contact = () => {
   const { data: company } = useCompanySettings();
@@ -10,7 +11,7 @@ const Contact = () => {
     <PublicLayout>
       <div className="container mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold mb-8 text-center">Contact Us</h1>
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto space-y-8">
           <Card>
             <CardHeader>
               <CardTitle>Get In Touch</CardTitle>
@@ -46,6 +47,11 @@ const Contact = () => {
               )}
             </CardContent>
           </Card>
+
+          <LeadFormEmbed 
+            headerText="Send Us a Message"
+            showHeader={true}
+          />
         </div>
       </div>
     </PublicLayout>

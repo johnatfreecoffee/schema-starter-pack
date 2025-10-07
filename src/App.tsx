@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { GlobalLeadFormModal } from "@/components/lead-form/GlobalLeadFormModal";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -31,6 +32,7 @@ import ServicesSettings from "./pages/dashboard/settings/Services";
 import ServiceAreas from "./pages/dashboard/settings/ServiceAreas";
 import Templates from "./pages/dashboard/settings/Templates";
 import StaticPages from "./pages/dashboard/settings/StaticPages";
+import FormFields from "./pages/dashboard/settings/FormFields";
 import Analytics from "./pages/dashboard/settings/Analytics";
 import QATesting from "./pages/dashboard/settings/QATesting";
 import PageRegenerator from "./pages/dashboard/PageRegenerator";
@@ -42,6 +44,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <GlobalLeadFormModal />
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
@@ -70,6 +73,7 @@ const App = () => (
           <Route path="/dashboard/settings/service-areas" element={<ServiceAreas />} />
           <Route path="/dashboard/settings/templates" element={<Templates />} />
           <Route path="/dashboard/settings/static-pages" element={<StaticPages />} />
+          <Route path="/dashboard/settings/form-fields" element={<FormFields />} />
           <Route path="/dashboard/settings/analytics" element={<Analytics />} />
           <Route path="/dashboard/settings/qa-testing" element={<QATesting />} />
           <Route path="/dashboard/regenerate-pages" element={<PageRegenerator />} />

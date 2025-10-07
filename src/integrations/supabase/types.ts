@@ -339,6 +339,42 @@ export type Database = {
           },
         ]
       }
+      form_settings: {
+        Row: {
+          form_heading: string | null
+          form_subheading: string | null
+          form_type: string
+          id: string
+          service_options: string[]
+          submit_button_text: string | null
+          success_message: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          form_heading?: string | null
+          form_subheading?: string | null
+          form_type?: string
+          id?: string
+          service_options?: string[]
+          submit_button_text?: string | null
+          success_message?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          form_heading?: string | null
+          form_subheading?: string | null
+          form_type?: string
+          id?: string
+          service_options?: string[]
+          submit_button_text?: string | null
+          success_message?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       generated_pages: {
         Row: {
           created_at: string
