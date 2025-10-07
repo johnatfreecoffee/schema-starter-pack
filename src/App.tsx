@@ -16,6 +16,7 @@ import StaticPage from "./pages/StaticPage";
 
 // Dashboard pages
 import Leads from "./pages/dashboard/Leads";
+import LeadDetail from "./pages/dashboard/LeadDetail";
 import Accounts from "./pages/dashboard/Accounts";
 import Tasks from "./pages/dashboard/Tasks";
 import Calendars from "./pages/dashboard/Calendars";
@@ -57,6 +58,7 @@ const App = () => (
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/leads" element={<Leads />} />
+          <Route path="/dashboard/leads/:id" element={<LeadDetail />} />
           <Route path="/dashboard/accounts" element={<Accounts />} />
           <Route path="/dashboard/tasks" element={<Tasks />} />
           <Route path="/dashboard/calendars" element={<Calendars />} />
