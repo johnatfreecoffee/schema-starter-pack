@@ -491,6 +491,7 @@ export type Database = {
       }
       leads: {
         Row: {
+          assigned_to: string | null
           city: string
           converted_account_id: string | null
           created_at: string
@@ -502,6 +503,7 @@ export type Database = {
           phone: string
           project_details: string | null
           service_needed: string
+          source: string | null
           state: string
           status: Database["public"]["Enums"]["lead_status"]
           street_address: string
@@ -510,6 +512,7 @@ export type Database = {
           zip: string
         }
         Insert: {
+          assigned_to?: string | null
           city: string
           converted_account_id?: string | null
           created_at?: string
@@ -521,6 +524,7 @@ export type Database = {
           phone: string
           project_details?: string | null
           service_needed: string
+          source?: string | null
           state: string
           status?: Database["public"]["Enums"]["lead_status"]
           street_address: string
@@ -529,6 +533,7 @@ export type Database = {
           zip: string
         }
         Update: {
+          assigned_to?: string | null
           city?: string
           converted_account_id?: string | null
           created_at?: string
@@ -540,6 +545,7 @@ export type Database = {
           phone?: string
           project_details?: string | null
           service_needed?: string
+          source?: string | null
           state?: string
           status?: Database["public"]["Enums"]["lead_status"]
           street_address?: string
