@@ -343,6 +343,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          last_viewed_at: string | null
           meta_description: string | null
           needs_regeneration: boolean
           page_title: string
@@ -352,10 +353,12 @@ export type Database = {
           status: boolean
           updated_at: string
           url_path: string
+          view_count: number
         }
         Insert: {
           created_at?: string
           id?: string
+          last_viewed_at?: string | null
           meta_description?: string | null
           needs_regeneration?: boolean
           page_title: string
@@ -365,10 +368,12 @@ export type Database = {
           status?: boolean
           updated_at?: string
           url_path: string
+          view_count?: number
         }
         Update: {
           created_at?: string
           id?: string
+          last_viewed_at?: string | null
           meta_description?: string | null
           needs_regeneration?: boolean
           page_title?: string
@@ -378,6 +383,7 @@ export type Database = {
           status?: boolean
           updated_at?: string
           url_path?: string
+          view_count?: number
         }
         Relationships: [
           {

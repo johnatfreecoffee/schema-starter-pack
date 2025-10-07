@@ -56,6 +56,8 @@ const TemplateForm = ({ template, onSuccess, onCancel }: TemplateFormProps) => {
             .from('generated_pages')
             .update({ needs_regeneration: true })
             .in('service_id', serviceIds);
+          
+          console.log(`Marked pages for ${serviceIds.length} services for regeneration`);
         }
       } else {
         // Create new template

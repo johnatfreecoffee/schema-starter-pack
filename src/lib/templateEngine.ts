@@ -48,6 +48,18 @@ export function formatPhone(phone: string): string {
 }
 
 /**
+ * Marks pages for regeneration when data changes
+ */
+export async function markPagesForRegeneration(
+  type: 'template' | 'company' | 'service' | 'service_area',
+  id?: string
+) {
+  // This will be called from mutation handlers
+  // Implementation depends on the specific use case
+  console.log(`Marking pages for regeneration: ${type}`, id);
+}
+
+/**
  * Gathers all data needed to render a generated page
  * @param generatedPageId - ID of the generated page
  * @returns Object with all template variables

@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import Services from "./pages/Services";
 import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
+import GeneratedPage from "./pages/GeneratedPage";
 
 // Dashboard pages
 import Leads from "./pages/dashboard/Leads";
@@ -31,6 +32,7 @@ import Templates from "./pages/dashboard/settings/Templates";
 import StaticPages from "./pages/dashboard/settings/StaticPages";
 import Analytics from "./pages/dashboard/settings/Analytics";
 import QATesting from "./pages/dashboard/settings/QATesting";
+import PageRegenerator from "./pages/dashboard/PageRegenerator";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +71,10 @@ const App = () => (
           <Route path="/dashboard/settings/static-pages" element={<StaticPages />} />
           <Route path="/dashboard/settings/analytics" element={<Analytics />} />
           <Route path="/dashboard/settings/qa-testing" element={<QATesting />} />
+          <Route path="/dashboard/regenerate-pages" element={<PageRegenerator />} />
+          
+          {/* Dynamic Generated Pages */}
+          <Route path="/:citySlug/:serviceSlug" element={<GeneratedPage />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
