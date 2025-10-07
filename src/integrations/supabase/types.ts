@@ -559,6 +559,42 @@ export type Database = {
           },
         ]
       }
+      page_edit_history: {
+        Row: {
+          ai_command: string
+          created_at: string | null
+          edit_description: string | null
+          edited_by: string
+          id: string
+          new_content: string
+          page_id: string
+          page_type: string
+          previous_content: string
+        }
+        Insert: {
+          ai_command: string
+          created_at?: string | null
+          edit_description?: string | null
+          edited_by: string
+          id?: string
+          new_content: string
+          page_id: string
+          page_type: string
+          previous_content: string
+        }
+        Update: {
+          ai_command?: string
+          created_at?: string | null
+          edit_description?: string | null
+          edited_by?: string
+          id?: string
+          new_content?: string
+          page_id?: string
+          page_type?: string
+          previous_content?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           account_id: string

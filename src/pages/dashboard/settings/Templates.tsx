@@ -11,9 +11,10 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, Edit, Copy, Trash2, Plus } from 'lucide-react';
+import { Eye, Edit, Copy, Trash2, Plus, Sparkles } from 'lucide-react';
 import TemplateForm from '@/components/admin/settings/templates/TemplateForm';
 import TemplatePreview from '@/components/admin/settings/templates/TemplatePreview';
+import AIPageEditor from '@/components/admin/ai-editor/AIPageEditor';
 
 const Templates = () => {
   const [typeFilter, setTypeFilter] = useState<string>('all');
@@ -21,6 +22,7 @@ const Templates = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [showAIEditor, setShowAIEditor] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -94,6 +96,31 @@ const Templates = () => {
       });
     },
   });
+
+  const handleAISave = async (content: string) => {
+    if (!selectedTemplate) return;
+    
+    const { error } = await supabase
+      .from('templates')
+      .update({ template_html: content, updated_at: new Date().toISOString() })
+      .eq('id', selectedTemplate.id);
+    
+    if (error) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['templates'] });
+    setShowAIEditor(false);
+    toast({
+      title: 'Success',
+      description: 'Template updated successfully with AI',
+    });
+  };
 
   const filteredTemplates = templates?.filter((template) => {
     const matchesType = typeFilter === 'all' || template.template_type === typeFilter;
@@ -173,13 +200,23 @@ const Templates = () => {
                           variant="ghost"
                           size="icon"
                           onClick={() => { setSelectedTemplate(template); setShowPreview(true); }}
+                          title="Preview template"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
+                          onClick={() => { setSelectedTemplate(template); setShowAIEditor(true); }}
+                          title="Edit with AI"
+                        >
+                          <Sparkles className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => { setSelectedTemplate(template); setShowForm(true); }}
+                          title="Edit template"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -234,6 +271,21 @@ const Templates = () => {
             )}
           </DialogContent>
         </Dialog>
+
+        {showAIEditor && selectedTemplate && (
+          <AIPageEditor
+            open={showAIEditor}
+            onClose={() => {
+              setShowAIEditor(false);
+              setSelectedTemplate(null);
+            }}
+            pageId={selectedTemplate.id}
+            pageType="template"
+            initialContent={selectedTemplate.template_html}
+            pageTitle={selectedTemplate.name}
+            onSave={handleAISave}
+          />
+        )}
 
         <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
           <AlertDialogContent>
