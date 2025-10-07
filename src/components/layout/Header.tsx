@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { User } from 'lucide-react';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { Session } from '@supabase/supabase-js';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface HeaderProps {
   session: Session | null;
@@ -10,6 +12,19 @@ interface HeaderProps {
 
 const Header = ({ session }: HeaderProps) => {
   const { data: company } = useCompanySettings();
+  
+  const { data: staticPages } = useQuery({
+    queryKey: ['static-pages-nav'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('static_pages')
+        .select('id, title, slug, display_order')
+        .eq('show_in_menu', true)
+        .eq('status', true)
+        .order('display_order', { ascending: true });
+      return data || [];
+    }
+  });
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -30,15 +45,15 @@ const Header = ({ session }: HeaderProps) => {
               <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
                 Home
               </Link>
-              <Link to="/services" className="text-sm font-medium hover:text-primary transition-colors">
-                Services
-              </Link>
-              <Link to="/about-us" className="text-sm font-medium hover:text-primary transition-colors">
-                About Us
-              </Link>
-              <Link to="/contact" className="text-sm font-medium hover:text-primary transition-colors">
-                Contact
-              </Link>
+              {staticPages?.map(page => (
+                <Link 
+                  key={page.id} 
+                  to={`/${page.slug}`} 
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
+                  {page.title}
+                </Link>
+              ))}
             </nav>
           </div>
 
