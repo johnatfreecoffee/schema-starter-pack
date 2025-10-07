@@ -900,6 +900,63 @@ export type Database = {
         }
         Relationships: []
       }
+      static_pages: {
+        Row: {
+          content_html: string
+          created_at: string
+          created_by: string | null
+          display_order: number | null
+          id: string
+          is_homepage: boolean | null
+          meta_description: string | null
+          meta_keywords: string | null
+          meta_title: string | null
+          show_in_menu: boolean | null
+          slug: string
+          status: boolean | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+          url_path: string
+        }
+        Insert: {
+          content_html: string
+          created_at?: string
+          created_by?: string | null
+          display_order?: number | null
+          id?: string
+          is_homepage?: boolean | null
+          meta_description?: string | null
+          meta_keywords?: string | null
+          meta_title?: string | null
+          show_in_menu?: boolean | null
+          slug: string
+          status?: boolean | null
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+          url_path: string
+        }
+        Update: {
+          content_html?: string
+          created_at?: string
+          created_by?: string | null
+          display_order?: number | null
+          id?: string
+          is_homepage?: boolean | null
+          meta_description?: string | null
+          meta_keywords?: string | null
+          meta_title?: string | null
+          show_in_menu?: boolean | null
+          slug?: string
+          status?: boolean | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+          url_path?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           assigned_to: string | null
