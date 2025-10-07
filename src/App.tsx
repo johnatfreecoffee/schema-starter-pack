@@ -27,6 +27,7 @@ import AITraining from "./pages/dashboard/settings/AITraining";
 import SiteSettings from "./pages/dashboard/settings/SiteSettings";
 import ServicesSettings from "./pages/dashboard/settings/Services";
 import ServiceAreas from "./pages/dashboard/settings/ServiceAreas";
+import Templates from "./pages/dashboard/settings/Templates";
 import StaticPages from "./pages/dashboard/settings/StaticPages";
 import Analytics from "./pages/dashboard/settings/Analytics";
 import QATesting from "./pages/dashboard/settings/QATesting";
@@ -64,6 +65,7 @@ const App = () => (
           <Route path="/dashboard/settings/site-settings" element={<SiteSettings />} />
           <Route path="/dashboard/settings/services" element={<ServicesSettings />} />
           <Route path="/dashboard/settings/service-areas" element={<ServiceAreas />} />
+          <Route path="/dashboard/settings/templates" element={<Templates />} />
           <Route path="/dashboard/settings/static-pages" element={<StaticPages />} />
           <Route path="/dashboard/settings/analytics" element={<Analytics />} />
           <Route path="/dashboard/settings/qa-testing" element={<QATesting />} />

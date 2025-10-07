@@ -344,6 +344,7 @@ export type Database = {
           created_at: string
           id: string
           meta_description: string | null
+          needs_regeneration: boolean
           page_title: string
           rendered_html: string | null
           service_area_id: string
@@ -356,6 +357,7 @@ export type Database = {
           created_at?: string
           id?: string
           meta_description?: string | null
+          needs_regeneration?: boolean
           page_title: string
           rendered_html?: string | null
           service_area_id: string
@@ -368,6 +370,7 @@ export type Database = {
           created_at?: string
           id?: string
           meta_description?: string | null
+          needs_regeneration?: boolean
           page_title?: string
           rendered_html?: string | null
           service_area_id?: string
