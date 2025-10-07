@@ -11,6 +11,7 @@ import Services from "./pages/Services";
 import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
 import GeneratedPage from "./pages/GeneratedPage";
+import StaticPage from "./pages/StaticPage";
 
 // Dashboard pages
 import Leads from "./pages/dashboard/Leads";
@@ -75,6 +76,9 @@ const App = () => (
           
           {/* Dynamic Generated Pages */}
           <Route path="/:citySlug/:serviceSlug" element={<GeneratedPage />} />
+          
+          {/* Static Pages (must be after all other routes) */}
+          <Route path="/:slug" element={<StaticPage />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

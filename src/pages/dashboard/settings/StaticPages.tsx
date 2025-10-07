@@ -185,9 +185,10 @@ const StaticPages = () => {
 
         {showAIEditor && selectedPage && (
           <AIPageEditor
+            open={showAIEditor}
             pageId={selectedPage.id}
             pageType="static"
-            currentContent={selectedPage.content_html}
+            initialContent={selectedPage.content_html}
             pageTitle={selectedPage.title}
             onClose={() => setShowAIEditor(false)}
             onSave={async (newContent) => {
