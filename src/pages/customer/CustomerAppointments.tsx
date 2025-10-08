@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import CustomerLayout from '@/components/layout/CustomerLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar as CalendarIcon, List, Download } from 'lucide-react';
+import { Calendar as CalendarIcon, List, Download, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar, dateFnsLocalizer, Event } from 'react-big-calendar';
@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/hooks/use-toast';
 import AppointmentDetailModal from '@/components/customer/AppointmentDetailModal';
+import { RequestAppointmentForm } from '@/components/customer/RequestAppointmentForm';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -46,6 +47,7 @@ const CustomerAppointments = () => {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [requestFormOpen, setRequestFormOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -73,8 +75,7 @@ const CustomerAppointments = () => {
           *,
           created_by:created_by(first_name, last_name)
         `)
-        .eq('related_to_type', 'account')
-        .eq('related_to_id', account.id)
+        .eq('account_id', account.id)
         .order('start_time', { ascending: true });
 
       if (error) throw error;
@@ -186,9 +187,15 @@ const CustomerAppointments = () => {
   return (
     <CustomerLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Appointments</h1>
-          <p className="text-muted-foreground mt-1">View and manage your appointments</p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold">Appointments</h1>
+            <p className="text-muted-foreground mt-1">View and manage your appointments</p>
+          </div>
+          <Button onClick={() => setRequestFormOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Request Appointment
+          </Button>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4">
@@ -329,8 +336,15 @@ const CustomerAppointments = () => {
           event={selectedEvent}
           open={modalOpen}
           onOpenChange={setModalOpen}
+          onUpdate={fetchAppointments}
         />
       )}
+      
+      <RequestAppointmentForm
+        open={requestFormOpen}
+        onOpenChange={setRequestFormOpen}
+        onSuccess={fetchAppointments}
+      />
     </CustomerLayout>
   );
 };

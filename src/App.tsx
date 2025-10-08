@@ -22,7 +22,7 @@ import Accounts from "./pages/dashboard/Accounts";
 import AccountDetail from "./pages/dashboard/AccountDetail";
 import ProjectDetail from "./pages/dashboard/ProjectDetail";
 import Tasks from "./pages/dashboard/Tasks";
-import Calendars from "./pages/dashboard/Calendars";
+import Appointments from "./pages/dashboard/Appointments";
 import Projects from "./pages/dashboard/Projects";
 import Money from "./pages/dashboard/Money";
 import Logs from "./pages/dashboard/Logs";
@@ -84,7 +84,7 @@ const App = () => (
           <Route path="/dashboard/accounts/:id" element={<AccountDetail />} />
           <Route path="/dashboard/projects/:id" element={<ProjectDetail />} />
           <Route path="/dashboard/tasks" element={<Tasks />} />
-          <Route path="/dashboard/calendars" element={<Calendars />} />
+          <Route path="/dashboard/calendars" element={<Appointments />} />
           <Route path="/dashboard/projects" element={<Projects />} />
           <Route path="/dashboard/money" element={<Money />} />
           <Route path="/dashboard/logs" element={<Logs />} />

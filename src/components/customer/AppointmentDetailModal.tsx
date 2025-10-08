@@ -1,8 +1,21 @@
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, MapPin, User, FileText, Download } from 'lucide-react';
+import { Calendar, Clock, MapPin, User, FileText, Download, X } from 'lucide-react';
 import { format } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface CalendarEvent {
   id: string;
@@ -21,9 +34,35 @@ interface AppointmentDetailModalProps {
   event: CalendarEvent;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onUpdate?: () => void;
 }
 
-const AppointmentDetailModal = ({ event, open, onOpenChange }: AppointmentDetailModalProps) => {
+const AppointmentDetailModal = ({ event, open, onOpenChange, onUpdate }: AppointmentDetailModalProps) => {
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleCancel = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('calendar_events')
+        .update({ status: 'canceled' })
+        .eq('id', event.id);
+
+      if (error) throw error;
+
+      toast.success('Appointment cancelled successfully');
+      setCancelDialogOpen(false);
+      onOpenChange(false);
+      onUpdate?.();
+    } catch (error) {
+      console.error('Error cancelling appointment:', error);
+      toast.error('Failed to cancel appointment');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const downloadICS = () => {
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
@@ -143,8 +182,38 @@ END:VCALENDAR`;
               </p>
             </div>
           )}
+
+          {event.status === 'scheduled' && isUpcoming && (
+            <div className="flex gap-2 pt-4 border-t">
+              <Button
+                variant="destructive"
+                onClick={() => setCancelDialogOpen(true)}
+                className="flex-1"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Cancel Appointment
+              </Button>
+            </div>
+          )}
         </div>
       </DialogContent>
+
+      <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Appointment</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel this appointment? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No, Keep It</AlertDialogCancel>
+            <AlertDialogAction onClick={handleCancel} disabled={loading}>
+              {loading ? 'Cancelling...' : 'Yes, Cancel'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };

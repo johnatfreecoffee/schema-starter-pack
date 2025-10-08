@@ -41,7 +41,7 @@ const BottomNav = ({ isAdmin }: BottomNavProps) => {
     { path: '/dashboard/leads', icon: UserPlus, label: 'Leads' },
     { path: '/dashboard/accounts', icon: Building2, label: 'Accounts' },
     { path: '/dashboard/tasks', icon: CheckSquare, label: 'Tasks' },
-    { path: '/dashboard/calendars', icon: Calendar, label: 'Calendars' },
+    { path: '/dashboard/calendars', icon: Calendar, label: 'Appointments' },
     { path: '/dashboard/projects', icon: FolderKanban, label: 'Projects' },
     { path: '/dashboard/money', icon: DollarSign, label: 'Money' },
     { path: '/dashboard/logs', icon: FileText, label: 'Logs' },

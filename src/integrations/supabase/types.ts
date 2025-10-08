@@ -220,6 +220,10 @@ export type Database = {
       }
       calendar_events: {
         Row: {
+          account_id: string | null
+          appointment_type:
+            | Database["public"]["Enums"]["appointment_type"]
+            | null
           created_at: string
           created_by: string
           description: string | null
@@ -227,15 +231,21 @@ export type Database = {
           event_type: string | null
           id: string
           location: string | null
+          notes: string | null
           related_to_id: string | null
           related_to_type:
             | Database["public"]["Enums"]["related_entity_type"]
             | null
           start_time: string
+          status: Database["public"]["Enums"]["appointment_status"] | null
           title: string
           updated_at: string
         }
         Insert: {
+          account_id?: string | null
+          appointment_type?:
+            | Database["public"]["Enums"]["appointment_type"]
+            | null
           created_at?: string
           created_by: string
           description?: string | null
@@ -243,15 +253,21 @@ export type Database = {
           event_type?: string | null
           id?: string
           location?: string | null
+          notes?: string | null
           related_to_id?: string | null
           related_to_type?:
             | Database["public"]["Enums"]["related_entity_type"]
             | null
           start_time: string
+          status?: Database["public"]["Enums"]["appointment_status"] | null
           title: string
           updated_at?: string
         }
         Update: {
+          account_id?: string | null
+          appointment_type?:
+            | Database["public"]["Enums"]["appointment_type"]
+            | null
           created_at?: string
           created_by?: string
           description?: string | null
@@ -259,15 +275,24 @@ export type Database = {
           event_type?: string | null
           id?: string
           location?: string | null
+          notes?: string | null
           related_to_id?: string | null
           related_to_type?:
             | Database["public"]["Enums"]["related_entity_type"]
             | null
           start_time?: string
+          status?: Database["public"]["Enums"]["appointment_status"] | null
           title?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "calendar_events_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "calendar_events_created_by_fkey"
             columns: ["created_by"]
@@ -1395,6 +1420,8 @@ export type Database = {
     Enums: {
       account_status: "active" | "inactive" | "archived"
       activity_action: "created" | "updated" | "deleted"
+      appointment_status: "scheduled" | "completed" | "canceled" | "requested"
+      appointment_type: "onsite" | "virtual" | "phone"
       invoice_status: "pending" | "paid" | "overdue" | "cancelled"
       lead_status: "new" | "contacted" | "qualified" | "converted" | "lost"
       project_status:
@@ -1542,6 +1569,8 @@ export const Constants = {
     Enums: {
       account_status: ["active", "inactive", "archived"],
       activity_action: ["created", "updated", "deleted"],
+      appointment_status: ["scheduled", "completed", "canceled", "requested"],
+      appointment_type: ["onsite", "virtual", "phone"],
       invoice_status: ["pending", "paid", "overdue", "cancelled"],
       lead_status: ["new", "contacted", "qualified", "converted", "lost"],
       project_status: [
