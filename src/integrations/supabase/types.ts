@@ -215,7 +215,9 @@ export type Database = {
           created_by: string
           description: string | null
           end_time: string
+          event_type: string | null
           id: string
+          location: string | null
           related_to_id: string | null
           related_to_type:
             | Database["public"]["Enums"]["related_entity_type"]
@@ -229,7 +231,9 @@ export type Database = {
           created_by: string
           description?: string | null
           end_time: string
+          event_type?: string | null
           id?: string
+          location?: string | null
           related_to_id?: string | null
           related_to_type?:
             | Database["public"]["Enums"]["related_entity_type"]
@@ -243,7 +247,9 @@ export type Database = {
           created_by?: string
           description?: string | null
           end_time?: string
+          event_type?: string | null
           id?: string
+          location?: string | null
           related_to_id?: string | null
           related_to_type?:
             | Database["public"]["Enums"]["related_entity_type"]
@@ -350,6 +356,38 @@ export type Database = {
             columns: ["account_id"]
             isOneToOne: false
             referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_participants: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          id: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          id?: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          id?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_participants_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "calendar_events"
             referencedColumns: ["id"]
           },
         ]
