@@ -1,11 +1,12 @@
+import CustomerLayout from '@/components/layout/CustomerLayout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FolderKanban, Calendar, FileText, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import CustomerLayout from '@/components/layout/CustomerLayout';
 import ProjectStatusBadge from '@/components/admin/projects/ProjectStatusBadge';
+import UpcomingAppointments from '@/components/customer/UpcomingAppointments';
 
 const CustomerDashboard = () => {
   const [stats, setStats] = useState({
@@ -15,7 +16,6 @@ const CustomerDashboard = () => {
     lastLogin: null as string | null,
   });
   const [recentProjects, setRecentProjects] = useState<any[]>([]);
-  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -69,16 +69,6 @@ const CustomerDashboard = () => {
         .order('created_at', { ascending: false })
         .limit(3);
 
-      // Get upcoming events
-      const { data: events } = await supabase
-        .from('calendar_events')
-        .select('*')
-        .eq('related_to_type', 'account')
-        .eq('related_to_id', account.id)
-        .gte('start_time', today)
-        .order('start_time', { ascending: true })
-        .limit(3);
-
       setStats({
         activeProjects: projectsCount || 0,
         upcomingAppointments: appointmentsCount || 0,
@@ -87,7 +77,6 @@ const CustomerDashboard = () => {
       });
 
       setRecentProjects(projects || []);
-      setUpcomingEvents(events || []);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
@@ -200,33 +189,8 @@ const CustomerDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Upcoming Appointments */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Upcoming Appointments</CardTitle>
-            <Link to="/customer/appointments" className="text-sm text-primary hover:underline">
-              View All
-            </Link>
-          </CardHeader>
-          <CardContent>
-            {upcomingEvents.length === 0 ? (
-              <p className="text-muted-foreground text-center py-4">No upcoming appointments</p>
-            ) : (
-              <div className="space-y-3">
-                {upcomingEvents.map((event) => (
-                  <div key={event.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex-1">
-                      <h4 className="font-medium">{event.title}</h4>
-                      <p className="text-sm text-muted-foreground">
-                        {format(new Date(event.start_time), 'PPp')}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Upcoming Appointments Widget */}
+        <UpcomingAppointments />
       </div>
     </CustomerLayout>
   );
