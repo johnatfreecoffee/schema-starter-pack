@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PhoneInput } from '@/components/lead-form/PhoneInput';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { CRUDLogger } from '@/lib/crudLogger';
 
 interface AccountFormProps {
   open: boolean;
@@ -45,21 +46,36 @@ export const AccountForm = ({ open, onOpenChange, account, onSuccess }: AccountF
     setLoading(true);
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
       if (account) {
         // Update existing account
+        const updates = {
+          account_name: formData.account_name,
+          industry: formData.industry,
+          website: formData.website,
+          status: formData.status,
+          notes: formData.notes,
+          updated_at: new Date().toISOString()
+        };
+
+        const changes = CRUDLogger.calculateChanges(account, updates);
+
         const { error } = await supabase
           .from('accounts')
-          .update({
-            account_name: formData.account_name,
-            industry: formData.industry,
-            website: formData.website,
-            status: formData.status,
-            notes: formData.notes,
-            updated_at: new Date().toISOString()
-          })
+          .update(updates)
           .eq('id', account.id);
 
         if (error) throw error;
+
+        await CRUDLogger.logUpdate({
+          userId: user.id,
+          entityType: 'account',
+          entityId: account.id,
+          entityName: formData.account_name,
+          changes
+        });
 
         toast({
           title: 'Success',

@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Phone, Mail } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { CRUDLogger } from '@/lib/crudLogger';
 
 const Accounts = () => {
   const { toast } = useToast();

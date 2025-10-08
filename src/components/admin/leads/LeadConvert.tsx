@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
+import { CRUDLogger } from '@/lib/crudLogger';
 
 interface LeadConvertProps {
   isOpen: boolean;
@@ -86,13 +87,23 @@ export const LeadConvert = ({ isOpen, onClose, lead }: LeadConvertProps) => {
 
       if (updateError) throw updateError;
 
-      // 6. Log Activity
-      await supabase.from('activity_logs').insert({
-        action: 'created',
-        entity_type: 'account',
-        entity_id: account.id,
-        parent_entity_type: 'lead',
-        parent_entity_id: lead.id
+      // 6. Log Activities
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      await CRUDLogger.logConvert({
+        userId: user.id,
+        entityType: 'lead',
+        entityId: lead.id,
+        entityName: `${lead.first_name} ${lead.last_name}`,
+        convertedTo: account.id
+      });
+
+      await CRUDLogger.logCreate({
+        userId: user.id,
+        entityType: 'account',
+        entityId: account.id,
+        entityName: account.account_name
       });
 
       toast({

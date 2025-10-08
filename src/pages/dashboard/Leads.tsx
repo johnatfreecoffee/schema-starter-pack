@@ -45,6 +45,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { CRUDLogger } from '@/lib/crudLogger';
 
 const Leads = () => {
   const { toast } = useToast();
@@ -156,9 +157,23 @@ const Leads = () => {
   };
 
   const handleDelete = async (id: string) => {
+    const leadToDelete = leads.find(l => l.id === id);
     if (!confirm('Are you sure you want to delete this lead?')) return;
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Log before deletion
+      if (leadToDelete) {
+        await CRUDLogger.logDelete({
+          userId: user.id,
+          entityType: 'lead',
+          entityId: id,
+          entityName: `${leadToDelete.first_name} ${leadToDelete.last_name}`
+        });
+      }
+
       const { error } = await supabase.from('leads').delete().eq('id', id);
 
       if (error) throw error;

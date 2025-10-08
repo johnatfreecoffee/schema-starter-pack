@@ -8,6 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import NotesSection from "@/components/admin/notes/NotesSection";
+import ActivityFeed from "@/components/admin/ActivityFeed";
 import InvoiceStatusBadge from "@/components/admin/money/InvoiceStatusBadge";
 import { format } from "date-fns";
 import {
@@ -124,6 +125,7 @@ const InvoiceDetail = () => {
           <TabsList>
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="notes">Notes</TabsTrigger>
+            <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
 
           <TabsContent value="details" className="mt-6">
@@ -238,6 +240,17 @@ const InvoiceDetail = () => {
 
           <TabsContent value="notes" className="mt-6">
             <NotesSection entityType="invoice" entityId={id!} />
+          </TabsContent>
+
+          <TabsContent value="activity" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Activity History</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ActivityFeed entityType="invoice" entityId={id!} limit={50} />
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

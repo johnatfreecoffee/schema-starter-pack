@@ -17,6 +17,7 @@ import TaskPriorityBadge from '@/components/admin/tasks/TaskPriorityBadge';
 import { Progress } from '@/components/ui/progress';
 import { format } from 'date-fns';
 import NotesSection from '@/components/admin/notes/NotesSection';
+import ActivityFeed from '@/components/admin/ActivityFeed';
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -292,8 +293,8 @@ const ProjectDetail = () => {
             <TabsTrigger value="tasks">Tasks ({tasks.length})</TabsTrigger>
             <TabsTrigger value="calendar">Calendar ({events.length})</TabsTrigger>
             <TabsTrigger value="phases">Phases ({phases.length})</TabsTrigger>
-            <TabsTrigger value="activity">Activity</TabsTrigger>
             <TabsTrigger value="notes">Notes</TabsTrigger>
+            <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
@@ -464,23 +465,10 @@ const ProjectDetail = () => {
           <TabsContent value="activity">
             <Card>
               <CardHeader>
-                <CardTitle>Activity Timeline</CardTitle>
+                <CardTitle>Activity History</CardTitle>
               </CardHeader>
               <CardContent>
-                {activity.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">No activity yet</div>
-                ) : (
-                  <div className="space-y-3">
-                    {activity.map(log => (
-                      <div key={log.id} className="text-sm">
-                        <span className="font-medium">{log.action}</span> {log.entity_type}
-                        <span className="text-muted-foreground ml-2">
-                          {format(new Date(log.created_at), 'MMM d, yyyy h:mm a')}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <ActivityFeed entityType="project" entityId={id!} limit={50} />
               </CardContent>
             </Card>
           </TabsContent>

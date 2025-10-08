@@ -10,6 +10,7 @@ import { PhoneInput } from '@/components/lead-form/PhoneInput';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useFormSettings } from '@/hooks/useFormSettings';
+import { CRUDLogger } from '@/lib/crudLogger';
 
 interface LeadFormProps {
   isOpen: boolean;
@@ -47,8 +48,13 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
     setLoading(true);
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
       if (lead?.id) {
         // Update existing lead
+        const changes = CRUDLogger.calculateChanges(lead, formData);
+        
         const { error } = await supabase
           .from('leads')
           .update(formData)
@@ -57,10 +63,12 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
         if (error) throw error;
 
         // Log activity
-        await supabase.from('activity_logs').insert({
-          action: 'updated',
-          entity_type: 'lead',
-          entity_id: lead.id
+        await CRUDLogger.logUpdate({
+          userId: user.id,
+          entityType: 'lead',
+          entityId: lead.id,
+          entityName: `${formData.first_name} ${formData.last_name}`,
+          changes
         });
 
         toast({
@@ -69,11 +77,21 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
         });
       } else {
         // Create new lead
-        const { error } = await supabase
+        const { data: newLead, error } = await supabase
           .from('leads')
-          .insert(formData);
+          .insert(formData)
+          .select()
+          .single();
 
         if (error) throw error;
+
+        // Log activity
+        await CRUDLogger.logCreate({
+          userId: user.id,
+          entityType: 'lead',
+          entityId: newLead.id,
+          entityName: `${formData.first_name} ${formData.last_name}`
+        });
 
         toast({
           title: 'Success',
