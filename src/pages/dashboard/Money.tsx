@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import QuoteStatusBadge from '@/components/admin/money/QuoteStatusBadge';
 import InvoiceStatusBadge from '@/components/admin/money/InvoiceStatusBadge';
 import QuoteForm from '@/components/admin/money/QuoteForm';
+import InvoiceForm from '@/components/admin/money/InvoiceForm';
 import { format } from 'date-fns';
 
 const Money = () => {
@@ -28,6 +29,7 @@ const Money = () => {
   const [searchQuotes, setSearchQuotes] = useState('');
   const [searchInvoices, setSearchInvoices] = useState('');
   const [showQuoteForm, setShowQuoteForm] = useState(false);
+  const [showInvoiceForm, setShowInvoiceForm] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -285,7 +287,7 @@ const Money = () => {
                     <CardTitle>Invoices</CardTitle>
                     <CardDescription>Track invoices and payments</CardDescription>
                   </div>
-                  <Button>
+                  <Button onClick={() => setShowInvoiceForm(true)}>
                     <Plus className="h-4 w-4 mr-2" />
                     Create Invoice
                   </Button>
@@ -357,6 +359,12 @@ const Money = () => {
       <QuoteForm
         open={showQuoteForm}
         onOpenChange={setShowQuoteForm}
+        onSuccess={fetchData}
+      />
+
+      <InvoiceForm
+        open={showInvoiceForm}
+        onOpenChange={setShowInvoiceForm}
         onSuccess={fetchData}
       />
     </AdminLayout>
