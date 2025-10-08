@@ -1434,7 +1434,15 @@ export type Database = {
         | "on_hold"
         | "cancelled"
       quote_status: "draft" | "sent" | "accepted" | "declined" | "expired"
-      related_entity_type: "lead" | "account" | "project" | "contact" | "task"
+      related_entity_type:
+        | "lead"
+        | "account"
+        | "project"
+        | "contact"
+        | "task"
+        | "appointment"
+        | "quote"
+        | "invoice"
       service_category:
         | "Authority Hub"
         | "Emergency Services"
@@ -1584,7 +1592,16 @@ export const Constants = {
         "cancelled",
       ],
       quote_status: ["draft", "sent", "accepted", "declined", "expired"],
-      related_entity_type: ["lead", "account", "project", "contact", "task"],
+      related_entity_type: [
+        "lead",
+        "account",
+        "project",
+        "contact",
+        "task",
+        "appointment",
+        "quote",
+        "invoice",
+      ],
       service_category: [
         "Authority Hub",
         "Emergency Services",

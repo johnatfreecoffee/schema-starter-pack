@@ -417,7 +417,12 @@ const Tasks = () => {
                       <TableCell>
                         <TaskStatusBadge status={task.status} />
                       </TableCell>
-                      <TableCell className="font-medium">{task.title}</TableCell>
+                      <TableCell 
+                        className="font-medium cursor-pointer hover:underline"
+                        onClick={() => navigate(`/dashboard/tasks/${task.id}`)}
+                      >
+                        {task.title}
+                      </TableCell>
                       <TableCell>
                         {task.related_to_type && task.relatedEntityName ? (
                           <span className="text-sm capitalize">

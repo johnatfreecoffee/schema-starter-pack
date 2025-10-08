@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,6 +17,7 @@ import InvoiceForm from '@/components/admin/money/InvoiceForm';
 import { format } from 'date-fns';
 
 const Money = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [quotes, setQuotes] = useState<any[]>([]);
@@ -248,12 +250,16 @@ const Money = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredQuotes.map((quote) => (
-                      <TableRow key={quote.id}>
-                        <TableCell>
-                          <QuoteStatusBadge status={quote.status} />
-                        </TableCell>
-                        <TableCell className="font-medium">{quote.quote_number}</TableCell>
+                  {filteredQuotes.map((quote) => (
+                    <TableRow 
+                      key={quote.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => navigate(`/dashboard/quotes/${quote.id}`)}
+                    >
+                      <TableCell>
+                        <QuoteStatusBadge status={quote.status} />
+                      </TableCell>
+                      <TableCell className="font-medium">{quote.quote_number}</TableCell>
                         <TableCell>
                           <Link to={`/dashboard/accounts/${quote.account_id}`} className="hover:underline">
                             {quote.accounts?.account_name}
@@ -318,12 +324,16 @@ const Money = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredInvoices.map((invoice) => (
-                      <TableRow key={invoice.id}>
-                        <TableCell>
-                          <InvoiceStatusBadge status={invoice.status} />
-                        </TableCell>
-                        <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
+                  {filteredInvoices.map((invoice) => (
+                    <TableRow 
+                      key={invoice.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => navigate(`/dashboard/invoices/${invoice.id}`)}
+                    >
+                      <TableCell>
+                        <InvoiceStatusBadge status={invoice.status} />
+                      </TableCell>
+                      <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
                         <TableCell>
                           <Link to={`/dashboard/accounts/${invoice.account_id}`} className="hover:underline">
                             {invoice.accounts?.account_name}

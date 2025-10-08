@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +29,7 @@ interface Appointment {
 }
 
 const Appointments = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -172,7 +174,11 @@ const Appointments = () => {
                 </TableHeader>
                 <TableBody>
                   {appointments.map((appointment) => (
-                    <TableRow key={appointment.id}>
+                    <TableRow 
+                      key={appointment.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => navigate(`/dashboard/appointments/${appointment.id}`)}
+                    >
                       <TableCell className="font-medium">
                         {appointment.accounts?.account_name || 'Unknown'}
                       </TableCell>

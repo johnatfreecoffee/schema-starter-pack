@@ -22,9 +22,13 @@ import Accounts from "./pages/dashboard/Accounts";
 import AccountDetail from "./pages/dashboard/AccountDetail";
 import ProjectDetail from "./pages/dashboard/ProjectDetail";
 import Tasks from "./pages/dashboard/Tasks";
+import TaskDetail from "./pages/dashboard/TaskDetail";
 import Appointments from "./pages/dashboard/Appointments";
+import AppointmentDetail from "./pages/dashboard/AppointmentDetail";
 import Projects from "./pages/dashboard/Projects";
 import Money from "./pages/dashboard/Money";
+import QuoteDetail from "./pages/dashboard/QuoteDetail";
+import InvoiceDetail from "./pages/dashboard/InvoiceDetail";
 import Logs from "./pages/dashboard/Logs";
 import Settings from "./pages/dashboard/Settings";
 
@@ -84,9 +88,14 @@ const App = () => (
           <Route path="/dashboard/accounts/:id" element={<AccountDetail />} />
           <Route path="/dashboard/projects/:id" element={<ProjectDetail />} />
           <Route path="/dashboard/tasks" element={<Tasks />} />
+          <Route path="/dashboard/tasks/:id" element={<TaskDetail />} />
+          <Route path="/dashboard/appointments" element={<Appointments />} />
+          <Route path="/dashboard/appointments/:id" element={<AppointmentDetail />} />
           <Route path="/dashboard/calendars" element={<Appointments />} />
           <Route path="/dashboard/projects" element={<Projects />} />
           <Route path="/dashboard/money" element={<Money />} />
+          <Route path="/dashboard/quotes/:id" element={<QuoteDetail />} />
+          <Route path="/dashboard/invoices/:id" element={<InvoiceDetail />} />
           <Route path="/dashboard/logs" element={<Logs />} />
           <Route path="/dashboard/settings" element={<Settings />} />
           
