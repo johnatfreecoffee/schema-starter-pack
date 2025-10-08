@@ -16,6 +16,7 @@ import TaskStatusBadge from '@/components/admin/tasks/TaskStatusBadge';
 import TaskPriorityBadge from '@/components/admin/tasks/TaskPriorityBadge';
 import { Progress } from '@/components/ui/progress';
 import { format } from 'date-fns';
+import NotesSection from '@/components/admin/notes/NotesSection';
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -292,6 +293,7 @@ const ProjectDetail = () => {
             <TabsTrigger value="calendar">Calendar ({events.length})</TabsTrigger>
             <TabsTrigger value="phases">Phases ({phases.length})</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
+            <TabsTrigger value="notes">Notes</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
@@ -481,6 +483,10 @@ const ProjectDetail = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="notes">
+            <NotesSection entityType="project" entityId={id!} />
           </TabsContent>
         </Tabs>
 

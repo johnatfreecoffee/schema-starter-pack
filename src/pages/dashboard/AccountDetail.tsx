@@ -15,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Edit, Plus, Phone, Mail, MapPin, Trash2 } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { formatDistanceToNow } from 'date-fns';
+import NotesSection from '@/components/admin/notes/NotesSection';
 
 const AccountDetail = () => {
   const { id } = useParams();
@@ -561,16 +562,7 @@ const AccountDetail = () => {
 
           {/* Notes Tab */}
           <TabsContent value="notes">
-            <Card>
-              <CardHeader>
-                <CardTitle>Notes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-center py-8">
-                  Notes module coming soon
-                </p>
-              </CardContent>
-            </Card>
+            <NotesSection entityType="account" entityId={id!} />
           </TabsContent>
         </Tabs>
       </div>

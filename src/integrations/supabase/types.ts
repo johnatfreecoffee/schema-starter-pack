@@ -700,6 +700,7 @@ export type Database = {
           created_at: string
           created_by: string
           id: string
+          is_pinned: boolean | null
           related_to_id: string
           related_to_type: Database["public"]["Enums"]["related_entity_type"]
           updated_at: string
@@ -709,6 +710,7 @@ export type Database = {
           created_at?: string
           created_by: string
           id?: string
+          is_pinned?: boolean | null
           related_to_id: string
           related_to_type: Database["public"]["Enums"]["related_entity_type"]
           updated_at?: string
@@ -718,6 +720,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           id?: string
+          is_pinned?: boolean | null
           related_to_id?: string
           related_to_type?: Database["public"]["Enums"]["related_entity_type"]
           updated_at?: string

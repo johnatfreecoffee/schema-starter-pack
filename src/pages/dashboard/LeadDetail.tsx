@@ -8,6 +8,7 @@ import { LeadForm } from '@/components/admin/leads/LeadForm';
 import { LeadConvert } from '@/components/admin/leads/LeadConvert';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import NotesSection from '@/components/admin/notes/NotesSection';
 import { 
   ArrowLeft, 
   Mail, 
@@ -470,7 +471,7 @@ const LeadDetail = () => {
                 <CardTitle>Notes</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">Notes coming soon</p>
+                <NotesSection entityType="lead" entityId={id!} />
               </CardContent>
             </Card>
 
