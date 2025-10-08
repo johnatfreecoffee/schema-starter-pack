@@ -21,9 +21,12 @@ export type Database = {
           id: string
           industry: string | null
           notes: string | null
+          portal_enabled: boolean | null
+          portal_last_login: string | null
           source_lead_id: string | null
           status: Database["public"]["Enums"]["account_status"]
           updated_at: string
+          user_id: string | null
           website: string | null
         }
         Insert: {
@@ -32,9 +35,12 @@ export type Database = {
           id?: string
           industry?: string | null
           notes?: string | null
+          portal_enabled?: boolean | null
+          portal_last_login?: string | null
           source_lead_id?: string | null
           status?: Database["public"]["Enums"]["account_status"]
           updated_at?: string
+          user_id?: string | null
           website?: string | null
         }
         Update: {
@@ -43,9 +49,12 @@ export type Database = {
           id?: string
           industry?: string | null
           notes?: string | null
+          portal_enabled?: boolean | null
+          portal_last_login?: string | null
           source_lead_id?: string | null
           status?: Database["public"]["Enums"]["account_status"]
           updated_at?: string
+          user_id?: string | null
           website?: string | null
         }
         Relationships: [

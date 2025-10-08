@@ -40,6 +40,14 @@ import Analytics from "./pages/dashboard/settings/Analytics";
 import QATesting from "./pages/dashboard/settings/QATesting";
 import PageRegenerator from "./pages/dashboard/PageRegenerator";
 
+// Customer portal pages
+import CustomerAuth from "./pages/customer/CustomerAuth";
+import CustomerDashboard from "./pages/customer/CustomerDashboard";
+import CustomerProfile from "./pages/customer/CustomerProfile";
+import CustomerProjects from "./pages/customer/CustomerProjects";
+import CustomerAppointments from "./pages/customer/CustomerAppointments";
+import CustomerInvoices from "./pages/customer/CustomerInvoices";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -56,6 +64,14 @@ const App = () => (
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/auth" element={<Auth />} />
+          
+          {/* Customer Portal Routes */}
+          <Route path="/customer/login" element={<CustomerAuth />} />
+          <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+          <Route path="/customer/profile" element={<CustomerProfile />} />
+          <Route path="/customer/projects" element={<CustomerProjects />} />
+          <Route path="/customer/appointments" element={<CustomerAppointments />} />
+          <Route path="/customer/invoices" element={<CustomerInvoices />} />
           
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<Dashboard />} />
