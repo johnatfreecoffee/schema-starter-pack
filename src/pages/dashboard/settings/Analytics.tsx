@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { MetricCard } from '@/components/analytics/MetricCard';
 import { RevenueChart } from '@/components/analytics/RevenueChart';
@@ -6,18 +6,31 @@ import { LeadFunnelChart } from '@/components/analytics/LeadFunnelChart';
 import { ProjectStatusChart } from '@/components/analytics/ProjectStatusChart';
 import { TasksCompletedChart } from '@/components/analytics/TasksCompletedChart';
 import { ActivityFeedWidget } from '@/components/analytics/ActivityFeedWidget';
+import { TopPerformersWidget } from '@/components/analytics/TopPerformersWidget';
 import { DateRangeSelector } from '@/components/analytics/DateRangeSelector';
 import { AnalyticsService, type AnalyticsMetrics } from '@/services/analyticsService';
+import { ExportService } from '@/services/exportService';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Download, TrendingUp, Users, CheckSquare, FolderKanban } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { RefreshCw, Download, TrendingUp, Users, CheckSquare, FolderKanban, Clock, Lock } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { startOfDay, endOfDay, subDays } from 'date-fns';
+import { startOfDay, endOfDay, subDays, formatDistanceToNow } from 'date-fns';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const Analytics = () => {
+  const { role, loading: roleLoading } = useUserRole();
   const [metrics, setMetrics] = useState<AnalyticsMetrics | null>(null);
   const [historicalData, setHistoricalData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date>(new Date());
+  const [exporting, setExporting] = useState(false);
+  const chartsRef = useRef<HTMLDivElement>(null);
   const [dateRange, setDateRange] = useState({
     start: startOfDay(subDays(new Date(), 30)),
     end: endOfDay(new Date()),
@@ -32,6 +45,7 @@ const Analytics = () => {
       ]);
       setMetrics(currentMetrics);
       setHistoricalData(historical);
+      setLastUpdatedAt(new Date());
     } catch (error) {
       console.error('Error loading analytics:', error);
       toast({
@@ -43,6 +57,15 @@ const Analytics = () => {
       setLoading(false);
     }
   };
+
+  // Auto-refresh every 5 minutes
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      loadAnalytics();
+    }, 5 * 60 * 1000); // 5 minutes in milliseconds
+
+    return () => clearInterval(refreshInterval);
+  }, [dateRange]);
 
   useEffect(() => {
     loadAnalytics();
@@ -60,13 +83,80 @@ const Analytics = () => {
     });
   };
 
-  const handleExport = () => {
-    toast({
-      title: 'Export Started',
-      description: 'Your analytics report is being generated',
-    });
-    // TODO: Implement actual export functionality
+  const handleExportPDF = async () => {
+    if (!metrics) return;
+    
+    setExporting(true);
+    try {
+      const chartElements = chartsRef.current?.querySelectorAll('.recharts-wrapper');
+      await ExportService.exportToPDF(metrics, dateRange, chartElements);
+      toast({
+        title: 'Export Complete',
+        description: 'Your PDF report has been downloaded',
+      });
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+      toast({
+        title: 'Export Failed',
+        description: 'Failed to generate PDF report',
+        variant: 'destructive',
+      });
+    } finally {
+      setExporting(false);
+    }
   };
+
+  const handleExportCSV = async () => {
+    if (!metrics) return;
+    
+    setExporting(true);
+    try {
+      await ExportService.exportToCSV(metrics, historicalData);
+      toast({
+        title: 'Export Complete',
+        description: 'Your CSV report has been downloaded',
+      });
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      toast({
+        title: 'Export Failed',
+        description: 'Failed to generate CSV report',
+        variant: 'destructive',
+      });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  // Admin role check
+  if (roleLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  if (role !== 'admin') {
+    return (
+      <AdminLayout>
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <Lock className="h-16 w-16 text-muted-foreground mb-4" />
+          <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+          <p className="text-muted-foreground mb-4">
+            Only administrators can view analytics.
+          </p>
+          <Button onClick={() => window.history.back()}>
+            Go Back
+          </Button>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   if (loading) {
     return (
@@ -111,16 +201,32 @@ const Analytics = () => {
             <p className="text-muted-foreground">
               Comprehensive insights across your CRM system
             </p>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+              <Clock className="h-4 w-4" />
+              Last updated: {formatDistanceToNow(lastUpdatedAt, { addSuffix: true })}
+            </div>
           </div>
           <div className="flex gap-2">
-            <Button onClick={handleRefresh} variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" />
+            <Button onClick={handleRefresh} variant="outline" size="sm" disabled={loading}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-            <Button onClick={handleExport} variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" disabled={exporting}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleExportPDF}>
+                  Export as PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportCSV}>
+                  Export as CSV
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -158,14 +264,25 @@ const Analytics = () => {
         </div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <RevenueChart data={historicalData} />
-          <LeadFunnelChart data={metrics.leads.byStatus} />
-        </div>
+        <div ref={chartsRef}>
+          {historicalData.length === 0 ? (
+            <div className="text-center py-12 mb-8">
+              <p className="text-muted-foreground mb-2">No historical data yet</p>
+              <p className="text-sm text-muted-foreground">Check back tomorrow to see trends!</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <RevenueChart data={historicalData} />
+                <LeadFunnelChart data={metrics.leads.byStatus} />
+              </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <ProjectStatusChart data={metrics.projects.byStatus} />
-          <TasksCompletedChart data={historicalData} />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <ProjectStatusChart data={metrics.projects.byStatus} />
+                <TasksCompletedChart data={historicalData} />
+              </div>
+            </>
+          )}
         </div>
 
         {/* Performance Metrics */}
@@ -195,6 +312,12 @@ const Analytics = () => {
             icon={Users}
             colorClass="bg-accent/10 text-accent"
           />
+        </div>
+
+        {/* Top Performers Section */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-6">Top Performers</h2>
+          <TopPerformersWidget />
         </div>
 
         {/* Activity Feed */}

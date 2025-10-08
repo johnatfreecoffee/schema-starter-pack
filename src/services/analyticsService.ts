@@ -45,6 +45,31 @@ export interface DateRange {
   end: Date;
 }
 
+/**
+ * PRODUCTION SETUP REQUIRED FOR DAILY SNAPSHOTS:
+ * 
+ * To automatically create daily snapshots, set up one of these:
+ * 
+ * Option 1: Supabase Edge Function with pg_cron
+ * - Create edge function that calls AnalyticsService.createDailySnapshot()
+ * - Schedule with: 
+ *   SELECT cron.schedule('daily-analytics', '0 1 * * *', 
+ *     $$
+ *     SELECT net.http_post(
+ *       url:='https://your-project.supabase.co/functions/v1/create-analytics-snapshot',
+ *       headers:='{"Content-Type": "application/json", "Authorization": "Bearer YOUR_ANON_KEY"}'::jsonb
+ *     ) as request_id;
+ *     $$
+ *   );
+ * 
+ * Option 2: External Cron Job
+ * - Set up cron on your server to call API endpoint daily at 1 AM
+ * - Endpoint should authenticate and call createDailySnapshot()
+ * 
+ * Option 3: GitHub Actions (free tier)
+ * - Create workflow that runs daily
+ * - Calls your API to trigger snapshot creation
+ */
 export class AnalyticsService {
   private static CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
