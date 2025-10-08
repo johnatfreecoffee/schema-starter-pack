@@ -49,6 +49,8 @@ import PageRegenerator from "./pages/dashboard/PageRegenerator";
 import EmailTemplates from "./pages/dashboard/settings/EmailTemplates";
 import Notifications from "./pages/dashboard/settings/Notifications";
 import EmailQueue from "./pages/dashboard/EmailQueue";
+import Team from "./pages/dashboard/Team";
+import AcceptInvite from "./pages/AcceptInvite";
 
 // Customer portal pages
 import CustomerAuth from "./pages/customer/CustomerAuth";
@@ -75,6 +77,7 @@ const App = () => (
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/accept-invite" element={<AcceptInvite />} />
           
           {/* Customer Portal Routes */}
           <Route path="/customer/login" element={<CustomerAuth />} />
@@ -88,6 +91,7 @@ const App = () => (
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/analytics" element={<Analytics />} />
+          <Route path="/dashboard/team" element={<Team />} />
           <Route path="/dashboard/leads" element={<Leads />} />
           <Route path="/dashboard/leads/:id" element={<LeadDetail />} />
           <Route path="/dashboard/accounts" element={<Accounts />} />
