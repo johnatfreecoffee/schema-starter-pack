@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Calendar, dateFnsLocalizer, View } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay, addMonths, subMonths, startOfMonth, endOfMonth, addDays } from 'date-fns';
+import { enUS } from 'date-fns/locale';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -12,7 +13,7 @@ import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-const locales = { 'en-US': require('date-fns/locale/en-US') };
+const locales = { 'en-US': enUS };
 const localizer = dateFnsLocalizer({
   format,
   parse,
