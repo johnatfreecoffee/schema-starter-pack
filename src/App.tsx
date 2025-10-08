@@ -43,7 +43,7 @@ import ServiceAreas from "./pages/dashboard/settings/ServiceAreas";
 import Templates from "./pages/dashboard/settings/Templates";
 import StaticPages from "./pages/dashboard/settings/StaticPages";
 import FormFields from "./pages/dashboard/settings/FormFields";
-import Analytics from "./pages/dashboard/settings/Analytics";
+import Analytics from "./pages/dashboard/Analytics";
 import QATesting from "./pages/dashboard/settings/QATesting";
 import PageRegenerator from "./pages/dashboard/PageRegenerator";
 import EmailTemplates from "./pages/dashboard/settings/EmailTemplates";
@@ -118,7 +118,6 @@ const App = () => (
           <Route path="/dashboard/settings/form-fields" element={<FormFields />} />
           <Route path="/dashboard/settings/email-templates" element={<EmailTemplates />} />
           <Route path="/dashboard/settings/notifications" element={<Notifications />} />
-          <Route path="/dashboard/settings/analytics" element={<Analytics />} />
           <Route path="/dashboard/settings/qa-testing" element={<QATesting />} />
           <Route path="/dashboard/email-queue" element={<EmailQueue />} />
           <Route path="/dashboard/regenerate-pages" element={<PageRegenerator />} />
