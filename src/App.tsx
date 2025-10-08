@@ -46,6 +46,9 @@ import FormFields from "./pages/dashboard/settings/FormFields";
 import Analytics from "./pages/dashboard/settings/Analytics";
 import QATesting from "./pages/dashboard/settings/QATesting";
 import PageRegenerator from "./pages/dashboard/PageRegenerator";
+import EmailTemplates from "./pages/dashboard/settings/EmailTemplates";
+import Notifications from "./pages/dashboard/settings/Notifications";
+import EmailQueue from "./pages/dashboard/EmailQueue";
 
 // Customer portal pages
 import CustomerAuth from "./pages/customer/CustomerAuth";
@@ -112,8 +115,11 @@ const App = () => (
           <Route path="/dashboard/settings/templates" element={<Templates />} />
           <Route path="/dashboard/settings/static-pages" element={<StaticPages />} />
           <Route path="/dashboard/settings/form-fields" element={<FormFields />} />
+          <Route path="/dashboard/settings/email-templates" element={<EmailTemplates />} />
+          <Route path="/dashboard/settings/notifications" element={<Notifications />} />
           <Route path="/dashboard/settings/analytics" element={<Analytics />} />
           <Route path="/dashboard/settings/qa-testing" element={<QATesting />} />
+          <Route path="/dashboard/email-queue" element={<EmailQueue />} />
           <Route path="/dashboard/regenerate-pages" element={<PageRegenerator />} />
           
           {/* Dynamic Generated Pages */}

@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useFormSettings } from '@/hooks/useFormSettings';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { EmailService } from '@/services/emailService';
 
 interface LeadFormProps {
   isOpen: boolean;
