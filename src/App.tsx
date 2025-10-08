@@ -45,6 +45,7 @@ import CustomerAuth from "./pages/customer/CustomerAuth";
 import CustomerDashboard from "./pages/customer/CustomerDashboard";
 import CustomerProfile from "./pages/customer/CustomerProfile";
 import CustomerProjects from "./pages/customer/CustomerProjects";
+import CustomerProjectDetail from "./pages/customer/CustomerProjectDetail";
 import CustomerAppointments from "./pages/customer/CustomerAppointments";
 import CustomerInvoices from "./pages/customer/CustomerInvoices";
 
@@ -70,6 +71,7 @@ const App = () => (
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
           <Route path="/customer/profile" element={<CustomerProfile />} />
           <Route path="/customer/projects" element={<CustomerProjects />} />
+          <Route path="/customer/projects/:id" element={<CustomerProjectDetail />} />
           <Route path="/customer/appointments" element={<CustomerAppointments />} />
           <Route path="/customer/invoices" element={<CustomerInvoices />} />
           
