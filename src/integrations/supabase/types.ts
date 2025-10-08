@@ -70,30 +70,39 @@ export type Database = {
       activity_logs: {
         Row: {
           action: Database["public"]["Enums"]["activity_action"]
+          changes: Json | null
           created_at: string
           entity_id: string
+          entity_name: string | null
           entity_type: string
           id: string
+          metadata: Json | null
           parent_entity_id: string | null
           parent_entity_type: string | null
           user_id: string | null
         }
         Insert: {
           action: Database["public"]["Enums"]["activity_action"]
+          changes?: Json | null
           created_at?: string
           entity_id: string
+          entity_name?: string | null
           entity_type: string
           id?: string
+          metadata?: Json | null
           parent_entity_id?: string | null
           parent_entity_type?: string | null
           user_id?: string | null
         }
         Update: {
           action?: Database["public"]["Enums"]["activity_action"]
+          changes?: Json | null
           created_at?: string
           entity_id?: string
+          entity_name?: string | null
           entity_type?: string
           id?: string
+          metadata?: Json | null
           parent_entity_id?: string | null
           parent_entity_type?: string | null
           user_id?: string | null

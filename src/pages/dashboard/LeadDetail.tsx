@@ -9,6 +9,7 @@ import { LeadConvert } from '@/components/admin/leads/LeadConvert';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import NotesSection from '@/components/admin/notes/NotesSection';
+import ActivityFeed from '@/components/admin/ActivityFeed';
 import { 
   ArrowLeft, 
   Mail, 
