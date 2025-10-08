@@ -690,36 +690,101 @@ export type Database = {
         }
         Relationships: []
       }
+      project_phases: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          phase_name: string
+          phase_order: number | null
+          project_id: string
+          start_date: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          phase_name: string
+          phase_order?: number | null
+          project_id: string
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          phase_name?: string
+          phase_order?: number | null
+          project_id?: string
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_phases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           account_id: string
+          actual_completion: string | null
+          budget: number | null
           created_at: string
+          created_by: string | null
+          description: string | null
           estimated_completion: string | null
           id: string
+          project_manager: string | null
           project_name: string
           source_lead_id: string | null
+          spent: number | null
           start_date: string | null
           status: Database["public"]["Enums"]["project_status"]
           updated_at: string
         }
         Insert: {
           account_id: string
+          actual_completion?: string | null
+          budget?: number | null
           created_at?: string
+          created_by?: string | null
+          description?: string | null
           estimated_completion?: string | null
           id?: string
+          project_manager?: string | null
           project_name: string
           source_lead_id?: string | null
+          spent?: number | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["project_status"]
           updated_at?: string
         }
         Update: {
           account_id?: string
+          actual_completion?: string | null
+          budget?: number | null
           created_at?: string
+          created_by?: string | null
+          description?: string | null
           estimated_completion?: string | null
           id?: string
+          project_manager?: string | null
           project_name?: string
           source_lead_id?: string | null
+          spent?: number | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["project_status"]
           updated_at?: string
