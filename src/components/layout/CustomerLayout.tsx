@@ -74,7 +74,7 @@ const CustomerLayout = ({ children }: CustomerLayoutProps) => {
     { path: '/customer/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/customer/projects', icon: FolderKanban, label: 'My Projects' },
     { path: '/customer/appointments', icon: Calendar, label: 'Appointments' },
-    { path: '/customer/invoices', icon: FileText, label: 'Invoices' },
+    { path: '/customer/invoices', icon: FileText, label: 'Payments' },
     { path: '/customer/profile', icon: User, label: 'Profile' },
   ];
 

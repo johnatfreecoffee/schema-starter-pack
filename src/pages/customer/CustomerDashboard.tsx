@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import ProjectStatusBadge from '@/components/admin/projects/ProjectStatusBadge';
 import UpcomingAppointments from '@/components/customer/UpcomingAppointments';
+import RecentPayments from '@/components/customer/RecentPayments';
 
 const CustomerDashboard = () => {
   const [stats, setStats] = useState({
@@ -191,6 +192,9 @@ const CustomerDashboard = () => {
 
         {/* Upcoming Appointments Widget */}
         <UpcomingAppointments />
+
+        {/* Recent Payments Widget */}
+        <RecentPayments />
       </div>
     </CustomerLayout>
   );
