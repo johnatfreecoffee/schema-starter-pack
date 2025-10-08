@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { AccountStatusBadge } from '@/components/admin/accounts/AccountStatusBadge';
 import { AccountForm } from '@/components/admin/accounts/AccountForm';
 import { ContactForm } from '@/components/admin/accounts/ContactForm';
-import { AddressForm } from '@/components/admin/accounts/AddressForm';
+import { AddressManager } from '@/components/admin/accounts/AddressManager';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Edit, Plus, Phone, Mail, MapPin, Trash2 } from 'lucide-react';
@@ -33,9 +33,7 @@ const AccountDetail = () => {
   
   const [showAccountForm, setShowAccountForm] = useState(false);
   const [showContactForm, setShowContactForm] = useState(false);
-  const [showAddressForm, setShowAddressForm] = useState(false);
   const [editingContact, setEditingContact] = useState<any>(null);
-  const [editingAddress, setEditingAddress] = useState<any>(null);
 
   const fetchAccountData = async () => {
     if (!id) return;
@@ -448,89 +446,10 @@ const AccountDetail = () => {
 
           {/* Addresses Tab */}
           <TabsContent value="addresses">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Addresses</CardTitle>
-                <Button onClick={() => {
-                  setEditingAddress(null);
-                  setShowAddressForm(true);
-                }}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Address
-                </Button>
-              </CardHeader>
-              <CardContent>
-                {addresses.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-8">No addresses yet</p>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Address</TableHead>
-                        <TableHead>City</TableHead>
-                        <TableHead>State</TableHead>
-                        <TableHead>Zip</TableHead>
-                        <TableHead>Primary</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {addresses.map((address) => (
-                        <TableRow key={address.id}>
-                          <TableCell>
-                            <Badge variant="outline">{address.address_type}</Badge>
-                          </TableCell>
-                          <TableCell>
-                            {address.street_address}
-                            {address.unit && ` ${address.unit}`}
-                          </TableCell>
-                          <TableCell>{address.city}</TableCell>
-                          <TableCell>{address.state}</TableCell>
-                          <TableCell>{address.zip}</TableCell>
-                          <TableCell>
-                            {address.is_primary && <Badge>Primary</Badge>}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                onClick={() => {
-                                  setEditingAddress(address);
-                                  setShowAddressForm(true);
-                                }}
-                              >
-                                Edit
-                              </Button>
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button size="sm" variant="destructive">Delete</Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete Address?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      This will permanently delete this address from this account.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteAddress(address.id)}>
-                                      Delete
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
+            <AddressManager 
+              entityType="account" 
+              entityId={id!} 
+            />
           </TabsContent>
 
           {/* Projects Tab */}
@@ -565,6 +484,18 @@ const AccountDetail = () => {
           <TabsContent value="notes">
             <NotesSection entityType="account" entityId={id!} />
           </TabsContent>
+
+          {/* Activity Tab */}
+          <TabsContent value="activity">
+            <div className="bg-card rounded-lg border p-6">
+              <h3 className="text-lg font-semibold mb-4">Activity History</h3>
+              <ActivityFeed 
+                entityType="account" 
+                entityId={id!} 
+                limit={50}
+              />
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
 
@@ -577,29 +508,16 @@ const AccountDetail = () => {
       />
 
       {id && (
-        <>
-          <ContactForm
-            open={showContactForm}
-            onOpenChange={setShowContactForm}
-            accountId={id}
-            contact={editingContact}
-            onSuccess={() => {
-              fetchAccountData();
-              setEditingContact(null);
-            }}
-          />
-
-          <AddressForm
-            open={showAddressForm}
-            onOpenChange={setShowAddressForm}
-            accountId={id}
-            address={editingAddress}
-            onSuccess={() => {
-              fetchAccountData();
-              setEditingAddress(null);
-            }}
-          />
-        </>
+        <ContactForm
+          open={showContactForm}
+          onOpenChange={setShowContactForm}
+          accountId={id}
+          contact={editingContact}
+          onSuccess={() => {
+            fetchAccountData();
+            setEditingContact(null);
+          }}
+        />
       )}
     </AdminLayout>
   );

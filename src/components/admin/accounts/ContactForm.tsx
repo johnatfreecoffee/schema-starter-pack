@@ -25,7 +25,10 @@ export const ContactForm = ({ open, onOpenChange, accountId, contact, onSuccess 
     last_name: contact?.last_name || '',
     email: contact?.email || '',
     phone: contact?.phone || '',
+    mobile: contact?.mobile || '',
     title: contact?.title || '',
+    department: contact?.department || '',
+    notes: contact?.notes || '',
     is_primary: contact?.is_primary || false
   });
 
@@ -43,11 +46,16 @@ export const ContactForm = ({ open, onOpenChange, accountId, contact, onSuccess 
           .neq('id', contact?.id || '');
       }
 
+      const { data: { user } } = await supabase.auth.getUser();
+
       if (contact) {
         // Update existing contact
         const { error } = await supabase
           .from('contacts')
-          .update(formData)
+          .update({
+            ...formData,
+            updated_by: user?.id
+          })
           .eq('id', contact.id);
 
         if (error) throw error;
@@ -57,23 +65,11 @@ export const ContactForm = ({ open, onOpenChange, accountId, contact, onSuccess 
           .from('contacts')
           .insert({
             ...formData,
-            account_id: accountId
+            account_id: accountId,
+            created_by: user?.id
           });
 
         if (error) throw error;
-
-        // Log activity
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          await supabase.from('activity_logs').insert([{
-            user_id: user.id,
-            action: 'created' as const,
-            entity_type: 'contact',
-            entity_id: crypto.randomUUID(),
-            parent_entity_type: 'account',
-            parent_entity_id: accountId
-          }]);
-        }
       }
 
       toast({
@@ -145,11 +141,40 @@ export const ContactForm = ({ open, onOpenChange, accountId, contact, onSuccess 
           </div>
 
           <div>
-            <Label htmlFor="title">Title/Position</Label>
+            <Label htmlFor="mobile">Mobile</Label>
+            <PhoneInput
+              value={formData.mobile}
+              onChange={(value) => setFormData({ ...formData, mobile: value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="title">Title/Position</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="department">Department</Label>
+              <Input
+                id="department"
+                value={formData.department}
+                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="notes">Internal Notes</Label>
             <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              id="notes"
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              placeholder="Internal notes about this contact"
             />
           </div>
 

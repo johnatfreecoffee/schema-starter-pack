@@ -116,9 +116,11 @@ export const AccountForm = ({ open, onOpenChange, account, onSuccess }: AccountF
         const { error: addressError } = await supabase
           .from('addresses')
           .insert({
-            account_id: accountData.id,
-            street_address: formData.street_address,
-            unit: formData.unit,
+            entity_type: 'account',
+            entity_id: accountData.id,
+            account_id: accountData.id, // Legacy field for backward compatibility
+            street_1: formData.street_address,
+            street_2: formData.unit,
             city: formData.city,
             state: formData.state,
             zip: formData.zip,

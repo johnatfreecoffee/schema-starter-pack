@@ -11,22 +11,25 @@ import { useToast } from '@/hooks/use-toast';
 interface AddressFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  accountId: string;
+  entityType: 'account' | 'contact';
+  entityId: string;
   address?: any;
   onSuccess: () => void;
 }
 
-export const AddressForm = ({ open, onOpenChange, accountId, address, onSuccess }: AddressFormProps) => {
+export const AddressForm = ({ open, onOpenChange, entityType, entityId, address, onSuccess }: AddressFormProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
     address_type: address?.address_type || 'billing',
-    street_address: address?.street_address || '',
-    unit: address?.unit || '',
+    label: address?.label || '',
+    street_1: address?.street_1 || '',
+    street_2: address?.street_2 || '',
     city: address?.city || '',
     state: address?.state || '',
     zip: address?.zip || '',
+    country: address?.country || 'United States',
     is_primary: address?.is_primary || false
   });
 
@@ -40,7 +43,8 @@ export const AddressForm = ({ open, onOpenChange, accountId, address, onSuccess 
         await supabase
           .from('addresses')
           .update({ is_primary: false })
-          .eq('account_id', accountId)
+          .eq('entity_type', entityType)
+          .eq('entity_id', entityId)
           .neq('id', address?.id || '');
       }
 
@@ -58,23 +62,13 @@ export const AddressForm = ({ open, onOpenChange, accountId, address, onSuccess 
           .from('addresses')
           .insert({
             ...formData,
-            account_id: accountId
+            entity_type: entityType,
+            entity_id: entityId,
+            // Legacy field for backward compatibility
+            account_id: entityType === 'account' ? entityId : null
           });
 
         if (error) throw error;
-
-        // Log activity
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          await supabase.from('activity_logs').insert([{
-            user_id: user.id,
-            action: 'created' as const,
-            entity_type: 'address',
-            entity_id: crypto.randomUUID(),
-            parent_entity_type: 'account',
-            parent_entity_id: accountId
-          }]);
-        }
       }
 
       toast({
@@ -103,39 +97,52 @@ export const AddressForm = ({ open, onOpenChange, accountId, address, onSuccess 
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="address_type">Address Type</Label>
-            <Select 
-              value={formData.address_type} 
-              onValueChange={(value) => setFormData({ ...formData, address_type: value })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="billing">Billing</SelectItem>
-                <SelectItem value="service">Service</SelectItem>
-                <SelectItem value="mailing">Mailing</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="address_type">Address Type</Label>
+              <Select 
+                value={formData.address_type} 
+                onValueChange={(value) => setFormData({ ...formData, address_type: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="billing">Billing</SelectItem>
+                  <SelectItem value="shipping">Shipping</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="label">Label (optional)</Label>
+              <Input
+                id="label"
+                placeholder="e.g., Headquarters, Warehouse"
+                value={formData.label}
+                onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+              />
+            </div>
           </div>
 
           <div>
-            <Label htmlFor="street_address">Street Address *</Label>
+            <Label htmlFor="street_1">Street Address *</Label>
             <Input
-              id="street_address"
-              value={formData.street_address}
-              onChange={(e) => setFormData({ ...formData, street_address: e.target.value })}
+              id="street_1"
+              value={formData.street_1}
+              onChange={(e) => setFormData({ ...formData, street_1: e.target.value })}
               required
             />
           </div>
 
           <div>
-            <Label htmlFor="unit">Apartment/Unit/Floor</Label>
+            <Label htmlFor="street_2">Address Line 2</Label>
             <Input
-              id="unit"
-              value={formData.unit}
-              onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+              id="street_2"
+              placeholder="Apartment, suite, floor, etc."
+              value={formData.street_2}
+              onChange={(e) => setFormData({ ...formData, street_2: e.target.value })}
             />
           </div>
 
@@ -161,14 +168,25 @@ export const AddressForm = ({ open, onOpenChange, accountId, address, onSuccess 
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="zip">Zip Code *</Label>
-            <Input
-              id="zip"
-              value={formData.zip}
-              onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
-              required
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="zip">Zip Code *</Label>
+              <Input
+                id="zip"
+                value={formData.zip}
+                onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
+                required
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="country">Country</Label>
+              <Input
+                id="country"
+                value={formData.country}
+                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+              />
+            </div>
           </div>
 
           <div className="flex items-center space-x-2">

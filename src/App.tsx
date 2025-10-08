@@ -12,6 +12,8 @@ import NotFound from "./pages/NotFound";
 import Services from "./pages/Services";
 import AboutUs from "./pages/AboutUs";
 import Contact from "./pages/Contact";
+import Contacts from "./pages/dashboard/Contacts";
+import ContactDetail from "./pages/dashboard/ContactDetail";
 import GeneratedPage from "./pages/GeneratedPage";
 import StaticPage from "./pages/StaticPage";
 
@@ -86,6 +88,8 @@ const App = () => (
           <Route path="/dashboard/leads/:id" element={<LeadDetail />} />
           <Route path="/dashboard/accounts" element={<Accounts />} />
           <Route path="/dashboard/accounts/:id" element={<AccountDetail />} />
+          <Route path="/dashboard/contacts" element={<Contacts />} />
+          <Route path="/dashboard/contacts/:id" element={<ContactDetail />} />
           <Route path="/dashboard/projects/:id" element={<ProjectDetail />} />
           <Route path="/dashboard/tasks" element={<Tasks />} />
           <Route path="/dashboard/tasks/:id" element={<TaskDetail />} />

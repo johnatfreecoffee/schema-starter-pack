@@ -122,11 +122,16 @@ export type Database = {
           account_id: string
           address_type: string | null
           city: string
+          country: string | null
           created_at: string
+          entity_id: string
+          entity_type: string
           id: string
           is_primary: boolean
+          label: string | null
           state: string
-          street_address: string
+          street_1: string
+          street_2: string | null
           unit: string | null
           updated_at: string
           zip: string
@@ -135,11 +140,16 @@ export type Database = {
           account_id: string
           address_type?: string | null
           city: string
+          country?: string | null
           created_at?: string
+          entity_id: string
+          entity_type?: string
           id?: string
           is_primary?: boolean
+          label?: string | null
           state: string
-          street_address: string
+          street_1: string
+          street_2?: string | null
           unit?: string | null
           updated_at?: string
           zip: string
@@ -148,11 +158,16 @@ export type Database = {
           account_id?: string
           address_type?: string | null
           city?: string
+          country?: string | null
           created_at?: string
+          entity_id?: string
+          entity_type?: string
           id?: string
           is_primary?: boolean
+          label?: string | null
           state?: string
-          street_address?: string
+          street_1?: string
+          street_2?: string | null
           unit?: string | null
           updated_at?: string
           zip?: string
@@ -360,38 +375,53 @@ export type Database = {
         Row: {
           account_id: string
           created_at: string
+          created_by: string | null
+          department: string | null
           email: string
           first_name: string
           id: string
           is_primary: boolean
           last_name: string
+          mobile: string | null
+          notes: string | null
           phone: string
           title: string | null
           updated_at: string
+          updated_by: string | null
         }
         Insert: {
           account_id: string
           created_at?: string
+          created_by?: string | null
+          department?: string | null
           email: string
           first_name: string
           id?: string
           is_primary?: boolean
           last_name: string
+          mobile?: string | null
+          notes?: string | null
           phone: string
           title?: string | null
           updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           account_id?: string
           created_at?: string
+          created_by?: string | null
+          department?: string | null
           email?: string
           first_name?: string
           id?: string
           is_primary?: boolean
           last_name?: string
+          mobile?: string | null
+          notes?: string | null
           phone?: string
           title?: string | null
           updated_at?: string
+          updated_by?: string | null
         }
         Relationships: [
           {

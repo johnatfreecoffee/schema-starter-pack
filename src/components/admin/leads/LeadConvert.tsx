@@ -53,9 +53,11 @@ export const LeadConvert = ({ isOpen, onClose, lead }: LeadConvertProps) => {
       const { error: addressError } = await supabase
         .from('addresses')
         .insert({
-          account_id: account.id,
-          street_address: lead.street_address,
-          unit: lead.unit,
+          entity_type: 'account',
+          entity_id: account.id,
+          account_id: account.id, // Legacy field for backward compatibility
+          street_1: lead.street_address,
+          street_2: lead.unit,
           city: lead.city,
           state: lead.state,
           zip: lead.zip,
