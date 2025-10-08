@@ -18,14 +18,33 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { InviteUserDialog } from '@/components/admin/team/InviteUserDialog';
+import { UserDetailDialog } from '@/components/admin/team/UserDetailDialog';
 import { UserRoleBadge } from '@/components/admin/team/UserRoleBadge';
 import { UserStatusBadge } from '@/components/admin/team/UserStatusBadge';
 import { toast } from '@/hooks/use-toast';
 import { useUserRole } from '@/hooks/useUserRole';
-import { UserPlus, Search, Lock, Loader2 } from 'lucide-react';
+import { UserPlus, Search, Lock, Loader2, MoreVertical } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { CRUDLogger } from '@/lib/crudLogger';
 
 interface TeamMember {
   id: string;
@@ -59,6 +78,11 @@ const Team = () => {
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [userDetailOpen, setUserDetailOpen] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [bulkActionDialogOpen, setBulkActionDialogOpen] = useState(false);
+  const [bulkAction, setBulkAction] = useState<'suspend' | 'reactivate' | 'delete' | null>(null);
 
   useEffect(() => {
     if (!roleLoading) {
@@ -164,6 +188,100 @@ const Team = () => {
     );
   }
 
+  const handleUserClick = (userId: string) => {
+    setSelectedUserId(userId);
+    setUserDetailOpen(true);
+  };
+
+  const handleSelectUser = (userId: string, checked: boolean) => {
+    const newSelected = new Set(selectedUsers);
+    if (checked) {
+      newSelected.add(userId);
+    } else {
+      newSelected.delete(userId);
+    }
+    setSelectedUsers(newSelected);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedUsers(new Set(filteredMembers.map(m => m.id)));
+    } else {
+      setSelectedUsers(new Set());
+    }
+  };
+
+  const handleBulkAction = async () => {
+    if (!bulkAction || selectedUsers.size === 0) return;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      if (bulkAction === 'delete') {
+        const { error } = await supabase
+          .from('user_profiles')
+          .delete()
+          .in('id', Array.from(selectedUsers));
+
+        if (error) throw error;
+
+        // Log deletions
+        for (const userId of selectedUsers) {
+          const member = teamMembers.find(m => m.id === userId);
+          if (member) {
+            await CRUDLogger.logDelete({
+              userId: user.id,
+              entityType: 'account',
+              entityId: userId,
+              entityName: member.full_name,
+            });
+          }
+        }
+      } else {
+        const newStatus = bulkAction === 'suspend' ? 'suspended' : 'active';
+        const { error } = await supabase
+          .from('user_profiles')
+          .update({ status: newStatus })
+          .in('id', Array.from(selectedUsers));
+
+        if (error) throw error;
+
+        // Log status changes
+        for (const userId of selectedUsers) {
+          const member = teamMembers.find(m => m.id === userId);
+          if (member) {
+            await CRUDLogger.logStatusChange({
+              userId: user.id,
+              entityType: 'account',
+              entityId: userId,
+              entityName: member.full_name,
+              oldStatus: member.status,
+              newStatus,
+            });
+          }
+        }
+      }
+
+      toast({
+        title: 'Success',
+        description: `Successfully ${bulkAction === 'delete' ? 'deleted' : bulkAction === 'suspend' ? 'suspended' : 'reactivated'} ${selectedUsers.size} user(s)`,
+      });
+
+      setSelectedUsers(new Set());
+      setBulkActionDialogOpen(false);
+      setBulkAction(null);
+      loadTeamData();
+    } catch (error: any) {
+      console.error('Error performing bulk action:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to perform bulk action',
+        variant: 'destructive',
+      });
+    }
+  };
+
   // Filter team members
   const filteredMembers = teamMembers.filter(member => {
     const matchesSearch =
@@ -191,7 +309,7 @@ const Team = () => {
           </Button>
         </div>
 
-        {/* Filters */}
+        {/* Filters and Bulk Actions */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -222,6 +340,27 @@ const Team = () => {
               <SelectItem value="suspended">Suspended</SelectItem>
             </SelectContent>
           </Select>
+          {selectedUsers.size > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  Bulk Actions ({selectedUsers.size})
+                  <MoreVertical className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => { setBulkAction('suspend'); setBulkActionDialogOpen(true); }}>
+                  Suspend Users
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { setBulkAction('reactivate'); setBulkActionDialogOpen(true); }}>
+                  Reactivate Users
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { setBulkAction('delete'); setBulkActionDialogOpen(true); }} className="text-destructive">
+                  Delete Users
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* Pending Invitations */}
@@ -266,6 +405,12 @@ const Team = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">
+                  <Checkbox
+                    checked={selectedUsers.size === filteredMembers.length && filteredMembers.length > 0}
+                    onCheckedChange={handleSelectAll}
+                  />
+                </TableHead>
                 <TableHead>User</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Status</TableHead>
@@ -276,20 +421,26 @@ const Team = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center py-8">
                     <Loader2 className="h-6 w-6 animate-spin mx-auto" />
                   </TableCell>
                 </TableRow>
               ) : filteredMembers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     No team members found
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredMembers.map((member) => (
-                  <TableRow key={member.id}>
-                    <TableCell>
+                  <TableRow key={member.id} className="cursor-pointer hover:bg-muted/50">
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={selectedUsers.has(member.id)}
+                        onCheckedChange={(checked) => handleSelectUser(member.id, checked as boolean)}
+                      />
+                    </TableCell>
+                    <TableCell onClick={() => handleUserClick(member.id)}>
                       <div className="flex items-center gap-3">
                         <Avatar>
                           <AvatarImage src={member.avatar_url || undefined} />
@@ -306,19 +457,19 @@ const Team = () => {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={() => handleUserClick(member.id)}>
                       <UserRoleBadge role={member.role} />
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={() => handleUserClick(member.id)}>
                       <UserStatusBadge status={member.status} />
                     </TableCell>
-                    <TableCell>
+                    <TableCell onClick={() => handleUserClick(member.id)}>
                       {member.last_login_at
                         ? formatDistanceToNow(new Date(member.last_login_at), { addSuffix: true })
                         : 'Never'}
                     </TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="sm">
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <Button variant="ghost" size="sm" onClick={() => handleUserClick(member.id)}>
                         Manage
                       </Button>
                     </TableCell>
@@ -335,6 +486,29 @@ const Team = () => {
         onOpenChange={setInviteDialogOpen}
         onSuccess={loadTeamData}
       />
+
+      <UserDetailDialog
+        open={userDetailOpen}
+        onOpenChange={setUserDetailOpen}
+        userId={selectedUserId}
+        onSuccess={loadTeamData}
+      />
+
+      <AlertDialog open={bulkActionDialogOpen} onOpenChange={setBulkActionDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Bulk Action</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to {bulkAction} {selectedUsers.size} user(s)? 
+              {bulkAction === 'delete' && ' This action cannot be undone.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleBulkAction}>Confirm</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminLayout>
   );
 };

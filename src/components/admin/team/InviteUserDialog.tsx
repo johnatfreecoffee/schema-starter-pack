@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { CRUDLogger } from '@/lib/crudLogger';
 import {
   Dialog,
   DialogContent,
@@ -66,30 +67,28 @@ export function InviteUserDialog({ open, onOpenChange, onSuccess }: InviteUserDi
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Generate invite token and expiry
-      const inviteToken = crypto.randomUUID();
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 7); // 7 days from now
+      // Call edge function to send invitation
+      const inviteData = {
+        email: data.email,
+        full_name: data.full_name,
+        role: data.role,
+        job_title: data.job_title,
+      };
 
-      // Create invitation record
-      const { error: inviteError } = await supabase
-        .from('team_invitations')
-        .insert({
-          email: data.email,
-          full_name: data.full_name,
-          role: data.role,
-          job_title: data.job_title,
-          invite_token: inviteToken,
-          invite_expires_at: expiresAt.toISOString(),
-          invited_by: user.id,
-        });
+      const { error } = await supabase.functions.invoke('send-team-invitation', {
+        body: inviteData,
+      });
 
-      if (inviteError) throw inviteError;
+      if (error) throw error;
 
-      // TODO: Send invitation email via edge function
-      // For now, we'll just show the invitation link in console
-      const inviteLink = `${window.location.origin}/accept-invite?token=${inviteToken}`;
-      console.log('Invitation link:', inviteLink);
+      // Log the invitation
+      await CRUDLogger.logCreate({
+        userId: user.id,
+        entityType: 'account',
+        entityId: crypto.randomUUID(),
+        entityName: data.full_name,
+        metadata: { action: 'invited', role: data.role },
+      });
 
       toast({
         title: 'Invitation Sent',
