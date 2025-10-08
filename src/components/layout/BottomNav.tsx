@@ -9,7 +9,8 @@ import {
   FileText, 
   Settings, 
   LogOut,
-  Phone
+  Phone,
+  BarChart3
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -38,6 +39,7 @@ const BottomNav = ({ isAdmin }: BottomNavProps) => {
   };
 
   const navItems = [
+    { path: '/dashboard/analytics', icon: BarChart3, label: 'Analytics' },
     { path: '/dashboard/leads', icon: UserPlus, label: 'Leads' },
     { path: '/dashboard/accounts', icon: Building2, label: 'Accounts' },
     { path: '/dashboard/tasks', icon: CheckSquare, label: 'Tasks' },

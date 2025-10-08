@@ -242,6 +242,108 @@ export type Database = {
         }
         Relationships: []
       }
+      analytics_cache: {
+        Row: {
+          calculated_at: string | null
+          expires_at: string | null
+          id: string
+          metric_key: string
+          metric_value: Json
+        }
+        Insert: {
+          calculated_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metric_key: string
+          metric_value: Json
+        }
+        Update: {
+          calculated_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metric_key?: string
+          metric_value?: Json
+        }
+        Relationships: []
+      }
+      analytics_snapshots: {
+        Row: {
+          active_accounts: number | null
+          active_projects: number | null
+          completed_projects_today: number | null
+          completed_tasks_today: number | null
+          converted_leads_today: number | null
+          created_at: string | null
+          customer_form_submissions_today: number | null
+          customer_logins_today: number | null
+          id: string
+          lead_conversion_rate: number | null
+          new_accounts_today: number | null
+          new_leads_today: number | null
+          outstanding_invoices: number | null
+          overdue_tasks: number | null
+          revenue_today: number | null
+          snapshot_date: string
+          total_accounts: number | null
+          total_invoices_value: number | null
+          total_leads: number | null
+          total_projects: number | null
+          total_quotes_value: number | null
+          total_tasks: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          active_accounts?: number | null
+          active_projects?: number | null
+          completed_projects_today?: number | null
+          completed_tasks_today?: number | null
+          converted_leads_today?: number | null
+          created_at?: string | null
+          customer_form_submissions_today?: number | null
+          customer_logins_today?: number | null
+          id?: string
+          lead_conversion_rate?: number | null
+          new_accounts_today?: number | null
+          new_leads_today?: number | null
+          outstanding_invoices?: number | null
+          overdue_tasks?: number | null
+          revenue_today?: number | null
+          snapshot_date: string
+          total_accounts?: number | null
+          total_invoices_value?: number | null
+          total_leads?: number | null
+          total_projects?: number | null
+          total_quotes_value?: number | null
+          total_tasks?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          active_accounts?: number | null
+          active_projects?: number | null
+          completed_projects_today?: number | null
+          completed_tasks_today?: number | null
+          converted_leads_today?: number | null
+          created_at?: string | null
+          customer_form_submissions_today?: number | null
+          customer_logins_today?: number | null
+          id?: string
+          lead_conversion_rate?: number | null
+          new_accounts_today?: number | null
+          new_leads_today?: number | null
+          outstanding_invoices?: number | null
+          overdue_tasks?: number | null
+          revenue_today?: number | null
+          snapshot_date?: string
+          total_accounts?: number | null
+          total_invoices_value?: number | null
+          total_leads?: number | null
+          total_projects?: number | null
+          total_quotes_value?: number | null
+          total_tasks?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       calendar_events: {
         Row: {
           account_id: string | null
