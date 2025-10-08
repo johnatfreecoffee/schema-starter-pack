@@ -6,6 +6,10 @@ import { format, parseISO } from 'date-fns';
 import InvoiceStatusBadge from '@/components/admin/money/InvoiceStatusBadge';
 import QuoteStatusBadge from '@/components/admin/money/QuoteStatusBadge';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 type PaymentDocument = {
   id: string;
@@ -18,6 +22,15 @@ type PaymentDocument = {
   account_id: string;
 };
 
+interface LineItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unit_price: number;
+  amount: number;
+  item_order: number;
+}
+
 interface PaymentDetailModalProps {
   document: PaymentDocument;
   open: boolean;
@@ -25,6 +38,46 @@ interface PaymentDetailModalProps {
 }
 
 const PaymentDetailModal = ({ document, open, onOpenChange }: PaymentDetailModalProps) => {
+  const [lineItems, setLineItems] = useState<LineItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (open && document) {
+      fetchLineItems();
+    }
+  }, [open, document]);
+
+  const fetchLineItems = async () => {
+    setLoading(true);
+    try {
+      if (document.type === 'quote') {
+        const { data, error } = await supabase
+          .from('quote_items')
+          .select('*')
+          .eq('quote_id', document.id)
+          .order('item_order', { ascending: true });
+
+        if (error) throw error;
+        setLineItems(data || []);
+      } else {
+        const { data, error } = await supabase
+          .from('invoice_items')
+          .select('*')
+          .eq('invoice_id', document.id)
+          .order('item_order', { ascending: true });
+
+        if (error) throw error;
+        setLineItems(data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching line items:', error);
+      toast.error('Failed to load line items');
+      setLineItems([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDownloadPDF = () => {
     toast.info('PDF download feature coming soon');
   };
@@ -32,6 +85,12 @@ const PaymentDetailModal = ({ document, open, onOpenChange }: PaymentDetailModal
   const handleAcceptQuote = () => {
     toast.info('Quote acceptance feature coming soon');
   };
+
+  // Calculate totals from line items
+  const subtotal = lineItems.reduce((sum, item) => sum + item.amount, 0);
+  const taxRate = 0.08; // 8% tax rate
+  const taxAmount = Math.round(subtotal * taxRate);
+  const total = subtotal + taxAmount;
 
   const isOverdue = document.type === 'invoice' && 
     document.due_date && 
@@ -94,18 +153,61 @@ const PaymentDetailModal = ({ document, open, onOpenChange }: PaymentDetailModal
 
           <Separator />
 
+          {/* Line Items Section */}
+          <div>
+            <h4 className="font-semibold mb-3">Line Items</h4>
+            {loading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ) : lineItems.length === 0 ? (
+              <div className="border rounded-lg p-8 text-center text-sm text-muted-foreground">
+                No line items added yet
+              </div>
+            ) : (
+              <div className="rounded-lg border overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Description</TableHead>
+                      <TableHead className="text-right">Quantity</TableHead>
+                      <TableHead className="text-right">Unit Price</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {lineItems.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-medium">{item.description}</TableCell>
+                        <TableCell className="text-right">{Number(item.quantity).toFixed(2)}</TableCell>
+                        <TableCell className="text-right">
+                          ${(item.unit_price / 100).toFixed(2)}
+                        </TableCell>
+                        <TableCell className="text-right font-medium">
+                          ${(item.amount / 100).toFixed(2)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </div>
+
           {/* Amount Breakdown */}
           <div className="bg-muted/30 p-4 rounded-lg space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Subtotal</span>
               <span className="font-medium">
-                ${(document.amount * 0.9).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${(subtotal / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Tax (10%)</span>
+              <span className="text-muted-foreground">Tax (8%)</span>
               <span className="font-medium">
-                ${(document.amount * 0.1).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${(taxAmount / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             <Separator />
@@ -113,7 +215,7 @@ const PaymentDetailModal = ({ document, open, onOpenChange }: PaymentDetailModal
               <span className="font-semibold text-lg">Total Amount</span>
               <div className="flex items-center gap-1 text-2xl font-bold">
                 <DollarSign className="h-5 w-5" />
-                {document.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {(total / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             </div>
             {document.type === 'invoice' && document.status !== 'paid' && (
@@ -123,19 +225,11 @@ const PaymentDetailModal = ({ document, open, onOpenChange }: PaymentDetailModal
                   <span className="font-semibold text-destructive">Balance Due</span>
                   <div className="flex items-center gap-1 text-xl font-bold text-destructive">
                     <DollarSign className="h-5 w-5" />
-                    {document.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {(total / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
                 </div>
               </>
             )}
-          </div>
-
-          {/* Line Items Placeholder */}
-          <div>
-            <h4 className="font-semibold mb-3">Line Items</h4>
-            <div className="border rounded-lg p-4 text-center text-sm text-muted-foreground">
-              Line items will be displayed here
-            </div>
           </div>
 
           {/* Payment History for Invoices */}
