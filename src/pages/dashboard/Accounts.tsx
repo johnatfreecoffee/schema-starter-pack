@@ -9,7 +9,8 @@ import { AccountForm } from '@/components/admin/accounts/AccountForm';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Phone, Mail } from 'lucide-react';
+import { Plus, Phone, Mail, Download } from 'lucide-react';
+import { ExportService } from '@/services/exportService';
 import { formatDistanceToNow } from 'date-fns';
 import { CRUDLogger } from '@/lib/crudLogger';
 
@@ -116,6 +117,22 @@ const Accounts = () => {
   };
 
   const totalAccounts = accounts.length;
+
+  const handleExport = () => {
+    const exportData = accounts.map(account => ({
+      id: account.id,
+      account_name: account.account_name,
+      status: account.status,
+      primary_contact: account.contacts?.[0] ? `${account.contacts[0].first_name} ${account.contacts[0].last_name}` : '',
+      email: account.contacts?.[0]?.email || '',
+      phone: account.contacts?.[0]?.phone || '',
+      location: account.addresses?.[0] ? `${account.addresses[0].city}, ${account.addresses[0].state}` : '',
+      project_count: account.projects?.length || 0,
+      created_at: account.created_at
+    }));
+    ExportService.exportModuleToCSV(exportData, 'accounts');
+    toast({ title: 'Success', description: 'Accounts exported successfully' });
+  };
 
   return (
     <AdminLayout>

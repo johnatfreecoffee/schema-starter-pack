@@ -50,6 +50,8 @@ import EmailTemplates from "./pages/dashboard/settings/EmailTemplates";
 import Notifications from "./pages/dashboard/settings/Notifications";
 import EmailQueue from "./pages/dashboard/EmailQueue";
 import Team from "./pages/dashboard/Team";
+import Import from "./pages/dashboard/Import";
+import ImportHistory from "./pages/dashboard/ImportHistory";
 import AcceptInvite from "./pages/AcceptInvite";
 
 // Customer portal pages
@@ -92,6 +94,8 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/analytics" element={<Analytics />} />
           <Route path="/dashboard/team" element={<Team />} />
+          <Route path="/dashboard/import" element={<Import />} />
+          <Route path="/dashboard/import/history" element={<ImportHistory />} />
           <Route path="/dashboard/leads" element={<Leads />} />
           <Route path="/dashboard/leads/:id" element={<LeadDetail />} />
           <Route path="/dashboard/accounts" element={<Accounts />} />

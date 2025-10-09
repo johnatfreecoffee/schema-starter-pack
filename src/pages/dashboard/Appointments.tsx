@@ -10,7 +10,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { Check, X, Calendar, Clock } from 'lucide-react';
+import { Check, X, Calendar, Clock, Download } from 'lucide-react';
+import { ExportService } from '@/services/exportService';
 
 interface Appointment {
   id: string;

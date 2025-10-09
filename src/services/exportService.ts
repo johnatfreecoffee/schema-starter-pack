@@ -235,4 +235,67 @@ export class ExportService {
       currency: 'USD',
     }).format(amount / 100);
   }
+
+  /**
+   * Export module data to CSV format
+   */
+  static exportModuleToCSV(
+    data: any[],
+    moduleName: string,
+    columns?: string[]
+  ): void {
+    if (data.length === 0) {
+      console.warn('No data to export');
+      return;
+    }
+
+    // If no columns specified, use all keys from first object
+    const exportColumns = columns || Object.keys(data[0]);
+
+    // Filter data to only include specified columns
+    const filteredData = data.map(row => {
+      const filteredRow: any = {};
+      exportColumns.forEach(col => {
+        filteredRow[col] = row[col];
+      });
+      return filteredRow;
+    });
+
+    // Convert to CSV
+    let csvContent = '';
+    
+    // Add headers
+    csvContent += exportColumns.join(',') + '\n';
+    
+    // Add data rows
+    filteredData.forEach(row => {
+      const values = exportColumns.map(col => {
+        const value = row[col];
+        // Escape commas and quotes
+        if (value === null || value === undefined) return '';
+        const stringValue = String(value);
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+          return `"${stringValue.replace(/"/g, '""')}"`;
+        }
+        return stringValue;
+      });
+      csvContent += values.join(',') + '\n';
+    });
+
+    // Create download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    const today = new Date().toISOString().split('T')[0];
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${moduleName}_${today}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    URL.revokeObjectURL(url);
+  }
 }

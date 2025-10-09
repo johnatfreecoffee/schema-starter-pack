@@ -788,6 +788,45 @@ export type Database = {
           },
         ]
       }
+      import_history: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          error_log: Json | null
+          failed_rows: number | null
+          filename: string | null
+          id: string
+          module: string
+          settings: Json | null
+          successful_rows: number | null
+          total_rows: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          error_log?: Json | null
+          failed_rows?: number | null
+          filename?: string | null
+          id?: string
+          module: string
+          settings?: Json | null
+          successful_rows?: number | null
+          total_rows?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          error_log?: Json | null
+          failed_rows?: number | null
+          filename?: string | null
+          id?: string
+          module?: string
+          settings?: Json | null
+          successful_rows?: number | null
+          total_rows?: number | null
+        }
+        Relationships: []
+      }
       invoice_items: {
         Row: {
           amount: number

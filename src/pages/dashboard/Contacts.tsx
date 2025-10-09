@@ -7,7 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ContactForm } from '@/components/admin/accounts/ContactForm';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Search, Edit, Trash2, Building2, Mail, Phone } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Building2, Mail, Phone, Download } from 'lucide-react';
+import { ExportService } from '@/services/exportService';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { CRUDLogger } from '@/lib/crudLogger';
 
@@ -109,6 +110,21 @@ const Contacts = () => {
     );
   });
 
+  const handleExport = () => {
+    const exportData = filteredContacts.map(contact => ({
+      ...contact,
+      account_name: accounts[contact.account_id]?.account_name || ''
+    }));
+    ExportService.exportModuleToCSV(exportData, 'contacts', [
+      'id', 'first_name', 'last_name', 'email', 'phone', 'title',
+      'account_name', 'is_primary', 'created_at'
+    ]);
+    toast({
+      title: 'Success',
+      description: 'Contacts exported successfully',
+    });
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -117,14 +133,20 @@ const Contacts = () => {
             <h1 className="text-3xl font-bold tracking-tight">Contacts</h1>
             <p className="text-muted-foreground">Manage your contact relationships</p>
           </div>
-          <Button onClick={() => {
-            setEditingContact(null);
-            setSelectedAccountId('');
-            setShowContactForm(true);
-          }}>
-            <Plus className="h-4 w-4 mr-2" />
-            New Contact
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleExport}>
+              <Download className="h-4 w-4 mr-2" />
+              Export to CSV
+            </Button>
+            <Button onClick={() => {
+              setEditingContact(null);
+              setSelectedAccountId('');
+              setShowContactForm(true);
+            }}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Contact
+            </Button>
+          </div>
         </div>
 
         <div className="flex items-center gap-4">

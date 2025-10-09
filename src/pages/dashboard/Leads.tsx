@@ -42,8 +42,10 @@ import {
   Trash2, 
   CheckCircle, 
   Filter,
-  AlertCircle
+  AlertCircle,
+  Download
 } from 'lucide-react';
+import { ExportService } from '@/services/exportService';
 import { formatDistanceToNow } from 'date-fns';
 import { CRUDLogger } from '@/lib/crudLogger';
 
@@ -200,6 +202,18 @@ const Leads = () => {
     return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6)}`;
   };
 
+  const handleExport = () => {
+    ExportService.exportModuleToCSV(leads, 'leads', [
+      'id', 'status', 'first_name', 'last_name', 'email', 'phone',
+      'service_needed', 'street_address', 'city', 'state', 'zip',
+      'is_emergency', 'created_at'
+    ]);
+    toast({
+      title: 'Success',
+      description: 'Leads exported successfully',
+    });
+  };
+
   return (
     <AdminLayout>
       <div className="container mx-auto px-4 py-8">
@@ -212,6 +226,10 @@ const Leads = () => {
             </p>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" onClick={handleExport}>
+              <Download className="mr-2 h-4 w-4" />
+              Export to CSV
+            </Button>
             <Button onClick={() => setShowCreateForm(true)}>
               <Plus className="mr-2 h-4 w-4" />
               Create New Lead
