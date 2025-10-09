@@ -1331,6 +1331,39 @@ export type Database = {
           },
         ]
       }
+      saved_views: {
+        Row: {
+          created_at: string | null
+          filters: Json
+          id: string
+          is_default: boolean | null
+          module: string
+          updated_at: string | null
+          user_id: string
+          view_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          filters: Json
+          id?: string
+          is_default?: boolean | null
+          module: string
+          updated_at?: string | null
+          user_id: string
+          view_name: string
+        }
+        Update: {
+          created_at?: string | null
+          filters?: Json
+          id?: string
+          is_default?: boolean | null
+          module?: string
+          updated_at?: string | null
+          user_id?: string
+          view_name?: string
+        }
+        Relationships: []
+      }
       service_area_services: {
         Row: {
           created_at: string
