@@ -23,12 +23,12 @@ import LeadDetail from "./pages/dashboard/LeadDetail";
 import Accounts from "./pages/dashboard/Accounts";
 import AccountDetail from "./pages/dashboard/AccountDetail";
 import ProjectDetail from "./pages/dashboard/ProjectDetail";
-import Tasks from "./pages/dashboard/Tasks";
+import TasksAdvanced from "./pages/dashboard/TasksAdvanced";
 import TaskDetail from "./pages/dashboard/TaskDetail";
-import Appointments from "./pages/dashboard/Appointments";
+import AppointmentsAdvanced from "./pages/dashboard/AppointmentsAdvanced";
 import AppointmentDetail from "./pages/dashboard/AppointmentDetail";
 import Projects from "./pages/dashboard/Projects";
-import Money from "./pages/dashboard/Money";
+import MoneyAdvanced from "./pages/dashboard/MoneyAdvanced";
 import QuoteDetail from "./pages/dashboard/QuoteDetail";
 import InvoiceDetail from "./pages/dashboard/InvoiceDetail";
 import Logs from "./pages/dashboard/Logs";
@@ -103,13 +103,13 @@ const App = () => (
           <Route path="/dashboard/contacts" element={<Contacts />} />
           <Route path="/dashboard/contacts/:id" element={<ContactDetail />} />
           <Route path="/dashboard/projects/:id" element={<ProjectDetail />} />
-          <Route path="/dashboard/tasks" element={<Tasks />} />
+          <Route path="/dashboard/tasks" element={<TasksAdvanced />} />
           <Route path="/dashboard/tasks/:id" element={<TaskDetail />} />
-          <Route path="/dashboard/appointments" element={<Appointments />} />
+          <Route path="/dashboard/appointments" element={<AppointmentsAdvanced />} />
           <Route path="/dashboard/appointments/:id" element={<AppointmentDetail />} />
-          <Route path="/dashboard/calendars" element={<Appointments />} />
+          <Route path="/dashboard/calendars" element={<AppointmentsAdvanced />} />
           <Route path="/dashboard/projects" element={<Projects />} />
-          <Route path="/dashboard/money" element={<Money />} />
+          <Route path="/dashboard/money" element={<MoneyAdvanced />} />
           <Route path="/dashboard/quotes/:id" element={<QuoteDetail />} />
           <Route path="/dashboard/invoices/:id" element={<InvoiceDetail />} />
           <Route path="/dashboard/logs" element={<Logs />} />
