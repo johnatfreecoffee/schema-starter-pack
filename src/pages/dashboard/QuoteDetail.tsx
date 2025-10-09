@@ -8,6 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import NotesSection from "@/components/admin/notes/NotesSection";
+import DocumentActions from "@/components/admin/money/DocumentActions";
 import ActivityFeed from "@/components/admin/ActivityFeed";
 import QuoteStatusBadge from "@/components/admin/money/QuoteStatusBadge";
 import { format } from "date-fns";
@@ -119,6 +120,19 @@ const QuoteDetail = () => {
             <h1 className="text-4xl font-bold mb-2">Quote #{quote.quote_number}</h1>
             <QuoteStatusBadge status={quote.status} />
           </div>
+          
+          <DocumentActions
+            documentType="quote"
+            documentId={id!}
+            documentNumber={quote.quote_number}
+            lineItems={lineItems.map(item => ({
+              description: item.description,
+              quantity: item.quantity,
+              unit_price: item.unit_price,
+              amount: item.amount,
+            }))}
+            customerEmail={quote.accounts?.contacts?.[0]?.email}
+          />
         </div>
 
         <Tabs defaultValue="details" className="w-full">

@@ -435,11 +435,18 @@ export type Database = {
           business_slogan: string | null
           created_at: string
           description: string | null
+          document_font: string | null
+          document_footer_text: string | null
+          document_header_color: string | null
+          document_logo_position: string | null
+          document_payment_instructions: string | null
+          document_terms: string | null
           email: string
           icon_url: string | null
           id: string
           logo_url: string | null
           phone: string
+          show_tagline_on_documents: boolean | null
           updated_at: string
           years_experience: number | null
         }
@@ -449,11 +456,18 @@ export type Database = {
           business_slogan?: string | null
           created_at?: string
           description?: string | null
+          document_font?: string | null
+          document_footer_text?: string | null
+          document_header_color?: string | null
+          document_logo_position?: string | null
+          document_payment_instructions?: string | null
+          document_terms?: string | null
           email: string
           icon_url?: string | null
           id?: string
           logo_url?: string | null
           phone: string
+          show_tagline_on_documents?: boolean | null
           updated_at?: string
           years_experience?: number | null
         }
@@ -463,11 +477,18 @@ export type Database = {
           business_slogan?: string | null
           created_at?: string
           description?: string | null
+          document_font?: string | null
+          document_footer_text?: string | null
+          document_header_color?: string | null
+          document_logo_position?: string | null
+          document_payment_instructions?: string | null
+          document_terms?: string | null
           email?: string
           icon_url?: string | null
           id?: string
           logo_url?: string | null
           phone?: string
+          show_tagline_on_documents?: boolean | null
           updated_at?: string
           years_experience?: number | null
         }
@@ -819,6 +840,8 @@ export type Database = {
           due_date: string
           id: string
           invoice_number: string
+          last_sent_at: string | null
+          pdf_url: string | null
           status: Database["public"]["Enums"]["invoice_status"]
           total_amount: number
           updated_at: string
@@ -830,6 +853,8 @@ export type Database = {
           due_date: string
           id?: string
           invoice_number: string
+          last_sent_at?: string | null
+          pdf_url?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
           total_amount: number
           updated_at?: string
@@ -841,6 +866,8 @@ export type Database = {
           due_date?: string
           id?: string
           invoice_number?: string
+          last_sent_at?: string | null
+          pdf_url?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
           total_amount?: number
           updated_at?: string
@@ -1217,6 +1244,8 @@ export type Database = {
           created_at: string
           created_by: string
           id: string
+          last_sent_at: string | null
+          pdf_url: string | null
           quote_number: string
           status: Database["public"]["Enums"]["quote_status"]
           total_amount: number
@@ -1227,6 +1256,8 @@ export type Database = {
           created_at?: string
           created_by: string
           id?: string
+          last_sent_at?: string | null
+          pdf_url?: string | null
           quote_number: string
           status?: Database["public"]["Enums"]["quote_status"]
           total_amount: number
@@ -1237,6 +1268,8 @@ export type Database = {
           created_at?: string
           created_by?: string
           id?: string
+          last_sent_at?: string | null
+          pdf_url?: string | null
           quote_number?: string
           status?: Database["public"]["Enums"]["quote_status"]
           total_amount?: number

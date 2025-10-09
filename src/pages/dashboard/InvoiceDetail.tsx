@@ -8,6 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import NotesSection from "@/components/admin/notes/NotesSection";
+import DocumentActions from "@/components/admin/money/DocumentActions";
 import ActivityFeed from "@/components/admin/ActivityFeed";
 import InvoiceStatusBadge from "@/components/admin/money/InvoiceStatusBadge";
 import { format } from "date-fns";
@@ -119,6 +120,19 @@ const InvoiceDetail = () => {
             <h1 className="text-4xl font-bold mb-2">Invoice #{invoice.invoice_number}</h1>
             <InvoiceStatusBadge status={invoice.status} />
           </div>
+          
+          <DocumentActions
+            documentType="invoice"
+            documentId={id!}
+            documentNumber={invoice.invoice_number}
+            lineItems={lineItems.map(item => ({
+              description: item.description,
+              quantity: item.quantity,
+              unit_price: item.unit_price,
+              amount: item.amount,
+            }))}
+            customerEmail={invoice.accounts?.contacts?.[0]?.email}
+          />
         </div>
 
         <Tabs defaultValue="details" className="w-full">

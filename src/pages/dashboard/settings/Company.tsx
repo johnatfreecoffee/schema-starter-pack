@@ -11,6 +11,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, Loader2 } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 
 const CompanySettings = () => {
   const { data: company } = useCompanySettings();
@@ -27,6 +30,13 @@ const CompanySettings = () => {
     years_experience: 0,
     logo_url: '',
     icon_url: '',
+    document_header_color: '#3b82f6',
+    document_logo_position: 'left',
+    document_font: 'helvetica',
+    document_footer_text: 'Thank you for your business!',
+    document_terms: '',
+    document_payment_instructions: 'Please make payment within the specified due date.',
+    show_tagline_on_documents: true,
   });
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -47,6 +57,13 @@ const CompanySettings = () => {
         years_experience: company.years_experience || 0,
         logo_url: company.logo_url || '',
         icon_url: company.icon_url || '',
+        document_header_color: company.document_header_color || '#3b82f6',
+        document_logo_position: company.document_logo_position || 'left',
+        document_font: company.document_font || 'helvetica',
+        document_footer_text: company.document_footer_text || 'Thank you for your business!',
+        document_terms: company.document_terms || '',
+        document_payment_instructions: company.document_payment_instructions || 'Please make payment within the specified due date.',
+        show_tagline_on_documents: company.show_tagline_on_documents ?? true,
       });
       setLogoPreview(company.logo_url || '');
       setIconPreview(company.icon_url || '');
@@ -174,6 +191,13 @@ const CompanySettings = () => {
         years_experience: company.years_experience || 0,
         logo_url: company.logo_url || '',
         icon_url: company.icon_url || '',
+        document_header_color: company.document_header_color || '#3b82f6',
+        document_logo_position: company.document_logo_position || 'left',
+        document_font: company.document_font || 'helvetica',
+        document_footer_text: company.document_footer_text || 'Thank you for your business!',
+        document_terms: company.document_terms || '',
+        document_payment_instructions: company.document_payment_instructions || 'Please make payment within the specified due date.',
+        show_tagline_on_documents: company.show_tagline_on_documents ?? true,
       });
       setLogoPreview(company.logo_url || '');
       setIconPreview(company.icon_url || '');
@@ -355,6 +379,137 @@ const CompanySettings = () => {
                 {uploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Company Settings
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Document Template Settings */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Document Template Settings</CardTitle>
+            <CardDescription>Customize how your quotes and invoices look</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Header Color */}
+            <div className="space-y-2">
+              <Label htmlFor="document_header_color">Header Color</Label>
+              <div className="flex gap-4 items-center">
+                <Input
+                  id="document_header_color"
+                  type="color"
+                  value={formData.document_header_color}
+                  onChange={(e) => setFormData({ ...formData, document_header_color: e.target.value })}
+                  className="w-20 h-10"
+                />
+                <Input
+                  value={formData.document_header_color}
+                  onChange={(e) => setFormData({ ...formData, document_header_color: e.target.value })}
+                  placeholder="#3b82f6"
+                  className="flex-1"
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Color used for document header background
+              </p>
+            </div>
+
+            {/* Logo Position */}
+            <div className="space-y-2">
+              <Label htmlFor="document_logo_position">Logo Position</Label>
+              <Select
+                value={formData.document_logo_position}
+                onValueChange={(value) => setFormData({ ...formData, document_logo_position: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="left">Left</SelectItem>
+                  <SelectItem value="center">Center</SelectItem>
+                  <SelectItem value="right">Right</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Font Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="document_font">Font</Label>
+              <Select
+                value={formData.document_font}
+                onValueChange={(value) => setFormData({ ...formData, document_font: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="helvetica">Helvetica</SelectItem>
+                  <SelectItem value="times">Times New Roman</SelectItem>
+                  <SelectItem value="courier">Courier</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Show Tagline */}
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Show Tagline on Documents</Label>
+                <p className="text-sm text-muted-foreground">
+                  Display your business slogan on quotes and invoices
+                </p>
+              </div>
+              <Switch
+                checked={formData.show_tagline_on_documents}
+                onCheckedChange={(checked) => setFormData({ ...formData, show_tagline_on_documents: checked })}
+              />
+            </div>
+
+            <Separator />
+
+            {/* Footer Text */}
+            <div className="space-y-2">
+              <Label htmlFor="document_footer_text">Footer Text</Label>
+              <Input
+                id="document_footer_text"
+                value={formData.document_footer_text}
+                onChange={(e) => setFormData({ ...formData, document_footer_text: e.target.value })}
+                placeholder="Thank you for your business!"
+                maxLength={100}
+              />
+              <p className="text-xs text-muted-foreground">
+                Text displayed at the bottom of documents
+              </p>
+            </div>
+
+            {/* Terms & Conditions */}
+            <div className="space-y-2">
+              <Label htmlFor="document_terms">Terms & Conditions</Label>
+              <Textarea
+                id="document_terms"
+                value={formData.document_terms}
+                onChange={(e) => setFormData({ ...formData, document_terms: e.target.value })}
+                rows={4}
+                placeholder="Enter your standard terms and conditions..."
+                maxLength={1000}
+              />
+              <p className="text-xs text-muted-foreground text-right">
+                {formData.document_terms.length} / 1000
+              </p>
+            </div>
+
+            {/* Payment Instructions */}
+            <div className="space-y-2">
+              <Label htmlFor="document_payment_instructions">Payment Instructions</Label>
+              <Textarea
+                id="document_payment_instructions"
+                value={formData.document_payment_instructions}
+                onChange={(e) => setFormData({ ...formData, document_payment_instructions: e.target.value })}
+                rows={3}
+                placeholder="Enter payment instructions..."
+                maxLength={500}
+              />
+              <p className="text-xs text-muted-foreground text-right">
+                {formData.document_payment_instructions.length} / 500
+              </p>
             </div>
           </CardContent>
         </Card>
