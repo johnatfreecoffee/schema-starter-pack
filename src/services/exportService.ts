@@ -237,12 +237,13 @@ export class ExportService {
   }
 
   /**
-   * Export module data to CSV format
+   * Export module data to CSV format with optional filtering
    */
   static exportModuleToCSV(
     data: any[],
     moduleName: string,
-    columns?: string[]
+    columns?: string[],
+    filters?: Record<string, any>
   ): void {
     if (data.length === 0) {
       console.warn('No data to export');
@@ -263,6 +264,15 @@ export class ExportService {
 
     // Convert to CSV
     let csvContent = '';
+    
+    // Add filter information if filters are applied
+    if (filters && Object.keys(filters).length > 0) {
+      csvContent += `Filtered Export - Applied Filters:\n`;
+      Object.entries(filters).forEach(([key, value]) => {
+        csvContent += `${key}: ${JSON.stringify(value)}\n`;
+      });
+      csvContent += '\n';
+    }
     
     // Add headers
     csvContent += exportColumns.join(',') + '\n';
@@ -288,8 +298,11 @@ export class ExportService {
     const url = URL.createObjectURL(blob);
     
     const today = new Date().toISOString().split('T')[0];
+    const hasFilters = filters && Object.keys(filters).length > 0;
+    const filename = hasFilters ? `${moduleName}_filtered_${today}.csv` : `${moduleName}_${today}.csv`;
+    
     link.setAttribute('href', url);
-    link.setAttribute('download', `${moduleName}_${today}.csv`);
+    link.setAttribute('download', filename);
     link.style.visibility = 'hidden';
     
     document.body.appendChild(link);
@@ -297,5 +310,134 @@ export class ExportService {
     document.body.removeChild(link);
     
     URL.revokeObjectURL(url);
+  }
+
+  /**
+   * Export module data to PDF format
+   */
+  static async exportModuleToPDF(
+    data: any[],
+    moduleName: string,
+    columns?: string[],
+    filters?: Record<string, any>
+  ): Promise<void> {
+    if (data.length === 0) {
+      console.warn('No data to export');
+      return;
+    }
+
+    try {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      let yPosition = 20;
+
+      // Header
+      pdf.setFontSize(18);
+      pdf.setTextColor(59, 130, 246);
+      pdf.text(`${moduleName} Export`, pageWidth / 2, yPosition, { align: 'center' });
+      
+      yPosition += 10;
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(
+        `Generated: ${format(new Date(), 'PPpp')}`,
+        pageWidth / 2,
+        yPosition,
+        { align: 'center' }
+      );
+
+      yPosition += 5;
+      pdf.text(
+        `Total Records: ${data.length}`,
+        pageWidth / 2,
+        yPosition,
+        { align: 'center' }
+      );
+
+      // Applied filters
+      if (filters && Object.keys(filters).length > 0) {
+        yPosition += 10;
+        pdf.setFontSize(12);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text('Applied Filters:', 20, yPosition);
+        yPosition += 7;
+        
+        pdf.setFontSize(9);
+        Object.entries(filters).forEach(([key, value]) => {
+          if (yPosition > pageHeight - 20) {
+            pdf.addPage();
+            yPosition = 20;
+          }
+          pdf.text(`${key}: ${JSON.stringify(value)}`, 25, yPosition);
+          yPosition += 5;
+        });
+      }
+
+      yPosition += 10;
+
+      // Data table
+      const exportColumns = columns || (data[0] ? Object.keys(data[0]) : []);
+      const maxRecords = 50; // Limit records for PDF
+      const recordsToExport = data.slice(0, maxRecords);
+
+      pdf.setFontSize(10);
+      pdf.setTextColor(0, 0, 0);
+      
+      // Table headers
+      const colWidth = (pageWidth - 40) / exportColumns.length;
+      exportColumns.forEach((col, i) => {
+        pdf.text(String(col), 20 + (i * colWidth), yPosition);
+      });
+      yPosition += 7;
+
+      // Table rows
+      recordsToExport.forEach((row) => {
+        if (yPosition > pageHeight - 20) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+
+        exportColumns.forEach((col, i) => {
+          const value = row[col];
+          const text = value !== null && value !== undefined ? String(value).substring(0, 20) : '';
+          pdf.text(text, 20 + (i * colWidth), yPosition);
+        });
+        yPosition += 7;
+      });
+
+      if (data.length > maxRecords) {
+        yPosition += 5;
+        pdf.setTextColor(100, 100, 100);
+        pdf.text(
+          `Note: Showing first ${maxRecords} of ${data.length} records`,
+          pageWidth / 2,
+          yPosition,
+          { align: 'center' }
+        );
+      }
+
+      // Footer
+      const totalPages = pdf.internal.pages.length - 1;
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(8);
+        pdf.setTextColor(150, 150, 150);
+        pdf.text(
+          `Page ${i} of ${totalPages}`,
+          pageWidth / 2,
+          pageHeight - 10,
+          { align: 'center' }
+        );
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      const hasFilters = filters && Object.keys(filters).length > 0;
+      const filename = hasFilters ? `${moduleName}_filtered_${today}.pdf` : `${moduleName}_${today}.pdf`;
+      pdf.save(filename);
+    } catch (error) {
+      console.error('Error exporting to PDF:', error);
+      throw error;
+    }
   }
 }
