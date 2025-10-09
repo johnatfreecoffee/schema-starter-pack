@@ -4,13 +4,18 @@ import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Eye, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Eye, Pencil, Trash2, Filter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import ProjectStatusBadge from '@/components/admin/projects/ProjectStatusBadge';
 import ProjectFilters from '@/components/admin/projects/ProjectFilters';
 import ProjectForm from '@/components/admin/projects/ProjectForm';
+import { ProjectAdvancedFilters } from '@/components/admin/projects/ProjectAdvancedFilters';
 import { Progress } from '@/components/ui/progress';
+import { FilterPanel } from '@/components/filters/FilterPanel';
+import { FilterChips } from '@/components/filters/FilterChips';
+import { SavedViewsBar } from '@/components/filters/SavedViewsBar';
+import { useUrlFilters } from '@/hooks/useUrlFilters';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,17 +25,27 @@ import {
 
 const Projects = () => {
   const navigate = useNavigate();
+  const { filters, setFilters, updateFilter, clearFilters } = useUrlFilters();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilters, setStatusFilters] = useState<string[]>([]);
-  const [managerFilter, setManagerFilter] = useState('all');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
 
   useEffect(() => {
     fetchProjects();
-  }, [searchTerm, statusFilters, managerFilter]);
+    loadUsers();
+  }, [filters]);
+
+  const loadUsers = async () => {
+    try {
+      const { data } = await supabase.from('user_roles').select('user_id').in('role', ['admin', 'crm_user']);
+      setUsers(data?.map((ur, idx) => ({ id: ur.user_id, name: `User ${idx + 1}` })) || []);
+    } catch (error) {
+      console.error('Error loading users:', error);
+    }
+  };
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -45,16 +60,20 @@ const Projects = () => {
         `)
         .order('created_at', { ascending: false });
 
-      if (searchTerm) {
-        query = query.ilike('project_name', `%${searchTerm}%`);
+      if (filters.status?.length > 0) {
+        query = query.in('status', filters.status);
       }
-
-      if (statusFilters.length > 0) {
-        query = query.in('status', statusFilters as ('planning' | 'active' | 'completed' | 'on_hold' | 'cancelled')[]);
+      if (filters.accountId) {
+        query = query.eq('account_id', filters.accountId);
       }
-
-      if (managerFilter === 'me' && user) {
-        query = query.eq('project_manager', user.id);
+      if (filters.assignedTo) {
+        query = query.eq('project_manager', filters.assignedTo);
+      }
+      if (filters.startDateFrom) {
+        query = query.gte('start_date', new Date(filters.startDateFrom).toISOString());
+      }
+      if (filters.budgetMin) {
+        query = query.gte('budget', filters.budgetMin);
       }
 
       const { data, error } = await query;
@@ -120,36 +139,34 @@ const Projects = () => {
     setSelectedProject(null);
   };
 
+  const activeFilterCount = Object.keys(filters).filter(k => filters[k]).length;
+
   return (
     <AdminLayout>
       <div className="container mx-auto px-4 py-8">
+        <SavedViewsBar module="projects" currentFilters={filters} onViewSelect={setFilters} />
+        
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-4xl font-bold">Projects</h1>
-            <p className="text-muted-foreground mt-2">
-              Manage customer projects and track progress
-            </p>
+            <p className="text-muted-foreground mt-2">Manage customer projects and track progress</p>
           </div>
-          <Button onClick={() => setIsFormOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Create New Project
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setFilterPanelOpen(true)}>
+              <Filter className="mr-2 h-4 w-4" />
+              Filters
+              {activeFilterCount > 0 && <Badge variant="secondary" className="ml-2">{activeFilterCount}</Badge>}
+            </Button>
+            <Button onClick={() => setIsFormOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create New Project
+            </Button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-1">
-            <ProjectFilters
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              statusFilters={statusFilters}
-              setStatusFilters={setStatusFilters}
-              managerFilter={managerFilter}
-              setManagerFilter={setManagerFilter}
-            />
-          </div>
+        <FilterChips filters={filters} onRemove={(key) => updateFilter(key, null)} onClearAll={clearFilters} />
 
-          <div className="lg:col-span-3">
-            {loading ? (
+        {loading ? (
               <div className="text-center py-12">Loading projects...</div>
             ) : projects.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
@@ -224,17 +241,14 @@ const Projects = () => {
                     ))}
                   </TableBody>
                 </Table>
-              </div>
-            )}
-          </div>
-        </div>
+            </div>
+          )}
 
-        <ProjectForm
-          isOpen={isFormOpen}
-          onClose={handleFormClose}
-          onSuccess={fetchProjects}
-          project={selectedProject}
-        />
+        <ProjectForm isOpen={isFormOpen} onClose={handleFormClose} onSuccess={fetchProjects} project={selectedProject} />
+        
+        <FilterPanel open={filterPanelOpen} onClose={() => setFilterPanelOpen(false)} title="Filter Projects" onClearAll={clearFilters}>
+          <ProjectAdvancedFilters values={filters} onChange={updateFilter} users={users} />
+        </FilterPanel>
       </div>
     </AdminLayout>
   );

@@ -6,28 +6,27 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { AccountStatusBadge } from '@/components/admin/accounts/AccountStatusBadge';
 import { AccountFilters } from '@/components/admin/accounts/AccountFilters';
 import { AccountForm } from '@/components/admin/accounts/AccountForm';
+import { AccountAdvancedFilters } from '@/components/admin/accounts/AccountAdvancedFilters';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Phone, Mail, Download } from 'lucide-react';
+import { Plus, Phone, Mail, Download, Filter } from 'lucide-react';
 import { ExportService } from '@/services/exportService';
 import { formatDistanceToNow } from 'date-fns';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { FilterPanel } from '@/components/filters/FilterPanel';
+import { FilterChips } from '@/components/filters/FilterChips';
+import { SavedViewsBar } from '@/components/filters/SavedViewsBar';
+import { useUrlFilters } from '@/hooks/useUrlFilters';
 
 const Accounts = () => {
   const { toast } = useToast();
+  const { filters, setFilters, updateFilter, clearFilters } = useUrlFilters();
   const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAccountForm, setShowAccountForm] = useState(false);
-  
-  const [search, setSearch] = useState('');
-  const [statusFilters, setStatusFilters] = useState({
-    active: true,
-    inactive: true,
-    archived: false
-  });
-  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
-  const [fromLeadOnly, setFromLeadOnly] = useState(false);
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
   const [statusCounts, setStatusCounts] = useState({
     active: 0,
     inactive: 0,
@@ -47,29 +46,21 @@ const Accounts = () => {
           projects(count)
         `);
 
-      // Apply filters
-      const activeStatuses = Object.entries(statusFilters)
-        .filter(([_, value]) => value)
-        .map(([key]) => key as 'active' | 'inactive' | 'archived');
-      
-      if (activeStatuses.length > 0) {
-        query = query.in('status', activeStatuses);
+      // Apply advanced filters
+      if (filters.status) {
+        query = query.eq('status', filters.status);
       }
 
-      if (search) {
-        query = query.or(`account_name.ilike.%${search}%,contacts.first_name.ilike.%${search}%,contacts.last_name.ilike.%${search}%,contacts.email.ilike.%${search}%`);
+      if (filters.industry) {
+        query = query.ilike('industry', `%${filters.industry}%`);
       }
 
-      if (fromLeadOnly) {
-        query = query.not('source_lead_id', 'is', null);
+      if (filters.createdFrom) {
+        query = query.gte('created_at', new Date(filters.createdFrom).toISOString());
       }
 
-      if (dateRange.from) {
-        query = query.gte('created_at', dateRange.from.toISOString());
-      }
-
-      if (dateRange.to) {
-        query = query.lte('created_at', dateRange.to.toISOString());
+      if (filters.createdTo) {
+        query = query.lte('created_at', new Date(filters.createdTo).toISOString());
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -110,13 +101,33 @@ const Accounts = () => {
 
   useEffect(() => {
     fetchAccounts();
-  }, [search, statusFilters, dateRange, fromLeadOnly]);
+    loadUsers();
+  }, [filters]);
 
-  const handleStatusFilterChange = (status: keyof typeof statusFilters, checked: boolean) => {
-    setStatusFilters(prev => ({ ...prev, [status]: checked }));
+  const loadUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('user_id')
+        .in('role', ['admin', 'crm_user']);
+
+      if (error) throw error;
+
+      const userList = data?.map((ur, idx) => ({
+        id: ur.user_id,
+        name: `User ${idx + 1}`
+      })) || [];
+
+      setUsers(userList);
+    } catch (error: any) {
+      console.error('Error loading users:', error);
+    }
   };
 
   const totalAccounts = accounts.length;
+  const activeFilterCount = Object.keys(filters).filter(
+    (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
+  ).length;
 
   const handleExport = () => {
     const exportData = accounts.map(account => ({
@@ -136,39 +147,53 @@ const Accounts = () => {
 
   return (
     <AdminLayout>
-      <div className="flex h-[calc(100vh-4rem)]">
-        {/* Filters Sidebar */}
-        <div className="w-64 flex-shrink-0">
-          <AccountFilters
-            search={search}
-            onSearchChange={setSearch}
-            statusFilters={statusFilters}
-            onStatusFilterChange={handleStatusFilterChange}
-            dateRange={dateRange}
-            onDateRangeChange={setDateRange}
-            fromLeadOnly={fromLeadOnly}
-            onFromLeadOnlyChange={setFromLeadOnly}
-            statusCounts={statusCounts}
-          />
+      <div className="container mx-auto px-4 py-8">
+        {/* Saved Views */}
+        <SavedViewsBar
+          module="accounts"
+          currentFilters={filters}
+          onViewSelect={(viewFilters) => setFilters(viewFilters)}
+        />
+
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-4xl font-bold">Accounts</h1>
+            <p className="text-muted-foreground mt-1">
+              Showing {totalAccounts} account{totalAccounts !== 1 ? 's' : ''}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setFilterPanelOpen(true)}
+            >
+              <Filter className="mr-2 h-4 w-4" />
+              Filters
+              {activeFilterCount > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {activeFilterCount}
+                </Badge>
+              )}
+            </Button>
+            <Button variant="outline" onClick={handleExport}>
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+            <Button onClick={() => setShowAccountForm(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Create New Account
+            </Button>
+          </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 overflow-auto">
-          <div className="container mx-auto px-6 py-8">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h1 className="text-4xl font-bold">Accounts</h1>
-                <p className="text-muted-foreground mt-1">
-                  Showing {totalAccounts} account{totalAccounts !== 1 ? 's' : ''}
-                </p>
-              </div>
-              <Button onClick={() => setShowAccountForm(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Create New Account
-              </Button>
-            </div>
+        {/* Filter Chips */}
+        <FilterChips
+          filters={filters}
+          onRemove={(key) => updateFilter(key, null)}
+          onClearAll={clearFilters}
+        />
 
-            {loading ? (
+        {loading ? (
               <div className="text-center py-12">Loading accounts...</div>
             ) : accounts.length === 0 ? (
               <div className="text-center py-12">
@@ -253,15 +278,27 @@ const Accounts = () => {
                 </Table>
               </div>
             )}
-          </div>
-        </div>
-      </div>
 
-      <AccountForm
-        open={showAccountForm}
-        onOpenChange={setShowAccountForm}
-        onSuccess={fetchAccounts}
-      />
+        <AccountForm
+          open={showAccountForm}
+          onOpenChange={setShowAccountForm}
+          onSuccess={fetchAccounts}
+        />
+
+        {/* Advanced Filter Panel */}
+        <FilterPanel
+          open={filterPanelOpen}
+          onClose={() => setFilterPanelOpen(false)}
+          title="Filter Accounts"
+          onClearAll={clearFilters}
+        >
+          <AccountAdvancedFilters
+            values={filters}
+            onChange={updateFilter}
+            users={users}
+          />
+        </FilterPanel>
+      </div>
     </AdminLayout>
   );
 };

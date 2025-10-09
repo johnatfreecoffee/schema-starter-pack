@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
   Table,
@@ -29,6 +28,11 @@ import { LeadStatusBadge } from '@/components/admin/leads/LeadStatusBadge';
 import { LeadFilters } from '@/components/admin/leads/LeadFilters';
 import { LeadForm } from '@/components/admin/leads/LeadForm';
 import { LeadConvert } from '@/components/admin/leads/LeadConvert';
+import { LeadAdvancedFilters } from '@/components/admin/leads/LeadAdvancedFilters';
+import { FilterPanel } from '@/components/filters/FilterPanel';
+import { FilterChips } from '@/components/filters/FilterChips';
+import { SavedViewsBar } from '@/components/filters/SavedViewsBar';
+import { useUrlFilters } from '@/hooks/useUrlFilters';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
@@ -52,6 +56,7 @@ import { CRUDLogger } from '@/lib/crudLogger';
 const Leads = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { filters, setFilters, updateFilter, clearFilters } = useUrlFilters();
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -60,7 +65,7 @@ const Leads = () => {
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
   const [services, setServices] = useState<string[]>([]);
   const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
-  const [filters, setFilters] = useState<any>({});
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
 
   useEffect(() => {
     loadLeads();
@@ -72,28 +77,25 @@ const Leads = () => {
     try {
       let query = supabase.from('leads').select('*');
 
-      // Apply filters
-      if (filters.statuses?.length > 0) {
-        query = query.in('status', filters.statuses);
+      // Apply advanced filters
+      if (filters.status?.length > 0) {
+        query = query.in('status', filters.status);
       }
-      if (filters.service && filters.service !== 'all') {
-        query = query.eq('service_needed', filters.service);
+      if (filters.source) {
+        query = query.eq('source', filters.source);
       }
-      if (filters.assignedTo && filters.assignedTo !== 'all') {
+      if (filters.assignedTo) {
         if (filters.assignedTo === 'unassigned') {
           query = query.is('assigned_to', null);
         } else {
           query = query.eq('assigned_to', filters.assignedTo);
         }
       }
-      if (filters.emergencyOnly) {
-        query = query.eq('is_emergency', true);
+      if (filters.createdFrom) {
+        query = query.gte('created_at', new Date(filters.createdFrom).toISOString());
       }
-      if (filters.dateFrom) {
-        query = query.gte('created_at', filters.dateFrom.toISOString());
-      }
-      if (filters.dateTo) {
-        query = query.lte('created_at', filters.dateTo.toISOString());
+      if (filters.createdTo) {
+        query = query.lte('created_at', new Date(filters.createdTo).toISOString());
       }
       if (filters.search) {
         query = query.or(`first_name.ilike.%${filters.search}%,last_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`);
@@ -214,9 +216,20 @@ const Leads = () => {
     });
   };
 
+  const activeFilterCount = Object.keys(filters).filter(
+    (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
+  ).length;
+
   return (
     <AdminLayout>
       <div className="container mx-auto px-4 py-8">
+        {/* Saved Views */}
+        <SavedViewsBar
+          module="leads"
+          currentFilters={filters}
+          onViewSelect={(viewFilters) => setFilters(viewFilters)}
+        />
+
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -226,6 +239,18 @@ const Leads = () => {
             </p>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setFilterPanelOpen(true)}
+            >
+              <Filter className="mr-2 h-4 w-4" />
+              Filters
+              {activeFilterCount > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {activeFilterCount}
+                </Badge>
+              )}
+            </Button>
             <Button variant="outline" onClick={handleExport}>
               <Download className="mr-2 h-4 w-4" />
               Export to CSV
@@ -236,6 +261,13 @@ const Leads = () => {
             </Button>
           </div>
         </div>
+
+        {/* Filter Chips */}
+        <FilterChips
+          filters={filters}
+          onRemove={(key) => updateFilter(key, null)}
+          onClearAll={clearFilters}
+        />
 
         {/* Stats */}
         <div className="grid grid-cols-5 gap-4 mb-6">
@@ -432,6 +464,20 @@ const Leads = () => {
           lead={convertingLead}
         />
       )}
+
+      {/* Advanced Filter Panel */}
+      <FilterPanel
+        open={filterPanelOpen}
+        onClose={() => setFilterPanelOpen(false)}
+        title="Filter Leads"
+        onClearAll={clearFilters}
+      >
+        <LeadAdvancedFilters
+          values={filters}
+          onChange={updateFilter}
+          users={users}
+        />
+      </FilterPanel>
     </AdminLayout>
   );
 };

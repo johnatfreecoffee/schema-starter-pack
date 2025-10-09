@@ -3,18 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ContactForm } from '@/components/admin/accounts/ContactForm';
+import { ContactAdvancedFilters } from '@/components/admin/contacts/ContactAdvancedFilters';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Search, Edit, Trash2, Building2, Mail, Phone, Download } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Building2, Mail, Phone, Download, Filter } from 'lucide-react';
 import { ExportService } from '@/services/exportService';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { FilterPanel } from '@/components/filters/FilterPanel';
+import { FilterChips } from '@/components/filters/FilterChips';
+import { SavedViewsBar } from '@/components/filters/SavedViewsBar';
+import { useUrlFilters } from '@/hooks/useUrlFilters';
 
 const Contacts = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { filters, setFilters, updateFilter, clearFilters } = useUrlFilters();
   const [contacts, setContacts] = useState<any[]>([]);
   const [accounts, setAccounts] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
@@ -22,11 +29,12 @@ const Contacts = () => {
   const [showContactForm, setShowContactForm] = useState(false);
   const [editingContact, setEditingContact] = useState<any>(null);
   const [selectedAccountId, setSelectedAccountId] = useState<string>('');
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
 
   useEffect(() => {
     fetchContacts();
     fetchAccounts();
-  }, []);
+  }, [filters]);
 
   const fetchAccounts = async () => {
     const { data } = await supabase
@@ -45,10 +53,26 @@ const Contacts = () => {
   const fetchContacts = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from('contacts')
         .select('*')
         .order('created_at', { ascending: false });
+
+      // Apply advanced filters
+      if (filters.accountId) {
+        query = query.eq('account_id', filters.accountId);
+      }
+      if (filters.jobTitle) {
+        query = query.ilike('title', `%${filters.jobTitle}%`);
+      }
+      if (filters.hasEmail) {
+        query = query.not('email', 'is', null);
+      }
+      if (filters.hasPhone) {
+        query = query.not('phone', 'is', null);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setContacts(data || []);
@@ -110,6 +134,10 @@ const Contacts = () => {
     );
   });
 
+  const activeFilterCount = Object.keys(filters).filter(
+    (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
+  ).length;
+
   const handleExport = () => {
     const exportData = filteredContacts.map(contact => ({
       ...contact,
@@ -127,13 +155,32 @@ const Contacts = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
+      <div className="container mx-auto px-4 py-8">
+        {/* Saved Views */}
+        <SavedViewsBar
+          module="contacts"
+          currentFilters={filters}
+          onViewSelect={(viewFilters) => setFilters(viewFilters)}
+        />
+
+        <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Contacts</h1>
             <p className="text-muted-foreground">Manage your contact relationships</p>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setFilterPanelOpen(true)}
+            >
+              <Filter className="mr-2 h-4 w-4" />
+              Filters
+              {activeFilterCount > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {activeFilterCount}
+                </Badge>
+              )}
+            </Button>
             <Button variant="outline" onClick={handleExport}>
               <Download className="h-4 w-4 mr-2" />
               Export to CSV
@@ -148,6 +195,13 @@ const Contacts = () => {
             </Button>
           </div>
         </div>
+
+        {/* Filter Chips */}
+        <FilterChips
+          filters={filters}
+          onRemove={(key) => updateFilter(key, null)}
+          onClearAll={clearFilters}
+        />
 
         <div className="flex items-center gap-4">
           <div className="relative flex-1 max-w-sm">
@@ -267,15 +321,28 @@ const Contacts = () => {
             </TableBody>
           </Table>
         </div>
-      </div>
 
-      <ContactForm
-        open={showContactForm}
-        onOpenChange={setShowContactForm}
-        accountId={selectedAccountId}
-        contact={editingContact}
-        onSuccess={fetchContacts}
-      />
+        <ContactForm
+          open={showContactForm}
+          onOpenChange={setShowContactForm}
+          accountId={selectedAccountId}
+          contact={editingContact}
+          onSuccess={fetchContacts}
+        />
+
+        {/* Advanced Filter Panel */}
+        <FilterPanel
+          open={filterPanelOpen}
+          onClose={() => setFilterPanelOpen(false)}
+          title="Filter Contacts"
+          onClearAll={clearFilters}
+        >
+          <ContactAdvancedFilters
+            values={filters}
+            onChange={updateFilter}
+          />
+        </FilterPanel>
+      </div>
     </AdminLayout>
   );
 };

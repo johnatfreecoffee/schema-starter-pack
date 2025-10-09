@@ -30,12 +30,24 @@ const moduleRoutes: Record<string, string> = {
   invoice: '/dashboard/invoices',
 };
 
+const RECENT_SEARCHES_KEY = 'recentSearches';
+const MAX_RECENT_SEARCHES = 10;
+
 export function GlobalSearch() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const { results, loading } = useGlobalSearch(query);
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  // Load recent searches from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+    if (stored) {
+      setRecentSearches(JSON.parse(stored));
+    }
+  }, []);
 
   // Keyboard shortcut: Cmd+K or Ctrl+K
   useEffect(() => {
@@ -57,13 +69,35 @@ export function GlobalSearch() {
     }
   }, [open]);
 
+  const saveRecentSearch = (searchQuery: string) => {
+    if (!searchQuery.trim()) return;
+    
+    const updated = [
+      searchQuery,
+      ...recentSearches.filter((s) => s !== searchQuery),
+    ].slice(0, MAX_RECENT_SEARCHES);
+    
+    setRecentSearches(updated);
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+  };
+
+  const clearRecentSearches = () => {
+    setRecentSearches([]);
+    localStorage.removeItem(RECENT_SEARCHES_KEY);
+  };
+
   const handleResultClick = (type: string, id: string) => {
     const basePath = moduleRoutes[type];
     if (basePath) {
+      saveRecentSearch(query);
       navigate(`${basePath}/${id}`);
       setOpen(false);
       setQuery('');
     }
+  };
+
+  const handleRecentSearchClick = (searchQuery: string) => {
+    setQuery(searchQuery);
   };
 
   const totalResults = Object.values(results).reduce((acc, arr) => acc + arr.length, 0);
@@ -156,7 +190,35 @@ export function GlobalSearch() {
               </div>
             )}
 
-            {!loading && !query && (
+            {!loading && !query && recentSearches.length > 0 && (
+              <div className="p-2">
+                <div className="flex items-center justify-between px-2 py-1 mb-2">
+                  <div className="text-xs font-semibold text-muted-foreground uppercase">
+                    Recent Searches
+                  </div>
+                  <button
+                    onClick={clearRecentSearches}
+                    className="text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <div className="space-y-1">
+                  {recentSearches.map((search, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleRecentSearchClick(search)}
+                      className="w-full flex items-center gap-2 rounded-lg px-2 py-2 text-left hover:bg-muted transition-colors"
+                    >
+                      <Search className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">{search}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!loading && !query && recentSearches.length === 0 && (
               <div className="p-4 text-sm text-muted-foreground text-center">
                 Start typing to search across all modules
               </div>
