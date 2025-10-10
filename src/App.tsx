@@ -56,6 +56,8 @@ import AcceptInvite from "./pages/AcceptInvite";
 import Workflows from "./pages/dashboard/Workflows";
 import WorkflowBuilder from "./pages/dashboard/WorkflowBuilder";
 import WorkflowMonitor from "./pages/dashboard/WorkflowMonitor";
+import WorkflowTemplates from "./pages/dashboard/WorkflowTemplates";
+import WorkflowTesting from "./pages/dashboard/WorkflowTesting";
 
 // Customer portal pages
 import CustomerAuth from "./pages/customer/CustomerAuth";
@@ -137,6 +139,8 @@ const App = () => (
           <Route path="/admin/automation/workflows" element={<Workflows />} />
           <Route path="/admin/automation/workflows/:id" element={<WorkflowBuilder />} />
           <Route path="/admin/automation/monitor" element={<WorkflowMonitor />} />
+          <Route path="/admin/automation/templates" element={<WorkflowTemplates />} />
+          <Route path="/admin/automation/testing" element={<WorkflowTesting />} />
           
           {/* Dynamic Generated Pages */}
           <Route path="/:citySlug/:serviceSlug" element={<GeneratedPage />} />

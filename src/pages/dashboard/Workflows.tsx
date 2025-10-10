@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Play, Pause, Trash2, Edit, Copy, Activity } from 'lucide-react';
+import { Workflow, Plus, Play, Pause, Trash2, Edit, Copy, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
@@ -109,10 +109,23 @@ const Workflows = () => {
           <div className="flex gap-2">
             <Button
               variant="outline"
+              onClick={() => navigate('/admin/automation/testing')}
+            >
+              <Play className="mr-2 h-4 w-4" />
+              Test
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => navigate('/admin/automation/monitor')}
             >
               <Activity className="mr-2 h-4 w-4" />
               Monitor
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/admin/automation/templates')}
+            >
+              Templates
             </Button>
             <Button onClick={() => navigate('/admin/automation/workflows/new')}>
               <Plus className="mr-2 h-4 w-4" />
