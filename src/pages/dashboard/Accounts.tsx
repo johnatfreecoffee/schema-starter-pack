@@ -24,6 +24,10 @@ import { BulkActionsBar } from '@/components/admin/bulk/BulkActionsBar';
 import { BulkOperationModal } from '@/components/admin/bulk/BulkOperationModal';
 import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
 import { BulkOperationsService } from '@/services/bulkOperationsService';
+import { BulkTagsModal } from '@/components/admin/bulk/BulkTagsModal';
+import { useBulkUndo } from '@/hooks/useBulkUndo';
+import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const Accounts = () => {
   const { toast } = useToast();
@@ -42,6 +46,9 @@ const Accounts = () => {
   const bulk = useBulkSelection(accounts);
   const [bulkAction, setBulkAction] = useState<string | null>(null);
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [tagsModalOpen, setTagsModalOpen] = useState(false);
+  const { role } = useUserRole();
+  const { undoState, saveUndoState, performUndo, clearUndo } = useBulkUndo();
 
   const fetchAccounts = async () => {
     try {
@@ -142,6 +149,11 @@ const Accounts = () => {
   const handleBulkAction = async (actionId: string) => {
     if (actionId === 'delete') {
       setBulkDeleteOpen(true);
+    } else if (actionId === 'tags') {
+      setTagsModalOpen(true);
+    } else if (actionId === 'export') {
+      await BulkOperationsService.bulkExport('accounts', Array.from(bulk.selectedIds));
+      toast({ title: 'Success', description: `${bulk.selectedCount} accounts exported` });
     } else {
       setBulkAction(actionId);
     }
@@ -161,11 +173,44 @@ const Accounts = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Store previous values for undo
+    const previousValues = bulk.selectedItems.map(a => ({ id: a.id, status: a.status }));
+
     await BulkOperationsService.bulkStatusChange('accounts', Array.from(bulk.selectedIds), formData.status, user.id);
+    
+    // Save undo state
+    saveUndoState({
+      operation: 'status',
+      module: 'accounts',
+      itemIds: Array.from(bulk.selectedIds),
+      previousValues,
+      timestamp: new Date(),
+    });
+
     toast({ title: 'Success', description: `Updated status for ${bulk.selectedCount} accounts` });
     bulk.deselectAll();
     fetchAccounts();
   };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a' && !e.shiftKey) {
+        e.preventDefault();
+        bulk.selectAll();
+      }
+      if (e.key === 'Escape' && bulk.selectedCount > 0) {
+        bulk.deselectAll();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [bulk.selectedCount]);
+
+  // Permission controls
+  const canBulkEdit = role === 'admin' || bulk.selectedItems.every(item => item.created_by === users[0]?.id);
+  const canBulkDelete = role === 'admin';
 
 
   return (
@@ -341,13 +386,33 @@ const Accounts = () => {
           selectedCount={bulk.selectedCount}
           onClear={bulk.deselectAll}
           actions={[
-            { id: 'status', label: 'Change Status', icon: <Badge className="h-4 w-4" /> },
-            { id: 'assign', label: 'Assign to User', icon: <UserPlus className="h-4 w-4" /> },
+            canBulkEdit && { id: 'status', label: 'Change Status', icon: <Badge className="h-4 w-4" /> },
+            canBulkEdit && { id: 'tags', label: 'Manage Tags', icon: <Tag className="h-4 w-4" /> },
+            canBulkEdit && { id: 'assign', label: 'Assign to User', icon: <UserPlus className="h-4 w-4" /> },
             { id: 'export', label: 'Export Selected', icon: <Download className="h-4 w-4" /> },
-            { id: 'delete', label: 'Delete', icon: <Trash2 className="h-4 w-4" />, variant: 'destructive' as const },
-          ]}
+            canBulkDelete && { id: 'delete', label: 'Delete', icon: <Trash2 className="h-4 w-4" />, variant: 'destructive' as const },
+          ].filter(Boolean) as any}
           onAction={handleBulkAction}
         />
+
+        <BulkTagsModal
+          open={tagsModalOpen}
+          onOpenChange={setTagsModalOpen}
+          selectedCount={bulk.selectedCount}
+          module="accounts"
+          onConfirm={async (tags, mode) => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+            await BulkOperationsService.bulkTagsUpdate('accounts', Array.from(bulk.selectedIds), tags, mode, user.id);
+            toast({ title: 'Success', description: `Tags updated for ${bulk.selectedCount} accounts` });
+            bulk.deselectAll();
+            fetchAccounts();
+          }}
+        />
+
+        {undoState && (
+          <BulkUndoToast count={undoState.itemIds.length} onUndo={performUndo} />
+        )}
 
         <BulkOperationModal
           open={bulkAction === 'status'}

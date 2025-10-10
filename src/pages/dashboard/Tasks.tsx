@@ -28,6 +28,9 @@ import { BulkOperationModal } from '@/components/admin/bulk/BulkOperationModal';
 import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
 import { BulkProgressModal } from '@/components/admin/bulk/BulkProgressModal';
 import { BulkOperationsService } from '@/services/bulkOperationsService';
+import { useBulkUndo } from '@/hooks/useBulkUndo';
+import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
+import { useUserRole } from '@/hooks/useUserRole';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -74,6 +77,9 @@ const Tasks = () => {
     errors: Array<{ id: string; error: string }>;
     isComplete: boolean;
   }>({ open: false, operation: '', total: 0, completed: 0, failed: 0, errors: [], isComplete: false });
+  
+  const { role } = useUserRole();
+  const { undoState, saveUndoState, performUndo } = useBulkUndo();
 
   // Filter states
   const [search, setSearch] = useState("");
@@ -340,16 +346,20 @@ const Tasks = () => {
     return format(date, "MMM d, yyyy");
   };
 
+  // Permission controls
+  const canBulkEdit = role === 'admin' || bulkSelection.selectedItems.every(item => item.assigned_to === currentUserId || item.created_by === currentUserId);
+  const canBulkDelete = role === 'admin';
+
   // Bulk operations handlers
   const bulkActions: BulkAction[] = [
-    { id: 'assign', label: 'Assign to User', icon: <UserCheck className="h-4 w-4" /> },
-    { id: 'status', label: 'Change Status' },
-    { id: 'priority', label: 'Change Priority' },
-    { id: 'due_date', label: 'Set Due Date' },
-    { id: 'mark_complete', label: 'Mark Complete' },
+    canBulkEdit && { id: 'assign', label: 'Assign to User', icon: <UserCheck className="h-4 w-4" /> },
+    canBulkEdit && { id: 'status', label: 'Change Status' },
+    canBulkEdit && { id: 'priority', label: 'Change Priority' },
+    canBulkEdit && { id: 'due_date', label: 'Set Due Date' },
+    canBulkEdit && { id: 'mark_complete', label: 'Mark Complete' },
     { id: 'export', label: 'Export Selected', icon: <FileDown className="h-4 w-4" /> },
-    { id: 'delete', label: 'Delete Selected', variant: 'destructive' as const },
-  ];
+    canBulkDelete && { id: 'delete', label: 'Delete Selected', variant: 'destructive' as const },
+  ].filter(Boolean) as BulkAction[];
 
   const handleBulkAction = (actionId: string) => {
     switch (actionId) {
@@ -374,6 +384,15 @@ const Tasks = () => {
   const handleBulkOperationConfirm = async (formData: Record<string, any>) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+
+    // Store previous values for undo
+    const previousValues = bulkSelection.selectedItems.map(t => ({
+      id: t.id,
+      ...(bulkOperationModal.type === 'status' && { status: t.status }),
+      ...(bulkOperationModal.type === 'assign' && { assigned_to: t.assigned_to }),
+      ...(bulkOperationModal.type === 'priority' && { priority: t.priority }),
+      ...(bulkOperationModal.type === 'due_date' && { due_date: t.due_date }),
+    }));
 
     setBulkProgress({
       open: true,
@@ -401,6 +420,17 @@ const Tasks = () => {
       userId: user.id,
     });
 
+    // Save undo state
+    if (result.success > 0) {
+      saveUndoState({
+        operation: bulkOperationModal.type as any,
+        module: 'tasks',
+        itemIds: Array.from(bulkSelection.selectedIds),
+        previousValues,
+        timestamp: new Date(),
+      });
+    }
+
     setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
     bulkSelection.deselectAll();
     loadData();
@@ -410,6 +440,22 @@ const Tasks = () => {
       description: `${result.success} tasks updated successfully${result.failed > 0 ? `, ${result.failed} failed` : ''}`,
     });
   };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a' && !e.shiftKey) {
+        e.preventDefault();
+        bulkSelection.selectAll();
+      }
+      if (e.key === 'Escape' && bulkSelection.selectedCount > 0) {
+        bulkSelection.deselectAll();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [bulkSelection.selectedCount]);
 
   const handleBulkMarkComplete = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -834,6 +880,10 @@ const Tasks = () => {
         errors={bulkProgress.errors}
         isComplete={bulkProgress.isComplete}
       />
+
+      {undoState && (
+        <BulkUndoToast count={undoState.itemIds.length} onUndo={performUndo} />
+      )}
     </AdminLayout>
   );
 };

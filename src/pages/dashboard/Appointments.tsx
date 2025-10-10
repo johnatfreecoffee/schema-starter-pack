@@ -19,6 +19,9 @@ import { BulkOperationModal } from '@/components/admin/bulk/BulkOperationModal';
 import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
 import { BulkProgressModal } from '@/components/admin/bulk/BulkProgressModal';
 import { BulkOperationsService } from '@/services/bulkOperationsService';
+import { useBulkUndo } from '@/hooks/useBulkUndo';
+import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
+import { useUserRole } from '@/hooks/useUserRole';
 
 interface Appointment {
   id: string;
@@ -58,6 +61,9 @@ const Appointments = () => {
     errors: Array<{ id: string; error: string }>;
     isComplete: boolean;
   }>({ open: false, operation: '', total: 0, completed: 0, failed: 0, errors: [], isComplete: false });
+  
+  const { role } = useUserRole();
+  const { undoState, saveUndoState, performUndo } = useBulkUndo();
 
   const fetchAppointments = async () => {
     setLoading(true);
@@ -180,6 +186,13 @@ const Appointments = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Store previous values for undo
+    const previousValues = bulkSelection.selectedItems.map(a => ({
+      id: a.id,
+      ...(bulkOperationModal.type === 'type' && { appointment_type: a.appointment_type }),
+      ...(bulkOperationModal.type === 'reschedule' && { start_time: a.start_time, end_time: a.end_time }),
+    }));
+
     setBulkProgress({
       open: true,
       operation: `Updating ${bulkSelection.selectedCount} appointments`,
@@ -220,8 +233,26 @@ const Appointments = () => {
         changes,
         userId: user.id,
       });
+      
+      if (result.success > 0) {
+        saveUndoState({
+          operation: 'edit',
+          module: 'calendar_events',
+          itemIds: Array.from(bulkSelection.selectedIds),
+          previousValues,
+          timestamp: new Date(),
+        });
+      }
+      
       setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
     } else {
+      saveUndoState({
+        operation: 'edit',
+        module: 'calendar_events',
+        itemIds: Array.from(bulkSelection.selectedIds),
+        previousValues,
+        timestamp: new Date(),
+      });
       setBulkProgress(prev => ({ ...prev, completed: bulkSelection.selectedCount, isComplete: true }));
     }
 
@@ -230,6 +261,26 @@ const Appointments = () => {
     
     toast.success(`${bulkSelection.selectedCount} appointments updated`);
   };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a' && !e.shiftKey) {
+        e.preventDefault();
+        bulkSelection.selectAll();
+      }
+      if (e.key === 'Escape' && bulkSelection.selectedCount > 0) {
+        bulkSelection.deselectAll();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [bulkSelection.selectedCount]);
+
+  // Permission controls
+  const canBulkEdit = role === 'admin';
+  const canBulkDelete = role === 'admin';
 
   const handleBulkDelete = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -461,6 +512,10 @@ const Appointments = () => {
           errors={bulkProgress.errors}
           isComplete={bulkProgress.isComplete}
         />
+
+        {undoState && (
+          <BulkUndoToast count={undoState.itemIds.length} onUndo={performUndo} />
+        )}
       </div>
     </AdminLayout>
   );

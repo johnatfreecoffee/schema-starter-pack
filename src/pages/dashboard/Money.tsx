@@ -22,6 +22,9 @@ import { BulkOperationModal } from '@/components/admin/bulk/BulkOperationModal';
 import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
 import { BulkProgressModal } from '@/components/admin/bulk/BulkProgressModal';
 import { BulkOperationsService } from '@/services/bulkOperationsService';
+import { useBulkUndo } from '@/hooks/useBulkUndo';
+import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const Money = () => {
   const navigate = useNavigate();
@@ -65,6 +68,9 @@ const Money = () => {
     errors: Array<{ id: string; error: string }>;
     isComplete: boolean;
   }>({ open: false, operation: '', total: 0, completed: 0, failed: 0, errors: [], isComplete: false });
+
+  const { role } = useUserRole();
+  const { undoState, saveUndoState, performUndo } = useBulkUndo();
 
   useEffect(() => {
     fetchData();
@@ -204,6 +210,12 @@ const Money = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Store previous values for undo
+    const previousValues = quotesSelection.selectedItems.map(q => ({
+      id: q.id,
+      status: q.status,
+    }));
+
     setBulkProgress({
       open: true,
       operation: `Updating ${quotesSelection.selectedCount} quotes`,
@@ -221,6 +233,17 @@ const Money = () => {
         formData.status,
         user.id
       );
+      
+      if (result.success > 0) {
+        saveUndoState({
+          operation: 'status',
+          module: 'quotes',
+          itemIds: Array.from(quotesSelection.selectedIds),
+          previousValues,
+          timestamp: new Date(),
+        });
+      }
+      
       setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
     } else if (quotesBulkModal.type === 'convert') {
       // Convert quotes to invoices
@@ -337,6 +360,14 @@ const Money = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Store previous values for undo
+    const previousValues = invoicesSelection.selectedItems.map(i => ({
+      id: i.id,
+      status: i.status,
+      payment_date: i.payment_date,
+      amount_due: i.amount_due,
+    }));
+
     setBulkProgress({
       open: true,
       operation: `Updating ${invoicesSelection.selectedCount} invoices`,
@@ -354,6 +385,17 @@ const Money = () => {
         formData.status,
         user.id
       );
+      
+      if (result.success > 0) {
+        saveUndoState({
+          operation: 'status',
+          module: 'invoices',
+          itemIds: Array.from(invoicesSelection.selectedIds),
+          previousValues,
+          timestamp: new Date(),
+        });
+      }
+      
       setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
     } else if (invoicesBulkModal.type === 'mark_paid') {
       const result = await BulkOperationsService.performBulkOperation({
@@ -367,6 +409,17 @@ const Money = () => {
         },
         userId: user.id,
       });
+      
+      if (result.success > 0) {
+        saveUndoState({
+          operation: 'status',
+          module: 'invoices',
+          itemIds: Array.from(invoicesSelection.selectedIds),
+          previousValues,
+          timestamp: new Date(),
+        });
+      }
+      
       setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
     } else if (invoicesBulkModal.type === 'send_reminder') {
       // Send payment reminders (placeholder - implement email sending)
@@ -419,6 +472,42 @@ const Money = () => {
       });
     }
   };
+
+  // Keyboard shortcuts for quotes
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a' && !e.shiftKey) {
+        e.preventDefault();
+        quotesSelection.selectAll();
+      }
+      if (e.key === 'Escape' && quotesSelection.selectedCount > 0) {
+        quotesSelection.deselectAll();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [quotesSelection.selectedCount]);
+
+  // Keyboard shortcuts for invoices
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a' && !e.shiftKey) {
+        e.preventDefault();
+        invoicesSelection.selectAll();
+      }
+      if (e.key === 'Escape' && invoicesSelection.selectedCount > 0) {
+        invoicesSelection.deselectAll();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [invoicesSelection.selectedCount]);
+
+  // Permission controls
+  const canBulkEdit = role === 'admin';
+  const canBulkDelete = role === 'admin';
 
   return (
     <AdminLayout>
@@ -782,6 +871,10 @@ const Money = () => {
         errors={bulkProgress.errors}
         isComplete={bulkProgress.isComplete}
       />
+
+      {undoState && (
+        <BulkUndoToast count={undoState.itemIds.length} onUndo={performUndo} />
+      )}
     </AdminLayout>
   );
 };
