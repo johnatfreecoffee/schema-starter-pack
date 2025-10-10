@@ -53,6 +53,9 @@ import Team from "./pages/dashboard/Team";
 import Import from "./pages/dashboard/Import";
 import ImportHistory from "./pages/dashboard/ImportHistory";
 import AcceptInvite from "./pages/AcceptInvite";
+import Workflows from "./pages/dashboard/Workflows";
+import WorkflowBuilder from "./pages/dashboard/WorkflowBuilder";
+import WorkflowMonitor from "./pages/dashboard/WorkflowMonitor";
 
 // Customer portal pages
 import CustomerAuth from "./pages/customer/CustomerAuth";
@@ -129,6 +132,11 @@ const App = () => (
           <Route path="/dashboard/settings/qa-testing" element={<QATesting />} />
           <Route path="/dashboard/email-queue" element={<EmailQueue />} />
           <Route path="/dashboard/regenerate-pages" element={<PageRegenerator />} />
+          
+          {/* Workflow Automation Routes */}
+          <Route path="/admin/automation/workflows" element={<Workflows />} />
+          <Route path="/admin/automation/workflows/:id" element={<WorkflowBuilder />} />
+          <Route path="/admin/automation/monitor" element={<WorkflowMonitor />} />
           
           {/* Dynamic Generated Pages */}
           <Route path="/:citySlug/:serviceSlug" element={<GeneratedPage />} />
