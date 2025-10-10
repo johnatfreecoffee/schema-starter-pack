@@ -4,7 +4,8 @@ import AdminLayout from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Grid, List, CheckCircle2, AlertCircle, Download } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Plus, Grid, List, CheckCircle2, AlertCircle, Download, UserCheck, FileDown } from "lucide-react";
 import { ExportService } from '@/services/exportService';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +22,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import { BulkActionsBar, BulkAction } from '@/components/admin/bulk/BulkActionsBar';
+import { BulkOperationModal } from '@/components/admin/bulk/BulkOperationModal';
+import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
+import { BulkProgressModal } from '@/components/admin/bulk/BulkProgressModal';
+import { BulkOperationsService } from '@/services/bulkOperationsService';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,6 +57,23 @@ const Tasks = () => {
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
+
+  // Bulk operations state
+  const bulkSelection = useBulkSelection(tasks);
+  const [bulkOperationModal, setBulkOperationModal] = useState<{
+    open: boolean;
+    type: 'status' | 'assign' | 'priority' | 'due_date' | null;
+  }>({ open: false, type: null });
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState<{
+    open: boolean;
+    operation: string;
+    total: number;
+    completed: number;
+    failed: number;
+    errors: Array<{ id: string; error: string }>;
+    isComplete: boolean;
+  }>({ open: false, operation: '', total: 0, completed: 0, failed: 0, errors: [], isComplete: false });
 
   // Filter states
   const [search, setSearch] = useState("");
@@ -316,6 +340,205 @@ const Tasks = () => {
     return format(date, "MMM d, yyyy");
   };
 
+  // Bulk operations handlers
+  const bulkActions: BulkAction[] = [
+    { id: 'assign', label: 'Assign to User', icon: <UserCheck className="h-4 w-4" /> },
+    { id: 'status', label: 'Change Status' },
+    { id: 'priority', label: 'Change Priority' },
+    { id: 'due_date', label: 'Set Due Date' },
+    { id: 'mark_complete', label: 'Mark Complete' },
+    { id: 'export', label: 'Export Selected', icon: <FileDown className="h-4 w-4" /> },
+    { id: 'delete', label: 'Delete Selected', variant: 'destructive' as const },
+  ];
+
+  const handleBulkAction = (actionId: string) => {
+    switch (actionId) {
+      case 'assign':
+      case 'status':
+      case 'priority':
+      case 'due_date':
+        setBulkOperationModal({ open: true, type: actionId as any });
+        break;
+      case 'mark_complete':
+        handleBulkMarkComplete();
+        break;
+      case 'delete':
+        setBulkDeleteOpen(true);
+        break;
+      case 'export':
+        handleBulkExport();
+        break;
+    }
+  };
+
+  const handleBulkOperationConfirm = async (formData: Record<string, any>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    setBulkProgress({
+      open: true,
+      operation: `Updating ${bulkSelection.selectedCount} tasks`,
+      total: bulkSelection.selectedCount,
+      completed: 0,
+      failed: 0,
+      errors: [],
+      isComplete: false,
+    });
+
+    let changes: Record<string, any> = {};
+    if (bulkOperationModal.type === 'status') changes = { status: formData.status };
+    if (bulkOperationModal.type === 'assign') changes = { assigned_to: formData.assigned_to };
+    if (bulkOperationModal.type === 'priority') changes = { priority: formData.priority };
+    if (bulkOperationModal.type === 'due_date') changes = { due_date: formData.due_date };
+
+    const result = await BulkOperationsService.performBulkOperation({
+      type: bulkOperationModal.type === 'assign' ? 'assign' : 
+            bulkOperationModal.type === 'status' ? 'status_change' :
+            bulkOperationModal.type === 'priority' ? 'priority_change' : 'date_change',
+      itemIds: Array.from(bulkSelection.selectedIds),
+      module: 'tasks',
+      changes,
+      userId: user.id,
+    });
+
+    setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
+    bulkSelection.deselectAll();
+    loadData();
+    
+    toast({
+      title: 'Success',
+      description: `${result.success} tasks updated successfully${result.failed > 0 ? `, ${result.failed} failed` : ''}`,
+    });
+  };
+
+  const handleBulkMarkComplete = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const result = await BulkOperationsService.performBulkOperation({
+      type: 'status_change',
+      itemIds: Array.from(bulkSelection.selectedIds),
+      module: 'tasks',
+      changes: { status: 'completed', completed_at: new Date().toISOString() },
+      userId: user.id,
+    });
+
+    bulkSelection.deselectAll();
+    loadData();
+    
+    toast({
+      title: 'Success',
+      description: `${result.success} tasks marked as complete`,
+    });
+  };
+
+  const handleBulkDelete = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    setBulkProgress({
+      open: true,
+      operation: `Deleting ${bulkSelection.selectedCount} tasks`,
+      total: bulkSelection.selectedCount,
+      completed: 0,
+      failed: 0,
+      errors: [],
+      isComplete: false,
+    });
+
+    const result = await BulkOperationsService.bulkDelete('tasks', Array.from(bulkSelection.selectedIds), user.id);
+
+    setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
+    bulkSelection.deselectAll();
+    loadData();
+
+    toast({
+      title: 'Success',
+      description: `${result.success} tasks deleted${result.failed > 0 ? `, ${result.failed} failed` : ''}`,
+    });
+  };
+
+  const handleBulkExport = async () => {
+    try {
+      await BulkOperationsService.bulkExport('tasks', Array.from(bulkSelection.selectedIds));
+      toast({
+        title: 'Success',
+        description: `${bulkSelection.selectedCount} tasks exported`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to export tasks',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const getBulkModalTitle = () => {
+    switch (bulkOperationModal.type) {
+      case 'status': return 'Change Status';
+      case 'assign': return 'Assign to User';
+      case 'priority': return 'Change Priority';
+      case 'due_date': return 'Set Due Date';
+      default: return '';
+    }
+  };
+
+  const getBulkModalDescription = () => {
+    return `Update ${bulkSelection.selectedCount} selected tasks`;
+  };
+
+  const getBulkModalFields = () => {
+    switch (bulkOperationModal.type) {
+      case 'status':
+        return [{
+          name: 'status',
+          label: 'Status',
+          type: 'select' as const,
+          options: [
+            { value: 'not_started', label: 'Not Started' },
+            { value: 'in_progress', label: 'In Progress' },
+            { value: 'completed', label: 'Completed' },
+            { value: 'cancelled', label: 'Cancelled' },
+          ],
+          required: true,
+        }];
+      case 'assign':
+        return [{
+          name: 'assigned_to',
+          label: 'Assign To',
+          type: 'select' as const,
+          options: users.map(u => ({
+            value: u.id,
+            label: `${u.first_name} ${u.last_name}`,
+          })),
+          required: true,
+        }];
+      case 'priority':
+        return [{
+          name: 'priority',
+          label: 'Priority',
+          type: 'select' as const,
+          options: [
+            { value: 'low', label: 'Low' },
+            { value: 'medium', label: 'Medium' },
+            { value: 'high', label: 'High' },
+            { value: 'urgent', label: 'Urgent' },
+          ],
+          required: true,
+        }];
+      case 'due_date':
+        return [{
+          name: 'due_date',
+          label: 'Due Date',
+          type: 'date' as const,
+          required: true,
+        }];
+      default:
+        return [];
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="flex h-full">
@@ -400,6 +623,18 @@ const Tasks = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-12">
+                      <Checkbox
+                        checked={bulkSelection.isAllSelected}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            bulkSelection.selectAll();
+                          } else {
+                            bulkSelection.deselectAll();
+                          }
+                        }}
+                      />
+                    </TableHead>
                     <TableHead>Priority</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Title</TableHead>
@@ -412,6 +647,12 @@ const Tasks = () => {
                 <TableBody>
                   {tasks.map((task) => (
                     <TableRow key={task.id}>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          checked={bulkSelection.isSelected(task.id)}
+                          onCheckedChange={() => bulkSelection.toggleItem(task.id)}
+                        />
+                      </TableCell>
                       <TableCell>
                         <TaskPriorityBadge priority={task.priority} />
                       </TableCell>
@@ -555,6 +796,44 @@ const Tasks = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Bulk Operations UI */}
+      <BulkActionsBar
+        selectedCount={bulkSelection.selectedCount}
+        actions={bulkActions}
+        onAction={handleBulkAction}
+        onClear={bulkSelection.deselectAll}
+      />
+
+      <BulkOperationModal
+        open={bulkOperationModal.open}
+        onOpenChange={(open) => setBulkOperationModal({ open, type: null })}
+        title={getBulkModalTitle()}
+        description={getBulkModalDescription()}
+        selectedCount={bulkSelection.selectedCount}
+        onConfirm={handleBulkOperationConfirm}
+        fields={getBulkModalFields()}
+      />
+
+      <BulkDeleteConfirmation
+        open={bulkDeleteOpen}
+        onOpenChange={setBulkDeleteOpen}
+        itemCount={bulkSelection.selectedCount}
+        itemType="tasks"
+        onConfirm={handleBulkDelete}
+        requireTyping={bulkSelection.selectedCount > 10}
+      />
+
+      <BulkProgressModal
+        open={bulkProgress.open}
+        onOpenChange={(open) => setBulkProgress(prev => ({ ...prev, open }))}
+        operation={bulkProgress.operation}
+        total={bulkProgress.total}
+        completed={bulkProgress.completed}
+        failed={bulkProgress.failed}
+        errors={bulkProgress.errors}
+        isComplete={bulkProgress.isComplete}
+      />
     </AdminLayout>
   );
 };

@@ -6,12 +6,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
-import { Check, X, Calendar, Clock, Download } from 'lucide-react';
+import { Check, X, Calendar, Clock, Download, UserCheck, FileDown } from 'lucide-react';
 import { ExportService } from '@/services/exportService';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import { BulkActionsBar, BulkAction } from '@/components/admin/bulk/BulkActionsBar';
+import { BulkOperationModal } from '@/components/admin/bulk/BulkOperationModal';
+import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
+import { BulkProgressModal } from '@/components/admin/bulk/BulkProgressModal';
+import { BulkOperationsService } from '@/services/bulkOperationsService';
 
 interface Appointment {
   id: string;
@@ -34,6 +41,23 @@ const Appointments = () => {
   const [loading, setLoading] = useState(true);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [statusFilter, setStatusFilter] = useState('all');
+
+  // Bulk operations state
+  const bulkSelection = useBulkSelection(appointments);
+  const [bulkOperationModal, setBulkOperationModal] = useState<{
+    open: boolean;
+    type: 'type' | 'reschedule' | null;
+  }>({ open: false, type: null });
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState<{
+    open: boolean;
+    operation: string;
+    total: number;
+    completed: number;
+    failed: number;
+    errors: Array<{ id: string; error: string }>;
+    isComplete: boolean;
+  }>({ open: false, operation: '', total: 0, completed: 0, failed: 0, errors: [], isComplete: false });
 
   const fetchAppointments = async () => {
     setLoading(true);
@@ -129,6 +153,154 @@ const Appointments = () => {
     );
   };
 
+  // Bulk operations handlers
+  const bulkActions: BulkAction[] = [
+    { id: 'type', label: 'Change Type' },
+    { id: 'reschedule', label: 'Reschedule (offset days)' },
+    { id: 'export', label: 'Export Selected', icon: <FileDown className="h-4 w-4" /> },
+    { id: 'delete', label: 'Delete Selected', variant: 'destructive' as const },
+  ];
+
+  const handleBulkAction = (actionId: string) => {
+    switch (actionId) {
+      case 'type':
+      case 'reschedule':
+        setBulkOperationModal({ open: true, type: actionId as any });
+        break;
+      case 'delete':
+        setBulkDeleteOpen(true);
+        break;
+      case 'export':
+        handleBulkExport();
+        break;
+    }
+  };
+
+  const handleBulkOperationConfirm = async (formData: Record<string, any>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    setBulkProgress({
+      open: true,
+      operation: `Updating ${bulkSelection.selectedCount} appointments`,
+      total: bulkSelection.selectedCount,
+      completed: 0,
+      failed: 0,
+      errors: [],
+      isComplete: false,
+    });
+
+    let changes: Record<string, any> = {};
+    if (bulkOperationModal.type === 'type') {
+      changes = { appointment_type: formData.appointment_type };
+    } else if (bulkOperationModal.type === 'reschedule') {
+      // Offset appointments by X days - will need to fetch and update each individually
+      const offsetDays = parseInt(formData.offset_days || '0');
+      for (const appointment of bulkSelection.selectedItems) {
+        const startTime = new Date(appointment.start_time);
+        const endTime = new Date(appointment.end_time);
+        startTime.setDate(startTime.getDate() + offsetDays);
+        endTime.setDate(endTime.getDate() + offsetDays);
+        
+        await supabase
+          .from('calendar_events')
+          .update({
+            start_time: startTime.toISOString(),
+            end_time: endTime.toISOString(),
+          })
+          .eq('id', appointment.id);
+      }
+    }
+
+    if (bulkOperationModal.type === 'type') {
+      const result = await BulkOperationsService.performBulkOperation({
+        type: 'status_change',
+        itemIds: Array.from(bulkSelection.selectedIds),
+        module: 'calendar_events',
+        changes,
+        userId: user.id,
+      });
+      setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
+    } else {
+      setBulkProgress(prev => ({ ...prev, completed: bulkSelection.selectedCount, isComplete: true }));
+    }
+
+    bulkSelection.deselectAll();
+    fetchAppointments();
+    
+    toast.success(`${bulkSelection.selectedCount} appointments updated`);
+  };
+
+  const handleBulkDelete = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    setBulkProgress({
+      open: true,
+      operation: `Deleting ${bulkSelection.selectedCount} appointments`,
+      total: bulkSelection.selectedCount,
+      completed: 0,
+      failed: 0,
+      errors: [],
+      isComplete: false,
+    });
+
+    const result = await BulkOperationsService.bulkDelete('calendar_events', Array.from(bulkSelection.selectedIds), user.id);
+
+    setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
+    bulkSelection.deselectAll();
+    fetchAppointments();
+
+    toast.success(`${result.success} appointments deleted`);
+  };
+
+  const handleBulkExport = async () => {
+    try {
+      await BulkOperationsService.bulkExport('calendar_events', Array.from(bulkSelection.selectedIds));
+      toast.success(`${bulkSelection.selectedCount} appointments exported`);
+    } catch (error) {
+      toast.error('Failed to export appointments');
+    }
+  };
+
+  const getBulkModalTitle = () => {
+    switch (bulkOperationModal.type) {
+      case 'type': return 'Change Appointment Type';
+      case 'reschedule': return 'Reschedule Appointments';
+      default: return '';
+    }
+  };
+
+  const getBulkModalDescription = () => {
+    return `Update ${bulkSelection.selectedCount} selected appointments`;
+  };
+
+  const getBulkModalFields = () => {
+    switch (bulkOperationModal.type) {
+      case 'type':
+        return [{
+          name: 'appointment_type',
+          label: 'Appointment Type',
+          type: 'select' as const,
+          options: [
+            { value: 'onsite', label: 'Onsite' },
+            { value: 'virtual', label: 'Virtual' },
+            { value: 'phone', label: 'Phone' },
+          ],
+          required: true,
+        }];
+      case 'reschedule':
+        return [{
+          name: 'offset_days',
+          label: 'Offset by days',
+          type: 'text' as const,
+          required: true,
+        }];
+      default:
+        return [];
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="container mx-auto p-6 space-y-6">
@@ -165,6 +337,18 @@ const Appointments = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-12">
+                      <Checkbox
+                        checked={bulkSelection.isAllSelected}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            bulkSelection.selectAll();
+                          } else {
+                            bulkSelection.deselectAll();
+                          }
+                        }}
+                      />
+                    </TableHead>
                     <TableHead>Account</TableHead>
                     <TableHead>Title</TableHead>
                     <TableHead>Type</TableHead>
@@ -180,6 +364,12 @@ const Appointments = () => {
                       className="cursor-pointer hover:bg-muted/50"
                       onClick={() => navigate(`/dashboard/appointments/${appointment.id}`)}
                     >
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          checked={bulkSelection.isSelected(appointment.id)}
+                          onCheckedChange={() => bulkSelection.toggleItem(appointment.id)}
+                        />
+                      </TableCell>
                       <TableCell className="font-medium">
                         {appointment.accounts?.account_name || 'Unknown'}
                       </TableCell>
@@ -233,6 +423,44 @@ const Appointments = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Bulk Operations UI */}
+        <BulkActionsBar
+          selectedCount={bulkSelection.selectedCount}
+          actions={bulkActions}
+          onAction={handleBulkAction}
+          onClear={bulkSelection.deselectAll}
+        />
+
+        <BulkOperationModal
+          open={bulkOperationModal.open}
+          onOpenChange={(open) => setBulkOperationModal({ open, type: null })}
+          title={getBulkModalTitle()}
+          description={getBulkModalDescription()}
+          selectedCount={bulkSelection.selectedCount}
+          onConfirm={handleBulkOperationConfirm}
+          fields={getBulkModalFields()}
+        />
+
+        <BulkDeleteConfirmation
+          open={bulkDeleteOpen}
+          onOpenChange={setBulkDeleteOpen}
+          itemCount={bulkSelection.selectedCount}
+          itemType="appointments"
+          onConfirm={handleBulkDelete}
+          requireTyping={bulkSelection.selectedCount > 10}
+        />
+
+        <BulkProgressModal
+          open={bulkProgress.open}
+          onOpenChange={(open) => setBulkProgress(prev => ({ ...prev, open }))}
+          operation={bulkProgress.operation}
+          total={bulkProgress.total}
+          completed={bulkProgress.completed}
+          failed={bulkProgress.failed}
+          errors={bulkProgress.errors}
+          isComplete={bulkProgress.isComplete}
+        />
       </div>
     </AdminLayout>
   );
