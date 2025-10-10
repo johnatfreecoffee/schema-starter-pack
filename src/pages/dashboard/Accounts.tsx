@@ -11,9 +11,9 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Phone, Mail, Download, Filter } from 'lucide-react';
-import { ExportService } from '@/services/exportService';
 import { formatDistanceToNow } from 'date-fns';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { ExportButton } from '@/components/admin/ExportButton';
 import { FilterPanel } from '@/components/filters/FilterPanel';
 import { FilterChips } from '@/components/filters/FilterChips';
 import { SavedViewsBar } from '@/components/filters/SavedViewsBar';
@@ -129,21 +129,6 @@ const Accounts = () => {
     (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
   ).length;
 
-  const handleExport = () => {
-    const exportData = accounts.map(account => ({
-      id: account.id,
-      account_name: account.account_name,
-      status: account.status,
-      primary_contact: account.contacts?.[0] ? `${account.contacts[0].first_name} ${account.contacts[0].last_name}` : '',
-      email: account.contacts?.[0]?.email || '',
-      phone: account.contacts?.[0]?.phone || '',
-      location: account.addresses?.[0] ? `${account.addresses[0].city}, ${account.addresses[0].state}` : '',
-      project_count: account.projects?.length || 0,
-      created_at: account.created_at
-    }));
-    ExportService.exportModuleToCSV(exportData, 'accounts');
-    toast({ title: 'Success', description: 'Accounts exported successfully' });
-  };
 
   return (
     <AdminLayout>
@@ -175,10 +160,13 @@ const Accounts = () => {
                 </Badge>
               )}
             </Button>
-            <Button variant="outline" onClick={handleExport}>
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
+            <ExportButton
+              data={accounts}
+              moduleName="accounts"
+              filters={filters}
+              isFiltered={activeFilterCount > 0}
+              filteredCount={accounts.length}
+            />
             <Button onClick={() => setShowAccountForm(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Create New Account

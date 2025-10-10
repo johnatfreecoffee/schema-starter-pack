@@ -16,6 +16,7 @@ import { FilterPanel } from '@/components/filters/FilterPanel';
 import { FilterChips } from '@/components/filters/FilterChips';
 import { SavedViewsBar } from '@/components/filters/SavedViewsBar';
 import { useUrlFilters } from '@/hooks/useUrlFilters';
+import { ExportButton } from '@/components/admin/ExportButton';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -157,6 +158,13 @@ const Projects = () => {
               Filters
               {activeFilterCount > 0 && <Badge variant="secondary" className="ml-2">{activeFilterCount}</Badge>}
             </Button>
+            <ExportButton
+              data={projects}
+              moduleName="projects"
+              filters={filters}
+              isFiltered={activeFilterCount > 0}
+              filteredCount={projects.length}
+            />
             <Button onClick={() => setIsFormOpen(true)}>
               <Plus className="mr-2 h-4 w-4" />
               Create New Project

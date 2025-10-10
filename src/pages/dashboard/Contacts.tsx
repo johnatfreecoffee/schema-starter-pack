@@ -10,9 +10,9 @@ import { ContactAdvancedFilters } from '@/components/admin/contacts/ContactAdvan
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Search, Edit, Trash2, Building2, Mail, Phone, Download, Filter } from 'lucide-react';
-import { ExportService } from '@/services/exportService';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { ExportButton } from '@/components/admin/ExportButton';
 import { FilterPanel } from '@/components/filters/FilterPanel';
 import { FilterChips } from '@/components/filters/FilterChips';
 import { SavedViewsBar } from '@/components/filters/SavedViewsBar';
@@ -138,20 +138,6 @@ const Contacts = () => {
     (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
   ).length;
 
-  const handleExport = () => {
-    const exportData = filteredContacts.map(contact => ({
-      ...contact,
-      account_name: accounts[contact.account_id]?.account_name || ''
-    }));
-    ExportService.exportModuleToCSV(exportData, 'contacts', [
-      'id', 'first_name', 'last_name', 'email', 'phone', 'title',
-      'account_name', 'is_primary', 'created_at'
-    ]);
-    toast({
-      title: 'Success',
-      description: 'Contacts exported successfully',
-    });
-  };
 
   return (
     <AdminLayout>
@@ -181,10 +167,20 @@ const Contacts = () => {
                 </Badge>
               )}
             </Button>
-            <Button variant="outline" onClick={handleExport}>
-              <Download className="h-4 w-4 mr-2" />
-              Export to CSV
-            </Button>
+            <ExportButton
+              data={filteredContacts.map(contact => ({
+                ...contact,
+                account_name: accounts[contact.account_id]?.account_name || ''
+              }))}
+              moduleName="contacts"
+              columns={[
+                'id', 'first_name', 'last_name', 'email', 'phone', 'title',
+                'account_name', 'is_primary', 'created_at'
+              ]}
+              filters={filters}
+              isFiltered={activeFilterCount > 0}
+              filteredCount={filteredContacts.length}
+            />
             <Button onClick={() => {
               setEditingContact(null);
               setSelectedAccountId('');

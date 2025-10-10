@@ -49,9 +49,9 @@ import {
   AlertCircle,
   Download
 } from 'lucide-react';
-import { ExportService } from '@/services/exportService';
 import { formatDistanceToNow } from 'date-fns';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { ExportButton } from '@/components/admin/ExportButton';
 
 const Leads = () => {
   const { toast } = useToast();
@@ -204,17 +204,6 @@ const Leads = () => {
     return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6)}`;
   };
 
-  const handleExport = () => {
-    ExportService.exportModuleToCSV(leads, 'leads', [
-      'id', 'status', 'first_name', 'last_name', 'email', 'phone',
-      'service_needed', 'street_address', 'city', 'state', 'zip',
-      'is_emergency', 'created_at'
-    ]);
-    toast({
-      title: 'Success',
-      description: 'Leads exported successfully',
-    });
-  };
 
   const activeFilterCount = Object.keys(filters).filter(
     (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
@@ -251,10 +240,18 @@ const Leads = () => {
                 </Badge>
               )}
             </Button>
-            <Button variant="outline" onClick={handleExport}>
-              <Download className="mr-2 h-4 w-4" />
-              Export to CSV
-            </Button>
+            <ExportButton
+              data={leads}
+              moduleName="leads"
+              columns={[
+                'id', 'status', 'first_name', 'last_name', 'email', 'phone',
+                'service_needed', 'street_address', 'city', 'state', 'zip',
+                'is_emergency', 'created_at'
+              ]}
+              filters={filters}
+              isFiltered={activeFilterCount > 0}
+              filteredCount={leads.length}
+            />
             <Button onClick={() => setShowCreateForm(true)}>
               <Plus className="mr-2 h-4 w-4" />
               Create New Lead
