@@ -3,6 +3,7 @@ import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Table,
   TableBody,
@@ -52,6 +53,13 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { CRUDLogger } from '@/lib/crudLogger';
 import { ExportButton } from '@/components/admin/ExportButton';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import { BulkActionsBar, BulkAction } from '@/components/admin/bulk/BulkActionsBar';
+import { BulkOperationModal } from '@/components/admin/bulk/BulkOperationModal';
+import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
+import { BulkProgressModal } from '@/components/admin/bulk/BulkProgressModal';
+import { BulkOperationsService } from '@/services/bulkOperationsService';
+import { UserCheck, FileDown } from 'lucide-react';
 
 const Leads = () => {
   const { toast } = useToast();
@@ -66,6 +74,23 @@ const Leads = () => {
   const [services, setServices] = useState<string[]>([]);
   const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+
+  // Bulk operations state
+  const bulkSelection = useBulkSelection(leads);
+  const [bulkOperationModal, setBulkOperationModal] = useState<{
+    open: boolean;
+    type: 'status' | 'assign' | null;
+  }>({ open: false, type: null });
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState<{
+    open: boolean;
+    operation: string;
+    total: number;
+    completed: number;
+    failed: number;
+    errors: Array<{ id: string; error: string }>;
+    isComplete: boolean;
+  }>({ open: false, operation: '', total: 0, completed: 0, failed: 0, errors: [], isComplete: false });
 
   useEffect(() => {
     loadLeads();
@@ -204,6 +229,180 @@ const Leads = () => {
     return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6)}`;
   };
 
+  // Bulk operations handlers
+  const handleBulkAction = (actionId: string) => {
+    switch (actionId) {
+      case 'status':
+        setBulkOperationModal({ open: true, type: 'status' });
+        break;
+      case 'assign':
+        setBulkOperationModal({ open: true, type: 'assign' });
+        break;
+      case 'delete':
+        setBulkDeleteOpen(true);
+        break;
+      case 'export':
+        handleBulkExport();
+        break;
+    }
+  };
+
+  const handleBulkStatusChange = async (data: Record<string, any>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    setBulkProgress({
+      open: true,
+      operation: 'Updating status',
+      total: bulkSelection.selectedCount,
+      completed: 0,
+      failed: 0,
+      errors: [],
+      isComplete: false,
+    });
+
+    const result = await BulkOperationsService.bulkStatusChange(
+      'leads',
+      Array.from(bulkSelection.selectedIds),
+      data.status,
+      user.id
+    );
+
+    setBulkProgress(prev => ({
+      ...prev,
+      completed: result.success + result.failed,
+      failed: result.failed,
+      errors: result.errors,
+      isComplete: true,
+    }));
+
+    bulkSelection.deselectAll();
+    loadLeads();
+
+    toast({
+      title: 'Success',
+      description: `Updated ${result.success} lead${result.success !== 1 ? 's' : ''}`,
+    });
+  };
+
+  const handleBulkAssign = async (data: Record<string, any>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    setBulkProgress({
+      open: true,
+      operation: 'Assigning leads',
+      total: bulkSelection.selectedCount,
+      completed: 0,
+      failed: 0,
+      errors: [],
+      isComplete: false,
+    });
+
+    const result = await BulkOperationsService.bulkAssign(
+      'leads',
+      Array.from(bulkSelection.selectedIds),
+      data.assignedTo,
+      user.id
+    );
+
+    setBulkProgress(prev => ({
+      ...prev,
+      completed: result.success + result.failed,
+      failed: result.failed,
+      errors: result.errors,
+      isComplete: true,
+    }));
+
+    bulkSelection.deselectAll();
+    loadLeads();
+
+    toast({
+      title: 'Success',
+      description: `Assigned ${result.success} lead${result.success !== 1 ? 's' : ''}`,
+    });
+  };
+
+  const handleBulkDelete = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    setBulkProgress({
+      open: true,
+      operation: 'Deleting leads',
+      total: bulkSelection.selectedCount,
+      completed: 0,
+      failed: 0,
+      errors: [],
+      isComplete: false,
+    });
+
+    const result = await BulkOperationsService.bulkDelete(
+      'leads',
+      Array.from(bulkSelection.selectedIds),
+      user.id
+    );
+
+    setBulkProgress(prev => ({
+      ...prev,
+      completed: result.success + result.failed,
+      failed: result.failed,
+      errors: result.errors,
+      isComplete: true,
+    }));
+
+    bulkSelection.deselectAll();
+    loadLeads();
+
+    toast({
+      title: 'Success',
+      description: `Deleted ${result.success} lead${result.success !== 1 ? 's' : ''}`,
+    });
+  };
+
+  const handleBulkExport = async () => {
+    try {
+      await BulkOperationsService.bulkExport(
+        'leads',
+        Array.from(bulkSelection.selectedIds)
+      );
+      toast({
+        title: 'Success',
+        description: `Exported ${bulkSelection.selectedCount} lead${bulkSelection.selectedCount !== 1 ? 's' : ''}`,
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const bulkActions: BulkAction[] = [
+    {
+      id: 'status',
+      label: 'Change Status',
+      icon: <CheckCircle className="h-4 w-4" />,
+    },
+    {
+      id: 'assign',
+      label: 'Assign to User',
+      icon: <UserCheck className="h-4 w-4" />,
+    },
+    {
+      id: 'export',
+      label: 'Export Selected',
+      icon: <FileDown className="h-4 w-4" />,
+    },
+    {
+      id: 'delete',
+      label: 'Delete Selected',
+      icon: <Trash2 className="h-4 w-4" />,
+      variant: 'destructive',
+    },
+  ];
+
 
   const activeFilterCount = Object.keys(filters).filter(
     (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
@@ -326,6 +525,12 @@ const Leads = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={bulkSelection.isAllSelected}
+                          onCheckedChange={() => bulkSelection.toggleAll(leads)}
+                        />
+                      </TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Name</TableHead>
                       <TableHead>Service</TableHead>
@@ -338,19 +543,25 @@ const Leads = () => {
                   <TableBody>
                     {loading ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8">
+                        <TableCell colSpan={8} className="text-center py-8">
                           Loading leads...
                         </TableCell>
                       </TableRow>
                     ) : leads.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                           No leads found
                         </TableCell>
                       </TableRow>
                     ) : (
                       leads.map((lead) => (
                         <TableRow key={lead.id} className="group">
+                          <TableCell>
+                            <Checkbox
+                              checked={bulkSelection.isSelected(lead.id)}
+                              onCheckedChange={() => bulkSelection.toggleItem(lead.id)}
+                            />
+                          </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <LeadStatusBadge status={lead.status} />
@@ -475,6 +686,80 @@ const Leads = () => {
           users={users}
         />
       </FilterPanel>
+
+      {/* Bulk Actions Bar */}
+      <BulkActionsBar
+        selectedCount={bulkSelection.selectedCount}
+        actions={bulkActions}
+        onAction={handleBulkAction}
+        onClear={bulkSelection.deselectAll}
+      />
+
+      {/* Bulk Status Change Modal */}
+      <BulkOperationModal
+        open={bulkOperationModal.open && bulkOperationModal.type === 'status'}
+        onOpenChange={(open) => !open && setBulkOperationModal({ open: false, type: null })}
+        title="Change Status"
+        description="Update the status for selected leads"
+        selectedCount={bulkSelection.selectedCount}
+        onConfirm={handleBulkStatusChange}
+        fields={[
+          {
+            name: 'status',
+            label: 'New Status',
+            type: 'select',
+            required: true,
+            options: [
+              { value: 'new', label: 'New' },
+              { value: 'contacted', label: 'Contacted' },
+              { value: 'qualified', label: 'Qualified' },
+              { value: 'converted', label: 'Converted' },
+              { value: 'lost', label: 'Lost' },
+            ],
+          },
+        ]}
+      />
+
+      {/* Bulk Assign Modal */}
+      <BulkOperationModal
+        open={bulkOperationModal.open && bulkOperationModal.type === 'assign'}
+        onOpenChange={(open) => !open && setBulkOperationModal({ open: false, type: null })}
+        title="Assign Leads"
+        description="Assign selected leads to a user"
+        selectedCount={bulkSelection.selectedCount}
+        onConfirm={handleBulkAssign}
+        fields={[
+          {
+            name: 'assignedTo',
+            label: 'Assign To',
+            type: 'select',
+            required: true,
+            options: users.map(u => ({ value: u.id, label: u.name })),
+          },
+        ]}
+      />
+
+      {/* Bulk Delete Confirmation */}
+      <BulkDeleteConfirmation
+        open={bulkDeleteOpen}
+        onOpenChange={setBulkDeleteOpen}
+        itemCount={bulkSelection.selectedCount}
+        itemType="leads"
+        itemNames={bulkSelection.selectedItems.map(l => `${l.first_name} ${l.last_name}`)}
+        onConfirm={handleBulkDelete}
+      />
+
+      {/* Bulk Progress Modal */}
+      <BulkProgressModal
+        open={bulkProgress.open}
+        onOpenChange={(open) => setBulkProgress(prev => ({ ...prev, open }))}
+        operation={bulkProgress.operation}
+        total={bulkProgress.total}
+        completed={bulkProgress.completed}
+        failed={bulkProgress.failed}
+        errors={bulkProgress.errors}
+        isComplete={bulkProgress.isComplete}
+      />
     </AdminLayout>
   );
 };
