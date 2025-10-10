@@ -23,6 +23,9 @@ import { BulkActionsBar } from '@/components/admin/bulk/BulkActionsBar';
 import { BulkOperationModal } from '@/components/admin/bulk/BulkOperationModal';
 import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
 import { BulkOperationsService } from '@/services/bulkOperationsService';
+import { useBulkUndo } from '@/hooks/useBulkUndo';
+import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
+import { useUserRole } from '@/hooks/useUserRole';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,11 +46,30 @@ const Projects = () => {
   const bulk = useBulkSelection(projects);
   const [bulkAction, setBulkAction] = useState<string | null>(null);
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  
+  const { role: userRole } = useUserRole();
+  const { undoState, saveUndoState, performUndo } = useBulkUndo();
 
   useEffect(() => {
     fetchProjects();
     loadUsers();
   }, [filters]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a' && !e.shiftKey) {
+        e.preventDefault();
+        bulk.selectAll();
+      }
+      if (e.key === 'Escape' && bulk.selectedCount > 0) {
+        bulk.deselectAll();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [projects, bulk.selectedCount]);
 
   const loadUsers = async () => {
     try {
@@ -174,11 +196,27 @@ const Projects = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Save previous values for undo
+    const previousValues = projects
+      .filter(p => bulk.selectedIds.has(p.id))
+      .map(p => ({ id: p.id, status: p.status }));
+
     await BulkOperationsService.bulkStatusChange('projects', Array.from(bulk.selectedIds), formData.status, user.id);
+    
+    saveUndoState({
+      operation: 'status',
+      module: 'projects',
+      itemIds: Array.from(bulk.selectedIds),
+      previousValues,
+      timestamp: new Date(),
+    });
+
     toast({ title: 'Success', description: `Updated status for ${bulk.selectedCount} projects` });
     bulk.deselectAll();
     fetchProjects();
   };
+
+  const canBulkDelete = userRole === 'admin';
 
   return (
     <AdminLayout>
@@ -314,7 +352,7 @@ const Projects = () => {
           actions={[
             { id: 'status', label: 'Change Status', icon: <Badge className="h-4 w-4" /> },
             { id: 'assign', label: 'Assign Manager', icon: <UserPlus className="h-4 w-4" /> },
-            { id: 'delete', label: 'Delete', icon: <Trash2 className="h-4 w-4" />, variant: 'destructive' as const },
+            ...(canBulkDelete ? [{ id: 'delete', label: 'Delete', icon: <Trash2 className="h-4 w-4" />, variant: 'destructive' as const }] : []),
           ]}
           onAction={handleBulkAction}
         />
@@ -345,6 +383,16 @@ const Projects = () => {
           itemNames={bulk.selectedItems.map(p => p.project_name)}
           onConfirm={handleBulkDelete}
         />
+
+        {undoState && (
+          <BulkUndoToast
+            count={undoState.itemIds.length}
+            onUndo={async () => {
+              await performUndo();
+              fetchProjects();
+            }}
+          />
+        )}
       </div>
     </AdminLayout>
   );

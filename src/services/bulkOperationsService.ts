@@ -189,4 +189,182 @@ export class BulkOperationsService {
     link.click();
     URL.revokeObjectURL(url);
   }
+
+  static async bulkTagsUpdate(
+    module: string,
+    itemIds: string[],
+    tags: string[],
+    mode: 'add' | 'replace',
+    userId: string
+  ): Promise<BulkOperationResult> {
+    const result: BulkOperationResult = {
+      success: 0,
+      failed: 0,
+      errors: [],
+    };
+
+    for (let i = 0; i < itemIds.length; i += this.BATCH_SIZE) {
+      const batch = itemIds.slice(i, i + this.BATCH_SIZE);
+      
+      try {
+        for (const itemId of batch) {
+          let newTags = tags;
+          
+          if (mode === 'add') {
+            // Fetch current item
+            const { data: currentItem, error: fetchError } = await supabase
+              .from(module as any)
+              .select('tags')
+              .eq('id', itemId)
+              .single();
+
+            if (!fetchError && currentItem && 'tags' in currentItem && currentItem.tags && Array.isArray(currentItem.tags)) {
+              // Add to existing tags
+              const existingTags = currentItem.tags as string[];
+              newTags = [...new Set([...existingTags, ...tags])];
+            }
+          }
+
+          const { error } = await supabase
+            .from(module as any)
+            .update({ tags: newTags } as any)
+            .eq('id', itemId);
+
+          if (error) throw error;
+        }
+
+        result.success += batch.length;
+
+        await Promise.all(
+          batch.map(itemId =>
+            ActivityLogger.log({
+              userId,
+              entityType: module as any,
+              entityId: itemId,
+              action: 'updated',
+              changes: { tags: { old: null, new: tags } },
+              metadata: { bulk: true, tag_mode: mode },
+            })
+          )
+        );
+      } catch (error: any) {
+        result.failed += batch.length;
+        batch.forEach(id => {
+          result.errors.push({ id, error: error.message });
+        });
+      }
+    }
+
+    return result;
+  }
+
+  static async bulkConvertLeads(
+    leadIds: string[],
+    accountStatus: string,
+    deleteLeads: boolean,
+    userId: string
+  ): Promise<BulkOperationResult> {
+    const result: BulkOperationResult = {
+      success: 0,
+      failed: 0,
+      errors: [],
+    };
+
+    for (const leadId of leadIds) {
+      try {
+        // Fetch lead data
+        const { data: lead, error: fetchError } = await supabase
+          .from('leads')
+          .select('*')
+          .eq('id', leadId)
+          .single();
+
+        if (fetchError || !lead) throw new Error('Lead not found');
+
+        // Create account
+        const { data: account, error: accountError } = await supabase
+          .from('accounts')
+          .insert({
+            account_name: `${lead.first_name} ${lead.last_name}`,
+            status: accountStatus as any,
+            notes: lead.project_details,
+            source_lead_id: leadId,
+          } as any)
+          .select()
+          .single();
+
+        if (accountError || !account) throw new Error('Failed to create account');
+
+        // Create contact
+        const { error: contactError } = await supabase
+          .from('contacts')
+          .insert({
+            account_id: account.id,
+            first_name: lead.first_name,
+            last_name: lead.last_name,
+            email: lead.email,
+            phone: lead.phone,
+            is_primary: true,
+          });
+
+        if (contactError) throw new Error('Failed to create contact');
+
+        // Create address
+        const { error: addressError } = await supabase
+          .from('addresses')
+          .insert({
+            entity_type: 'account',
+            entity_id: account.id,
+            account_id: account.id,
+            street_1: lead.street_address,
+            unit: lead.unit,
+            city: lead.city,
+            state: lead.state,
+            zip: lead.zip,
+            address_type: 'billing',
+            is_primary: true,
+          });
+
+        if (addressError) throw new Error('Failed to create address');
+
+        // Update lead status
+        const { error: leadUpdateError } = await supabase
+          .from('leads')
+          .update({ status: 'converted', converted_account_id: account.id })
+          .eq('id', leadId);
+
+        if (leadUpdateError) throw new Error('Failed to update lead status');
+
+        // Delete lead if requested
+        if (deleteLeads) {
+          const { error: deleteError } = await supabase
+            .from('leads')
+            .delete()
+            .eq('id', leadId);
+
+          if (deleteError) throw new Error('Failed to delete lead');
+        }
+
+        // Log activity
+        await ActivityLogger.log({
+          userId,
+          entityType: 'lead',
+          entityId: leadId,
+          action: 'converted',
+          metadata: { 
+            bulk: true, 
+            account_id: account.id,
+            deleted: deleteLeads 
+          },
+        });
+
+        result.success++;
+      } catch (error: any) {
+        result.failed++;
+        result.errors.push({ id: leadId, error: error.message });
+      }
+    }
+
+    return result;
+  }
 }

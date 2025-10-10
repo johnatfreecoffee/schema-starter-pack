@@ -22,6 +22,12 @@ import { useBulkSelection } from '@/hooks/useBulkSelection';
 import { BulkActionsBar } from '@/components/admin/bulk/BulkActionsBar';
 import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
 import { BulkOperationsService } from '@/services/bulkOperationsService';
+import { BulkTagsModal } from '@/components/admin/bulk/BulkTagsModal';
+import { BulkEmailModal } from '@/components/admin/bulk/BulkEmailModal';
+import { useBulkUndo } from '@/hooks/useBulkUndo';
+import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
+import { useUserRole } from '@/hooks/useUserRole';
+import { Tags, Mail as MailIconBulk } from 'lucide-react';
 
 const Contacts = () => {
   const navigate = useNavigate();
@@ -35,6 +41,11 @@ const Contacts = () => {
   const [editingContact, setEditingContact] = useState<any>(null);
   const [selectedAccountId, setSelectedAccountId] = useState<string>('');
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [bulkTagsOpen, setBulkTagsOpen] = useState(false);
+  const [bulkEmailOpen, setBulkEmailOpen] = useState(false);
+  
+  const { role: userRole } = useUserRole();
+  const { undoState, saveUndoState, performUndo, clearUndo } = useBulkUndo();
 
   useEffect(() => {
     fetchContacts();
@@ -142,6 +153,22 @@ const Contacts = () => {
   const bulk = useBulkSelection(filteredContacts);
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a' && !e.shiftKey) {
+        e.preventDefault();
+        bulk.selectAll();
+      }
+      if (e.key === 'Escape' && bulk.selectedCount > 0) {
+        bulk.deselectAll();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [filteredContacts, bulk.selectedCount]);
+
   const activeFilterCount = Object.keys(filters).filter(
     (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
   ).length;
@@ -152,6 +179,10 @@ const Contacts = () => {
     } else if (actionId === 'export') {
       await BulkOperationsService.bulkExport('contacts', Array.from(bulk.selectedIds));
       toast({ title: 'Success', description: `Exported ${bulk.selectedCount} contacts` });
+    } else if (actionId === 'tags') {
+      setBulkTagsOpen(true);
+    } else if (actionId === 'email') {
+      setBulkEmailOpen(true);
     }
   };
 
@@ -164,6 +195,48 @@ const Contacts = () => {
     bulk.deselectAll();
     fetchContacts();
   };
+
+  const handleBulkTags = async (tags: string[], mode: 'add' | 'replace') => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    try {
+      await BulkOperationsService.bulkTagsUpdate('contacts', Array.from(bulk.selectedIds), tags, mode, user.id);
+      toast({ title: 'Success', description: `Tags updated for ${bulk.selectedCount} contacts` });
+      bulk.deselectAll();
+      fetchContacts();
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  };
+
+  const handleBulkEmail = async (subject: string, body: string, templateId?: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    try {
+      // Queue emails for selected contacts
+      const selectedContacts = bulk.selectedItems;
+      for (const contact of selectedContacts) {
+        await supabase.from('email_queue').insert({
+          to_email: contact.email,
+          subject,
+          body,
+          template_id: templateId,
+          entity_type: 'contact',
+          entity_id: contact.id,
+          created_by: user.id,
+        });
+      }
+      toast({ title: 'Success', description: `Emails queued for ${bulk.selectedCount} contacts` });
+      bulk.deselectAll();
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  };
+
+  // Permission checks
+  const canBulkDelete = userRole === 'admin';
 
 
   return (
@@ -382,8 +455,10 @@ const Contacts = () => {
           selectedCount={bulk.selectedCount}
           onClear={bulk.deselectAll}
           actions={[
+            { id: 'tags', label: 'Manage Tags', icon: <Tags className="h-4 w-4" /> },
+            { id: 'email', label: 'Send Bulk Email', icon: <MailIconBulk className="h-4 w-4" /> },
             { id: 'export', label: 'Export Selected', icon: <Download className="h-4 w-4" /> },
-            { id: 'delete', label: 'Delete', icon: <Trash2 className="h-4 w-4" />, variant: 'destructive' as const },
+            ...(canBulkDelete ? [{ id: 'delete', label: 'Delete', icon: <Trash2 className="h-4 w-4" />, variant: 'destructive' as const }] : []),
           ]}
           onAction={handleBulkAction}
         />
@@ -396,6 +471,36 @@ const Contacts = () => {
           itemNames={bulk.selectedItems.map(c => `${c.first_name} ${c.last_name}`)}
           onConfirm={handleBulkDelete}
         />
+
+        <BulkTagsModal
+          open={bulkTagsOpen}
+          onOpenChange={setBulkTagsOpen}
+          selectedCount={bulk.selectedCount}
+          module="contacts"
+          onConfirm={handleBulkTags}
+        />
+
+        <BulkEmailModal
+          open={bulkEmailOpen}
+          onOpenChange={setBulkEmailOpen}
+          selectedCount={bulk.selectedCount}
+          selectedContacts={bulk.selectedItems.map(c => ({
+            email: c.email,
+            first_name: c.first_name,
+            last_name: c.last_name,
+          }))}
+          onConfirm={handleBulkEmail}
+        />
+
+        {undoState && (
+          <BulkUndoToast
+            count={undoState.itemIds.length}
+            onUndo={async () => {
+              await performUndo();
+              fetchContacts();
+            }}
+          />
+        )}
       </div>
     </AdminLayout>
   );

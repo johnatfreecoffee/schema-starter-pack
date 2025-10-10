@@ -59,7 +59,12 @@ import { BulkOperationModal } from '@/components/admin/bulk/BulkOperationModal';
 import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
 import { BulkProgressModal } from '@/components/admin/bulk/BulkProgressModal';
 import { BulkOperationsService } from '@/services/bulkOperationsService';
-import { UserCheck, FileDown } from 'lucide-react';
+import { UserCheck, FileDown, Tags, Users } from 'lucide-react';
+import { BulkTagsModal } from '@/components/admin/bulk/BulkTagsModal';
+import { BulkConvertLeadsModal } from '@/components/admin/bulk/BulkConvertLeadsModal';
+import { useBulkUndo } from '@/hooks/useBulkUndo';
+import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const Leads = () => {
   const { toast } = useToast();
@@ -82,6 +87,8 @@ const Leads = () => {
     type: 'status' | 'assign' | null;
   }>({ open: false, type: null });
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [bulkTagsOpen, setBulkTagsOpen] = useState(false);
+  const [bulkConvertOpen, setBulkConvertOpen] = useState(false);
   const [bulkProgress, setBulkProgress] = useState<{
     open: boolean;
     operation: string;
@@ -91,11 +98,30 @@ const Leads = () => {
     errors: Array<{ id: string; error: string }>;
     isComplete: boolean;
   }>({ open: false, operation: '', total: 0, completed: 0, failed: 0, errors: [], isComplete: false });
+  
+  const { role: userRole } = useUserRole();
+  const { undoState, saveUndoState, performUndo, clearUndo } = useBulkUndo();
 
   useEffect(() => {
     loadLeads();
     loadUsers();
   }, [filters]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a' && !e.shiftKey) {
+        e.preventDefault();
+        bulkSelection.selectAll();
+      }
+      if (e.key === 'Escape' && bulkSelection.selectedCount > 0) {
+        bulkSelection.deselectAll();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [leads, bulkSelection.selectedCount]);
 
   const loadLeads = async () => {
     setLoading(true);
@@ -238,6 +264,12 @@ const Leads = () => {
       case 'assign':
         setBulkOperationModal({ open: true, type: 'assign' });
         break;
+      case 'tags':
+        setBulkTagsOpen(true);
+        break;
+      case 'convert':
+        setBulkConvertOpen(true);
+        break;
       case 'delete':
         setBulkDeleteOpen(true);
         break;
@@ -250,6 +282,11 @@ const Leads = () => {
   const handleBulkStatusChange = async (data: Record<string, any>) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+
+    // Save previous values for undo
+    const previousValues = leads
+      .filter(l => bulkSelection.selectedIds.has(l.id))
+      .map(l => ({ id: l.id, status: l.status }));
 
     setBulkProgress({
       open: true,
@@ -275,6 +312,15 @@ const Leads = () => {
       errors: result.errors,
       isComplete: true,
     }));
+
+    // Save undo state
+    saveUndoState({
+      operation: 'status',
+      module: 'leads',
+      itemIds: Array.from(bulkSelection.selectedIds),
+      previousValues,
+      timestamp: new Date(),
+    });
 
     bulkSelection.deselectAll();
     loadLeads();
@@ -379,6 +425,38 @@ const Leads = () => {
     }
   };
 
+  const handleBulkTags = async (tags: string[], mode: 'add' | 'replace') => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    try {
+      await BulkOperationsService.bulkTagsUpdate('leads', Array.from(bulkSelection.selectedIds), tags, mode, user.id);
+      toast({ title: 'Success', description: `Tags updated for ${bulkSelection.selectedCount} leads` });
+      bulkSelection.deselectAll();
+      loadLeads();
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  };
+
+  const handleBulkConvert = async (accountStatus: string, deleteLeads: boolean) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    try {
+      await BulkOperationsService.bulkConvertLeads(Array.from(bulkSelection.selectedIds), accountStatus, deleteLeads, user.id);
+      toast({ title: 'Success', description: `Converted ${bulkSelection.selectedCount} leads to accounts` });
+      bulkSelection.deselectAll();
+      loadLeads();
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  };
+
+  // Permission checks
+  const canBulkEdit = userRole === 'admin' || leads.every(l => bulkSelection.selectedIds.has(l.id) ? l.assigned_to === users.find(u => u.id)?.id : true);
+  const canBulkDelete = userRole === 'admin';
+
   const bulkActions: BulkAction[] = [
     {
       id: 'status',
@@ -391,16 +469,26 @@ const Leads = () => {
       icon: <UserCheck className="h-4 w-4" />,
     },
     {
+      id: 'tags',
+      label: 'Manage Tags',
+      icon: <Tags className="h-4 w-4" />,
+    },
+    {
+      id: 'convert',
+      label: 'Convert to Account',
+      icon: <Users className="h-4 w-4" />,
+    },
+    {
       id: 'export',
       label: 'Export Selected',
       icon: <FileDown className="h-4 w-4" />,
     },
-    {
+    ...(canBulkDelete ? [{
       id: 'delete',
       label: 'Delete Selected',
       icon: <Trash2 className="h-4 w-4" />,
-      variant: 'destructive',
-    },
+      variant: 'destructive' as const,
+    }] : []),
   ];
 
 
@@ -760,6 +848,34 @@ const Leads = () => {
         errors={bulkProgress.errors}
         isComplete={bulkProgress.isComplete}
       />
+
+      {/* Bulk Tags Modal */}
+      <BulkTagsModal
+        open={bulkTagsOpen}
+        onOpenChange={setBulkTagsOpen}
+        selectedCount={bulkSelection.selectedCount}
+        module="leads"
+        onConfirm={handleBulkTags}
+      />
+
+      {/* Bulk Convert Modal */}
+      <BulkConvertLeadsModal
+        open={bulkConvertOpen}
+        onOpenChange={setBulkConvertOpen}
+        selectedCount={bulkSelection.selectedCount}
+        onConfirm={handleBulkConvert}
+      />
+
+      {/* Undo Toast */}
+      {undoState && (
+        <BulkUndoToast
+          count={undoState.itemIds.length}
+          onUndo={async () => {
+            await performUndo();
+            loadLeads();
+          }}
+        />
+      )}
     </AdminLayout>
   );
 };
