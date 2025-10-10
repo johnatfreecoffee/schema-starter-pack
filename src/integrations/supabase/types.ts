@@ -1117,6 +1117,69 @@ export type Database = {
         }
         Relationships: []
       }
+      page_seo: {
+        Row: {
+          canonical_url: string | null
+          change_frequency: string | null
+          created_at: string | null
+          custom_head_tags: string | null
+          id: string
+          meta_description: string | null
+          meta_keywords: string | null
+          meta_title: string | null
+          og_description: string | null
+          og_image: string | null
+          og_title: string | null
+          page_id: string | null
+          page_type: string
+          priority: number | null
+          robots_directives: string | null
+          schema_markup: string | null
+          twitter_card_type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          canonical_url?: string | null
+          change_frequency?: string | null
+          created_at?: string | null
+          custom_head_tags?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_keywords?: string | null
+          meta_title?: string | null
+          og_description?: string | null
+          og_image?: string | null
+          og_title?: string | null
+          page_id?: string | null
+          page_type: string
+          priority?: number | null
+          robots_directives?: string | null
+          schema_markup?: string | null
+          twitter_card_type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          canonical_url?: string | null
+          change_frequency?: string | null
+          created_at?: string | null
+          custom_head_tags?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_keywords?: string | null
+          meta_title?: string | null
+          og_description?: string | null
+          og_image?: string | null
+          og_title?: string | null
+          page_id?: string | null
+          page_type?: string
+          priority?: number | null
+          robots_directives?: string | null
+          schema_markup?: string | null
+          twitter_card_type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       project_phases: {
         Row: {
           created_at: string | null
@@ -1331,6 +1394,39 @@ export type Database = {
           },
         ]
       }
+      redirects: {
+        Row: {
+          created_at: string | null
+          from_path: string
+          hit_count: number | null
+          id: string
+          is_active: boolean | null
+          redirect_type: number | null
+          to_path: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          from_path: string
+          hit_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          redirect_type?: number | null
+          to_path: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          from_path?: string
+          hit_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          redirect_type?: number | null
+          to_path?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       saved_views: {
         Row: {
           created_at: string | null
@@ -1361,6 +1457,93 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           view_name?: string
+        }
+        Relationships: []
+      }
+      seo_settings: {
+        Row: {
+          created_at: string | null
+          default_meta_description: string | null
+          default_title_suffix: string | null
+          facebook_pixel_id: string | null
+          google_analytics_id: string | null
+          google_tag_manager_id: string | null
+          id: string
+          og_default_image: string | null
+          robots_txt: string | null
+          schema_org_defaults: Json | null
+          sitemap_settings: Json | null
+          twitter_handle: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          default_meta_description?: string | null
+          default_title_suffix?: string | null
+          facebook_pixel_id?: string | null
+          google_analytics_id?: string | null
+          google_tag_manager_id?: string | null
+          id?: string
+          og_default_image?: string | null
+          robots_txt?: string | null
+          schema_org_defaults?: Json | null
+          sitemap_settings?: Json | null
+          twitter_handle?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          default_meta_description?: string | null
+          default_title_suffix?: string | null
+          facebook_pixel_id?: string | null
+          google_analytics_id?: string | null
+          google_tag_manager_id?: string | null
+          id?: string
+          og_default_image?: string | null
+          robots_txt?: string | null
+          schema_org_defaults?: Json | null
+          sitemap_settings?: Json | null
+          twitter_handle?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_templates: {
+        Row: {
+          applies_to: string
+          created_at: string | null
+          id: string
+          meta_description_template: string | null
+          meta_title_template: string | null
+          og_description_template: string | null
+          og_title_template: string | null
+          schema_template: string | null
+          template_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          applies_to: string
+          created_at?: string | null
+          id?: string
+          meta_description_template?: string | null
+          meta_title_template?: string | null
+          og_description_template?: string | null
+          og_title_template?: string | null
+          schema_template?: string | null
+          template_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          applies_to?: string
+          created_at?: string | null
+          id?: string
+          meta_description_template?: string | null
+          meta_title_template?: string | null
+          og_description_template?: string | null
+          og_title_template?: string | null
+          schema_template?: string | null
+          template_name?: string
+          updated_at?: string | null
         }
         Relationships: []
       }

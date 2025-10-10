@@ -69,7 +69,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="shadow-lg hover:shadow-xl transition-shadow cursor-pointer" onClick={() => navigate('/dashboard/invoices')}>
+          <Card className="shadow-lg hover:shadow-xl transition-shadow">
             <CardHeader>
               <CardTitle>Invoices</CardTitle>
               <CardDescription>Track invoices and payments</CardDescription>
@@ -77,17 +77,6 @@ const Dashboard = () => {
             <CardContent>
               <p className="text-3xl font-bold text-primary">$0</p>
               <p className="text-sm text-muted-foreground mt-2">Outstanding</p>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-lg hover:shadow-xl transition-shadow cursor-pointer" onClick={() => navigate('/admin/automation/workflows')}>
-            <CardHeader>
-              <CardTitle>Workflows</CardTitle>
-              <CardDescription>Automate your processes</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-primary">0</p>
-              <p className="text-sm text-muted-foreground mt-2">Active workflows</p>
             </CardContent>
           </Card>
             </div>

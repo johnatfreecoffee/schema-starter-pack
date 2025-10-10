@@ -58,6 +58,7 @@ import WorkflowBuilder from "./pages/dashboard/WorkflowBuilder";
 import WorkflowMonitor from "./pages/dashboard/WorkflowMonitor";
 import WorkflowTemplates from "./pages/dashboard/WorkflowTemplates";
 import WorkflowTesting from "./pages/dashboard/WorkflowTesting";
+import SEO from "./pages/dashboard/SEO";
 
 // Customer portal pages
 import CustomerAuth from "./pages/customer/CustomerAuth";
@@ -141,6 +142,9 @@ const App = () => (
           <Route path="/admin/automation/monitor" element={<WorkflowMonitor />} />
           <Route path="/admin/automation/templates" element={<WorkflowTemplates />} />
           <Route path="/admin/automation/testing" element={<WorkflowTesting />} />
+          
+          {/* SEO Management Routes */}
+          <Route path="/admin/seo" element={<SEO />} />
           
           {/* Dynamic Generated Pages */}
           <Route path="/:citySlug/:serviceSlug" element={<GeneratedPage />} />
