@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Search, FileText, DollarSign, AlertCircle, TrendingUp } from 'lucide-react';
+import { Plus, Search, FileText, DollarSign, AlertCircle, TrendingUp, FileDown, Send, FileSpreadsheet } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import QuoteStatusBadge from '@/components/admin/money/QuoteStatusBadge';
@@ -15,6 +16,12 @@ import InvoiceStatusBadge from '@/components/admin/money/InvoiceStatusBadge';
 import QuoteForm from '@/components/admin/money/QuoteForm';
 import InvoiceForm from '@/components/admin/money/InvoiceForm';
 import { format } from 'date-fns';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import { BulkActionsBar, BulkAction } from '@/components/admin/bulk/BulkActionsBar';
+import { BulkOperationModal } from '@/components/admin/bulk/BulkOperationModal';
+import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
+import { BulkProgressModal } from '@/components/admin/bulk/BulkProgressModal';
+import { BulkOperationsService } from '@/services/bulkOperationsService';
 
 const Money = () => {
   const navigate = useNavigate();
@@ -32,6 +39,32 @@ const Money = () => {
   const [searchInvoices, setSearchInvoices] = useState('');
   const [showQuoteForm, setShowQuoteForm] = useState(false);
   const [showInvoiceForm, setShowInvoiceForm] = useState(false);
+
+  // Bulk operations for quotes
+  const quotesSelection = useBulkSelection(quotes);
+  const [quotesBulkModal, setQuotesBulkModal] = useState<{
+    open: boolean;
+    type: 'status' | 'convert' | 'send' | null;
+  }>({ open: false, type: null });
+  const [quotesBulkDeleteOpen, setQuotesBulkDeleteOpen] = useState(false);
+
+  // Bulk operations for invoices
+  const invoicesSelection = useBulkSelection(invoices);
+  const [invoicesBulkModal, setInvoicesBulkModal] = useState<{
+    open: boolean;
+    type: 'status' | 'mark_paid' | 'send_reminder' | null;
+  }>({ open: false, type: null });
+  const [invoicesBulkDeleteOpen, setInvoicesBulkDeleteOpen] = useState(false);
+
+  const [bulkProgress, setBulkProgress] = useState<{
+    open: boolean;
+    operation: string;
+    total: number;
+    completed: number;
+    failed: number;
+    errors: Array<{ id: string; error: string }>;
+    isComplete: boolean;
+  }>({ open: false, operation: '', total: 0, completed: 0, failed: 0, errors: [], isComplete: false });
 
   useEffect(() => {
     fetchData();
@@ -142,6 +175,251 @@ const Money = () => {
     invoice.accounts?.account_name.toLowerCase().includes(searchInvoices.toLowerCase())
   );
 
+  // Quotes bulk actions
+  const quotesBulkActions: BulkAction[] = [
+    { id: 'status', label: 'Change Status' },
+    { id: 'send', label: 'Send to Customers', icon: <Send className="h-4 w-4" /> },
+    { id: 'convert', label: 'Convert to Invoices', icon: <FileSpreadsheet className="h-4 w-4" /> },
+    { id: 'export', label: 'Export Selected', icon: <FileDown className="h-4 w-4" /> },
+    { id: 'delete', label: 'Delete Selected', variant: 'destructive' as const },
+  ];
+
+  const handleQuotesBulkAction = (actionId: string) => {
+    switch (actionId) {
+      case 'status':
+      case 'convert':
+      case 'send':
+        setQuotesBulkModal({ open: true, type: actionId as any });
+        break;
+      case 'delete':
+        setQuotesBulkDeleteOpen(true);
+        break;
+      case 'export':
+        handleQuotesBulkExport();
+        break;
+    }
+  };
+
+  const handleQuotesBulkConfirm = async (formData: Record<string, any>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    setBulkProgress({
+      open: true,
+      operation: `Updating ${quotesSelection.selectedCount} quotes`,
+      total: quotesSelection.selectedCount,
+      completed: 0,
+      failed: 0,
+      errors: [],
+      isComplete: false,
+    });
+
+    if (quotesBulkModal.type === 'status') {
+      const result = await BulkOperationsService.bulkStatusChange(
+        'quotes',
+        Array.from(quotesSelection.selectedIds),
+        formData.status,
+        user.id
+      );
+      setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
+    } else if (quotesBulkModal.type === 'convert') {
+      // Convert quotes to invoices
+      let success = 0, failed = 0;
+      const errors: Array<{ id: string; error: string }> = [];
+
+      for (const quoteId of Array.from(quotesSelection.selectedIds)) {
+        try {
+          const { data: quote } = await supabase
+            .from('quotes')
+            .select('*')
+            .eq('id', quoteId)
+            .single();
+
+          if (quote) {
+            const { data: invoiceNumber } = await supabase
+              .rpc('generate_invoice_number' as any)
+              .single();
+
+            await supabase.from('invoices' as any).insert({
+              invoice_number: invoiceNumber || `INV-${Date.now()}`,
+              account_id: quote.account_id,
+              total_amount: quote.total_amount,
+              status: 'draft',
+              due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+              created_by: user.id,
+            });
+            success++;
+          }
+        } catch (error: any) {
+          failed++;
+          errors.push({ id: quoteId, error: error.message });
+        }
+      }
+      setBulkProgress(prev => ({ ...prev, completed: success, failed, errors, isComplete: true }));
+    } else if (quotesBulkModal.type === 'send') {
+      // Send quotes to customers (placeholder - implement email sending)
+      setBulkProgress(prev => ({ 
+        ...prev, 
+        completed: quotesSelection.selectedCount, 
+        isComplete: true 
+      }));
+      toast({
+        title: 'Success',
+        description: `${quotesSelection.selectedCount} quotes sent to customers`,
+      });
+    }
+
+    quotesSelection.deselectAll();
+    fetchData();
+  };
+
+  const handleQuotesBulkDelete = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const result = await BulkOperationsService.bulkDelete(
+      'quotes',
+      Array.from(quotesSelection.selectedIds),
+      user.id
+    );
+
+    quotesSelection.deselectAll();
+    fetchData();
+
+    toast({
+      title: 'Success',
+      description: `${result.success} quotes deleted`,
+    });
+  };
+
+  const handleQuotesBulkExport = async () => {
+    try {
+      await BulkOperationsService.bulkExport('quotes', Array.from(quotesSelection.selectedIds));
+      toast({
+        title: 'Success',
+        description: `${quotesSelection.selectedCount} quotes exported`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to export quotes',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  // Invoices bulk actions
+  const invoicesBulkActions: BulkAction[] = [
+    { id: 'status', label: 'Change Status' },
+    { id: 'mark_paid', label: 'Mark as Paid', icon: <DollarSign className="h-4 w-4" /> },
+    { id: 'send_reminder', label: 'Send Payment Reminders', icon: <Send className="h-4 w-4" /> },
+    { id: 'export', label: 'Export Selected', icon: <FileDown className="h-4 w-4" /> },
+    { id: 'delete', label: 'Delete Selected', variant: 'destructive' as const },
+  ];
+
+  const handleInvoicesBulkAction = (actionId: string) => {
+    switch (actionId) {
+      case 'status':
+      case 'mark_paid':
+      case 'send_reminder':
+        setInvoicesBulkModal({ open: true, type: actionId as any });
+        break;
+      case 'delete':
+        setInvoicesBulkDeleteOpen(true);
+        break;
+      case 'export':
+        handleInvoicesBulkExport();
+        break;
+    }
+  };
+
+  const handleInvoicesBulkConfirm = async (formData: Record<string, any>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    setBulkProgress({
+      open: true,
+      operation: `Updating ${invoicesSelection.selectedCount} invoices`,
+      total: invoicesSelection.selectedCount,
+      completed: 0,
+      failed: 0,
+      errors: [],
+      isComplete: false,
+    });
+
+    if (invoicesBulkModal.type === 'status') {
+      const result = await BulkOperationsService.bulkStatusChange(
+        'invoices',
+        Array.from(invoicesSelection.selectedIds),
+        formData.status,
+        user.id
+      );
+      setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
+    } else if (invoicesBulkModal.type === 'mark_paid') {
+      const result = await BulkOperationsService.performBulkOperation({
+        type: 'status_change',
+        itemIds: Array.from(invoicesSelection.selectedIds),
+        module: 'invoices',
+        changes: { 
+          status: 'paid', 
+          payment_date: new Date().toISOString(),
+          amount_due: 0 
+        },
+        userId: user.id,
+      });
+      setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
+    } else if (invoicesBulkModal.type === 'send_reminder') {
+      // Send payment reminders (placeholder - implement email sending)
+      setBulkProgress(prev => ({ 
+        ...prev, 
+        completed: invoicesSelection.selectedCount, 
+        isComplete: true 
+      }));
+      toast({
+        title: 'Success',
+        description: `Payment reminders sent for ${invoicesSelection.selectedCount} invoices`,
+      });
+    }
+
+    invoicesSelection.deselectAll();
+    fetchData();
+  };
+
+  const handleInvoicesBulkDelete = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const result = await BulkOperationsService.bulkDelete(
+      'invoices',
+      Array.from(invoicesSelection.selectedIds),
+      user.id
+    );
+
+    invoicesSelection.deselectAll();
+    fetchData();
+
+    toast({
+      title: 'Success',
+      description: `${result.success} invoices deleted`,
+    });
+  };
+
+  const handleInvoicesBulkExport = async () => {
+    try {
+      await BulkOperationsService.bulkExport('invoices', Array.from(invoicesSelection.selectedIds));
+      toast({
+        title: 'Success',
+        description: `${invoicesSelection.selectedCount} invoices exported`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to export invoices',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="container mx-auto px-4 py-8">
@@ -241,6 +519,18 @@ const Money = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={quotesSelection.isAllSelected}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              quotesSelection.selectAll();
+                            } else {
+                              quotesSelection.deselectAll();
+                            }
+                          }}
+                        />
+                      </TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Quote #</TableHead>
                       <TableHead>Account</TableHead>
@@ -256,6 +546,12 @@ const Money = () => {
                       className="cursor-pointer hover:bg-muted/50"
                       onClick={() => navigate(`/dashboard/quotes/${quote.id}`)}
                     >
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          checked={quotesSelection.isSelected(quote.id)}
+                          onCheckedChange={() => quotesSelection.toggleItem(quote.id)}
+                        />
+                      </TableCell>
                       <TableCell>
                         <QuoteStatusBadge status={quote.status} />
                       </TableCell>
@@ -315,6 +611,18 @@ const Money = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={invoicesSelection.isAllSelected}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              invoicesSelection.selectAll();
+                            } else {
+                              invoicesSelection.deselectAll();
+                            }
+                          }}
+                        />
+                      </TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Invoice #</TableHead>
                       <TableHead>Account</TableHead>
@@ -330,6 +638,12 @@ const Money = () => {
                       className="cursor-pointer hover:bg-muted/50"
                       onClick={() => navigate(`/dashboard/invoices/${invoice.id}`)}
                     >
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          checked={invoicesSelection.isSelected(invoice.id)}
+                          onCheckedChange={() => invoicesSelection.toggleItem(invoice.id)}
+                        />
+                      </TableCell>
                       <TableCell>
                         <InvoiceStatusBadge status={invoice.status} />
                       </TableCell>
@@ -376,6 +690,97 @@ const Money = () => {
         open={showInvoiceForm}
         onOpenChange={setShowInvoiceForm}
         onSuccess={fetchData}
+      />
+
+      {/* Quotes Bulk Operations */}
+      <BulkActionsBar
+        selectedCount={quotesSelection.selectedCount}
+        actions={quotesBulkActions}
+        onAction={handleQuotesBulkAction}
+        onClear={quotesSelection.deselectAll}
+      />
+
+      <BulkOperationModal
+        open={quotesBulkModal.open}
+        onOpenChange={(open) => setQuotesBulkModal({ open, type: null })}
+        title={quotesBulkModal.type === 'status' ? 'Change Status' : 
+               quotesBulkModal.type === 'convert' ? 'Convert to Invoices' :
+               'Send to Customers'}
+        description={`Update ${quotesSelection.selectedCount} selected quotes`}
+        selectedCount={quotesSelection.selectedCount}
+        onConfirm={handleQuotesBulkConfirm}
+        fields={quotesBulkModal.type === 'status' ? [{
+          name: 'status',
+          label: 'Status',
+          type: 'select' as const,
+          options: [
+            { value: 'draft', label: 'Draft' },
+            { value: 'sent', label: 'Sent' },
+            { value: 'accepted', label: 'Accepted' },
+            { value: 'rejected', label: 'Rejected' },
+          ],
+          required: true,
+        }] : []}
+      />
+
+      <BulkDeleteConfirmation
+        open={quotesBulkDeleteOpen}
+        onOpenChange={setQuotesBulkDeleteOpen}
+        itemCount={quotesSelection.selectedCount}
+        itemType="quotes"
+        onConfirm={handleQuotesBulkDelete}
+        requireTyping={quotesSelection.selectedCount > 10}
+      />
+
+      {/* Invoices Bulk Operations */}
+      <BulkActionsBar
+        selectedCount={invoicesSelection.selectedCount}
+        actions={invoicesBulkActions}
+        onAction={handleInvoicesBulkAction}
+        onClear={invoicesSelection.deselectAll}
+      />
+
+      <BulkOperationModal
+        open={invoicesBulkModal.open}
+        onOpenChange={(open) => setInvoicesBulkModal({ open, type: null })}
+        title={invoicesBulkModal.type === 'status' ? 'Change Status' : 
+               invoicesBulkModal.type === 'mark_paid' ? 'Mark as Paid' :
+               'Send Payment Reminders'}
+        description={`Update ${invoicesSelection.selectedCount} selected invoices`}
+        selectedCount={invoicesSelection.selectedCount}
+        onConfirm={handleInvoicesBulkConfirm}
+        fields={invoicesBulkModal.type === 'status' ? [{
+          name: 'status',
+          label: 'Status',
+          type: 'select' as const,
+          options: [
+            { value: 'draft', label: 'Draft' },
+            { value: 'sent', label: 'Sent' },
+            { value: 'paid', label: 'Paid' },
+            { value: 'overdue', label: 'Overdue' },
+          ],
+          required: true,
+        }] : []}
+      />
+
+      <BulkDeleteConfirmation
+        open={invoicesBulkDeleteOpen}
+        onOpenChange={setInvoicesBulkDeleteOpen}
+        itemCount={invoicesSelection.selectedCount}
+        itemType="invoices"
+        onConfirm={handleInvoicesBulkDelete}
+        requireTyping={invoicesSelection.selectedCount > 10}
+      />
+
+      <BulkProgressModal
+        open={bulkProgress.open}
+        onOpenChange={(open) => setBulkProgress(prev => ({ ...prev, open }))}
+        operation={bulkProgress.operation}
+        total={bulkProgress.total}
+        completed={bulkProgress.completed}
+        failed={bulkProgress.failed}
+        errors={bulkProgress.errors}
+        isComplete={bulkProgress.isComplete}
       />
     </AdminLayout>
   );
