@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Checkbox } from '@/components/ui/checkbox';
 import { AccountStatusBadge } from '@/components/admin/accounts/AccountStatusBadge';
 import { AccountFilters } from '@/components/admin/accounts/AccountFilters';
 import { AccountForm } from '@/components/admin/accounts/AccountForm';
@@ -10,7 +11,7 @@ import { AccountAdvancedFilters } from '@/components/admin/accounts/AccountAdvan
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Phone, Mail, Download, Filter } from 'lucide-react';
+import { Plus, Phone, Mail, Download, Filter, Trash2, UserPlus, Tag } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { CRUDLogger } from '@/lib/crudLogger';
 import { ExportButton } from '@/components/admin/ExportButton';
@@ -18,6 +19,11 @@ import { FilterPanel } from '@/components/filters/FilterPanel';
 import { FilterChips } from '@/components/filters/FilterChips';
 import { SavedViewsBar } from '@/components/filters/SavedViewsBar';
 import { useUrlFilters } from '@/hooks/useUrlFilters';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import { BulkActionsBar } from '@/components/admin/bulk/BulkActionsBar';
+import { BulkOperationModal } from '@/components/admin/bulk/BulkOperationModal';
+import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
+import { BulkOperationsService } from '@/services/bulkOperationsService';
 
 const Accounts = () => {
   const { toast } = useToast();
@@ -32,6 +38,10 @@ const Accounts = () => {
     inactive: 0,
     archived: 0
   });
+
+  const bulk = useBulkSelection(accounts);
+  const [bulkAction, setBulkAction] = useState<string | null>(null);
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
   const fetchAccounts = async () => {
     try {
@@ -129,6 +139,34 @@ const Accounts = () => {
     (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
   ).length;
 
+  const handleBulkAction = async (actionId: string) => {
+    if (actionId === 'delete') {
+      setBulkDeleteOpen(true);
+    } else {
+      setBulkAction(actionId);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await BulkOperationsService.bulkDelete('accounts', Array.from(bulk.selectedIds), user.id);
+    toast({ title: 'Success', description: `Deleted ${bulk.selectedCount} accounts` });
+    bulk.deselectAll();
+    fetchAccounts();
+  };
+
+  const handleBulkStatusChange = async (formData: Record<string, any>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await BulkOperationsService.bulkStatusChange('accounts', Array.from(bulk.selectedIds), formData.status, user.id);
+    toast({ title: 'Success', description: `Updated status for ${bulk.selectedCount} accounts` });
+    bulk.deselectAll();
+    fetchAccounts();
+  };
+
 
   return (
     <AdminLayout>
@@ -196,6 +234,12 @@ const Accounts = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={bulk.isAllSelected}
+                          onCheckedChange={() => bulk.toggleAll(accounts)}
+                        />
+                      </TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Account Name</TableHead>
                       <TableHead>Primary Contact</TableHead>
@@ -208,6 +252,12 @@ const Accounts = () => {
                   <TableBody>
                     {accounts.map((account) => (
                       <TableRow key={account.id} className="hover:bg-muted/50">
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={bulk.isSelected(account.id)}
+                            onCheckedChange={() => bulk.toggleItem(account.id)}
+                          />
+                        </TableCell>
                         <TableCell>
                           <AccountStatusBadge status={account.status} />
                         </TableCell>
@@ -286,6 +336,43 @@ const Accounts = () => {
             users={users}
           />
         </FilterPanel>
+
+        <BulkActionsBar
+          selectedCount={bulk.selectedCount}
+          onClear={bulk.deselectAll}
+          actions={[
+            { id: 'status', label: 'Change Status', icon: <Badge className="h-4 w-4" /> },
+            { id: 'assign', label: 'Assign to User', icon: <UserPlus className="h-4 w-4" /> },
+            { id: 'export', label: 'Export Selected', icon: <Download className="h-4 w-4" /> },
+            { id: 'delete', label: 'Delete', icon: <Trash2 className="h-4 w-4" />, variant: 'destructive' as const },
+          ]}
+          onAction={handleBulkAction}
+        />
+
+        <BulkOperationModal
+          open={bulkAction === 'status'}
+          onOpenChange={(open) => !open && setBulkAction(null)}
+          title="Change Status"
+          description="Update status for selected accounts"
+          selectedCount={bulk.selectedCount}
+          onConfirm={handleBulkStatusChange}
+          fields={[
+            { name: 'status', label: 'New Status', type: 'select', required: true, options: [
+              { value: 'active', label: 'Active' },
+              { value: 'inactive', label: 'Inactive' },
+              { value: 'archived', label: 'Archived' }
+            ]}
+          ]}
+        />
+
+        <BulkDeleteConfirmation
+          open={bulkDeleteOpen}
+          onOpenChange={setBulkDeleteOpen}
+          itemCount={bulk.selectedCount}
+          itemType="accounts"
+          itemNames={bulk.selectedItems.map(a => a.account_name)}
+          onConfirm={handleBulkDelete}
+        />
       </div>
     </AdminLayout>
   );

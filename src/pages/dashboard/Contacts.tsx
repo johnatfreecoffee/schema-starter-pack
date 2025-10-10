@@ -4,12 +4,13 @@ import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ContactForm } from '@/components/admin/accounts/ContactForm';
 import { ContactAdvancedFilters } from '@/components/admin/contacts/ContactAdvancedFilters';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Search, Edit, Trash2, Building2, Mail, Phone, Download, Filter } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Building2, Mail as MailIcon, Phone, Download, Filter, UserPlus } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { CRUDLogger } from '@/lib/crudLogger';
 import { ExportButton } from '@/components/admin/ExportButton';
@@ -17,6 +18,10 @@ import { FilterPanel } from '@/components/filters/FilterPanel';
 import { FilterChips } from '@/components/filters/FilterChips';
 import { SavedViewsBar } from '@/components/filters/SavedViewsBar';
 import { useUrlFilters } from '@/hooks/useUrlFilters';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import { BulkActionsBar } from '@/components/admin/bulk/BulkActionsBar';
+import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
+import { BulkOperationsService } from '@/services/bulkOperationsService';
 
 const Contacts = () => {
   const navigate = useNavigate();
@@ -134,9 +139,31 @@ const Contacts = () => {
     );
   });
 
+  const bulk = useBulkSelection(filteredContacts);
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+
   const activeFilterCount = Object.keys(filters).filter(
     (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
   ).length;
+
+  const handleBulkAction = async (actionId: string) => {
+    if (actionId === 'delete') {
+      setBulkDeleteOpen(true);
+    } else if (actionId === 'export') {
+      await BulkOperationsService.bulkExport('contacts', Array.from(bulk.selectedIds));
+      toast({ title: 'Success', description: `Exported ${bulk.selectedCount} contacts` });
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await BulkOperationsService.bulkDelete('contacts', Array.from(bulk.selectedIds), user.id);
+    toast({ title: 'Success', description: `Deleted ${bulk.selectedCount} contacts` });
+    bulk.deselectAll();
+    fetchContacts();
+  };
 
 
   return (
@@ -215,6 +242,12 @@ const Contacts = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">
+                  <Checkbox
+                    checked={bulk.isAllSelected}
+                    onCheckedChange={() => bulk.toggleAll(filteredContacts)}
+                  />
+                </TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Account</TableHead>
                 <TableHead>Email</TableHead>
@@ -227,13 +260,13 @@ const Contacts = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                     Loading contacts...
                   </TableCell>
                 </TableRow>
               ) : filteredContacts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                     No contacts found
                   </TableCell>
                 </TableRow>
@@ -244,6 +277,12 @@ const Contacts = () => {
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => navigate(`/dashboard/contacts/${contact.id}`)}
                   >
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={bulk.isSelected(contact.id)}
+                        onCheckedChange={() => bulk.toggleItem(contact.id)}
+                      />
+                    </TableCell>
                     <TableCell className="font-medium">
                       {contact.first_name} {contact.last_name}
                     </TableCell>
@@ -255,7 +294,7 @@ const Contacts = () => {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        <MailIcon className="h-4 w-4 text-muted-foreground" />
                         {contact.email}
                       </div>
                     </TableCell>
@@ -338,6 +377,25 @@ const Contacts = () => {
             onChange={updateFilter}
           />
         </FilterPanel>
+
+        <BulkActionsBar
+          selectedCount={bulk.selectedCount}
+          onClear={bulk.deselectAll}
+          actions={[
+            { id: 'export', label: 'Export Selected', icon: <Download className="h-4 w-4" /> },
+            { id: 'delete', label: 'Delete', icon: <Trash2 className="h-4 w-4" />, variant: 'destructive' as const },
+          ]}
+          onAction={handleBulkAction}
+        />
+
+        <BulkDeleteConfirmation
+          open={bulkDeleteOpen}
+          onOpenChange={setBulkDeleteOpen}
+          itemCount={bulk.selectedCount}
+          itemType="contacts"
+          itemNames={bulk.selectedItems.map(c => `${c.first_name} ${c.last_name}`)}
+          onConfirm={handleBulkDelete}
+        />
       </div>
     </AdminLayout>
   );

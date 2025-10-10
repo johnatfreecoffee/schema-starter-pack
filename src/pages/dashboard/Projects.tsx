@@ -4,7 +4,8 @@ import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Eye, Pencil, Trash2, Filter } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Plus, Eye, Pencil, Trash2, Filter, UserPlus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import ProjectStatusBadge from '@/components/admin/projects/ProjectStatusBadge';
@@ -17,6 +18,11 @@ import { FilterChips } from '@/components/filters/FilterChips';
 import { SavedViewsBar } from '@/components/filters/SavedViewsBar';
 import { useUrlFilters } from '@/hooks/useUrlFilters';
 import { ExportButton } from '@/components/admin/ExportButton';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import { BulkActionsBar } from '@/components/admin/bulk/BulkActionsBar';
+import { BulkOperationModal } from '@/components/admin/bulk/BulkOperationModal';
+import { BulkDeleteConfirmation } from '@/components/admin/bulk/BulkDeleteConfirmation';
+import { BulkOperationsService } from '@/services/bulkOperationsService';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,6 +39,10 @@ const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
+
+  const bulk = useBulkSelection(projects);
+  const [bulkAction, setBulkAction] = useState<string | null>(null);
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
   useEffect(() => {
     fetchProjects();
@@ -142,6 +152,34 @@ const Projects = () => {
 
   const activeFilterCount = Object.keys(filters).filter(k => filters[k]).length;
 
+  const handleBulkAction = async (actionId: string) => {
+    if (actionId === 'delete') {
+      setBulkDeleteOpen(true);
+    } else {
+      setBulkAction(actionId);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await BulkOperationsService.bulkDelete('projects', Array.from(bulk.selectedIds), user.id);
+    toast({ title: 'Success', description: `Deleted ${bulk.selectedCount} projects` });
+    bulk.deselectAll();
+    fetchProjects();
+  };
+
+  const handleBulkStatusChange = async (formData: Record<string, any>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await BulkOperationsService.bulkStatusChange('projects', Array.from(bulk.selectedIds), formData.status, user.id);
+    toast({ title: 'Success', description: `Updated status for ${bulk.selectedCount} projects` });
+    bulk.deselectAll();
+    fetchProjects();
+  };
+
   return (
     <AdminLayout>
       <div className="container mx-auto px-4 py-8">
@@ -185,6 +223,12 @@ const Projects = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={bulk.isAllSelected}
+                          onCheckedChange={() => bulk.toggleAll(projects)}
+                        />
+                      </TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Project Name</TableHead>
                       <TableHead>Account</TableHead>
@@ -197,6 +241,12 @@ const Projects = () => {
                   <TableBody>
                     {projects.map((project) => (
                       <TableRow key={project.id} className="cursor-pointer hover:bg-muted/50">
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={bulk.isSelected(project.id)}
+                            onCheckedChange={() => bulk.toggleItem(project.id)}
+                          />
+                        </TableCell>
                         <TableCell>
                           <ProjectStatusBadge status={project.status} />
                         </TableCell>
@@ -257,6 +307,44 @@ const Projects = () => {
         <FilterPanel open={filterPanelOpen} onClose={() => setFilterPanelOpen(false)} title="Filter Projects" onClearAll={clearFilters}>
           <ProjectAdvancedFilters values={filters} onChange={updateFilter} users={users} />
         </FilterPanel>
+
+        <BulkActionsBar
+          selectedCount={bulk.selectedCount}
+          onClear={bulk.deselectAll}
+          actions={[
+            { id: 'status', label: 'Change Status', icon: <Badge className="h-4 w-4" /> },
+            { id: 'assign', label: 'Assign Manager', icon: <UserPlus className="h-4 w-4" /> },
+            { id: 'delete', label: 'Delete', icon: <Trash2 className="h-4 w-4" />, variant: 'destructive' as const },
+          ]}
+          onAction={handleBulkAction}
+        />
+
+        <BulkOperationModal
+          open={bulkAction === 'status'}
+          onOpenChange={(open) => !open && setBulkAction(null)}
+          title="Change Status"
+          description="Update status for selected projects"
+          selectedCount={bulk.selectedCount}
+          onConfirm={handleBulkStatusChange}
+          fields={[
+            { name: 'status', label: 'New Status', type: 'select', required: true, options: [
+              { value: 'planning', label: 'Planning' },
+              { value: 'in_progress', label: 'In Progress' },
+              { value: 'on_hold', label: 'On Hold' },
+              { value: 'completed', label: 'Completed' },
+              { value: 'cancelled', label: 'Cancelled' }
+            ]}
+          ]}
+        />
+
+        <BulkDeleteConfirmation
+          open={bulkDeleteOpen}
+          onOpenChange={setBulkDeleteOpen}
+          itemCount={bulk.selectedCount}
+          itemType="projects"
+          itemNames={bulk.selectedItems.map(p => p.project_name)}
+          onConfirm={handleBulkDelete}
+        />
       </div>
     </AdminLayout>
   );
