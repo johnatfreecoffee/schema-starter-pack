@@ -37,6 +37,7 @@ const Accounts = () => {
   const [showAccountForm, setShowAccountForm] = useState(false);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [statusCounts, setStatusCounts] = useState({
     active: 0,
     inactive: 0,
@@ -61,7 +62,7 @@ const Accounts = () => {
           contacts!inner(first_name, last_name, email, phone, is_primary),
           addresses!inner(city, state, is_primary),
           projects(count)
-        `);
+        `, { count: 'exact' });
 
       // Apply advanced filters
       if (filters.status) {
@@ -80,9 +81,10 @@ const Accounts = () => {
         query = query.lte('created_at', new Date(filters.createdTo).toISOString());
       }
 
-      const { data, error } = await query.order('created_at', { ascending: false });
+      const { data, error, count } = await query.order('created_at', { ascending: false });
 
       if (error) throw error;
+      setTotalCount(count || 0);
 
       // Process data to get primary contact and address
       const processedData = data?.map(account => ({
@@ -145,6 +147,21 @@ const Accounts = () => {
   const activeFilterCount = Object.keys(filters).filter(
     (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
   ).length;
+
+  const handleSelectAllFiltered = async () => {
+    const { data } = await supabase
+      .from('accounts')
+      .select('id')
+      .limit(totalCount);
+    
+    if (data) {
+      data.forEach(item => bulk.toggleItem(item.id));
+      toast({
+        title: 'All items selected',
+        description: `Selected all ${totalCount} accounts matching current filter`
+      });
+    }
+  };
 
   const handleBulkAction = async (actionId: string) => {
     if (actionId === 'delete') {
@@ -257,6 +274,21 @@ const Accounts = () => {
           </div>
         </div>
 
+        {/* Select All Filtered Prompt */}
+        {bulk.selectedCount > 0 && bulk.selectedCount < totalCount && (
+          <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <span className="text-sm text-blue-900">
+              {bulk.selectedCount} selected
+            </span>
+            <button
+              onClick={handleSelectAllFiltered}
+              className="text-sm text-blue-600 hover:text-blue-800 underline font-medium min-h-[44px] px-2"
+            >
+              Select all {totalCount} items matching filter
+            </button>
+          </div>
+        )}
+
         {/* Filter Chips */}
         <FilterChips
           filters={filters}
@@ -283,6 +315,8 @@ const Accounts = () => {
                         <Checkbox
                           checked={bulk.isAllSelected}
                           onCheckedChange={() => bulk.toggleAll(accounts)}
+                          className="h-5 w-5"
+                          style={{ minHeight: '44px', minWidth: '44px' }}
                         />
                       </TableHead>
                       <TableHead>Status</TableHead>

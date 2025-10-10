@@ -42,49 +42,51 @@ export function BulkActionsBar({
         className
       )}
     >
-      <div className="container mx-auto flex items-center justify-between gap-4 p-4">
-        <div className="flex items-center gap-3">
-          <span className="font-medium">
-            {selectedCount} {selectedCount === 1 ? 'item' : 'items'} selected
-          </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClear}
-            className="h-8 gap-1"
-          >
-            <X className="h-4 w-4" />
-            Clear
-          </Button>
-        </div>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="gap-2">
-              Actions
-              <ChevronDown className="h-4 w-4" />
+      <div className="container mx-auto p-4">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <span className="font-medium text-sm md:text-base">
+              {selectedCount} {selectedCount === 1 ? 'item' : 'items'} selected
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClear}
+              className="h-8 gap-1 ml-auto md:ml-0"
+            >
+              <X className="h-4 w-4" />
+              Clear
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            {actions.map((action, index) => (
-              <div key={action.id}>
-                {index > 0 && action.variant === 'destructive' && (
-                  <DropdownMenuSeparator />
-                )}
-                <DropdownMenuItem
-                  onClick={() => onAction(action.id)}
-                  className={cn(
-                    'gap-2',
-                    action.variant === 'destructive' && 'text-destructive focus:text-destructive'
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="gap-2 w-full md:w-auto min-h-[44px]">
+                Actions
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              {actions.map((action, index) => (
+                <div key={action.id}>
+                  {index > 0 && action.variant === 'destructive' && (
+                    <DropdownMenuSeparator />
                   )}
-                >
-                  {action.icon}
-                  {action.label}
-                </DropdownMenuItem>
-              </div>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                  <DropdownMenuItem
+                    onClick={() => onAction(action.id)}
+                    className={cn(
+                      'gap-2 min-h-[44px]',
+                      action.variant === 'destructive' && 'text-destructive focus:text-destructive'
+                    )}
+                  >
+                    {action.icon}
+                    {action.label}
+                  </DropdownMenuItem>
+                </div>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </div>
   );

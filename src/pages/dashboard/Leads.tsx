@@ -79,6 +79,7 @@ const Leads = () => {
   const [services, setServices] = useState<string[]>([]);
   const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
 
   // Bulk operations state
   const bulkSelection = useBulkSelection(leads);
@@ -369,6 +370,21 @@ const Leads = () => {
     });
   };
 
+  const handleSelectAllFiltered = async () => {
+    const { data } = await supabase
+      .from('leads')
+      .select('id')
+      .limit(totalCount);
+    
+    if (data) {
+      data.forEach(item => bulkSelection.toggleItem(item.id));
+      toast({
+        title: 'All items selected',
+        description: `Selected all ${totalCount} leads matching current filter`
+      });
+    }
+  };
+
   const handleBulkDelete = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -545,6 +561,21 @@ const Leads = () => {
             </Button>
           </div>
         </div>
+
+        {/* Select All Filtered Prompt */}
+        {bulkSelection.selectedCount > 0 && bulkSelection.selectedCount < totalCount && (
+          <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <span className="text-sm text-blue-900">
+              {bulkSelection.selectedCount} selected
+            </span>
+            <button
+              onClick={handleSelectAllFiltered}
+              className="text-sm text-blue-600 hover:text-blue-800 underline font-medium min-h-[44px] px-2"
+            >
+              Select all {totalCount} items matching filter
+            </button>
+          </div>
+        )}
 
         {/* Filter Chips */}
         <FilterChips

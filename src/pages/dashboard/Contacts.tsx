@@ -43,6 +43,7 @@ const Contacts = () => {
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [bulkTagsOpen, setBulkTagsOpen] = useState(false);
   const [bulkEmailOpen, setBulkEmailOpen] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
   
   const { role: userRole } = useUserRole();
   const { undoState, saveUndoState, performUndo, clearUndo } = useBulkUndo();
@@ -71,7 +72,7 @@ const Contacts = () => {
       setLoading(true);
       let query = supabase
         .from('contacts')
-        .select('*')
+        .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
 
       // Apply advanced filters
@@ -88,10 +89,11 @@ const Contacts = () => {
         query = query.not('phone', 'is', null);
       }
 
-      const { data, error } = await query;
+      const { data, error, count } = await query;
 
       if (error) throw error;
       setContacts(data || []);
+      setTotalCount(count || 0);
     } catch (error: any) {
       toast({
         title: 'Error',
@@ -172,6 +174,21 @@ const Contacts = () => {
   const activeFilterCount = Object.keys(filters).filter(
     (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
   ).length;
+
+  const handleSelectAllFiltered = async () => {
+    const { data } = await supabase
+      .from('contacts')
+      .select('id')
+      .limit(totalCount);
+    
+    if (data) {
+      data.forEach(item => bulk.toggleItem(item.id));
+      toast({
+        title: 'All items selected',
+        description: `Selected all ${totalCount} contacts matching current filter`
+      });
+    }
+  };
 
   const handleBulkAction = async (actionId: string) => {
     if (actionId === 'delete') {
@@ -291,6 +308,21 @@ const Contacts = () => {
             </Button>
           </div>
         </div>
+
+        {/* Select All Filtered Prompt */}
+        {bulk.selectedCount > 0 && bulk.selectedCount < totalCount && (
+          <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <span className="text-sm text-blue-900">
+              {bulk.selectedCount} selected
+            </span>
+            <button
+              onClick={handleSelectAllFiltered}
+              className="text-sm text-blue-600 hover:text-blue-800 underline font-medium min-h-[44px] px-2"
+            >
+              Select all {totalCount} items matching filter
+            </button>
+          </div>
+        )}
 
         {/* Filter Chips */}
         <FilterChips
