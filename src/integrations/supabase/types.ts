@@ -1516,6 +1516,103 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          account_id: string | null
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          customer_location: string | null
+          customer_name: string
+          display_on_website: boolean | null
+          external_url: string | null
+          featured: boolean | null
+          id: string
+          project_id: string | null
+          rating: number
+          response_at: string | null
+          response_by: string | null
+          response_text: string | null
+          review_text: string
+          review_title: string
+          service_id: string | null
+          source: Database["public"]["Enums"]["review_source"]
+          status: Database["public"]["Enums"]["review_status"]
+          submitted_at: string
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          customer_location?: string | null
+          customer_name: string
+          display_on_website?: boolean | null
+          external_url?: string | null
+          featured?: boolean | null
+          id?: string
+          project_id?: string | null
+          rating: number
+          response_at?: string | null
+          response_by?: string | null
+          response_text?: string | null
+          review_text: string
+          review_title: string
+          service_id?: string | null
+          source?: Database["public"]["Enums"]["review_source"]
+          status?: Database["public"]["Enums"]["review_status"]
+          submitted_at?: string
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          customer_location?: string | null
+          customer_name?: string
+          display_on_website?: boolean | null
+          external_url?: string | null
+          featured?: boolean | null
+          id?: string
+          project_id?: string | null
+          rating?: number
+          response_at?: string | null
+          response_by?: string | null
+          response_text?: string | null
+          review_text?: string
+          review_title?: string
+          service_id?: string | null
+          source?: Database["public"]["Enums"]["review_source"]
+          status?: Database["public"]["Enums"]["review_status"]
+          submitted_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_views: {
         Row: {
           created_at: string | null
@@ -2347,6 +2444,8 @@ export type Database = {
         | "appointment"
         | "quote"
         | "invoice"
+      review_source: "portal" | "email" | "manual" | "google" | "facebook"
+      review_status: "pending" | "approved" | "rejected" | "archived"
       service_category:
         | "Authority Hub"
         | "Emergency Services"
@@ -2521,6 +2620,8 @@ export const Constants = {
         "quote",
         "invoice",
       ],
+      review_source: ["portal", "email", "manual", "google", "facebook"],
+      review_status: ["pending", "approved", "rejected", "archived"],
       service_category: [
         "Authority Hub",
         "Emergency Services",

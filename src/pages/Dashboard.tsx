@@ -1,6 +1,7 @@
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import DashboardActivityWidget from '@/components/admin/DashboardActivityWidget';
+import { ReviewsAnalyticsWidget } from '@/components/admin/ReviewsAnalyticsWidget';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -82,8 +83,9 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
             <DashboardActivityWidget />
+            <ReviewsAnalyticsWidget />
           </div>
         </div>
       </div>

@@ -62,6 +62,12 @@ import SEO from "./pages/dashboard/SEO";
 import Reports from "./pages/dashboard/Reports";
 import ReportBuilder from "./pages/dashboard/ReportBuilder";
 import ReportDetail from "./pages/dashboard/ReportDetail";
+import Reviews from "./pages/dashboard/Reviews";
+import ReviewDetail from "./pages/dashboard/ReviewDetail";
+import ReviewNew from "./pages/dashboard/ReviewNew";
+import CustomerSubmitReview from "./pages/customer/CustomerSubmitReview";
+import CustomerMyReviews from "./pages/customer/CustomerMyReviews";
+import ReviewsPage from "./pages/Reviews";
 
 // Customer portal pages
 import CustomerAuth from "./pages/customer/CustomerAuth";
@@ -87,6 +93,7 @@ const App = () => (
           <Route path="/services" element={<Services />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/reviews" element={<ReviewsPage />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/accept-invite" element={<AcceptInvite />} />
           
@@ -98,6 +105,8 @@ const App = () => (
           <Route path="/customer/projects/:id" element={<CustomerProjectDetail />} />
           <Route path="/customer/appointments" element={<CustomerAppointments />} />
           <Route path="/customer/invoices" element={<CustomerInvoices />} />
+          <Route path="/portal/submit-review" element={<CustomerSubmitReview />} />
+          <Route path="/portal/my-reviews" element={<CustomerMyReviews />} />
           
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<Dashboard />} />
@@ -126,6 +135,9 @@ const App = () => (
           <Route path="/dashboard/reports" element={<Reports />} />
           <Route path="/dashboard/reports/new" element={<ReportBuilder />} />
           <Route path="/dashboard/reports/:id" element={<ReportDetail />} />
+          <Route path="/dashboard/reviews" element={<Reviews />} />
+          <Route path="/dashboard/reviews/new" element={<ReviewNew />} />
+          <Route path="/dashboard/reviews/:id" element={<ReviewDetail />} />
           
           {/* Settings Sub-routes (Admin Only) */}
           <Route path="/dashboard/settings/company" element={<CompanySettings />} />
