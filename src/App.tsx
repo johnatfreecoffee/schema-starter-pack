@@ -59,6 +59,9 @@ import WorkflowMonitor from "./pages/dashboard/WorkflowMonitor";
 import WorkflowTemplates from "./pages/dashboard/WorkflowTemplates";
 import WorkflowTesting from "./pages/dashboard/WorkflowTesting";
 import SEO from "./pages/dashboard/SEO";
+import Reports from "./pages/dashboard/Reports";
+import ReportBuilder from "./pages/dashboard/ReportBuilder";
+import ReportDetail from "./pages/dashboard/ReportDetail";
 
 // Customer portal pages
 import CustomerAuth from "./pages/customer/CustomerAuth";
@@ -120,6 +123,9 @@ const App = () => (
           <Route path="/dashboard/invoices/:id" element={<InvoiceDetail />} />
           <Route path="/dashboard/logs" element={<Logs />} />
           <Route path="/dashboard/settings" element={<Settings />} />
+          <Route path="/dashboard/reports" element={<Reports />} />
+          <Route path="/dashboard/reports/new" element={<ReportBuilder />} />
+          <Route path="/dashboard/reports/:id" element={<ReportDetail />} />
           
           {/* Settings Sub-routes (Admin Only) */}
           <Route path="/dashboard/settings/company" element={<CompanySettings />} />

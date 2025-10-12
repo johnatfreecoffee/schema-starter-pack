@@ -1427,6 +1427,95 @@ export type Database = {
         }
         Relationships: []
       }
+      report_executions: {
+        Row: {
+          executed_at: string | null
+          executed_by: string | null
+          execution_time_ms: number | null
+          id: string
+          report_id: string | null
+          result_count: number | null
+        }
+        Insert: {
+          executed_at?: string | null
+          executed_by?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          report_id?: string | null
+          result_count?: number | null
+        }
+        Update: {
+          executed_at?: string | null
+          executed_by?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          report_id?: string | null
+          result_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_executions_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reports: {
+        Row: {
+          chart_config: Json | null
+          created_at: string | null
+          created_by: string | null
+          data_source: string
+          description: string | null
+          filters: Json | null
+          grouping: Json | null
+          id: string
+          is_scheduled: boolean | null
+          name: string
+          schedule_frequency: string | null
+          schedule_recipients: string[] | null
+          selected_fields: Json
+          updated_at: string | null
+          visualization_type: string
+        }
+        Insert: {
+          chart_config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          data_source: string
+          description?: string | null
+          filters?: Json | null
+          grouping?: Json | null
+          id?: string
+          is_scheduled?: boolean | null
+          name: string
+          schedule_frequency?: string | null
+          schedule_recipients?: string[] | null
+          selected_fields: Json
+          updated_at?: string | null
+          visualization_type: string
+        }
+        Update: {
+          chart_config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          data_source?: string
+          description?: string | null
+          filters?: Json | null
+          grouping?: Json | null
+          id?: string
+          is_scheduled?: boolean | null
+          name?: string
+          schedule_frequency?: string | null
+          schedule_recipients?: string[] | null
+          selected_fields?: Json
+          updated_at?: string | null
+          visualization_type?: string
+        }
+        Relationships: []
+      }
       saved_views: {
         Row: {
           created_at: string | null
