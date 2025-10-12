@@ -33,10 +33,24 @@ export default function Reviews() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [ratingFilter, setRatingFilter] = useState<string>('all');
+  const [serviceFilter, setServiceFilter] = useState<string>('all');
+  const [dateFrom, setDateFrom] = useState<string>('');
+  const [dateTo, setDateTo] = useState<string>('');
+  const [services, setServices] = useState<any[]>([]);
+  const [selectedReviews, setSelectedReviews] = useState<string[]>([]);
 
   useEffect(() => {
     loadReviews();
-  }, [statusFilter, ratingFilter]);
+    loadServices();
+  }, [statusFilter, ratingFilter, serviceFilter, dateFrom, dateTo]);
+
+  async function loadServices() {
+    const { data } = await supabase
+      .from('services')
+      .select('id, name')
+      .order('name');
+    setServices(data || []);
+  }
 
   async function loadReviews() {
     setLoading(true);
@@ -55,6 +69,18 @@ export default function Reviews() {
 
     if (ratingFilter !== 'all') {
       query = query.eq('rating', parseInt(ratingFilter));
+    }
+
+    if (serviceFilter !== 'all') {
+      query = query.eq('service_id', serviceFilter);
+    }
+
+    if (dateFrom) {
+      query = query.gte('submitted_at', new Date(dateFrom).toISOString());
+    }
+
+    if (dateTo) {
+      query = query.lte('submitted_at', new Date(dateTo).toISOString());
     }
 
     const { data, error } = await query;
@@ -118,6 +144,89 @@ export default function Reviews() {
     }
   }
 
+  async function handleBulkAction(action: string) {
+    if (selectedReviews.length === 0) {
+      toast({
+        title: "No reviews selected",
+        description: "Please select reviews to perform bulk actions",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    let updates: any = {};
+
+    switch (action) {
+      case 'approve':
+        updates = { status: 'approved' as const, approved_at: new Date().toISOString(), approved_by: user?.id };
+        break;
+      case 'reject':
+        updates = { status: 'rejected' as const };
+        break;
+      case 'archive':
+        updates = { status: 'archived' as const };
+        break;
+      case 'feature':
+        updates = { featured: true };
+        break;
+      case 'unfeature':
+        updates = { featured: false };
+        break;
+      case 'delete':
+        const { error: deleteError } = await supabase
+          .from('reviews')
+          .delete()
+          .in('id', selectedReviews);
+
+        if (deleteError) {
+          toast({
+            title: "Error deleting reviews",
+            description: deleteError.message,
+            variant: "destructive"
+          });
+        } else {
+          toast({ title: `${selectedReviews.length} reviews deleted` });
+          setSelectedReviews([]);
+          loadReviews();
+        }
+        return;
+    }
+
+    const { error } = await supabase
+      .from('reviews')
+      .update(updates)
+      .in('id', selectedReviews);
+
+    if (error) {
+      toast({
+        title: "Error updating reviews",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      toast({ title: `${selectedReviews.length} reviews updated` });
+      setSelectedReviews([]);
+      loadReviews();
+    }
+  }
+
+  function toggleSelectAll() {
+    if (selectedReviews.length === filteredReviews.length) {
+      setSelectedReviews([]);
+    } else {
+      setSelectedReviews(filteredReviews.map(r => r.id));
+    }
+  }
+
+  function toggleSelectReview(reviewId: string) {
+    setSelectedReviews(prev =>
+      prev.includes(reviewId)
+        ? prev.filter(id => id !== reviewId)
+        : [...prev, reviewId]
+    );
+  }
+
   return (
     <AdminLayout>
       <div className="container mx-auto py-8 space-y-6">
@@ -132,8 +241,8 @@ export default function Reviews() {
           </Button>
         </div>
 
-        <div className="flex gap-4">
-          <div className="flex-1 relative">
+        <div className="flex flex-wrap gap-4">
+          <div className="flex-1 min-w-[200px] relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Search reviews..."
@@ -167,7 +276,77 @@ export default function Reviews() {
               <SelectItem value="1">1 Star</SelectItem>
             </SelectContent>
           </Select>
+          <Select value={serviceFilter} onValueChange={setServiceFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Service" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Services</SelectItem>
+              {services.map((service) => (
+                <SelectItem key={service.id} value={service.id}>
+                  {service.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Input
+            type="date"
+            placeholder="From date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="w-40"
+          />
+          <Input
+            type="date"
+            placeholder="To date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="w-40"
+          />
+          {(statusFilter !== 'all' || ratingFilter !== 'all' || serviceFilter !== 'all' || dateFrom || dateTo) && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setStatusFilter('all');
+                setRatingFilter('all');
+                setServiceFilter('all');
+                setDateFrom('');
+                setDateTo('');
+              }}
+            >
+              Clear Filters
+            </Button>
+          )}
         </div>
+
+        {selectedReviews.length > 0 && (
+          <div className="bg-primary/10 border border-primary rounded-lg p-4 flex items-center justify-between">
+            <span className="font-medium">{selectedReviews.length} reviews selected</span>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={() => handleBulkAction('approve')}>
+                Approve
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => handleBulkAction('reject')}>
+                Reject
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => handleBulkAction('archive')}>
+                Archive
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => handleBulkAction('feature')}>
+                Feature
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => handleBulkAction('unfeature')}>
+                Un-feature
+              </Button>
+              <Button size="sm" variant="destructive" onClick={() => handleBulkAction('delete')}>
+                Delete
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => setSelectedReviews([])}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
 
         {loading ? (
           <div>Loading reviews...</div>
@@ -176,6 +355,14 @@ export default function Reviews() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-12">
+                    <input
+                      type="checkbox"
+                      checked={selectedReviews.length === filteredReviews.length && filteredReviews.length > 0}
+                      onChange={toggleSelectAll}
+                      className="cursor-pointer"
+                    />
+                  </TableHead>
                   <TableHead>Customer</TableHead>
                   <TableHead>Rating</TableHead>
                   <TableHead>Review</TableHead>
@@ -189,10 +376,20 @@ export default function Reviews() {
                 {filteredReviews.map((review) => (
                   <TableRow
                     key={review.id}
-                    className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => navigate(`/dashboard/reviews/${review.id}`)}
+                    className="hover:bg-muted/50"
                   >
-                    <TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selectedReviews.includes(review.id)}
+                        onChange={() => toggleSelectReview(review.id)}
+                        className="cursor-pointer"
+                      />
+                    </TableCell>
+                    <TableCell
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/dashboard/reviews/${review.id}`)}
+                    >
                       <div>
                         <div className="font-medium">{review.customer_name}</div>
                         {review.customer_location && (
@@ -202,22 +399,37 @@ export default function Reviews() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/dashboard/reviews/${review.id}`)}
+                    >
                       <StarRating rating={review.rating} size="sm" />
                     </TableCell>
-                    <TableCell className="max-w-md">
+                    <TableCell
+                      className="max-w-md cursor-pointer"
+                      onClick={() => navigate(`/dashboard/reviews/${review.id}`)}
+                    >
                       <div className="font-medium">{review.review_title}</div>
                       <div className="text-sm text-muted-foreground truncate">
                         {review.review_text}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/dashboard/reviews/${review.id}`)}
+                    >
                       {review.services?.name || '-'}
                     </TableCell>
-                    <TableCell>
+                    <TableCell
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/dashboard/reviews/${review.id}`)}
+                    >
                       <ReviewStatusBadge status={review.status} />
                     </TableCell>
-                    <TableCell>
+                    <TableCell
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/dashboard/reviews/${review.id}`)}
+                    >
                       {format(new Date(review.submitted_at), 'MMM d, yyyy')}
                     </TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>

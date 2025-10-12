@@ -12,7 +12,8 @@ import {
   Phone,
   BarChart3,
   Users,
-  ChartBar
+  ChartBar,
+  Star
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -49,6 +50,7 @@ const BottomNav = ({ isAdmin }: BottomNavProps) => {
     { path: '/dashboard/tasks', icon: CheckSquare, label: 'Tasks' },
     { path: '/dashboard/calendars', icon: Calendar, label: 'Appointments' },
     { path: '/dashboard/projects', icon: FolderKanban, label: 'Projects' },
+    { path: '/dashboard/reviews', icon: Star, label: 'Reviews' },
     { path: '/dashboard/money', icon: DollarSign, label: 'Money' },
     { path: '/dashboard/logs', icon: FileText, label: 'Logs' },
   ];

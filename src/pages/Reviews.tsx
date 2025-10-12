@@ -5,6 +5,7 @@ import { ReviewCard } from '@/components/reviews/ReviewCard';
 import { StarRating } from '@/components/reviews/StarRating';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { ReviewSchemaMarkup } from '@/components/reviews/ReviewSchemaMarkup';
 import {
   Select,
   SelectContent,
@@ -98,6 +99,13 @@ export default function Reviews() {
 
   return (
     <PublicLayout>
+      <ReviewSchemaMarkup
+        reviews={reviews}
+        aggregateRating={{
+          ratingValue: avgRating,
+          reviewCount: reviews.length
+        }}
+      />
       <main className="container mx-auto px-4 py-16">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">

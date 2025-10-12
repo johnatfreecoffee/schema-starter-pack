@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Pencil, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Pencil, Plus, Trash2, MessageSquare, Send } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import ProjectStatusBadge from '@/components/admin/projects/ProjectStatusBadge';
@@ -34,6 +34,7 @@ const ProjectDetail = () => {
   const [selectedPhase, setSelectedPhase] = useState<any>(null);
   const [users, setUsers] = useState<any[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>('');
+  const [requestingReview, setRequestingReview] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -175,6 +176,102 @@ const ProjectDetail = () => {
     }
   };
 
+  const handleRequestReview = async () => {
+    if (!project.account_id) {
+      toast({
+        title: 'Error',
+        description: 'Cannot request review without an associated account',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Check if review already exists for this project
+    const { data: existingReview } = await supabase
+      .from('reviews')
+      .select('id')
+      .eq('project_id', project.id)
+      .maybeSingle();
+
+    if (existingReview) {
+      toast({
+        title: 'Review already exists',
+        description: 'A review has already been submitted for this project',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setRequestingReview(true);
+
+    try {
+      // Get account details with primary contact
+      const { data: account } = await supabase
+        .from('accounts')
+        .select(`
+          account_name,
+          contacts(email, is_primary)
+        `)
+        .eq('id', project.account_id)
+        .single();
+
+      if (!account) {
+        throw new Error('Account not found');
+      }
+
+      // Get primary contact email
+      const primaryContact = account.contacts?.find((c: any) => c.is_primary) || account.contacts?.[0];
+      if (!primaryContact?.email) {
+        throw new Error('No email found for this account');
+      }
+
+      // Get company settings for the email
+      const { data: settings } = await supabase
+        .from('company_settings')
+        .select('business_name')
+        .maybeSingle();
+
+      const reviewLink = `${window.location.origin}/portal/submit-review`;
+
+      // Queue review request email
+      const { error: emailError } = await supabase
+        .from('email_queue')
+        .insert({
+          to_email: primaryContact.email,
+          subject: `We'd love your feedback on your project`,
+          body: `Hi ${account.account_name},\n\nThank you for choosing ${settings?.business_name || 'us'}! We'd love to hear about your experience with your recent project: ${project.project_name}.\n\nPlease take a moment to leave a review: ${reviewLink}\n\nThank you!`,
+          entity_type: 'project',
+          entity_id: project.id,
+          status: 'pending'
+        });
+
+      if (emailError) throw emailError;
+
+      // Add a note to the project
+      await supabase
+        .from('notes')
+        .insert({
+          related_to_type: 'project',
+          related_to_id: project.id,
+          content: `Review request sent to ${account.account_name} (${primaryContact.email})`,
+          created_by: currentUserId
+        });
+
+      toast({
+        title: 'Review request sent',
+        description: `Email sent to ${account.account_name}`
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error sending review request',
+        description: error.message,
+        variant: 'destructive'
+      });
+    } finally {
+      setRequestingReview(false);
+    }
+  };
+
   if (loading) {
     return (
       <AdminLayout>
@@ -224,6 +321,16 @@ const ProjectDetail = () => {
             </div>
           </div>
           <div className="flex gap-2">
+            {(project.status === 'completed' || project.status === 'on_hold') && (
+              <Button 
+                onClick={handleRequestReview} 
+                variant="outline"
+                disabled={requestingReview}
+              >
+                <Send className="mr-2 h-4 w-4" />
+                Request Review
+              </Button>
+            )}
             <Button onClick={() => setIsEditFormOpen(true)}>
               <Pencil className="mr-2 h-4 w-4" />
               Edit Project

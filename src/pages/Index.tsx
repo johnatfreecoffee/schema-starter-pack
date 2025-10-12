@@ -1,6 +1,7 @@
 import PublicLayout from '@/components/layout/PublicLayout';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { FeaturedReviewsWidget } from '@/components/reviews/FeaturedReviewsWidget';
 
 const Index = () => {
   return (
@@ -57,6 +58,9 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Featured Reviews Section */}
+      <FeaturedReviewsWidget />
     </PublicLayout>
   );
 };
