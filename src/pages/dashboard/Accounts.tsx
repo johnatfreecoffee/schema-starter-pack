@@ -4,6 +4,10 @@ import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ResponsiveList, MobileCard, MobileCardField } from '@/components/ui/responsive-table';
+import { MobileActionButton } from '@/components/ui/mobile-action-button';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Skeleton } from '@/components/ui/skeleton';
 import { AccountStatusBadge } from '@/components/admin/accounts/AccountStatusBadge';
 import { AccountFilters } from '@/components/admin/accounts/AccountFilters';
 import { AccountForm } from '@/components/admin/accounts/AccountForm';
@@ -31,6 +35,7 @@ import { useUserRole } from '@/hooks/useUserRole';
 
 const Accounts = () => {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const { filters, setFilters, updateFilter, clearFilters } = useUrlFilters();
   const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -267,12 +272,21 @@ const Accounts = () => {
               isFiltered={activeFilterCount > 0}
               filteredCount={accounts.length}
             />
-            <Button onClick={() => setShowAccountForm(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create New Account
-            </Button>
+            {!isMobile && (
+              <Button onClick={() => setShowAccountForm(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Create New Account
+              </Button>
+            )}
           </div>
         </div>
+
+        {/* Mobile Action Button */}
+        <MobileActionButton
+          onClick={() => setShowAccountForm(true)}
+          icon={<Plus className="h-5 w-5" />}
+          label="Create New Account"
+        />
 
         {/* Select All Filtered Prompt */}
         {bulk.selectedCount > 0 && bulk.selectedCount < totalCount && (
@@ -297,16 +311,68 @@ const Accounts = () => {
         />
 
         {loading ? (
-              <div className="text-center py-12">Loading accounts...</div>
-            ) : accounts.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">No accounts found</p>
-                <Button onClick={() => setShowAccountForm(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create First Account
-                </Button>
-              </div>
-            ) : (
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-32 w-full" />
+            ))}
+          </div>
+        ) : (
+          <ResponsiveList
+            items={accounts}
+            emptyMessage="No accounts found"
+            renderCard={(account) => (
+              <MobileCard key={account.id} onClick={() => window.location.href = `/dashboard/accounts/${account.id}`}>
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          checked={bulk.isSelected(account.id)}
+                          onCheckedChange={() => bulk.toggleItem(account.id)}
+                        />
+                      </div>
+                      <h3 className="font-bold text-lg">{account.account_name}</h3>
+                    </div>
+                    <AccountStatusBadge status={account.status} />
+                  </div>
+                </div>
+                
+                {account.primary_contact && (
+                  <MobileCardField 
+                    label="Contact" 
+                    value={
+                      <div>
+                        <div className="font-medium">
+                          {account.primary_contact.first_name} {account.primary_contact.last_name}
+                        </div>
+                        <div className="text-sm">{account.primary_contact.email}</div>
+                      </div>
+                    }
+                  />
+                )}
+                {account.primary_contact?.phone && (
+                  <MobileCardField 
+                    label="Phone" 
+                    value={
+                      <a href={`tel:${account.primary_contact.phone}`} className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
+                        {account.primary_contact.phone}
+                      </a>
+                    }
+                  />
+                )}
+                {account.primary_address && (
+                  <MobileCardField 
+                    label="Location" 
+                    value={`${account.primary_address.city}, ${account.primary_address.state}`}
+                  />
+                )}
+                <MobileCardField 
+                  label="Projects" 
+                  value={<Badge variant="secondary">{account.project_count}</Badge>}
+                />
+              </MobileCard>
+            )}
+            renderTable={() => (
               <div className="border rounded-lg">
                 <Table>
                   <TableHeader>
@@ -395,6 +461,8 @@ const Accounts = () => {
                 </Table>
               </div>
             )}
+          />
+        )}
 
         <AccountForm
           open={showAccountForm}

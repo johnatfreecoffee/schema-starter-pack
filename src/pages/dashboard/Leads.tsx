@@ -12,6 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { ResponsiveList, MobileCard, MobileCardField } from '@/components/ui/responsive-table';
+import { MobileActionButton } from '@/components/ui/mobile-action-button';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,6 +73,7 @@ import { useUserRole } from '@/hooks/useUserRole';
 const Leads = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { filters, setFilters, updateFilter, clearFilters } = useUrlFilters();
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -555,12 +560,21 @@ const Leads = () => {
               isFiltered={activeFilterCount > 0}
               filteredCount={leads.length}
             />
-            <Button onClick={() => setShowCreateForm(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Create New Lead
-            </Button>
+            {!isMobile && (
+              <Button onClick={() => setShowCreateForm(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Create New Lead
+              </Button>
+            )}
           </div>
         </div>
+
+        {/* Mobile Action Button */}
+        <MobileActionButton
+          onClick={() => setShowCreateForm(true)}
+          icon={<Plus className="h-5 w-5" />}
+          label="Create New Lead"
+        />
 
         {/* Select All Filtered Prompt */}
         {bulkSelection.selectedCount > 0 && bulkSelection.selectedCount < totalCount && (
@@ -639,128 +653,222 @@ const Leads = () => {
 
           {/* Leads Table */}
           <div className="lg:col-span-3">
-            <Card>
-              <div className="p-4">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12">
-                        <Checkbox
-                          checked={bulkSelection.isAllSelected}
-                          onCheckedChange={() => bulkSelection.toggleAll(leads)}
-                        />
-                      </TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Service</TableHead>
-                      <TableHead>Contact</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead>Created</TableHead>
-                      <TableHead></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {loading ? (
-                      <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8">
-                          Loading leads...
-                        </TableCell>
-                      </TableRow>
-                    ) : leads.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                          No leads found
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      leads.map((lead) => (
-                        <TableRow key={lead.id} className="group">
-                          <TableCell>
+            {loading ? (
+              <div className="space-y-4">
+                {[...Array(5)].map((_, i) => (
+                  <Skeleton key={i} className="h-32 w-full" />
+                ))}
+              </div>
+            ) : (
+              <ResponsiveList
+                items={leads}
+                emptyMessage="No leads found"
+                renderCard={(lead, index) => (
+                  <MobileCard key={lead.id} onClick={() => navigate(`/dashboard/leads/${lead.id}`)}>
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div onClick={(e) => e.stopPropagation()}>
                             <Checkbox
                               checked={bulkSelection.isSelected(lead.id)}
                               onCheckedChange={() => bulkSelection.toggleItem(lead.id)}
                             />
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <LeadStatusBadge status={lead.status} />
-                              {lead.is_emergency && (
-                                <AlertCircle className="h-4 w-4 text-red-500" />
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <button
-                              onClick={() => navigate(`/dashboard/leads/${lead.id}`)}
-                              className="font-medium hover:underline text-left"
-                            >
-                              {lead.first_name} {lead.last_name}
-                            </button>
-                          </TableCell>
-                          <TableCell>{lead.service_needed}</TableCell>
-                          <TableCell>
-                            <div className="space-y-1">
-                              <a
-                                href={`mailto:${lead.email}`}
-                                className="text-sm hover:underline flex items-center gap-1"
-                              >
-                                <Mail className="h-3 w-3" />
-                                {lead.email}
-                              </a>
-                              <a
-                                href={`tel:${lead.phone}`}
-                                className="text-sm hover:underline flex items-center gap-1"
-                              >
-                                <Phone className="h-3 w-3" />
-                                {formatPhone(lead.phone)}
-                              </a>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            {lead.city}, {lead.state}
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}
-                          </TableCell>
-                          <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <MoreVertical className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => navigate(`/dashboard/leads/${lead.id}`)}>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  View Details
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setEditingLead(lead)}>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  Edit
-                                </DropdownMenuItem>
-                                {lead.status !== 'converted' && (
-                                  <DropdownMenuItem onClick={() => setConvertingLead(lead)}>
-                                    <CheckCircle className="mr-2 h-4 w-4" />
-                                    Convert to Account
-                                  </DropdownMenuItem>
-                                )}
-                                <DropdownMenuItem
-                                  onClick={() => handleDelete(lead.id)}
-                                  className="text-red-600"
+                          </div>
+                          <h3 className="font-bold text-lg">
+                            {lead.first_name} {lead.last_name}
+                          </h3>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <LeadStatusBadge status={lead.status} />
+                          {lead.is_emergency && (
+                            <Badge variant="destructive" className="text-xs">Emergency</Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <MobileCardField 
+                      label="Service" 
+                      value={lead.service_needed || 'N/A'} 
+                    />
+                    <MobileCardField 
+                      label="Email" 
+                      value={
+                        <a href={`mailto:${lead.email}`} className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
+                          {lead.email}
+                        </a>
+                      } 
+                    />
+                    <MobileCardField 
+                      label="Phone" 
+                      value={
+                        <a href={`tel:${lead.phone}`} className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
+                          {formatPhone(lead.phone)}
+                        </a>
+                      } 
+                    />
+                    <MobileCardField 
+                      label="Location" 
+                      value={`${lead.city}, ${lead.state}`} 
+                    />
+                    <MobileCardField 
+                      label="Created" 
+                      value={formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })} 
+                    />
+                    
+                    <div className="flex gap-2 mt-3 pt-3 border-t">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingLead(lead);
+                        }}
+                        className="flex-1"
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
+                      </Button>
+                      {lead.status !== 'converted' && (
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConvertingLead(lead);
+                          }}
+                          className="flex-1"
+                        >
+                          <CheckCircle className="h-4 w-4 mr-1" />
+                          Convert
+                        </Button>
+                      )}
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(lead.id);
+                        }}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </MobileCard>
+                )}
+                renderTable={() => (
+                  <Card>
+                    <div className="p-4">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-12">
+                              <Checkbox
+                                checked={bulkSelection.isAllSelected}
+                                onCheckedChange={() => bulkSelection.toggleAll(leads)}
+                              />
+                            </TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Service</TableHead>
+                            <TableHead>Contact</TableHead>
+                            <TableHead>Location</TableHead>
+                            <TableHead>Created</TableHead>
+                            <TableHead></TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {leads.map((lead) => (
+                            <TableRow key={lead.id} className="group">
+                              <TableCell>
+                                <Checkbox
+                                  checked={bulkSelection.isSelected(lead.id)}
+                                  onCheckedChange={() => bulkSelection.toggleItem(lead.id)}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  <LeadStatusBadge status={lead.status} />
+                                  {lead.is_emergency && (
+                                    <AlertCircle className="h-4 w-4 text-red-500" />
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <button
+                                  onClick={() => navigate(`/dashboard/leads/${lead.id}`)}
+                                  className="font-medium hover:underline text-left"
                                 >
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </Card>
+                                  {lead.first_name} {lead.last_name}
+                                </button>
+                              </TableCell>
+                              <TableCell>{lead.service_needed}</TableCell>
+                              <TableCell>
+                                <div className="space-y-1">
+                                  <a
+                                    href={`mailto:${lead.email}`}
+                                    className="text-sm hover:underline flex items-center gap-1"
+                                  >
+                                    <Mail className="h-3 w-3" />
+                                    {lead.email}
+                                  </a>
+                                  <a
+                                    href={`tel:${lead.phone}`}
+                                    className="text-sm hover:underline flex items-center gap-1"
+                                  >
+                                    <Phone className="h-3 w-3" />
+                                    {formatPhone(lead.phone)}
+                                  </a>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                {lead.city}, {lead.state}
+                              </TableCell>
+                              <TableCell className="text-sm text-muted-foreground">
+                                {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}
+                              </TableCell>
+                              <TableCell>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="sm">
+                                      <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => navigate(`/dashboard/leads/${lead.id}`)}>
+                                      <Eye className="mr-2 h-4 w-4" />
+                                      View Details
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setEditingLead(lead)}>
+                                      <Edit className="mr-2 h-4 w-4" />
+                                      Edit
+                                    </DropdownMenuItem>
+                                    {lead.status !== 'converted' && (
+                                      <DropdownMenuItem onClick={() => setConvertingLead(lead)}>
+                                        <CheckCircle className="mr-2 h-4 w-4" />
+                                        Convert to Account
+                                      </DropdownMenuItem>
+                                    )}
+                                    <DropdownMenuItem
+                                      onClick={() => handleDelete(lead.id)}
+                                      className="text-red-600"
+                                    >
+                                      <Trash2 className="mr-2 h-4 w-4" />
+                                      Delete
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </Card>
+                )}
+              />
+            )}
           </div>
         </div>
       </div>
