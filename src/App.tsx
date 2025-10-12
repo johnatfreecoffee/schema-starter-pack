@@ -144,7 +144,7 @@ const App = () => (
           <Route path="/admin/automation/testing" element={<WorkflowTesting />} />
           
           {/* SEO Management Routes */}
-          <Route path="/admin/seo" element={<SEO />} />
+          <Route path="/dashboard/settings/seo" element={<SEO />} />
           
           {/* Dynamic Generated Pages */}
           <Route path="/:citySlug/:serviceSlug" element={<GeneratedPage />} />

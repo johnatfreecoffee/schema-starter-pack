@@ -17,6 +17,7 @@ const SettingsTabs = () => {
     { value: 'email-templates', label: 'Email Templates' },
     { value: 'notifications', label: 'Notifications' },
     { value: 'analytics', label: 'Analytics' },
+    { value: 'seo', label: 'SEO' },
     { value: 'qa-testing', label: 'QA Testing' },
   ];
 

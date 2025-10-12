@@ -24,54 +24,57 @@ export const PageSEOManager = () => {
     queryKey: ['pages-seo'],
     queryFn: async () => {
       const results: any[] = [];
-      
-      // Fetch static pages
-      const staticQuery = await supabase
-        .from('static_pages')
-        .select('id, title, slug, created_at')
-        .eq('is_published', true);
 
-      // Fetch generated pages  
-      const generatedQuery = await supabase
-        .from('generated_pages')
-        .select('id, page_title, url_path, created_at')
-        .eq('status', true);
+      // Fetch static pages
+      // @ts-ignore
+      const staticPagesQuery = supabase.from('static_pages').select('id, title, slug, created_at');
+      // @ts-ignore
+      const staticPagesResult = await staticPagesQuery.eq('is_published', true);
+      const staticPages = staticPagesResult.data;
+
+      // Fetch generated pages
+      // @ts-ignore
+      const generatedPagesQuery = supabase.from('generated_pages').select('id, page_title, url_path, created_at');
+      // @ts-ignore
+      const generatedPagesResult = await generatedPagesQuery.eq('status', true);
+      const generatedPages = generatedPagesResult.data;
 
       // Fetch SEO data
-      const seoQuery = await supabase.from('page_seo').select('*');
-      
-      const staticPages = staticQuery.data;
-      const generatedPages = generatedQuery.data;
-      const seoData = seoQuery.data;
+      const seoResult = await supabase.from('page_seo').select('*');
+      const seoData = seoResult.data;
 
-      // Combine static pages
-      staticPages?.forEach((p) => {
-        const seo = seoData?.find((s) => s.page_type === 'static' && s.page_id === p.id);
-        results.push({
-          id: p.id,
-          type: 'static',
-          title: p.title,
-          url: `/${p.slug}`,
-          created_at: p.created_at,
-          seo,
-        });
-      });
+      // Process static pages
+      if (staticPages) {
+        for (const page of staticPages) {
+          const seo = seoData?.find((s: any) => s.page_type === 'static' && s.page_id === page.id);
+          results.push({
+            id: page.id,
+            type: 'static',
+            title: page.title,
+            url: `/${page.slug}`,
+            created_at: page.created_at,
+            seo: seo || null
+          });
+        }
+      }
 
-      // Combine generated pages
-      generatedPages?.forEach((p) => {
-        const seo = seoData?.find((s) => s.page_type === 'generated' && s.page_id === p.id);
-        results.push({
-          id: p.id,
-          type: 'generated',
-          title: p.page_title,
-          url: p.url_path,
-          created_at: p.created_at,
-          seo,
-        });
-      });
+      // Process generated pages
+      if (generatedPages) {
+        for (const page of generatedPages) {
+          const seo = seoData?.find((s: any) => s.page_type === 'generated' && s.page_id === page.id);
+          results.push({
+            id: page.id,
+            type: 'generated',
+            title: page.page_title,
+            url: page.url_path,
+            created_at: page.created_at,
+            seo: seo || null
+          });
+        }
+      }
 
       return results;
-    },
+    }
   });
 
   const filteredPages = pages?.filter((page: any) =>
