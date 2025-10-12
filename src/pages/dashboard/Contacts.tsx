@@ -11,6 +11,10 @@ import { ContactAdvancedFilters } from '@/components/admin/contacts/ContactAdvan
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Search, Edit, Trash2, Building2, Mail as MailIcon, Phone, Download, Filter, UserPlus } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { ResponsiveList, MobileCard, MobileCardField } from '@/components/ui/responsive-table';
+import { MobileActionButton } from '@/components/ui/mobile-action-button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { CRUDLogger } from '@/lib/crudLogger';
 import { ExportButton } from '@/components/admin/ExportButton';
@@ -32,6 +36,7 @@ import { Tags, Mail as MailIconBulk } from 'lucide-react';
 const Contacts = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const { filters, setFilters, updateFilter, clearFilters } = useUrlFilters();
   const [contacts, setContacts] = useState<any[]>([]);
   const [accounts, setAccounts] = useState<Record<string, any>>({});
@@ -343,124 +348,222 @@ const Contacts = () => {
           </div>
         </div>
 
-        <div className="bg-card rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">
-                  <Checkbox
-                    checked={bulk.isAllSelected}
-                    onCheckedChange={() => bulk.toggleAll(filteredContacts)}
-                  />
-                </TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Account</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Primary</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                    Loading contacts...
-                  </TableCell>
-                </TableRow>
-              ) : filteredContacts.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                    No contacts found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredContacts.map((contact) => (
-                  <TableRow 
-                    key={contact.id}
-                    className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => navigate(`/dashboard/contacts/${contact.id}`)}
-                  >
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <Checkbox
-                        checked={bulk.isSelected(contact.id)}
-                        onCheckedChange={() => bulk.toggleItem(contact.id)}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">
+        {loading ? (
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-32 w-full" />
+            ))}
+          </div>
+        ) : (
+          <ResponsiveList
+            items={filteredContacts}
+            emptyMessage="No contacts found"
+            renderCard={(contact) => (
+              <MobileCard
+                key={contact.id}
+                onClick={() => navigate(`/dashboard/contacts/${contact.id}`)}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1" onClick={(e) => e.stopPropagation()}>
+                    <Checkbox
+                      checked={bulk.isSelected(contact.id)}
+                      onCheckedChange={() => bulk.toggleItem(contact.id)}
+                      className="mr-3"
+                    />
+                    <h3 className="font-semibold text-lg inline">
                       {contact.first_name} {contact.last_name}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-muted-foreground" />
-                        {accounts[contact.account_id]?.account_name || 'N/A'}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <MailIcon className="h-4 w-4 text-muted-foreground" />
-                        {contact.email}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-muted-foreground" />
-                        {contact.phone}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {contact.title || '—'}
-                    </TableCell>
-                    <TableCell>
-                      {contact.is_primary && (
-                        <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-                          Primary
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setEditingContact(contact);
-                            setSelectedAccountId(contact.account_id);
-                            setShowContactForm(true);
-                          }}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <Trash2 className="h-4 w-4" />
+                    </h3>
+                  </div>
+                  {contact.is_primary && (
+                    <Badge variant="secondary" className="ml-2">Primary</Badge>
+                  )}
+                </div>
+
+                <MobileCardField
+                  label="Account"
+                  value={
+                    <div className="flex items-center gap-2">
+                      <Building2 className="h-4 w-4 text-muted-foreground" />
+                      <span>{accounts[contact.account_id]?.account_name || 'N/A'}</span>
+                    </div>
+                  }
+                />
+
+                <MobileCardField
+                  label="Email"
+                  value={
+                    <div className="flex items-center gap-2">
+                      <MailIcon className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-xs">{contact.email}</span>
+                    </div>
+                  }
+                />
+
+                <MobileCardField
+                  label="Phone"
+                  value={
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      <span>{contact.phone}</span>
+                    </div>
+                  }
+                />
+
+                {contact.title && (
+                  <MobileCardField
+                    label="Title"
+                    value={<span>{contact.title}</span>}
+                  />
+                )}
+
+                <div className="flex gap-2 mt-4 pt-3 border-t" onClick={(e) => e.stopPropagation()}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setEditingContact(contact);
+                      setSelectedAccountId(contact.account_id);
+                      setShowContactForm(true);
+                    }}
+                    className="flex-1"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      if (window.confirm(`Delete ${contact.first_name} ${contact.last_name}?`)) {
+                        handleDelete(contact);
+                      }
+                    }}
+                    className="flex-1"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </Button>
+                </div>
+              </MobileCard>
+            )}
+            renderTable={() => (
+              <div className="bg-card rounded-lg border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={bulk.isAllSelected}
+                          onCheckedChange={() => bulk.toggleAll(filteredContacts)}
+                        />
+                      </TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Account</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Primary</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredContacts.map((contact) => (
+                      <TableRow 
+                        key={contact.id}
+                        className="cursor-pointer hover:bg-muted/50"
+                        onClick={() => navigate(`/dashboard/contacts/${contact.id}`)}
+                      >
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={bulk.isSelected(contact.id)}
+                            onCheckedChange={() => bulk.toggleItem(contact.id)}
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {contact.first_name} {contact.last_name}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Building2 className="h-4 w-4 text-muted-foreground" />
+                            {accounts[contact.account_id]?.account_name || 'N/A'}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <MailIcon className="h-4 w-4 text-muted-foreground" />
+                            {contact.email}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-4 w-4 text-muted-foreground" />
+                            {contact.phone}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {contact.title || '—'}
+                        </TableCell>
+                        <TableCell>
+                          {contact.is_primary && (
+                            <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                              Primary
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setEditingContact(contact);
+                                setSelectedAccountId(contact.account_id);
+                                setShowContactForm(true);
+                              }}
+                            >
+                              <Edit className="h-4 w-4" />
                             </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Contact</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete {contact.first_name} {contact.last_name}? This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(contact)}>
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete Contact</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete {contact.first_name} {contact.last_name}? This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDelete(contact)}>
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          />
+        )}
+
+        <MobileActionButton
+          onClick={() => {
+            setEditingContact(null);
+            setSelectedAccountId('');
+            setShowContactForm(true);
+          }}
+          icon={<Plus className="h-5 w-5" />}
+          label="New Contact"
+        />
 
         <ContactForm
           open={showContactForm}

@@ -13,6 +13,10 @@ import ProjectFilters from '@/components/admin/projects/ProjectFilters';
 import ProjectForm from '@/components/admin/projects/ProjectForm';
 import { ProjectAdvancedFilters } from '@/components/admin/projects/ProjectAdvancedFilters';
 import { Progress } from '@/components/ui/progress';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { ResponsiveList, MobileCard, MobileCardField } from '@/components/ui/responsive-table';
+import { MobileActionButton } from '@/components/ui/mobile-action-button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { FilterPanel } from '@/components/filters/FilterPanel';
 import { FilterChips } from '@/components/filters/FilterChips';
 import { SavedViewsBar } from '@/components/filters/SavedViewsBar';
@@ -35,6 +39,7 @@ import {
 
 const Projects = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { filters, setFilters, updateFilter, clearFilters } = useUrlFilters();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -251,12 +256,85 @@ const Projects = () => {
         <FilterChips filters={filters} onRemove={(key) => updateFilter(key, null)} onClearAll={clearFilters} />
 
         {loading ? (
-              <div className="text-center py-12">Loading projects...</div>
-            ) : projects.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                No projects found
-              </div>
-            ) : (
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-40 w-full" />
+            ))}
+          </div>
+        ) : (
+          <ResponsiveList
+            items={projects}
+            emptyMessage="No projects found"
+            renderCard={(project) => (
+              <MobileCard
+                key={project.id}
+                onClick={() => navigate(`/dashboard/projects/${project.id}`)}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1" onClick={(e) => e.stopPropagation()}>
+                    <Checkbox
+                      checked={bulk.isSelected(project.id)}
+                      onCheckedChange={() => bulk.toggleItem(project.id)}
+                      className="mr-3"
+                    />
+                    <h3 className="font-semibold text-lg inline">{project.project_name}</h3>
+                  </div>
+                  <ProjectStatusBadge status={project.status} />
+                </div>
+
+                <MobileCardField
+                  label="Account"
+                  value={<span>{project.accounts?.account_name}</span>}
+                />
+
+                <MobileCardField
+                  label="Start Date"
+                  value={<span>{project.start_date ? new Date(project.start_date).toLocaleDateString() : '—'}</span>}
+                />
+
+                <MobileCardField
+                  label="Est. Completion"
+                  value={<span>{project.estimated_completion ? new Date(project.estimated_completion).toLocaleDateString() : '—'}</span>}
+                />
+
+                <MobileCardField
+                  label="Budget"
+                  value={<span className="font-semibold">${project.budget?.toLocaleString() || 0}</span>}
+                />
+
+                <MobileCardField
+                  label="Progress"
+                  value={
+                    <div className="flex items-center gap-2 w-full">
+                      <Progress value={project.progress} className="flex-1" />
+                      <span className="text-sm font-medium">{project.progress}%</span>
+                    </div>
+                  }
+                />
+
+                <div className="flex gap-2 mt-4 pt-3 border-t" onClick={(e) => e.stopPropagation()}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate(`/dashboard/projects/${project.id}`)}
+                    className="flex-1"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    View
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEdit(project)}
+                    className="flex-1"
+                  >
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                </div>
+              </MobileCard>
+            )}
+            renderTable={() => (
               <div className="border rounded-lg">
                 <Table>
                   <TableHeader>
@@ -337,8 +415,16 @@ const Projects = () => {
                     ))}
                   </TableBody>
                 </Table>
-            </div>
-          )}
+              </div>
+            )}
+          />
+        )}
+
+        <MobileActionButton
+          onClick={() => setIsFormOpen(true)}
+          icon={<Plus className="h-5 w-5" />}
+          label="Create New Project"
+        />
 
         <ProjectForm isOpen={isFormOpen} onClose={handleFormClose} onSuccess={fetchProjects} project={selectedProject} />
         

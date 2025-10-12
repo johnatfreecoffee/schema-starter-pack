@@ -1,27 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
 import { 
   UserPlus, 
-  Building2, 
   CheckSquare, 
   Calendar, 
-  FolderKanban, 
-  DollarSign, 
-  FileText, 
-  Settings, 
-  LogOut,
-  Phone,
-  BarChart3,
-  Users,
-  ChartBar,
-  Star,
-  Ticket
+  DollarSign
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { useCompanySettings } from '@/hooks/useCompanySettings';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { BottomNavMore } from './BottomNavMore';
 
 interface BottomNavProps {
   isAdmin: boolean;
@@ -29,45 +14,13 @@ interface BottomNavProps {
 
 const BottomNav = ({ isAdmin }: BottomNavProps) => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { data: company } = useCompanySettings();
 
-  const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.error('Error logging out');
-    } else {
-      toast.success('Logged out successfully');
-      navigate('/auth');
-    }
-  };
-
-  const navItems = [
-    { path: '/dashboard/analytics', icon: BarChart3, label: 'Analytics' },
-    { path: '/dashboard/reports', icon: ChartBar, label: 'Reports' },
-    ...(isAdmin ? [{ path: '/dashboard/team', icon: Users, label: 'Team' }] : []),
-    { path: '/dashboard/leads', icon: UserPlus, label: 'Leads' },
-    { path: '/dashboard/accounts', icon: Building2, label: 'Accounts' },
-    { path: '/dashboard/tasks', icon: CheckSquare, label: 'Tasks' },
-    { path: '/dashboard/calendars', icon: Calendar, label: 'Appointments' },
-    { path: '/dashboard/projects', icon: FolderKanban, label: 'Projects' },
-    { path: '/dashboard/tickets', icon: Ticket, label: 'Tickets' },
-    { path: '/dashboard/reviews', icon: Star, label: 'Reviews' },
-    { path: '/dashboard/money', icon: DollarSign, label: 'Money' },
-    { path: '/dashboard/logs', icon: FileText, label: 'Logs' },
-  ];
-
-  if (isAdmin) {
-    navItems.push({ path: '/dashboard/settings', icon: Settings, label: 'Settings' });
-  }
-
-  // Show only essential items on mobile
+  // Show only essential items on mobile + More menu
   const mobileNavItems = [
     { path: '/dashboard/leads', icon: UserPlus, label: 'Leads' },
     { path: '/dashboard/tasks', icon: CheckSquare, label: 'Tasks' },
     { path: '/dashboard/calendars', icon: Calendar, label: 'Calendar' },
     { path: '/dashboard/money', icon: DollarSign, label: 'Money' },
-    ...(isAdmin ? [{ path: '/dashboard/settings', icon: Settings, label: 'Settings' }] : []),
   ];
 
   return (
@@ -93,6 +46,9 @@ const BottomNav = ({ isAdmin }: BottomNavProps) => {
             </Link>
           );
         })}
+        <div className="flex flex-col items-center justify-center px-3 py-2 min-w-[60px]">
+          <BottomNavMore isAdmin={isAdmin} />
+        </div>
       </div>
     </nav>
   );
