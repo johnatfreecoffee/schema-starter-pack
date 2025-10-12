@@ -20,6 +20,7 @@ export type Database = {
           created_at: string
           id: string
           industry: string | null
+          is_test_data: boolean | null
           notes: string | null
           portal_enabled: boolean | null
           portal_last_login: string | null
@@ -34,6 +35,7 @@ export type Database = {
           created_at?: string
           id?: string
           industry?: string | null
+          is_test_data?: boolean | null
           notes?: string | null
           portal_enabled?: boolean | null
           portal_last_login?: string | null
@@ -48,6 +50,7 @@ export type Database = {
           created_at?: string
           id?: string
           industry?: string | null
+          is_test_data?: boolean | null
           notes?: string | null
           portal_enabled?: boolean | null
           portal_last_login?: string | null
@@ -356,6 +359,7 @@ export type Database = {
           end_time: string
           event_type: string | null
           id: string
+          is_test_data: boolean | null
           location: string | null
           notes: string | null
           related_to_id: string | null
@@ -378,6 +382,7 @@ export type Database = {
           end_time: string
           event_type?: string | null
           id?: string
+          is_test_data?: boolean | null
           location?: string | null
           notes?: string | null
           related_to_id?: string | null
@@ -400,6 +405,7 @@ export type Database = {
           end_time?: string
           event_type?: string | null
           id?: string
+          is_test_data?: boolean | null
           location?: string | null
           notes?: string | null
           related_to_id?: string | null
@@ -537,6 +543,7 @@ export type Database = {
           first_name: string
           id: string
           is_primary: boolean
+          is_test_data: boolean | null
           last_name: string
           mobile: string | null
           notes: string | null
@@ -554,6 +561,7 @@ export type Database = {
           first_name: string
           id?: string
           is_primary?: boolean
+          is_test_data?: boolean | null
           last_name: string
           mobile?: string | null
           notes?: string | null
@@ -571,6 +579,7 @@ export type Database = {
           first_name?: string
           id?: string
           is_primary?: boolean
+          is_test_data?: boolean | null
           last_name?: string
           mobile?: string | null
           notes?: string | null
@@ -912,6 +921,7 @@ export type Database = {
           due_date: string
           id: string
           invoice_number: string
+          is_test_data: boolean | null
           last_sent_at: string | null
           pdf_url: string | null
           status: Database["public"]["Enums"]["invoice_status"]
@@ -925,6 +935,7 @@ export type Database = {
           due_date: string
           id?: string
           invoice_number: string
+          is_test_data?: boolean | null
           last_sent_at?: string | null
           pdf_url?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
@@ -938,6 +949,7 @@ export type Database = {
           due_date?: string
           id?: string
           invoice_number?: string
+          is_test_data?: boolean | null
           last_sent_at?: string | null
           pdf_url?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
@@ -971,6 +983,7 @@ export type Database = {
           first_name: string
           id: string
           is_emergency: boolean
+          is_test_data: boolean | null
           last_name: string
           phone: string
           project_details: string | null
@@ -992,6 +1005,7 @@ export type Database = {
           first_name: string
           id?: string
           is_emergency?: boolean
+          is_test_data?: boolean | null
           last_name: string
           phone: string
           project_details?: string | null
@@ -1013,6 +1027,7 @@ export type Database = {
           first_name?: string
           id?: string
           is_emergency?: boolean
+          is_test_data?: boolean | null
           last_name?: string
           phone?: string
           project_details?: string | null
@@ -1270,6 +1285,7 @@ export type Database = {
           description: string | null
           estimated_completion: string | null
           id: string
+          is_test_data: boolean | null
           project_manager: string | null
           project_name: string
           source_lead_id: string | null
@@ -1287,6 +1303,7 @@ export type Database = {
           description?: string | null
           estimated_completion?: string | null
           id?: string
+          is_test_data?: boolean | null
           project_manager?: string | null
           project_name: string
           source_lead_id?: string | null
@@ -1304,6 +1321,7 @@ export type Database = {
           description?: string | null
           estimated_completion?: string | null
           id?: string
+          is_test_data?: boolean | null
           project_manager?: string | null
           project_name?: string
           source_lead_id?: string | null
@@ -1328,6 +1346,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      qa_test_submissions: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          result: string
+          test_data: Json | null
+          test_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          result: string
+          test_data?: Json | null
+          test_type: string
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          result?: string
+          test_data?: Json | null
+          test_type?: string
+        }
+        Relationships: []
       }
       quote_items: {
         Row: {
@@ -1379,6 +1424,7 @@ export type Database = {
           created_at: string
           created_by: string
           id: string
+          is_test_data: boolean | null
           last_sent_at: string | null
           pdf_url: string | null
           quote_number: string
@@ -1391,6 +1437,7 @@ export type Database = {
           created_at?: string
           created_by: string
           id?: string
+          is_test_data?: boolean | null
           last_sent_at?: string | null
           pdf_url?: string | null
           quote_number: string
@@ -1403,6 +1450,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           id?: string
+          is_test_data?: boolean | null
           last_sent_at?: string | null
           pdf_url?: string | null
           quote_number?: string
@@ -2038,6 +2086,7 @@ export type Database = {
           description: string | null
           due_date: string | null
           id: string
+          is_test_data: boolean | null
           priority: Database["public"]["Enums"]["task_priority"]
           related_to_id: string | null
           related_to_type:
@@ -2055,6 +2104,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          is_test_data?: boolean | null
           priority?: Database["public"]["Enums"]["task_priority"]
           related_to_id?: string | null
           related_to_type?:
@@ -2072,6 +2122,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          is_test_data?: boolean | null
           priority?: Database["public"]["Enums"]["task_priority"]
           related_to_id?: string | null
           related_to_type?:
