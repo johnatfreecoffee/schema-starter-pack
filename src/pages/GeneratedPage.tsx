@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import PublicLayout from '@/components/layout/PublicLayout';
 import NotFound from './NotFound';
 import { renderTemplate, formatPrice, formatPhone } from '@/lib/templateEngine';
+import { ServiceReviews } from '@/components/reviews/ServiceReviews';
 
 const GeneratedPage = () => {
   const { citySlug, serviceSlug } = useParams<{ citySlug: string; serviceSlug: string }>();
@@ -149,6 +150,14 @@ const GeneratedPage = () => {
         className="container mx-auto px-4 py-8 prose prose-lg max-w-none"
         dangerouslySetInnerHTML={{ __html: renderedContent }}
       />
+
+      {/* Service Reviews Section */}
+      {page.service_id && (
+        <ServiceReviews 
+          serviceId={page.service_id} 
+          serviceName={page.service.name}
+        />
+      )}
     </PublicLayout>
   );
 };
