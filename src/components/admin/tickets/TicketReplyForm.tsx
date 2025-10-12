@@ -4,13 +4,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Send } from 'lucide-react';
+import { CannedResponseSelector } from './CannedResponseSelector';
 
 interface TicketReplyFormProps {
   onSubmit: (message: string, isInternalNote: boolean) => Promise<void>;
   isSubmitting: boolean;
+  customerName?: string;
+  ticketNumber?: string;
 }
 
-export const TicketReplyForm = ({ onSubmit, isSubmitting }: TicketReplyFormProps) => {
+export const TicketReplyForm = ({ onSubmit, isSubmitting, customerName, ticketNumber }: TicketReplyFormProps) => {
   const [message, setMessage] = useState('');
   const [isInternalNote, setIsInternalNote] = useState(false);
 
@@ -35,16 +38,23 @@ export const TicketReplyForm = ({ onSubmit, isSubmitting }: TicketReplyFormProps
         />
       </div>
       
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="internal-note"
-            checked={isInternalNote}
-            onCheckedChange={(checked) => setIsInternalNote(checked as boolean)}
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-4">
+          <CannedResponseSelector
+            onSelect={(content) => setMessage(message ? message + '\n\n' + content : content)}
+            customerName={customerName}
+            ticketNumber={ticketNumber}
           />
-          <Label htmlFor="internal-note" className="text-sm cursor-pointer">
-            Internal note (hidden from customer)
-          </Label>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="internal-note"
+              checked={isInternalNote}
+              onCheckedChange={(checked) => setIsInternalNote(checked as boolean)}
+            />
+            <Label htmlFor="internal-note" className="text-sm cursor-pointer">
+              Internal note
+            </Label>
+          </div>
         </div>
 
         <Button type="submit" disabled={isSubmitting || !message.trim()}>

@@ -12,7 +12,8 @@ import {
   LogOut,
   Menu,
   X,
-  Star
+  Star,
+  MessageCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
@@ -76,6 +77,7 @@ const CustomerLayout = ({ children }: CustomerLayoutProps) => {
     { path: '/customer/projects', icon: FolderKanban, label: 'My Projects' },
     { path: '/customer/appointments', icon: Calendar, label: 'Appointments' },
     { path: '/customer/invoices', icon: FileText, label: 'Payments' },
+    { path: '/customer/support', icon: MessageCircle, label: 'Support' },
     { path: '/portal/my-reviews', icon: Star, label: 'My Reviews' },
     { path: '/customer/profile', icon: User, label: 'Profile' },
   ];

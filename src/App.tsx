@@ -77,6 +77,14 @@ import CustomerProjects from "./pages/customer/CustomerProjects";
 import CustomerProjectDetail from "./pages/customer/CustomerProjectDetail";
 import CustomerAppointments from "./pages/customer/CustomerAppointments";
 import CustomerInvoices from "./pages/customer/CustomerInvoices";
+import CustomerSupport from "./pages/customer/CustomerSupport";
+import CustomerSubmitTicket from "./pages/customer/CustomerSubmitTicket";
+import CustomerTicketDetail from "./pages/customer/CustomerTicketDetail";
+
+// Ticket management pages
+import Tickets from "./pages/dashboard/Tickets";
+import TicketDetail from "./pages/dashboard/TicketDetail";
+import CannedResponses from "./pages/dashboard/CannedResponses";
 
 const queryClient = new QueryClient();
 
@@ -105,6 +113,9 @@ const App = () => (
           <Route path="/customer/projects/:id" element={<CustomerProjectDetail />} />
           <Route path="/customer/appointments" element={<CustomerAppointments />} />
           <Route path="/customer/invoices" element={<CustomerInvoices />} />
+          <Route path="/customer/support" element={<CustomerSupport />} />
+          <Route path="/customer/support/new" element={<CustomerSubmitTicket />} />
+          <Route path="/customer/support/:id" element={<CustomerTicketDetail />} />
           <Route path="/portal/submit-review" element={<CustomerSubmitReview />} />
           <Route path="/portal/my-reviews" element={<CustomerMyReviews />} />
           
@@ -138,6 +149,9 @@ const App = () => (
           <Route path="/dashboard/reviews" element={<Reviews />} />
           <Route path="/dashboard/reviews/new" element={<ReviewNew />} />
           <Route path="/dashboard/reviews/:id" element={<ReviewDetail />} />
+          <Route path="/dashboard/tickets" element={<Tickets />} />
+          <Route path="/dashboard/tickets/:id" element={<TicketDetail />} />
+          <Route path="/dashboard/settings/canned-responses" element={<CannedResponses />} />
           
           {/* Settings Sub-routes (Admin Only) */}
           <Route path="/dashboard/settings/company" element={<CompanySettings />} />
