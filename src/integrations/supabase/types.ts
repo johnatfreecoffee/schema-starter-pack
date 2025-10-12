@@ -428,6 +428,39 @@ export type Database = {
           },
         ]
       }
+      canned_responses: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          created_by: string
+          id: string
+          title: string
+          updated_at: string
+          usage_count: number | null
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          created_by: string
+          id?: string
+          title: string
+          updated_at?: string
+          usage_count?: number | null
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
       company_settings: {
         Row: {
           address: string
@@ -2137,6 +2170,174 @@ export type Database = {
         }
         Relationships: []
       }
+      ticket_messages: {
+        Row: {
+          attachments: Json | null
+          created_at: string
+          id: string
+          is_internal_note: boolean | null
+          message: string
+          read_at: string | null
+          sender_id: string
+          ticket_id: string
+          updated_at: string
+        }
+        Insert: {
+          attachments?: Json | null
+          created_at?: string
+          id?: string
+          is_internal_note?: boolean | null
+          message: string
+          read_at?: string | null
+          sender_id: string
+          ticket_id: string
+          updated_at?: string
+        }
+        Update: {
+          attachments?: Json | null
+          created_at?: string
+          id?: string
+          is_internal_note?: boolean | null
+          message?: string
+          read_at?: string | null
+          sender_id?: string
+          ticket_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_templates: {
+        Row: {
+          category: Database["public"]["Enums"]["ticket_category"]
+          created_at: string
+          default_assignee: string | null
+          id: string
+          message_template: string
+          name: string
+          priority: Database["public"]["Enums"]["priority_level"]
+          subject_template: string
+          updated_at: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["ticket_category"]
+          created_at?: string
+          default_assignee?: string | null
+          id?: string
+          message_template: string
+          name: string
+          priority?: Database["public"]["Enums"]["priority_level"]
+          subject_template: string
+          updated_at?: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["ticket_category"]
+          created_at?: string
+          default_assignee?: string | null
+          id?: string
+          message_template?: string
+          name?: string
+          priority?: Database["public"]["Enums"]["priority_level"]
+          subject_template?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tickets: {
+        Row: {
+          account_id: string
+          assigned_to: string | null
+          category: Database["public"]["Enums"]["ticket_category"]
+          closed_at: string | null
+          created_at: string
+          id: string
+          invoice_id: string | null
+          last_message_at: string | null
+          priority: Database["public"]["Enums"]["priority_level"]
+          project_id: string | null
+          resolved_at: string | null
+          satisfaction_comment: string | null
+          satisfaction_rating: number | null
+          status: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          ticket_number: string
+          unread_by_agent: boolean | null
+          unread_by_customer: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          assigned_to?: string | null
+          category?: Database["public"]["Enums"]["ticket_category"]
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          invoice_id?: string | null
+          last_message_at?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"]
+          project_id?: string | null
+          resolved_at?: string | null
+          satisfaction_comment?: string | null
+          satisfaction_rating?: number | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          ticket_number: string
+          unread_by_agent?: boolean | null
+          unread_by_customer?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          assigned_to?: string | null
+          category?: Database["public"]["Enums"]["ticket_category"]
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          invoice_id?: string | null
+          last_message_at?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"]
+          project_id?: string | null
+          resolved_at?: string | null
+          satisfaction_comment?: string | null
+          satisfaction_rating?: number | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject?: string
+          ticket_number?: string
+          unread_by_agent?: boolean | null
+          unread_by_customer?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_permissions: {
         Row: {
           can_create: boolean
@@ -2409,6 +2610,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_ticket_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_role"]
@@ -2428,6 +2633,7 @@ export type Database = {
       appointment_type: "onsite" | "virtual" | "phone"
       invoice_status: "pending" | "paid" | "overdue" | "cancelled"
       lead_status: "new" | "contacted" | "qualified" | "converted" | "lost"
+      priority_level: "low" | "medium" | "high" | "urgent"
       project_status:
         | "planning"
         | "active"
@@ -2453,6 +2659,8 @@ export type Database = {
       task_priority: "low" | "medium" | "high"
       task_status: "pending" | "in_progress" | "completed" | "cancelled"
       template_type: "service" | "static"
+      ticket_category: "support" | "billing" | "project" | "general"
+      ticket_status: "new" | "open" | "pending" | "resolved" | "closed"
       user_role: "admin" | "crm_user" | "customer"
       workflow_action_type:
         | "send_email"
@@ -2602,6 +2810,7 @@ export const Constants = {
       appointment_type: ["onsite", "virtual", "phone"],
       invoice_status: ["pending", "paid", "overdue", "cancelled"],
       lead_status: ["new", "contacted", "qualified", "converted", "lost"],
+      priority_level: ["low", "medium", "high", "urgent"],
       project_status: [
         "planning",
         "active",
@@ -2630,6 +2839,8 @@ export const Constants = {
       task_priority: ["low", "medium", "high"],
       task_status: ["pending", "in_progress", "completed", "cancelled"],
       template_type: ["service", "static"],
+      ticket_category: ["support", "billing", "project", "general"],
+      ticket_status: ["new", "open", "pending", "resolved", "closed"],
       user_role: ["admin", "crm_user", "customer"],
       workflow_action_type: [
         "send_email",
