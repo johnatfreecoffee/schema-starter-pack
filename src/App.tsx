@@ -85,6 +85,8 @@ import CustomerTicketDetail from "./pages/customer/CustomerTicketDetail";
 import Tickets from "./pages/dashboard/Tickets";
 import TicketDetail from "./pages/dashboard/TicketDetail";
 import CannedResponses from "./pages/dashboard/CannedResponses";
+import TicketTemplates from "./pages/dashboard/TicketTemplates";
+import AutoAssignment from "./pages/dashboard/AutoAssignment";
 
 const queryClient = new QueryClient();
 
@@ -152,6 +154,8 @@ const App = () => (
           <Route path="/dashboard/tickets" element={<Tickets />} />
           <Route path="/dashboard/tickets/:id" element={<TicketDetail />} />
           <Route path="/dashboard/settings/canned-responses" element={<CannedResponses />} />
+          <Route path="/dashboard/settings/ticket-templates" element={<TicketTemplates />} />
+          <Route path="/dashboard/settings/auto-assignment" element={<AutoAssignment />} />
           
           {/* Settings Sub-routes (Admin Only) */}
           <Route path="/dashboard/settings/company" element={<CompanySettings />} />

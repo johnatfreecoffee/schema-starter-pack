@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { TicketPriorityBadge } from '@/components/admin/tickets/TicketPriorityBadge';
 import { TicketStatusBadge } from '@/components/admin/tickets/TicketStatusBadge';
 import { TicketConversation } from '@/components/admin/tickets/TicketConversation';
+import { SatisfactionRating } from '@/components/admin/tickets/SatisfactionRating';
 import { ArrowLeft, Send } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
@@ -169,6 +170,13 @@ export default function CustomerTicketDetail() {
               </Button>
             </form>
           </Card>
+        )}
+
+        {ticket.status === 'resolved' && !ticket.satisfaction_rating && (
+          <SatisfactionRating
+            ticketId={ticket.id}
+            ticketNumber={ticket.ticket_number}
+          />
         )}
       </div>
     </CustomerLayout>
