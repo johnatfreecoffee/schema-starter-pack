@@ -97,14 +97,15 @@ export default function TicketDetail() {
   });
 
   const sendReply = useMutation({
-    mutationFn: async ({ message, isInternalNote }: { message: string; isInternalNote: boolean }) => {
+    mutationFn: async ({ message, isInternalNote, attachments }: { message: string; isInternalNote: boolean; attachments: string[] }) => {
       const { error } = await supabase
         .from('ticket_messages')
         .insert({
           ticket_id: id,
           sender_id: currentUser?.id,
           message,
-          is_internal_note: isInternalNote
+          is_internal_note: isInternalNote,
+          attachments: attachments.length > 0 ? attachments : null
         });
       
       if (error) throw error;
@@ -183,10 +184,12 @@ export default function TicketDetail() {
             <Card className="p-6">
               <h3 className="font-semibold mb-4">Reply</h3>
               <TicketReplyForm
-                onSubmit={(message, isInternalNote) => 
-                  sendReply.mutateAsync({ message, isInternalNote })
+                onSubmit={(message, isInternalNote, attachments) => 
+                  sendReply.mutateAsync({ message, isInternalNote, attachments })
                 }
                 isSubmitting={sendReply.isPending}
+                customerName={ticket.account.account_name}
+                ticketNumber={ticket.ticket_number}
               />
             </Card>
           </div>

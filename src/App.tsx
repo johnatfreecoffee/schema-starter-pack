@@ -83,6 +83,7 @@ import CustomerTicketDetail from "./pages/customer/CustomerTicketDetail";
 
 // Ticket management pages
 import Tickets from "./pages/dashboard/Tickets";
+import TicketNew from "./pages/dashboard/TicketNew";
 import TicketDetail from "./pages/dashboard/TicketDetail";
 import CannedResponses from "./pages/dashboard/CannedResponses";
 import TicketTemplates from "./pages/dashboard/TicketTemplates";
@@ -152,6 +153,7 @@ const App = () => (
           <Route path="/dashboard/reviews/new" element={<ReviewNew />} />
           <Route path="/dashboard/reviews/:id" element={<ReviewDetail />} />
           <Route path="/dashboard/tickets" element={<Tickets />} />
+          <Route path="/dashboard/tickets/new" element={<TicketNew />} />
           <Route path="/dashboard/tickets/:id" element={<TicketDetail />} />
           <Route path="/dashboard/settings/canned-responses" element={<CannedResponses />} />
           <Route path="/dashboard/settings/ticket-templates" element={<TicketTemplates />} />

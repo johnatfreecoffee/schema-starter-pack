@@ -5,9 +5,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Send } from 'lucide-react';
 import { CannedResponseSelector } from './CannedResponseSelector';
+import { FileAttachments } from './FileAttachments';
 
 interface TicketReplyFormProps {
-  onSubmit: (message: string, isInternalNote: boolean) => Promise<void>;
+  onSubmit: (message: string, isInternalNote: boolean, attachments: string[]) => Promise<void>;
   isSubmitting: boolean;
   customerName?: string;
   ticketNumber?: string;
@@ -16,14 +17,16 @@ interface TicketReplyFormProps {
 export const TicketReplyForm = ({ onSubmit, isSubmitting, customerName, ticketNumber }: TicketReplyFormProps) => {
   const [message, setMessage] = useState('');
   const [isInternalNote, setIsInternalNote] = useState(false);
+  const [attachments, setAttachments] = useState<string[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
     
-    await onSubmit(message, isInternalNote);
+    await onSubmit(message, isInternalNote, attachments);
     setMessage('');
     setIsInternalNote(false);
+    setAttachments([]);
   };
 
   return (
@@ -37,6 +40,12 @@ export const TicketReplyForm = ({ onSubmit, isSubmitting, customerName, ticketNu
           required
         />
       </div>
+      
+      <FileAttachments
+        onFilesUploaded={setAttachments}
+        existingFiles={attachments}
+        maxFiles={5}
+      />
       
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-4">
