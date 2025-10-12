@@ -29,7 +29,7 @@ export const PageSEOManager = () => {
       // @ts-ignore
       const staticPagesQuery = supabase.from('static_pages').select('id, title, slug, created_at');
       // @ts-ignore
-      const staticPagesResult = await staticPagesQuery.eq('is_published', true);
+      const staticPagesResult = await staticPagesQuery.eq('status', true);
       const staticPages = staticPagesResult.data;
 
       // Fetch generated pages

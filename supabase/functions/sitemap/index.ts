@@ -24,7 +24,7 @@ serve(async (req) => {
     const { data: staticPages } = await supabase
       .from('static_pages')
       .select('id, slug, updated_at')
-      .eq('is_published', true);
+      .eq('status', true);
 
     // Fetch all active generated pages
     const { data: generatedPages } = await supabase
