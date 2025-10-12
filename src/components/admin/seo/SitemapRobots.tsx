@@ -90,7 +90,7 @@ export const SitemapRobots = () => {
             </Button>
             <Button
               variant="outline"
-              onClick={() => window.open('/robots.txt', '_blank')}
+              onClick={() => window.open(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/robots`, '_blank')}
             >
               <ExternalLink className="h-4 w-4 mr-2" />
               View Current robots.txt
@@ -122,10 +122,17 @@ export const SitemapRobots = () => {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => window.open('/sitemap.xml', '_blank')}
+              onClick={() => window.open(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sitemap`, '_blank')}
             >
               <ExternalLink className="h-4 w-4 mr-2" />
               View Sitemap
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => window.open(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/robots`, '_blank')}
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              View Robots.txt
             </Button>
             <Button
               variant="outline"

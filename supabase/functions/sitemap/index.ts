@@ -14,58 +14,85 @@ serve(async (req) => {
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
+
+    // Get the base URL from the request
+    const baseUrl = new URL(req.url).origin;
+
+    // Fetch all published static pages
+    const { data: staticPages } = await supabase
+      .from('static_pages')
+      .select('id, slug, updated_at')
+      .eq('is_published', true);
 
     // Fetch all active generated pages
-    const { data: pages, error } = await supabase
+    const { data: generatedPages } = await supabase
       .from('generated_pages')
-      .select('url_path, updated_at')
-      .eq('status', true)
-      .order('updated_at', { ascending: false });
+      .select('id, url_path, updated_at')
+      .eq('status', true);
 
-    if (error) {
-      throw error;
-    }
+    // Fetch SEO settings for priorities
+    const { data: seoPages } = await supabase
+      .from('page_seo')
+      .select('page_id, page_type, priority, change_frequency');
 
-    // Build URLs array
-    const urls = pages.map((page) => ({
-      loc: `https://yoursite.com${page.url_path}`,
-      lastmod: new Date(page.updated_at).toISOString().split('T')[0],
-      changefreq: 'monthly',
-      priority: 0.8,
-    }));
-
+    // Build XML sitemap
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+    
+    // Add homepage
+    xml += `  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>\n`;
+    
     // Add static pages
-    const today = new Date().toISOString().split('T')[0];
-    urls.unshift(
-      { loc: 'https://yoursite.com/', lastmod: today, changefreq: 'weekly', priority: 1.0 },
-      { loc: 'https://yoursite.com/services', lastmod: today, changefreq: 'weekly', priority: 0.9 },
-      { loc: 'https://yoursite.com/about-us', lastmod: today, changefreq: 'monthly', priority: 0.7 },
-      { loc: 'https://yoursite.com/contact', lastmod: today, changefreq: 'monthly', priority: 0.7 }
-    );
-
-    // Generate XML
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls
-  .map(
-    (url) => `  <url>
-    <loc>${url.loc}</loc>
-    <lastmod>${url.lastmod}</lastmod>
-    <changefreq>${url.changefreq}</changefreq>
-    <priority>${url.priority}</priority>
-  </url>`
-  )
-  .join('\n')}
-</urlset>`;
-
+    if (staticPages) {
+      for (const page of staticPages) {
+        const seoData = seoPages?.find(
+          (s: any) => s.page_type === 'static' && s.page_id === page.id
+        );
+        const priority = seoData?.priority || 0.8;
+        const changefreq = seoData?.change_frequency || 'weekly';
+        
+        xml += `  <url>
+    <loc>${baseUrl}/${page.slug}</loc>
+    <lastmod>${page.updated_at}</lastmod>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>\n`;
+      }
+    }
+    
+    // Add generated pages
+    if (generatedPages) {
+      for (const page of generatedPages) {
+        const seoData = seoPages?.find(
+          (s: any) => s.page_type === 'generated' && s.page_id === page.id
+        );
+        const priority = seoData?.priority || 0.6;
+        const changefreq = seoData?.change_frequency || 'monthly';
+        
+        xml += `  <url>
+    <loc>${baseUrl}${page.url_path}</loc>
+    <lastmod>${page.updated_at}</lastmod>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>\n`;
+      }
+    }
+    
+    xml += '</urlset>';
+    
     return new Response(xml, {
       status: 200,
       headers: {
         ...corsHeaders,
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=86400', // Cache for 24 hours
+        'Cache-Control': 'public, max-age=3600',
       },
     });
   } catch (error) {
