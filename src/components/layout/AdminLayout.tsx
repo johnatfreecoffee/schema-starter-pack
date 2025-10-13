@@ -123,10 +123,10 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           </div>
         </div>
       </header>
-      <main className="flex-1 pb-20 md:pb-4">
+      <main className="flex-1 pb-20">
         {children}
       </main>
-      {isMobile && <BottomNav isAdmin={role === 'Super Admin' || role === 'Admin'} />}
+      <BottomNav isAdmin={role === 'Super Admin' || role === 'Admin'} />
     </div>
   );
 };
