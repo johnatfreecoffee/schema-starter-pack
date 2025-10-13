@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Search, FileText, DollarSign, AlertCircle, TrendingUp, FileDown, Send, FileSpreadsheet } from 'lucide-react';
+import { Plus, Search, FileText, DollarSign, AlertCircle, TrendingUp, FileDown, Send, FileSpreadsheet, Eye, Pencil, Trash, Mail, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import QuoteStatusBadge from '@/components/admin/money/QuoteStatusBadge';
@@ -25,6 +25,10 @@ import { BulkOperationsService } from '@/services/bulkOperationsService';
 import { useBulkUndo } from '@/hooks/useBulkUndo';
 import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileActionButton } from '@/components/ui/mobile-action-button';
+import { ResponsiveList, MobileCard, MobileCardField } from '@/components/ui/responsive-table';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Money = () => {
   const navigate = useNavigate();
@@ -508,6 +512,7 @@ const Money = () => {
   // Permission controls
   const canBulkEdit = role === 'admin';
   const canBulkDelete = role === 'admin';
+  const isMobile = useIsMobile();
 
   return (
     <AdminLayout>
@@ -586,10 +591,12 @@ const Money = () => {
                     <CardTitle>Quotes</CardTitle>
                     <CardDescription>Manage customer quotes</CardDescription>
                   </div>
-                  <Button onClick={() => setShowQuoteForm(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Quote
-                  </Button>
+                  {!isMobile && (
+                    <Button onClick={() => setShowQuoteForm(true)}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Quote
+                    </Button>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>
@@ -605,69 +612,143 @@ const Money = () => {
                   </div>
                 </div>
 
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12">
-                        <Checkbox
-                          checked={quotesSelection.isAllSelected}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              quotesSelection.selectAll();
-                            } else {
-                              quotesSelection.deselectAll();
-                            }
-                          }}
-                        />
-                      </TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Quote #</TableHead>
-                      <TableHead>Account</TableHead>
-                      <TableHead>Total</TableHead>
-                      <TableHead>Valid Until</TableHead>
-                      <TableHead>Created</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                  {filteredQuotes.map((quote) => (
-                    <TableRow 
-                      key={quote.id}
-                      className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => navigate(`/dashboard/quotes/${quote.id}`)}
-                    >
-                      <TableCell onClick={(e) => e.stopPropagation()}>
-                        <Checkbox
-                          checked={quotesSelection.isSelected(quote.id)}
-                          onCheckedChange={() => quotesSelection.toggleItem(quote.id)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <QuoteStatusBadge status={quote.status} />
-                      </TableCell>
-                      <TableCell className="font-medium">{quote.quote_number}</TableCell>
-                        <TableCell>
-                          <Link to={`/dashboard/accounts/${quote.account_id}`} className="hover:underline">
+                {loading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-40 w-full" />
+                    ))}
+                  </div>
+                ) : (
+                  <ResponsiveList
+                    items={filteredQuotes}
+                    emptyMessage="No quotes found"
+                    renderCard={(quote) => (
+                    <MobileCard key={quote.id} onClick={() => navigate(`/dashboard/quotes/${quote.id}`)}>
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-bold text-lg mb-1">{quote.quote_number}</h3>
+                          <Link 
+                            to={`/dashboard/accounts/${quote.account_id}`}
+                            className="text-sm text-primary hover:underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             {quote.accounts?.account_name}
                           </Link>
-                        </TableCell>
-                        <TableCell>${parseFloat(quote.total_amount).toFixed(2)}</TableCell>
-                        <TableCell>
-                          {quote.valid_until ? format(new Date(quote.valid_until), 'MMM d, yyyy') : '-'}
-                        </TableCell>
-                        <TableCell>{format(new Date(quote.created_at), 'MMM d, yyyy')}</TableCell>
-                      </TableRow>
-                    ))}
-                    {filteredQuotes.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center text-muted-foreground">
-                          No quotes found
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
+                        </div>
+                        <QuoteStatusBadge status={quote.status} />
+                      </div>
+                      
+                      <MobileCardField 
+                        label="Amount" 
+                        value={<span className="font-bold text-lg">${parseFloat(quote.total_amount).toFixed(2)}</span>}
+                      />
+                      
+                      <MobileCardField 
+                        label="Created" 
+                        value={format(new Date(quote.created_at), 'MMM d, yyyy')}
+                      />
+                      
+                      {quote.valid_until && (
+                        <MobileCardField 
+                          label="Valid Until" 
+                          value={format(new Date(quote.valid_until), 'MMM d, yyyy')}
+                        />
+                      )}
+                      
+                      <div className="flex gap-2 mt-3 pt-3 border-t">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/dashboard/quotes/${quote.id}`);
+                          }}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Edit quote logic
+                          }}
+                        >
+                          <Pencil className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+                      </div>
+                    </MobileCard>
+                  )}
+                  renderTable={() => (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-12">
+                            <Checkbox
+                              checked={quotesSelection.isAllSelected}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  quotesSelection.selectAll();
+                                } else {
+                                  quotesSelection.deselectAll();
+                                }
+                              }}
+                            />
+                          </TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Quote #</TableHead>
+                          <TableHead>Account</TableHead>
+                          <TableHead>Total</TableHead>
+                          <TableHead>Valid Until</TableHead>
+                          <TableHead>Created</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredQuotes.map((quote) => (
+                          <TableRow 
+                            key={quote.id}
+                            className="cursor-pointer hover:bg-muted/50"
+                            onClick={() => navigate(`/dashboard/quotes/${quote.id}`)}
+                          >
+                            <TableCell onClick={(e) => e.stopPropagation()}>
+                              <Checkbox
+                                checked={quotesSelection.isSelected(quote.id)}
+                                onCheckedChange={() => quotesSelection.toggleItem(quote.id)}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <QuoteStatusBadge status={quote.status} />
+                            </TableCell>
+                            <TableCell className="font-medium">{quote.quote_number}</TableCell>
+                            <TableCell>
+                              <Link to={`/dashboard/accounts/${quote.account_id}`} className="hover:underline">
+                                {quote.accounts?.account_name}
+                              </Link>
+                            </TableCell>
+                            <TableCell>${parseFloat(quote.total_amount).toFixed(2)}</TableCell>
+                            <TableCell>
+                              {quote.valid_until ? format(new Date(quote.valid_until), 'MMM d, yyyy') : '-'}
+                            </TableCell>
+                            <TableCell>{format(new Date(quote.created_at), 'MMM d, yyyy')}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                  />
+                )}
               </CardContent>
             </Card>
+            
+            {isMobile && (
+              <MobileActionButton
+                onClick={() => setShowQuoteForm(true)}
+                icon={<Plus className="h-6 w-6" />}
+                label="Create Quote"
+              />
+            )}
           </TabsContent>
           
           <TabsContent value="invoices" className="mt-6">
@@ -678,10 +759,12 @@ const Money = () => {
                     <CardTitle>Invoices</CardTitle>
                     <CardDescription>Track invoices and payments</CardDescription>
                   </div>
-                  <Button onClick={() => setShowInvoiceForm(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Invoice
-                  </Button>
+                  {!isMobile && (
+                    <Button onClick={() => setShowInvoiceForm(true)}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Invoice
+                    </Button>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>
@@ -697,74 +780,166 @@ const Money = () => {
                   </div>
                 </div>
 
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12">
-                        <Checkbox
-                          checked={invoicesSelection.isAllSelected}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              invoicesSelection.selectAll();
-                            } else {
-                              invoicesSelection.deselectAll();
-                            }
-                          }}
-                        />
-                      </TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Invoice #</TableHead>
-                      <TableHead>Account</TableHead>
-                      <TableHead>Total</TableHead>
-                      <TableHead>Amount Due</TableHead>
-                      <TableHead>Due Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                  {filteredInvoices.map((invoice) => (
-                    <TableRow 
-                      key={invoice.id}
-                      className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => navigate(`/dashboard/invoices/${invoice.id}`)}
-                    >
-                      <TableCell onClick={(e) => e.stopPropagation()}>
-                        <Checkbox
-                          checked={invoicesSelection.isSelected(invoice.id)}
-                          onCheckedChange={() => invoicesSelection.toggleItem(invoice.id)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <InvoiceStatusBadge status={invoice.status} />
-                      </TableCell>
-                      <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
-                        <TableCell>
-                          <Link to={`/dashboard/accounts/${invoice.account_id}`} className="hover:underline">
+                {loading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-40 w-full" />
+                    ))}
+                  </div>
+                ) : (
+                  <ResponsiveList
+                    items={filteredInvoices}
+                    emptyMessage="No invoices found"
+                    renderCard={(invoice) => (
+                    <MobileCard key={invoice.id} onClick={() => navigate(`/dashboard/invoices/${invoice.id}`)}>
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="font-bold text-lg mb-1">{invoice.invoice_number}</h3>
+                          <Link 
+                            to={`/dashboard/accounts/${invoice.account_id}`}
+                            className="text-sm text-primary hover:underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             {invoice.accounts?.account_name}
                           </Link>
-                        </TableCell>
-                        <TableCell>${parseFloat(invoice.total_amount).toFixed(2)}</TableCell>
-                        <TableCell className={invoice.status === 'overdue' ? 'text-destructive font-medium' : ''}>
-                          ${parseFloat(invoice.amount_due).toFixed(2)}
-                        </TableCell>
-                        <TableCell>
-                          {format(new Date(invoice.due_date), 'MMM d, yyyy')}
-                          {invoice.status === 'overdue' && (
-                            <span className="ml-2 text-xs text-destructive">Overdue</span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    {filteredInvoices.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center text-muted-foreground">
-                          No invoices found
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
+                        </div>
+                        <InvoiceStatusBadge status={invoice.status} />
+                      </div>
+                      
+                      <MobileCardField 
+                        label="Total Amount" 
+                        value={<span className="font-bold text-lg">${parseFloat(invoice.total_amount).toFixed(2)}</span>}
+                      />
+                      
+                      <MobileCardField 
+                        label="Amount Due" 
+                        value={
+                          <span className={invoice.status === 'overdue' ? 'text-destructive font-bold' : 'font-bold'}>
+                            ${parseFloat(invoice.amount_due).toFixed(2)}
+                          </span>
+                        }
+                      />
+                      
+                      <MobileCardField 
+                        label="Due Date" 
+                        value={
+                          <span className={invoice.status === 'overdue' ? 'text-destructive' : ''}>
+                            {format(new Date(invoice.due_date), 'MMM d, yyyy')}
+                            {invoice.status === 'overdue' && ' (Overdue)'}
+                          </span>
+                        }
+                      />
+                      
+                      <div className="flex gap-2 mt-3 pt-3 border-t">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/dashboard/invoices/${invoice.id}`);
+                          }}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Edit invoice logic
+                          }}
+                        >
+                          <Pencil className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // Send invoice logic
+                          }}
+                        >
+                          <Mail className="h-4 w-4 mr-1" />
+                          Send
+                        </Button>
+                      </div>
+                    </MobileCard>
+                  )}
+                  renderTable={() => (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-12">
+                            <Checkbox
+                              checked={invoicesSelection.isAllSelected}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  invoicesSelection.selectAll();
+                                } else {
+                                  invoicesSelection.deselectAll();
+                                }
+                              }}
+                            />
+                          </TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Invoice #</TableHead>
+                          <TableHead>Account</TableHead>
+                          <TableHead>Total</TableHead>
+                          <TableHead>Amount Due</TableHead>
+                          <TableHead>Due Date</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredInvoices.map((invoice) => (
+                          <TableRow 
+                            key={invoice.id}
+                            className="cursor-pointer hover:bg-muted/50"
+                            onClick={() => navigate(`/dashboard/invoices/${invoice.id}`)}
+                          >
+                            <TableCell onClick={(e) => e.stopPropagation()}>
+                              <Checkbox
+                                checked={invoicesSelection.isSelected(invoice.id)}
+                                onCheckedChange={() => invoicesSelection.toggleItem(invoice.id)}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <InvoiceStatusBadge status={invoice.status} />
+                            </TableCell>
+                            <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
+                            <TableCell>
+                              <Link to={`/dashboard/accounts/${invoice.account_id}`} className="hover:underline">
+                                {invoice.accounts?.account_name}
+                              </Link>
+                            </TableCell>
+                            <TableCell>${parseFloat(invoice.total_amount).toFixed(2)}</TableCell>
+                            <TableCell className={invoice.status === 'overdue' ? 'text-destructive font-medium' : ''}>
+                              ${parseFloat(invoice.amount_due).toFixed(2)}
+                            </TableCell>
+                            <TableCell>
+                              {format(new Date(invoice.due_date), 'MMM d, yyyy')}
+                              {invoice.status === 'overdue' && (
+                                <span className="ml-2 text-xs text-destructive">Overdue</span>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                  />
+                )}
               </CardContent>
             </Card>
+            
+            {isMobile && (
+              <MobileActionButton
+                onClick={() => setShowInvoiceForm(true)}
+                icon={<Plus className="h-6 w-6" />}
+                label="Create Invoice"
+              />
+            )}
           </TabsContent>
         </Tabs>
       </div>

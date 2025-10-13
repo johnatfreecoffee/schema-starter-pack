@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useFormSettings } from '@/hooks/useFormSettings';
 import { CRUDLogger } from '@/lib/crudLogger';
 import { EmailService } from '@/services/emailService';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface LeadFormProps {
   isOpen: boolean;
@@ -25,6 +27,7 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
   const { toast } = useToast();
   const { data: formSettings } = useFormSettings();
   const [loading, setLoading] = useState(false);
+  const isMobile = useIsMobile();
   
   const [formData, setFormData] = useState({
     first_name: lead?.first_name || '',
@@ -113,221 +116,248 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
     }
   };
 
+  const formContent = (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Personal Information */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Personal Information</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="first_name">First Name *</Label>
+            <Input
+              id="first_name"
+              required
+              value={formData.first_name}
+              onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+              className="min-h-[44px]"
+            />
+          </div>
+          <div>
+            <Label htmlFor="last_name">Last Name *</Label>
+            <Input
+              id="last_name"
+              required
+              value={formData.last_name}
+              onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+              className="min-h-[44px]"
+            />
+          </div>
+          <div>
+            <Label htmlFor="email">Email *</Label>
+            <Input
+              id="email"
+              type="email"
+              required
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="min-h-[44px]"
+            />
+          </div>
+          <div>
+            <Label htmlFor="phone">Phone *</Label>
+            <PhoneInput
+              value={formData.phone}
+              onChange={(value) => setFormData({ ...formData, phone: value })}
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Service Information */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Service Information</h3>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="service_needed">Service Needed *</Label>
+            <Select 
+              value={formData.service_needed}
+              onValueChange={(value) => setFormData({ ...formData, service_needed: value })}
+            >
+              <SelectTrigger className="min-h-[44px]">
+                <SelectValue placeholder="Select a service" />
+              </SelectTrigger>
+              <SelectContent>
+                {formSettings?.service_options?.map((service: string) => (
+                  <SelectItem key={service} value={service}>{service}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="project_details">Project Details</Label>
+            <Textarea
+              id="project_details"
+              rows={4}
+              value={formData.project_details}
+              onChange={(e) => setFormData({ ...formData, project_details: e.target.value })}
+              className="min-h-[44px]"
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="is_emergency"
+              checked={formData.is_emergency}
+              onCheckedChange={(checked) => setFormData({ ...formData, is_emergency: checked as boolean })}
+            />
+            <Label htmlFor="is_emergency" className="text-sm font-medium cursor-pointer">
+              This is an emergency
+            </Label>
+          </div>
+        </div>
+      </div>
+
+      {/* Address */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Address</h3>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="street_address">Street Address *</Label>
+            <Input
+              id="street_address"
+              required
+              value={formData.street_address}
+              onChange={(e) => setFormData({ ...formData, street_address: e.target.value })}
+              className="min-h-[44px]"
+            />
+          </div>
+          <div>
+            <Label htmlFor="unit">Apartment/Unit/Floor</Label>
+            <Input
+              id="unit"
+              value={formData.unit}
+              onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+              className="min-h-[44px]"
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <Label htmlFor="city">City *</Label>
+              <Input
+                id="city"
+                required
+                value={formData.city}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                className="min-h-[44px]"
+              />
+            </div>
+            <div>
+              <Label htmlFor="state">State *</Label>
+              <Input
+                id="state"
+                required
+                value={formData.state}
+                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                className="min-h-[44px]"
+              />
+            </div>
+            <div>
+              <Label htmlFor="zip">Zip Code *</Label>
+              <Input
+                id="zip"
+                required
+                value={formData.zip}
+                onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
+                className="min-h-[44px]"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Lead Management */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Lead Management</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <Label htmlFor="status">Status</Label>
+            <Select 
+              value={formData.status}
+              onValueChange={(value) => setFormData({ ...formData, status: value })}
+            >
+              <SelectTrigger className="min-h-[44px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="new">New</SelectItem>
+                <SelectItem value="contacted">Contacted</SelectItem>
+                <SelectItem value="qualified">Qualified</SelectItem>
+                <SelectItem value="converted">Converted</SelectItem>
+                <SelectItem value="lost">Lost</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="source">Source</Label>
+            <Select 
+              value={formData.source}
+              onValueChange={(value) => setFormData({ ...formData, source: value })}
+            >
+              <SelectTrigger className="min-h-[44px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="web_form">Web Form</SelectItem>
+                <SelectItem value="manual">Manual</SelectItem>
+                <SelectItem value="import">Import</SelectItem>
+                <SelectItem value="api">API</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="assigned_to">Assigned To</Label>
+            <Select 
+              value={formData.assigned_to || 'unassigned'}
+              onValueChange={(value) => setFormData({ ...formData, assigned_to: value === 'unassigned' ? '' : value })}
+            >
+              <SelectTrigger className="min-h-[44px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unassigned">Unassigned</SelectItem>
+                {users.map(user => (
+                  <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row justify-end'} gap-2`}>
+        <Button type="button" variant="outline" onClick={onClose} className={isMobile ? 'w-full' : ''}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={loading} className={isMobile ? 'w-full' : ''}>
+          {loading ? 'Saving...' : 'Save'}
+        </Button>
+      </div>
+    </form>
+  );
+
+  if (isMobile) {
+    return (
+      <Sheet open={isOpen} onOpenChange={onClose}>
+        <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>{lead ? 'Edit Lead' : 'Create New Lead'}</SheetTitle>
+          </SheetHeader>
+          <div className="mt-4">
+            {formContent}
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{lead ? 'Edit Lead' : 'Create New Lead'}</DialogTitle>
         </DialogHeader>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Personal Information */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Personal Information</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="first_name">First Name *</Label>
-                <Input
-                  id="first_name"
-                  required
-                  value={formData.first_name}
-                  onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="last_name">Last Name *</Label>
-                <Input
-                  id="last_name"
-                  required
-                  value={formData.last_name}
-                  onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="phone">Phone *</Label>
-                <PhoneInput
-                  value={formData.phone}
-                  onChange={(value) => setFormData({ ...formData, phone: value })}
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Service Information */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Service Information</h3>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="service_needed">Service Needed *</Label>
-                <Select 
-                  value={formData.service_needed}
-                  onValueChange={(value) => setFormData({ ...formData, service_needed: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a service" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {formSettings?.service_options?.map((service: string) => (
-                      <SelectItem key={service} value={service}>{service}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="project_details">Project Details</Label>
-                <Textarea
-                  id="project_details"
-                  rows={4}
-                  value={formData.project_details}
-                  onChange={(e) => setFormData({ ...formData, project_details: e.target.value })}
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="is_emergency"
-                  checked={formData.is_emergency}
-                  onCheckedChange={(checked) => setFormData({ ...formData, is_emergency: checked as boolean })}
-                />
-                <Label htmlFor="is_emergency" className="text-sm font-medium cursor-pointer">
-                  This is an emergency
-                </Label>
-              </div>
-            </div>
-          </div>
-
-          {/* Address */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Address</h3>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="street_address">Street Address *</Label>
-                <Input
-                  id="street_address"
-                  required
-                  value={formData.street_address}
-                  onChange={(e) => setFormData({ ...formData, street_address: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="unit">Apartment/Unit/Floor</Label>
-                <Input
-                  id="unit"
-                  value={formData.unit}
-                  onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                />
-              </div>
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="city">City *</Label>
-                  <Input
-                    id="city"
-                    required
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="state">State *</Label>
-                  <Input
-                    id="state"
-                    required
-                    value={formData.state}
-                    onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="zip">Zip Code *</Label>
-                  <Input
-                    id="zip"
-                    required
-                    value={formData.zip}
-                    onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Lead Management */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Lead Management</h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <Select 
-                  value={formData.status}
-                  onValueChange={(value) => setFormData({ ...formData, status: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="new">New</SelectItem>
-                    <SelectItem value="contacted">Contacted</SelectItem>
-                    <SelectItem value="qualified">Qualified</SelectItem>
-                    <SelectItem value="converted">Converted</SelectItem>
-                    <SelectItem value="lost">Lost</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="source">Source</Label>
-                <Select 
-                  value={formData.source}
-                  onValueChange={(value) => setFormData({ ...formData, source: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="web_form">Web Form</SelectItem>
-                    <SelectItem value="manual">Manual</SelectItem>
-                    <SelectItem value="import">Import</SelectItem>
-                    <SelectItem value="api">API</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="assigned_to">Assigned To</Label>
-                <Select 
-                  value={formData.assigned_to || 'unassigned'}
-                  onValueChange={(value) => setFormData({ ...formData, assigned_to: value === 'unassigned' ? '' : value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="unassigned">Unassigned</SelectItem>
-                    {users.map(user => (
-                      <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Saving...' : 'Save'}
-            </Button>
-          </div>
-        </form>
+        {formContent}
       </DialogContent>
     </Dialog>
   );

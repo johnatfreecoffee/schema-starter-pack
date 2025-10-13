@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +10,7 @@ import { PhoneInput } from '@/components/lead-form/PhoneInput';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface AccountFormProps {
   open: boolean;
@@ -20,6 +22,7 @@ interface AccountFormProps {
 export const AccountForm = ({ open, onOpenChange, account, onSuccess }: AccountFormProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const isMobile = useIsMobile();
   
   const [formData, setFormData] = useState({
     account_name: account?.account_name || '',
@@ -160,202 +163,233 @@ export const AccountForm = ({ open, onOpenChange, account, onSuccess }: AccountF
     }
   };
 
+  const formContent = (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-4">
+        <h3 className="font-semibold">Account Information</h3>
+        
+        <div>
+          <Label htmlFor="account_name">Account Name *</Label>
+          <Input
+            id="account_name"
+            value={formData.account_name}
+            onChange={(e) => setFormData({ ...formData, account_name: e.target.value })}
+            required
+            className="min-h-[44px]"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="industry">Industry</Label>
+            <Input
+              id="industry"
+              value={formData.industry}
+              onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
+              className="min-h-[44px]"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="status">Status</Label>
+            <Select 
+              value={formData.status} 
+              onValueChange={(value) => setFormData({ ...formData, status: value })}
+            >
+              <SelectTrigger className="min-h-[44px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="archived">Archived</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="website">Website</Label>
+          <Input
+            id="website"
+            type="url"
+            placeholder="https://example.com"
+            value={formData.website}
+            onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+            className="min-h-[44px]"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="notes">Notes</Label>
+          <Textarea
+            id="notes"
+            rows={3}
+            value={formData.notes}
+            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+            className="min-h-[44px]"
+          />
+        </div>
+      </div>
+
+      {!account && (
+        <>
+          <div className="space-y-4">
+            <h3 className="font-semibold">Primary Contact</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="contact_first_name">First Name *</Label>
+                <Input
+                  id="contact_first_name"
+                  value={formData.contact_first_name}
+                  onChange={(e) => setFormData({ ...formData, contact_first_name: e.target.value })}
+                  required
+                  className="min-h-[44px]"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="contact_last_name">Last Name *</Label>
+                <Input
+                  id="contact_last_name"
+                  value={formData.contact_last_name}
+                  onChange={(e) => setFormData({ ...formData, contact_last_name: e.target.value })}
+                  required
+                  className="min-h-[44px]"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="contact_email">Email *</Label>
+                <Input
+                  id="contact_email"
+                  type="email"
+                  value={formData.contact_email}
+                  onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
+                  required
+                  className="min-h-[44px]"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="contact_phone">Phone *</Label>
+                <PhoneInput
+                  value={formData.contact_phone}
+                  onChange={(value) => setFormData({ ...formData, contact_phone: value })}
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="contact_title">Title</Label>
+              <Input
+                id="contact_title"
+                value={formData.contact_title}
+                onChange={(e) => setFormData({ ...formData, contact_title: e.target.value })}
+                className="min-h-[44px]"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="font-semibold">Primary Address</h3>
+            
+            <div>
+              <Label htmlFor="street_address">Street Address *</Label>
+              <Input
+                id="street_address"
+                value={formData.street_address}
+                onChange={(e) => setFormData({ ...formData, street_address: e.target.value })}
+                required
+                className="min-h-[44px]"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="unit">Apartment/Unit/Floor</Label>
+              <Input
+                id="unit"
+                value={formData.unit}
+                onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                className="min-h-[44px]"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
+                <Label htmlFor="city">City *</Label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  required
+                  className="min-h-[44px]"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="state">State *</Label>
+                <Input
+                  id="state"
+                  value={formData.state}
+                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                  required
+                  className="min-h-[44px]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="zip">Zip Code *</Label>
+              <Input
+                id="zip"
+                value={formData.zip}
+                onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
+                required
+                className="min-h-[44px]"
+              />
+            </div>
+          </div>
+        </>
+      )}
+
+      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row justify-end'} gap-2`}>
+        <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className={isMobile ? 'w-full' : ''}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={loading} className={isMobile ? 'w-full' : ''}>
+          {loading ? 'Saving...' : account ? 'Update Account' : 'Create Account'}
+        </Button>
+      </div>
+    </form>
+  );
+
+  if (isMobile) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>{account ? 'Edit Account' : 'Create New Account'}</SheetTitle>
+          </SheetHeader>
+          <div className="mt-4">
+            {formContent}
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{account ? 'Edit Account' : 'Create New Account'}</DialogTitle>
         </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            <h3 className="font-semibold">Account Information</h3>
-            
-            <div>
-              <Label htmlFor="account_name">Account Name *</Label>
-              <Input
-                id="account_name"
-                value={formData.account_name}
-                onChange={(e) => setFormData({ ...formData, account_name: e.target.value })}
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="industry">Industry</Label>
-                <Input
-                  id="industry"
-                  value={formData.industry}
-                  onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <Select 
-                  value={formData.status} 
-                  onValueChange={(value) => setFormData({ ...formData, status: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="archived">Archived</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="website">Website</Label>
-              <Input
-                id="website"
-                type="url"
-                placeholder="https://example.com"
-                value={formData.website}
-                onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                rows={3}
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              />
-            </div>
-          </div>
-
-          {!account && (
-            <>
-              <div className="space-y-4">
-                <h3 className="font-semibold">Primary Contact</h3>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="contact_first_name">First Name *</Label>
-                    <Input
-                      id="contact_first_name"
-                      value={formData.contact_first_name}
-                      onChange={(e) => setFormData({ ...formData, contact_first_name: e.target.value })}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="contact_last_name">Last Name *</Label>
-                    <Input
-                      id="contact_last_name"
-                      value={formData.contact_last_name}
-                      onChange={(e) => setFormData({ ...formData, contact_last_name: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="contact_email">Email *</Label>
-                    <Input
-                      id="contact_email"
-                      type="email"
-                      value={formData.contact_email}
-                      onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="contact_phone">Phone *</Label>
-                    <PhoneInput
-                      value={formData.contact_phone}
-                      onChange={(value) => setFormData({ ...formData, contact_phone: value })}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="contact_title">Title</Label>
-                  <Input
-                    id="contact_title"
-                    value={formData.contact_title}
-                    onChange={(e) => setFormData({ ...formData, contact_title: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="font-semibold">Primary Address</h3>
-                
-                <div>
-                  <Label htmlFor="street_address">Street Address *</Label>
-                  <Input
-                    id="street_address"
-                    value={formData.street_address}
-                    onChange={(e) => setFormData({ ...formData, street_address: e.target.value })}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="unit">Apartment/Unit/Floor</Label>
-                  <Input
-                    id="unit"
-                    value={formData.unit}
-                    onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                  />
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="col-span-2">
-                    <Label htmlFor="city">City *</Label>
-                    <Input
-                      id="city"
-                      value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="state">State *</Label>
-                    <Input
-                      id="state"
-                      value={formData.state}
-                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="zip">Zip Code *</Label>
-                  <Input
-                    id="zip"
-                    value={formData.zip}
-                    onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-            </>
-          )}
-
-          <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Saving...' : account ? 'Update Account' : 'Create Account'}
-            </Button>
-          </div>
-        </form>
+        {formContent}
       </DialogContent>
     </Dialog>
   );

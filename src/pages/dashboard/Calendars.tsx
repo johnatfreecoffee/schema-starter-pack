@@ -9,9 +9,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { EventModal } from '@/components/admin/calendar/EventModal';
 import { EventDetail } from '@/components/admin/calendar/EventDetail';
 import { EventTypeBadge } from '@/components/admin/calendar/EventTypeBadge';
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Grid3x3, List, Clock, MapPin, Eye, Pencil, Trash } from 'lucide-react';
 import { toast } from 'sonner';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileActionButton } from '@/components/ui/mobile-action-button';
+import { MobileCard, MobileCardField } from '@/components/ui/responsive-table';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const locales = { 'en-US': enUS };
 const localizer = dateFnsLocalizer({
@@ -41,6 +45,15 @@ const Calendars = () => {
   const [editingEvent, setEditingEvent] = useState<any>(null);
   const [defaultDate, setDefaultDate] = useState<Date | undefined>();
   const [loading, setLoading] = useState(true);
+  const [calendarView, setCalendarView] = useState<'grid' | 'list'>('grid');
+  const isMobile = useIsMobile();
+
+  // Default to list view on mobile
+  useEffect(() => {
+    if (isMobile) {
+      setCalendarView('list');
+    }
+  }, [isMobile]);
 
   const fetchEvents = useCallback(async () => {
     try {
@@ -189,8 +202,8 @@ const Calendars = () => {
   return (
     <AdminLayout>
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+          <div className="flex items-center space-x-4 flex-wrap gap-2">
             <h1 className="text-4xl font-bold">Calendar</h1>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" onClick={navigateToday}>
@@ -202,53 +215,151 @@ const Calendars = () => {
               <Button variant="outline" size="icon" onClick={navigateNext}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
-              <span className="text-lg font-medium px-4">
-                {view === 'month' && format(date, 'MMMM yyyy')}
-                {view === 'week' && `Week of ${format(startOfWeek(date), 'MMM d')}`}
-                {view === 'day' && format(date, 'EEEE, MMMM d, yyyy')}
-              </span>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="flex border rounded-md">
-              <Button
-                variant={view === 'month' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setView('month')}
-                className="rounded-r-none"
-              >
-                Month
-              </Button>
-              <Button
-                variant={view === 'week' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setView('week')}
-                className="rounded-none border-x"
-              >
-                Week
-              </Button>
-              <Button
-                variant={view === 'day' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setView('day')}
-                className="rounded-l-none"
-              >
-                Day
-              </Button>
-            </div>
-            <Button onClick={() => { setDefaultDate(undefined); setEditingEvent(null); setShowEventModal(true); }}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Event
-            </Button>
+          <div className="flex items-center space-x-2 flex-wrap">
+            {isMobile && (
+              <div className="flex border rounded-md mr-2">
+                <Button
+                  variant={calendarView === 'grid' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setCalendarView('grid')}
+                  className="rounded-r-none"
+                >
+                  <Grid3x3 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={calendarView === 'list' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setCalendarView('list')}
+                  className="rounded-l-none"
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+            {!isMobile && (
+              <>
+                <div className="flex border rounded-md">
+                  <Button
+                    variant={view === 'month' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setView('month')}
+                    className="rounded-r-none"
+                  >
+                    Month
+                  </Button>
+                  <Button
+                    variant={view === 'week' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setView('week')}
+                    className="rounded-none border-x"
+                  >
+                    Week
+                  </Button>
+                  <Button
+                    variant={view === 'day' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setView('day')}
+                    className="rounded-l-none"
+                  >
+                    Day
+                  </Button>
+                </div>
+                <Button onClick={() => { setDefaultDate(undefined); setEditingEvent(null); setShowEventModal(true); }}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Event
+                </Button>
+              </>
+            )}
           </div>
         </div>
 
-        <Card className="p-4">
-          {loading ? (
-            <div className="flex items-center justify-center h-[600px]">
-              <p className="text-muted-foreground">Loading calendar...</p>
+        <div className="text-lg font-medium mb-4">
+          {view === 'month' && format(date, 'MMMM yyyy')}
+          {view === 'week' && `Week of ${format(startOfWeek(date), 'MMM d')}`}
+          {view === 'day' && format(date, 'EEEE, MMMM d, yyyy')}
+        </div>
+
+        {loading ? (
+          <Card className="p-4">
+            <div className="space-y-4">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Skeleton key={i} className="h-20 w-full" />
+              ))}
             </div>
-          ) : (
+          </Card>
+        ) : isMobile && calendarView === 'list' ? (
+          <div className="space-y-3">
+            {events.length === 0 ? (
+              <Card className="p-8 text-center">
+                <p className="text-muted-foreground">No events scheduled</p>
+              </Card>
+            ) : (
+              events
+                .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
+                .map((event) => (
+                  <MobileCard key={event.id} onClick={() => handleSelectEvent(event)}>
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h3 className="font-bold text-lg mb-1">{event.title}</h3>
+                        <EventTypeBadge type={event.event_type} />
+                      </div>
+                    </div>
+                    
+                    <MobileCardField 
+                      label="Date & Time" 
+                      value={`${format(event.start, 'MMM d, yyyy')} at ${format(event.start, 'h:mm a')}${event.end ? ` - ${format(event.end, 'h:mm a')}` : ''}`}
+                    />
+                    
+                    {event.location && (
+                      <MobileCardField 
+                        label="Location" 
+                        value={event.location}
+                      />
+                    )}
+                    
+                    {event.description && (
+                      <MobileCardField 
+                        label="Description" 
+                        value={<p className="text-sm line-clamp-2">{event.description}</p>}
+                      />
+                    )}
+                    
+                    {event.resource.type !== 'task' && (
+                      <div className="flex gap-2 mt-3 pt-3 border-t">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedEvent(event);
+                            setShowDetailModal(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingEvent(event);
+                            setShowEventModal(true);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+                      </div>
+                    )}
+                  </MobileCard>
+                ))
+            )}
+          </div>
+        ) : (
+          <Card className="p-4">
             <Calendar
               localizer={localizer}
               events={events}
@@ -264,35 +375,45 @@ const Calendars = () => {
               selectable
               resizable
               eventPropGetter={eventStyleGetter}
-              style={{ height: 600 }}
-              views={['month', 'week', 'day']}
+              style={{ height: isMobile ? 400 : 600 }}
+              views={isMobile ? ['month'] : ['month', 'week', 'day']}
             />
-          )}
-        </Card>
+          </Card>
+        )}
 
-        <div className="mt-6 flex flex-wrap gap-4">
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 rounded" style={{ backgroundColor: eventTypeColors.meeting }} />
-            <span className="text-sm">Meetings</span>
+        {!isMobile && (
+          <div className="mt-6 flex flex-wrap gap-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: eventTypeColors.meeting }} />
+              <span className="text-sm">Meetings</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: eventTypeColors.call }} />
+              <span className="text-sm">Calls</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: eventTypeColors.appointment }} />
+              <span className="text-sm">Appointments</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: eventTypeColors.deadline }} />
+              <span className="text-sm">Deadlines</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: eventTypeColors.task }} />
+              <span className="text-sm">Tasks</span>
+            </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 rounded" style={{ backgroundColor: eventTypeColors.call }} />
-            <span className="text-sm">Calls</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 rounded" style={{ backgroundColor: eventTypeColors.appointment }} />
-            <span className="text-sm">Appointments</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 rounded" style={{ backgroundColor: eventTypeColors.deadline }} />
-            <span className="text-sm">Deadlines</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 rounded" style={{ backgroundColor: eventTypeColors.task }} />
-            <span className="text-sm">Tasks</span>
-          </div>
-        </div>
+        )}
       </div>
+
+      {isMobile && (
+        <MobileActionButton
+          onClick={() => { setDefaultDate(undefined); setEditingEvent(null); setShowEventModal(true); }}
+          icon={<Plus className="h-6 w-6" />}
+          label="Create Event"
+        />
+      )}
 
       <EventModal
         open={showEventModal}
