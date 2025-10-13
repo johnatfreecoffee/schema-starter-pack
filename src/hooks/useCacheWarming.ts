@@ -34,7 +34,7 @@ export const useCacheWarming = () => {
 
         // Warm services list (for navigation/forms)
         try {
-          const result = await supabase
+          const result = await (supabase as any)
             .from('services')
             .select('id, name, slug, status')
             .eq('status', true)

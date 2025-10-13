@@ -87,7 +87,7 @@ export const warmCriticalCaches = async () => {
     }
 
     // Warm services list
-    const servicesResult = await supabase
+    const servicesResult = await (supabase as any)
       .from('services')
       .select('id, name, slug, status')
       .eq('status', true);
