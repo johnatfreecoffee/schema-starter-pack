@@ -50,6 +50,7 @@ import PageRegenerator from "./pages/dashboard/PageRegenerator";
 import EmailTemplates from "./pages/dashboard/settings/EmailTemplates";
 import Notifications from "./pages/dashboard/settings/Notifications";
 import PerformanceSettings from "./pages/dashboard/settings/Performance";
+import BackupManagement from "./pages/dashboard/settings/BackupManagement";
 import EmailQueue from "./pages/dashboard/EmailQueue";
 import Team from "./pages/dashboard/Team";
 import Import from "./pages/dashboard/Import";
@@ -177,6 +178,7 @@ const AppContent = () => {
           <Route path="/dashboard/settings/notifications" element={<Notifications />} />
           <Route path="/dashboard/settings/qa-testing" element={<QATesting />} />
           <Route path="/dashboard/settings/performance" element={<PerformanceSettings />} />
+          <Route path="/dashboard/settings/backup-management" element={<BackupManagement />} />
           <Route path="/dashboard/email-queue" element={<EmailQueue />} />
           <Route path="/dashboard/regenerate-pages" element={<PageRegenerator />} />
           
