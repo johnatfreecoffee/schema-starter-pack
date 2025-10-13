@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { PhoneInput } from '@/components/lead-form/PhoneInput';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ContactFormProps {
   open: boolean;
@@ -18,6 +20,7 @@ interface ContactFormProps {
 
 export const ContactForm = ({ open, onOpenChange, accountId, contact, onSuccess }: ContactFormProps) => {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -90,116 +93,138 @@ export const ContactForm = ({ open, onOpenChange, accountId, contact, onSuccess 
     }
   };
 
+  const formContent = (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-4`}>
+        <div>
+          <Label htmlFor="first_name">First Name *</Label>
+          <Input
+            id="first_name"
+            value={formData.first_name}
+            onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+            required
+            className="min-h-[44px]"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="last_name">Last Name *</Label>
+          <Input
+            id="last_name"
+            value={formData.last_name}
+            onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+            required
+            className="min-h-[44px]"
+          />
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="email">Email *</Label>
+        <Input
+          id="email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          required
+          className="min-h-[44px]"
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="phone">Phone *</Label>
+        <PhoneInput
+          value={formData.phone}
+          onChange={(value) => setFormData({ ...formData, phone: value })}
+          required
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="mobile">Mobile</Label>
+        <PhoneInput
+          value={formData.mobile}
+          onChange={(value) => setFormData({ ...formData, mobile: value })}
+        />
+      </div>
+
+      <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-4`}>
+        <div>
+          <Label htmlFor="title">Title/Position</Label>
+          <Input
+            id="title"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            className="min-h-[44px]"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="department">Department</Label>
+          <Input
+            id="department"
+            value={formData.department}
+            onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+            className="min-h-[44px]"
+          />
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="notes">Internal Notes</Label>
+        <Input
+          id="notes"
+          value={formData.notes}
+          onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+          placeholder="Internal notes about this contact"
+          className="min-h-[44px]"
+        />
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="is_primary"
+          checked={formData.is_primary}
+          onCheckedChange={(checked) => 
+            setFormData({ ...formData, is_primary: checked as boolean })
+          }
+        />
+        <Label htmlFor="is_primary" className="cursor-pointer">
+          Set as primary contact
+        </Label>
+      </div>
+
+      <div className={`flex gap-2 ${isMobile ? 'flex-col' : 'justify-end'}`}>
+        <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className={isMobile ? 'w-full' : ''}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={loading} className={isMobile ? 'w-full' : ''}>
+          {loading ? 'Saving...' : contact ? 'Update Contact' : 'Add Contact'}
+        </Button>
+      </div>
+    </form>
+  );
+
+  if (isMobile) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>{contact ? 'Edit Contact' : 'Add Contact'}</SheetTitle>
+          </SheetHeader>
+          <div className="mt-4">{formContent}</div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{contact ? 'Edit Contact' : 'Add Contact'}</DialogTitle>
         </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="first_name">First Name *</Label>
-              <Input
-                id="first_name"
-                value={formData.first_name}
-                onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="last_name">Last Name *</Label>
-              <Input
-                id="last_name"
-                value={formData.last_name}
-                onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="email">Email *</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="phone">Phone *</Label>
-            <PhoneInput
-              value={formData.phone}
-              onChange={(value) => setFormData({ ...formData, phone: value })}
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="mobile">Mobile</Label>
-            <PhoneInput
-              value={formData.mobile}
-              onChange={(value) => setFormData({ ...formData, mobile: value })}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="title">Title/Position</Label>
-              <Input
-                id="title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="department">Department</Label>
-              <Input
-                id="department"
-                value={formData.department}
-                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="notes">Internal Notes</Label>
-            <Input
-              id="notes"
-              value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder="Internal notes about this contact"
-            />
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="is_primary"
-              checked={formData.is_primary}
-              onCheckedChange={(checked) => 
-                setFormData({ ...formData, is_primary: checked as boolean })
-              }
-            />
-            <Label htmlFor="is_primary" className="cursor-pointer">
-              Set as primary contact
-            </Label>
-          </div>
-
-          <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Saving...' : contact ? 'Update Contact' : 'Add Contact'}
-            </Button>
-          </div>
-        </form>
+        {formContent}
       </DialogContent>
     </Dialog>
   );

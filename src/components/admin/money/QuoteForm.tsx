@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import LineItemsEditor, { LineItem } from './LineItemsEditor';
 
 type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'declined' | 'expired' | 'converted';
@@ -20,6 +22,7 @@ interface QuoteFormProps {
 
 const QuoteForm = ({ open, onOpenChange, quote, onSuccess }: QuoteFormProps) => {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [loading, setLoading] = useState(false);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
@@ -249,191 +252,212 @@ const QuoteForm = ({ open, onOpenChange, quote, onSuccess }: QuoteFormProps) => 
 
   const totals = calculateTotals();
 
+  const formContent = (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-4`}>
+        <div>
+          <Label>Account *</Label>
+          <Select
+            value={formData.account_id}
+            onValueChange={(value) => setFormData({ ...formData, account_id: value, project_id: '' })}
+          >
+            <SelectTrigger className="min-h-[44px]">
+              <SelectValue placeholder="Select account" />
+            </SelectTrigger>
+            <SelectContent>
+              {accounts.map((account) => (
+                <SelectItem key={account.id} value={account.id}>
+                  {account.account_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label>Project (Optional)</Label>
+          <Select
+            value={formData.project_id}
+            onValueChange={(value) => setFormData({ ...formData, project_id: value })}
+            disabled={!formData.account_id}
+          >
+            <SelectTrigger className="min-h-[44px]">
+              <SelectValue placeholder="Select project" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">None</SelectItem>
+              {projects.map((project) => (
+                <SelectItem key={project.id} value={project.id}>
+                  {project.project_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label>Valid Until</Label>
+          <Input
+            type="date"
+            value={formData.valid_until}
+            onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
+            className="min-h-[44px]"
+          />
+        </div>
+
+        {quote && (
+          <div>
+            <Label>Status</Label>
+            <Select
+              value={formData.status}
+              onValueChange={(value: QuoteStatus) => setFormData({ ...formData, status: value })}
+            >
+              <SelectTrigger className="min-h-[44px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="sent">Sent</SelectItem>
+                <SelectItem value="accepted">Accepted</SelectItem>
+                <SelectItem value="declined">Declined</SelectItem>
+                <SelectItem value="expired">Expired</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+      </div>
+
+      <LineItemsEditor items={lineItems} onChange={setLineItems} />
+
+      <div className="border-t pt-4">
+        <h3 className="text-lg font-semibold mb-4">Calculations</h3>
+        
+        <div className="space-y-4">
+          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-4`}>
+            <div>
+              <Label>Discount Type</Label>
+              <Select
+                value={formData.discount_type}
+                onValueChange={(value: any) => setFormData({ ...formData, discount_type: value })}
+              >
+                <SelectTrigger className="min-h-[44px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="percentage">Percentage</SelectItem>
+                  <SelectItem value="fixed">Fixed Amount</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {formData.discount_type !== 'none' && (
+              <div>
+                <Label>Discount Value</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={formData.discount_value}
+                  onChange={(e) => setFormData({ ...formData, discount_value: e.target.value })}
+                  placeholder="0.00"
+                  className="min-h-[44px]"
+                />
+              </div>
+            )}
+
+            <div>
+              <Label>Tax Rate (%)</Label>
+              <Input
+                type="number"
+                min="0"
+                max="100"
+                step="0.01"
+                value={formData.tax_rate}
+                onChange={(e) => setFormData({ ...formData, tax_rate: e.target.value })}
+                className="min-h-[44px]"
+              />
+            </div>
+          </div>
+
+          <div className="bg-muted p-4 rounded-lg space-y-2">
+            <div className="flex justify-between">
+              <span>Subtotal:</span>
+              <span className="font-medium">${totals.subtotal.toFixed(2)}</span>
+            </div>
+            {totals.discountAmount > 0 && (
+              <div className="flex justify-between text-destructive">
+                <span>Discount:</span>
+                <span>-${totals.discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span>Tax ({formData.tax_rate}%):</span>
+              <span className="font-medium">${totals.taxAmount.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-lg font-bold border-t pt-2">
+              <span>Total:</span>
+              <span>${totals.totalAmount.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-4`}>
+        <div>
+          <Label>Internal Notes</Label>
+          <Textarea
+            value={formData.notes}
+            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+            placeholder="Internal notes (not shown to customer)"
+            rows={3}
+            className="min-h-[44px]"
+          />
+        </div>
+
+        <div>
+          <Label>Terms & Conditions</Label>
+          <Textarea
+            value={formData.terms}
+            onChange={(e) => setFormData({ ...formData, terms: e.target.value })}
+            placeholder="Terms shown on quote PDF"
+            rows={3}
+            className="min-h-[44px]"
+          />
+        </div>
+      </div>
+
+      <div className={`flex gap-2 ${isMobile ? 'flex-col' : 'justify-end'}`}>
+        <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className={isMobile ? 'w-full' : ''}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={loading} className={isMobile ? 'w-full' : ''}>
+          {loading ? 'Saving...' : quote ? 'Update Quote' : 'Create Quote'}
+        </Button>
+      </div>
+    </form>
+  );
+
+  if (isMobile) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>{quote ? 'Edit Quote' : 'Create New Quote'}</SheetTitle>
+          </SheetHeader>
+          <div className="mt-4">{formContent}</div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{quote ? 'Edit Quote' : 'Create New Quote'}</DialogTitle>
         </DialogHeader>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Account *</Label>
-              <Select
-                value={formData.account_id}
-                onValueChange={(value) => setFormData({ ...formData, account_id: value, project_id: '' })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select account" />
-                </SelectTrigger>
-                <SelectContent>
-                  {accounts.map((account) => (
-                    <SelectItem key={account.id} value={account.id}>
-                      {account.account_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label>Project (Optional)</Label>
-              <Select
-                value={formData.project_id}
-                onValueChange={(value) => setFormData({ ...formData, project_id: value })}
-                disabled={!formData.account_id}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select project" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">None</SelectItem>
-                  {projects.map((project) => (
-                    <SelectItem key={project.id} value={project.id}>
-                      {project.project_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label>Valid Until</Label>
-              <Input
-                type="date"
-                value={formData.valid_until}
-                onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
-              />
-            </div>
-
-            {quote && (
-              <div>
-                <Label>Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value: QuoteStatus) => setFormData({ ...formData, status: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="sent">Sent</SelectItem>
-                    <SelectItem value="accepted">Accepted</SelectItem>
-                    <SelectItem value="declined">Declined</SelectItem>
-                    <SelectItem value="expired">Expired</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-          </div>
-
-          <LineItemsEditor items={lineItems} onChange={setLineItems} />
-
-          <div className="border-t pt-4">
-            <h3 className="text-lg font-semibold mb-4">Calculations</h3>
-            
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Discount Type</Label>
-                  <Select
-                    value={formData.discount_type}
-                    onValueChange={(value: any) => setFormData({ ...formData, discount_type: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      <SelectItem value="percentage">Percentage</SelectItem>
-                      <SelectItem value="fixed">Fixed Amount</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {formData.discount_type !== 'none' && (
-                  <div>
-                    <Label>Discount Value</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={formData.discount_value}
-                      onChange={(e) => setFormData({ ...formData, discount_value: e.target.value })}
-                      placeholder="0.00"
-                    />
-                  </div>
-                )}
-
-                <div>
-                  <Label>Tax Rate (%)</Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.01"
-                    value={formData.tax_rate}
-                    onChange={(e) => setFormData({ ...formData, tax_rate: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div className="bg-muted p-4 rounded-lg space-y-2">
-                <div className="flex justify-between">
-                  <span>Subtotal:</span>
-                  <span className="font-medium">${totals.subtotal.toFixed(2)}</span>
-                </div>
-                {totals.discountAmount > 0 && (
-                  <div className="flex justify-between text-destructive">
-                    <span>Discount:</span>
-                    <span>-${totals.discountAmount.toFixed(2)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span>Tax ({formData.tax_rate}%):</span>
-                  <span className="font-medium">${totals.taxAmount.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-lg font-bold border-t pt-2">
-                  <span>Total:</span>
-                  <span>${totals.totalAmount.toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Internal Notes</Label>
-              <Textarea
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Internal notes (not shown to customer)"
-                rows={3}
-              />
-            </div>
-
-            <div>
-              <Label>Terms & Conditions</Label>
-              <Textarea
-                value={formData.terms}
-                onChange={(e) => setFormData({ ...formData, terms: e.target.value })}
-                placeholder="Terms shown on quote PDF"
-                rows={3}
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Saving...' : quote ? 'Update Quote' : 'Create Quote'}
-            </Button>
-          </div>
-        </form>
+        {formContent}
       </DialogContent>
     </Dialog>
   );
