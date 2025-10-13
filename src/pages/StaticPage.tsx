@@ -2,12 +2,15 @@ import { useParams, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import PublicLayout from '@/components/layout/PublicLayout';
+import { useCachedQuery } from '@/hooks/useCachedQuery';
 
 const StaticPage = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  const { data: page, isLoading } = useQuery({
+  const { data: page, isLoading } = useCachedQuery({
     queryKey: ['static-page', slug],
+    cacheKey: `pages:static:${slug}`,
+    cacheTTL: 60 * 60 * 1000, // 1 hour
     queryFn: async () => {
       const { data, error } = await supabase
         .from('static_pages')
@@ -21,8 +24,10 @@ const StaticPage = () => {
     }
   });
 
-  const { data: companySettings } = useQuery({
+  const { data: companySettings } = useCachedQuery({
     queryKey: ['company-settings'],
+    cacheKey: 'company:settings',
+    cacheTTL: 24 * 60 * 60 * 1000, // 24 hours
     queryFn: async () => {
       const { data, error } = await supabase
         .from('company_settings')

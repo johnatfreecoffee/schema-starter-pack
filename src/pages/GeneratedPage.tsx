@@ -5,13 +5,16 @@ import PublicLayout from '@/components/layout/PublicLayout';
 import NotFound from './NotFound';
 import { renderTemplate, formatPrice, formatPhone } from '@/lib/templateEngine';
 import { ServiceReviews } from '@/components/reviews/ServiceReviews';
+import { useCachedQuery } from '@/hooks/useCachedQuery';
 
 const GeneratedPage = () => {
   const { citySlug, serviceSlug } = useParams<{ citySlug: string; serviceSlug: string }>();
   const urlPath = `/${citySlug}/${serviceSlug}`;
 
-  const { data: page, isLoading, error } = useQuery({
+  const { data: page, isLoading, error } = useCachedQuery({
     queryKey: ['generated-page', urlPath],
+    cacheKey: `pages:generated:${urlPath}`,
+    cacheTTL: 60 * 60 * 1000, // 1 hour
     queryFn: async () => {
       const { data, error } = await supabase
         .from('generated_pages')
@@ -32,8 +35,10 @@ const GeneratedPage = () => {
     },
   });
 
-  const { data: company } = useQuery({
+  const { data: company } = useCachedQuery({
     queryKey: ['company-settings'],
+    cacheKey: 'company:settings',
+    cacheTTL: 24 * 60 * 60 * 1000, // 24 hours
     queryFn: async () => {
       const { data, error } = await supabase
         .from('company_settings')
