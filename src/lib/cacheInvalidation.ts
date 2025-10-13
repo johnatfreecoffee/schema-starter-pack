@@ -1,4 +1,5 @@
 import { cacheService } from './cacheService';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
  * Cache invalidation utilities
@@ -67,4 +68,59 @@ export const cacheInvalidation = {
   async invalidateAll() {
     await cacheService.clear();
   },
+};
+
+/**
+ * Warm critical caches with frequently accessed data
+ */
+export const warmCriticalCaches = async () => {
+  console.log('Warming critical caches...');
+  
+  try {
+    // Warm company settings
+    const { data: company } = await supabase
+      .from('company_settings')
+      .select('*')
+      .single();
+    if (company) {
+      await cacheService.set('company:settings', company, 24 * 60 * 60 * 1000);
+    }
+
+    // Warm services list
+    const servicesResult = await supabase
+      .from('services')
+      .select('id, name, slug, status')
+      .eq('status', true);
+    if (servicesResult.data) {
+      await cacheService.set('services:list', servicesResult.data, 60 * 60 * 1000);
+    }
+
+    // Warm service areas
+    const { data: areas, error: areasError } = await supabase
+      .from('service_areas')
+      .select('id, city_name, city_slug, display_name, status')
+      .eq('status', true);
+    if (!areasError && areas) {
+      await cacheService.set('areas:list', areas, 60 * 60 * 1000);
+    }
+
+    // Warm top 5 generated pages
+    const { data: topPages, error: pagesError } = await supabase
+      .from('generated_pages')
+      .select('id, url_path, page_title, status, view_count')
+      .eq('status', true)
+      .order('view_count', { ascending: false })
+      .limit(5);
+
+    if (!pagesError && topPages) {
+      for (const page of topPages) {
+        await cacheService.set(`pages:generated:${page.url_path}`, page, 60 * 60 * 1000);
+      }
+    }
+
+    console.log('Cache warming complete');
+  } catch (error) {
+    console.error('Cache warming error:', error);
+    throw error;
+  }
 };

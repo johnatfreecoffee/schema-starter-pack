@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { GlobalLeadFormModal } from "@/components/lead-form/GlobalLeadFormModal";
+import { useCacheWarming } from "@/hooks/useCacheWarming";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -92,9 +93,12 @@ import AutoAssignment from "./pages/dashboard/AutoAssignment";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+const AppContent = () => {
+  // Warm cache on app initialization
+  useCacheWarming();
+  
+  return (
+    <>
       <Toaster />
       <Sonner />
       <GlobalLeadFormModal />
@@ -196,6 +200,14 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+    </>
+  );
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <AppContent />
     </TooltipProvider>
   </QueryClientProvider>
 );

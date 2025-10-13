@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import ServiceForm from '@/components/admin/settings/services/ServiceForm';
 import ServicePreview from '@/components/admin/settings/services/ServicePreview';
+import { cacheInvalidation } from '@/lib/cacheInvalidation';
 
 const ServicesSettings = () => {
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
@@ -66,8 +67,10 @@ const ServicesSettings = () => {
         .eq('id', id);
       
       if (error) throw error;
+      return id;
     },
-    onSuccess: () => {
+    onSuccess: async (deletedServiceId) => {
+      await cacheInvalidation.invalidateService(deletedServiceId);
       queryClient.invalidateQueries({ queryKey: ['services'] });
       toast({ title: 'Service deleted successfully' });
       setDeleteDialogOpen(false);

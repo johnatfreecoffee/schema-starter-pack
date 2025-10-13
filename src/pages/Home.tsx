@@ -2,10 +2,16 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import PublicLayout from '@/components/layout/PublicLayout';
 import Index from './Index';
+import { useCachedQuery } from '@/hooks/useCachedQuery';
+import { useEffect } from 'react';
 
 const Home = () => {
-  const { data: homepage, isLoading } = useQuery({
+  const startTime = performance.now();
+
+  const { data: homepage, isLoading } = useCachedQuery({
     queryKey: ['homepage'],
+    cacheKey: 'pages:homepage',
+    cacheTTL: 60 * 60 * 1000, // 1 hour
     queryFn: async () => {
       const { data, error } = await supabase
         .from('static_pages')
@@ -19,8 +25,10 @@ const Home = () => {
     }
   });
 
-  const { data: companySettings } = useQuery({
+  const { data: companySettings } = useCachedQuery({
     queryKey: ['company-settings'],
+    cacheKey: 'company:settings',
+    cacheTTL: 24 * 60 * 60 * 1000, // 24 hours
     queryFn: async () => {
       const { data, error } = await supabase
         .from('company_settings')
@@ -30,6 +38,14 @@ const Home = () => {
       return data;
     }
   });
+
+  // Track page load performance
+  useEffect(() => {
+    if (!isLoading && (homepage || companySettings)) {
+      const loadTime = performance.now() - startTime;
+      console.log(`Home page loaded in ${loadTime.toFixed(2)}ms`);
+    }
+  }, [isLoading, homepage, companySettings, startTime]);
 
   if (isLoading) {
     return (

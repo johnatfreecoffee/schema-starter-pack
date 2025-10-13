@@ -11,6 +11,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { cacheInvalidation } from '@/lib/cacheInvalidation';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Service name is required').max(100),
@@ -118,7 +119,8 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
 
       return { service: newService, pagesCount: generatedPages.length };
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      await cacheInvalidation.invalidateService(data.service.id);
       queryClient.invalidateQueries({ queryKey: ['services'] });
       toast({
         title: 'Service created!',
@@ -170,7 +172,8 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         }
       }
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await cacheInvalidation.invalidateService(service.id);
       queryClient.invalidateQueries({ queryKey: ['services'] });
       toast({ title: 'Service updated!' });
       onSuccess();
