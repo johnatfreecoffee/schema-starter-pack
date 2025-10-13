@@ -8,7 +8,7 @@ import { CRUDLogger } from '@/lib/crudLogger';
 
 interface PermissionsMatrixProps {
   userId: string;
-  userRole: 'admin' | 'crm_user' | 'customer';
+  userRole: string;
 }
 
 interface Permission {
@@ -57,10 +57,10 @@ export function PermissionsMatrix({ userId, userRole }: PermissionsMatrixProps) 
       MODULES.forEach(module => {
         permissionsMap[module.id] = {
           module: module.id,
-          can_view: userRole === 'admin',
-          can_create: userRole === 'admin',
-          can_edit: userRole === 'admin',
-          can_delete: userRole === 'admin',
+          can_view: userRole === 'Super Admin' || userRole === 'Admin',
+          can_create: userRole === 'Super Admin' || userRole === 'Admin',
+          can_edit: userRole === 'Super Admin' || userRole === 'Admin',
+          can_delete: userRole === 'Super Admin' || userRole === 'Admin',
         };
       });
 
@@ -164,7 +164,7 @@ export function PermissionsMatrix({ userId, userRole }: PermissionsMatrixProps) 
     );
   }
 
-  const isAdmin = userRole === 'admin';
+  const isAdmin = userRole === 'Super Admin' || userRole === 'Admin';
 
   return (
     <div className="space-y-4">

@@ -110,29 +110,20 @@ const Tasks = () => {
 
       // Load users for filters
       const { data: usersData, error: usersError } = await supabase
-        .from("user_roles")
+        .from("user_profiles")
         .select(`
-          user_id,
-          role
-        `)
-        .in("role", ["admin", "crm_user"]);
+          id,
+          full_name,
+          email
+        `);
 
       if (usersError) throw usersError;
 
-      // Get user details from auth.users metadata
-      const userIds = usersData?.map(u => u.user_id) || [];
-      const usersList: any[] = [];
-      for (const userId of userIds) {
-        const { data: userData } = await supabase.auth.admin.getUserById(userId);
-        if (userData?.user?.user_metadata) {
-          usersList.push({
-            id: userId,
-            first_name: userData.user.user_metadata.first_name || "Unknown",
-            last_name: userData.user.user_metadata.last_name || "User"
-          });
-        }
-      }
-      setUsers(usersList);
+      setUsers((usersData || []).map(user => ({
+        id: user.id,
+        first_name: user.full_name || user.email || "Unknown",
+        last_name: ""
+      })));
 
       // Build query
       let query = supabase
@@ -352,8 +343,8 @@ const Tasks = () => {
   };
 
   // Permission controls
-  const canBulkEdit = role === 'admin' || bulkSelection.selectedItems.every(item => item.assigned_to === currentUserId || item.created_by === currentUserId);
-  const canBulkDelete = role === 'admin';
+  const canBulkEdit = role === 'Super Admin' || role === 'Admin' || bulkSelection.selectedItems.every(item => item.assigned_to === currentUserId || item.created_by === currentUserId);
+  const canBulkDelete = role === 'Super Admin' || role === 'Admin';
 
   // Bulk operations handlers
   const bulkActions: BulkAction[] = [

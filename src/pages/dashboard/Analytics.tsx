@@ -141,7 +141,7 @@ const Analytics = () => {
     );
   }
 
-  if (role !== 'admin') {
+  if (role !== 'Super Admin' && role !== 'Admin') {
     return (
       <AdminLayout>
         <div className="flex flex-col items-center justify-center min-h-screen">

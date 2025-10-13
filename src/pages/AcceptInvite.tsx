@@ -132,12 +132,22 @@ const AcceptInvite = () => {
       if (profileError) throw profileError;
 
       // Assign role
-      const { error: roleError } = await supabase
-        .from('user_roles')
-        .update({ role: invitation.role })
-        .eq('user_id', authData.user.id);
+      const { data: roleData } = await supabase
+        .from('roles')
+        .select('id')
+        .eq('name', invitation.role)
+        .single();
 
-      if (roleError) throw roleError;
+      if (roleData) {
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: authData.user.id,
+            role_id: roleData.id
+          });
+
+        if (roleError) throw roleError;
+      }
 
       // Mark invitation as accepted
       const { error: inviteError } = await supabase

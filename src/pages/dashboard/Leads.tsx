@@ -475,8 +475,8 @@ const Leads = () => {
   };
 
   // Permission checks
-  const canBulkEdit = userRole === 'admin' || leads.every(l => bulkSelection.selectedIds.has(l.id) ? l.assigned_to === users.find(u => u.id)?.id : true);
-  const canBulkDelete = userRole === 'admin';
+  const canBulkEdit = userRole === 'Super Admin' || userRole === 'Admin' || leads.every(l => bulkSelection.selectedIds.has(l.id) ? l.assigned_to === users.find(u => u.id)?.id : true);
+  const canBulkDelete = userRole === 'Super Admin' || userRole === 'Admin';
 
   const bulkActions: BulkAction[] = [
     {

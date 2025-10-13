@@ -22,27 +22,15 @@ export function TaskAdvancedFilters({ values, onChange }: TaskAdvancedFiltersPro
     queryKey: ['users-for-filters'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('user_roles')
-        .select('user_id, role')
-        .in('role', ['admin', 'crm_user']);
+        .from('user_profiles')
+        .select('id, full_name, email');
       
       if (error) throw error;
       
-      // Get user details
-      const userIds = data?.map(u => u.user_id) || [];
-      const usersList: any[] = [];
-      
-      for (const userId of userIds) {
-        const { data: userData } = await supabase.auth.admin.getUserById(userId);
-        if (userData?.user) {
-          usersList.push({
-            value: userId,
-            label: `${userData.user.user_metadata?.first_name || ''} ${userData.user.user_metadata?.last_name || ''}`.trim() || userData.user.email || 'Unknown'
-          });
-        }
-      }
-      
-      return usersList;
+      return (data || []).map(user => ({
+        value: user.id,
+        label: user.full_name || user.email || 'Unknown'
+      }));
     }
   });
 

@@ -79,14 +79,14 @@ export function UserDetailDialog({ open, onOpenChange, userId, onSuccess }: User
       // Load role
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
-        .select('role')
+        .select('role_id, roles(name)')
         .eq('user_id', userId)
         .single();
 
       if (roleError) throw roleError;
 
       setProfile(profileData as UserProfile);
-      setRole(roleData.role);
+      setRole((roleData as any)?.roles?.name || 'customer');
     } catch (error: any) {
       console.error('Error loading user data:', error);
       toast({
@@ -174,16 +174,34 @@ export function UserDetailDialog({ open, onOpenChange, userId, onSuccess }: User
       if (profileError) throw profileError;
 
       // Update role if changed
-      const newRole = formData.get('role') as 'admin' | 'crm_user';
+      const newRole = formData.get('role') as string;
       if (newRole !== role) {
-        const { error: roleError } = await supabase
-          .from('user_roles')
-          .update({ role: newRole })
-          .eq('user_id', userId);
+        // Get the role ID for the selected role name
+        const { data: newRoleData } = await supabase
+          .from('roles')
+          .select('id')
+          .eq('name', newRole)
+          .single();
 
-        if (roleError) throw roleError;
+        if (newRoleData) {
+          // Delete existing role
+          await supabase
+            .from('user_roles')
+            .delete()
+            .eq('user_id', userId);
 
-        changes['role'] = { old: role, new: newRole };
+          // Insert new role
+          const { error: roleError } = await supabase
+            .from('user_roles')
+            .insert({
+              user_id: userId,
+              role_id: newRoleData.id
+            });
+
+          if (roleError) throw roleError;
+
+          changes['role'] = { old: role, new: newRole };
+        }
       }
 
       // Log the update

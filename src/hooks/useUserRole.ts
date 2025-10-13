@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-export type UserRole = 'admin' | 'crm_user' | 'customer' | null;
+export type UserRole = 'Super Admin' | 'Admin' | 'Sales Manager' | 'Technician' | 'Office Staff' | 'Read-Only User' | 'customer' | null;
 
 export const useUserRole = () => {
   const [role, setRole] = useState<UserRole>(null);
@@ -19,15 +19,15 @@ export const useUserRole = () => {
 
       const { data, error } = await supabase
         .from('user_roles')
-        .select('role')
+        .select('role_id, roles(name)')
         .eq('user_id', user.id)
         .maybeSingle();
 
       if (error) {
         console.error('Error fetching user role:', error);
         setRole('customer'); // Default to customer
-      } else if (data) {
-        setRole(data.role as UserRole);
+      } else if (data && data.roles) {
+        setRole(data.roles.name as UserRole);
       } else {
         setRole('customer');
       }

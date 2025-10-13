@@ -279,8 +279,8 @@ const Appointments = () => {
   }, [bulkSelection.selectedCount]);
 
   // Permission controls
-  const canBulkEdit = role === 'admin';
-  const canBulkDelete = role === 'admin';
+  const canBulkEdit = role === 'Super Admin' || role === 'Admin';
+  const canBulkDelete = role === 'Super Admin' || role === 'Admin';
 
   const handleBulkDelete = async () => {
     const { data: { user } } = await supabase.auth.getUser();

@@ -67,7 +67,7 @@ const Accounts = () => {
           contacts!inner(first_name, last_name, email, phone, is_primary),
           addresses!inner(city, state, is_primary),
           projects(count)
-        `, { count: 'exact' });
+        `, { count: 'exact' }) as any;
 
       // Apply advanced filters
       if (filters.status) {
@@ -231,8 +231,8 @@ const Accounts = () => {
   }, [bulk.selectedCount]);
 
   // Permission controls
-  const canBulkEdit = role === 'admin' || bulk.selectedItems.every(item => item.created_by === users[0]?.id);
-  const canBulkDelete = role === 'admin';
+  const canBulkEdit = role === 'Super Admin' || role === 'Admin' || bulk.selectedItems.every(item => item.created_by === users[0]?.id);
+  const canBulkDelete = role === 'Super Admin' || role === 'Admin';
 
 
   return (

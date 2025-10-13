@@ -41,11 +41,11 @@ const CustomerAuth = () => {
         // Check if user has customer role
         supabase
           .from('user_roles')
-          .select('role')
+          .select('role_id, roles(name)')
           .eq('user_id', session.user.id)
           .maybeSingle()
           .then(({ data }) => {
-            if (data?.role === 'customer') {
+            if ((data as any)?.roles?.name === 'customer') {
               navigate('/customer/dashboard');
             }
           });
@@ -56,11 +56,11 @@ const CustomerAuth = () => {
       if (event === 'SIGNED_IN' && session) {
         const { data } = await supabase
           .from('user_roles')
-          .select('role')
+          .select('role_id, roles(name)')
           .eq('user_id', session.user.id)
           .maybeSingle();
         
-        if (data?.role === 'customer') {
+        if ((data as any)?.roles?.name === 'customer') {
           navigate('/customer/dashboard');
         }
       }
@@ -86,11 +86,11 @@ const CustomerAuth = () => {
       // Verify user has customer role
       const { data: roleData } = await supabase
         .from('user_roles')
-        .select('role')
+        .select('role_id, roles(name)')
         .eq('user_id', data.user.id)
         .maybeSingle();
 
-      if (roleData?.role !== 'customer') {
+      if ((roleData as any)?.roles?.name !== 'customer') {
         await supabase.auth.signOut();
         throw new Error('Invalid credentials for customer portal');
       }
@@ -136,10 +136,19 @@ const CustomerAuth = () => {
       if (error) throw error;
 
       if (data.user) {
-        // Create customer role
-        await supabase
-          .from('user_roles')
-          .insert({ user_id: data.user.id, role: 'customer' });
+        // Get customer role ID
+        const { data: customerRole } = await supabase
+          .from('roles')
+          .select('id')
+          .eq('name', 'customer')
+          .single();
+
+        if (customerRole) {
+          // Create customer role
+          await supabase
+            .from('user_roles')
+            .insert({ user_id: data.user.id, role_id: customerRole.id });
+        }
 
         // Create account for the customer
         await supabase

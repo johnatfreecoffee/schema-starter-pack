@@ -61,7 +61,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     { path: '/dashboard/reviews', icon: Star, label: 'Reviews' },
     { path: '/dashboard/money', icon: DollarSign, label: 'Money' },
     { path: '/dashboard/analytics', icon: BarChart3, label: 'Analytics' },
-    ...(role === 'admin' ? [
+    ...((role === 'Super Admin' || role === 'Admin') ? [
       { path: '/dashboard/team', icon: Users, label: 'Team' },
       { path: '/dashboard/logs', icon: FileText, label: 'Logs' },
       { path: '/dashboard/settings', icon: Settings, label: 'Settings' }
@@ -126,7 +126,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       <main className="flex-1 pb-20 md:pb-4">
         {children}
       </main>
-      {isMobile && <BottomNav isAdmin={role === 'admin'} />}
+      {isMobile && <BottomNav isAdmin={role === 'Super Admin' || role === 'Admin'} />}
     </div>
   );
 };

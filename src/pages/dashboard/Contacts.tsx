@@ -258,7 +258,7 @@ const Contacts = () => {
   };
 
   // Permission checks
-  const canBulkDelete = userRole === 'admin';
+  const canBulkDelete = userRole === 'Super Admin' || userRole === 'Admin';
 
 
   return (

@@ -95,8 +95,9 @@ const Projects = () => {
         .select(`
           *,
           accounts (account_name)
-        `)
-        .order('created_at', { ascending: false });
+        `) as any;
+      
+      query = query.order('created_at', { ascending: false });
 
       if (filters.status?.length > 0) {
         query = query.in('status', filters.status);
@@ -221,7 +222,7 @@ const Projects = () => {
     fetchProjects();
   };
 
-  const canBulkDelete = userRole === 'admin';
+  const canBulkDelete = userRole === 'Super Admin' || userRole === 'Admin';
 
   return (
     <AdminLayout>

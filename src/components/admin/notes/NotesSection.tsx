@@ -63,10 +63,10 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
       setCurrentUserId(user.id);
       const { data: roleData } = await supabase
         .from('user_roles')
-        .select('role')
+        .select('role_id, roles(name)')
         .eq('user_id', user.id)
         .single();
-      setIsAdmin(roleData?.role === 'admin');
+      setIsAdmin((roleData as any)?.roles?.name === 'Super Admin' || (roleData as any)?.roles?.name === 'Admin');
     }
   };
 

@@ -104,13 +104,12 @@ const Team = () => {
       // Get roles for each user
       const { data: roles, error: rolesError } = await supabase
         .from('user_roles')
-        .select('user_id, role')
-        .in('role', ['admin', 'crm_user']);
+        .select('user_id, role_id, roles(name)');
 
       if (rolesError) throw rolesError;
 
       const members: TeamMember[] = (profiles || []).map(profile => {
-        const userRole = roles?.find(r => r.user_id === profile.id);
+        const userRole = roles?.find((r: any) => r.user_id === profile.id);
         
         return {
           id: profile.id,
@@ -121,7 +120,7 @@ const Team = () => {
           job_title: profile.job_title,
           status: profile.status as 'active' | 'suspended',
           last_login_at: profile.last_login_at,
-          role: (userRole?.role || 'customer') as 'admin' | 'crm_user' | 'customer',
+          role: (userRole?.roles?.name || 'customer') as 'admin' | 'crm_user' | 'customer',
           created_at: profile.created_at,
         };
       }).filter(m => m.role !== 'customer');
@@ -171,7 +170,7 @@ const Team = () => {
     );
   }
 
-  if (role !== 'admin') {
+  if (role !== 'Super Admin' && role !== 'Admin') {
     return (
       <AdminLayout>
         <div className="flex flex-col items-center justify-center min-h-screen">

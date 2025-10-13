@@ -32,8 +32,8 @@ export function useUserPermissions(module: string) {
     async function loadPermissions() {
       if (roleLoading) return;
 
-      // Admins have all permissions
-      if (role === 'admin') {
+      // Super Admin and Admin have all permissions
+      if (role === 'Super Admin' || role === 'Admin') {
         setPermissions(ADMIN_PERMISSIONS);
         setLoading(false);
         return;
@@ -46,7 +46,7 @@ export function useUserPermissions(module: string) {
         return;
       }
 
-      // CRM users - fetch their specific permissions
+      // Other roles - fetch their permissions from role_permissions
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
@@ -55,27 +55,44 @@ export function useUserPermissions(module: string) {
           return;
         }
 
-        const { data, error } = await supabase
-          .from('user_permissions')
-          .select('can_view, can_create, can_edit, can_delete')
+        // Get user's role permissions
+        const { data: roleData, error: roleError } = await supabase
+          .from('user_roles')
+          .select('role_id')
           .eq('user_id', user.id)
-          .eq('module', module)
           .maybeSingle();
 
-        if (error) {
-          console.error('Error fetching permissions:', error);
+        if (roleError || !roleData) {
           setPermissions(DEFAULT_PERMISSIONS);
-        } else if (data) {
-          setPermissions({
-            canView: data.can_view,
-            canCreate: data.can_create,
-            canEdit: data.can_edit,
-            canDelete: data.can_delete,
-          });
-        } else {
-          // No specific permissions set, default to view only
-          setPermissions({ ...DEFAULT_PERMISSIONS, canView: true });
+          setLoading(false);
+          return;
         }
+
+        // Get permissions for this role and module
+        const { data: permsData, error: permsError } = await supabase
+          .from('role_permissions')
+          .select('permissions(name, action)')
+          .eq('role_id', roleData.role_id);
+
+        if (permsError || !permsData) {
+          setPermissions({ ...DEFAULT_PERMISSIONS, canView: true });
+          setLoading(false);
+          return;
+        }
+
+        // Parse permissions for this module
+        const modulePerms: ModulePermissions = { ...DEFAULT_PERMISSIONS };
+        permsData.forEach((item: any) => {
+          const perm = item.permissions;
+          if (perm && perm.name.startsWith(module + '.')) {
+            if (perm.action === 'view') modulePerms.canView = true;
+            if (perm.action === 'create') modulePerms.canCreate = true;
+            if (perm.action === 'edit') modulePerms.canEdit = true;
+            if (perm.action === 'delete') modulePerms.canDelete = true;
+          }
+        });
+
+        setPermissions(modulePerms);
       } catch (error) {
         console.error('Error in useUserPermissions:', error);
         setPermissions(DEFAULT_PERMISSIONS);

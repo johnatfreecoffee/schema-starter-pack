@@ -510,8 +510,8 @@ const Money = () => {
   }, [invoicesSelection.selectedCount]);
 
   // Permission controls
-  const canBulkEdit = role === 'admin';
-  const canBulkDelete = role === 'admin';
+  const canBulkEdit = role === 'Super Admin' || role === 'Admin';
+  const canBulkDelete = role === 'Super Admin' || role === 'Admin';
   const isMobile = useIsMobile();
 
   return (
