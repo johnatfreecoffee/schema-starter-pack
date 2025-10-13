@@ -5,6 +5,7 @@ import * as z from 'zod';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/hooks/use-toast';
+import { cacheInvalidation } from '@/lib/cacheInvalidation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -102,6 +103,7 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
           }
         }
 
+        await cacheInvalidation.invalidateServiceArea(area.id);
         toast({ title: 'Service area updated successfully' });
       } else {
         // Create new area
@@ -163,6 +165,7 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
 
         if (pagesError) throw pagesError;
 
+        await cacheInvalidation.invalidateServiceArea(newArea.id);
         toast({ 
           title: 'Service area created successfully',
           description: `${services.length} pages generated for ${data.city_name}`,

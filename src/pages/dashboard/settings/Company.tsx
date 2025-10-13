@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
+import { cacheInvalidation } from '@/lib/cacheInvalidation';
 import AdminLayout from '@/components/layout/AdminLayout';
 import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -159,7 +160,8 @@ const CompanySettings = () => {
         if (error) throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await cacheInvalidation.invalidateCompanySettings();
       queryClient.invalidateQueries({ queryKey: ['company-settings'] });
       setLogoFile(null);
       setIconFile(null);

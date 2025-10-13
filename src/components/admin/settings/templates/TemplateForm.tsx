@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { cacheInvalidation } from '@/lib/cacheInvalidation';
 import TemplateEditor from './TemplateEditor';
 import VariableReference from './VariableReference';
 
@@ -67,7 +68,8 @@ const TemplateForm = ({ template, onSuccess, onCancel }: TemplateFormProps) => {
         if (error) throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      await cacheInvalidation.invalidateTemplate(template?.id);
       toast({
         title: 'Success',
         description: template ? 'Template updated successfully' : 'Template created successfully',

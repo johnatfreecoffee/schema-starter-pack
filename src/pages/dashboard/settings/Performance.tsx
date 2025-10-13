@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cacheService, CacheStats, DEFAULT_TTL, CacheItem } from '@/lib/cacheService';
+import { warmCriticalCaches } from '@/lib/cacheInvalidation';
 import { toast } from 'sonner';
 import { 
   Zap, 
@@ -98,11 +99,12 @@ const Performance = () => {
   const handleWarmCache = async () => {
     setWarming(true);
     try {
-      await cacheService.warmCache();
+      await warmCriticalCaches();
       await loadCacheStats();
       await loadCacheItems();
       toast.success('Cache warmed successfully');
     } catch (error) {
+      console.error('Cache warming error:', error);
       toast.error('Failed to warm cache');
     } finally {
       setWarming(false);

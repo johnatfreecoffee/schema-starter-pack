@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { cacheInvalidation } from '@/lib/cacheInvalidation';
 import { useState } from 'react';
 import { Eye, Pencil, Trash2, Plus, LayoutGrid, List, Settings, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -66,7 +67,8 @@ const ServiceAreas = () => {
       
       if (pagesError) throw pagesError;
     },
-    onSuccess: () => {
+    onSuccess: async (_, variables) => {
+      await cacheInvalidation.invalidateServiceArea(variables.id);
       queryClient.invalidateQueries({ queryKey: ['service-areas'] });
       toast({ title: 'Area status updated' });
     },
@@ -80,8 +82,10 @@ const ServiceAreas = () => {
         .eq('id', id);
       
       if (error) throw error;
+      return id;
     },
-    onSuccess: () => {
+    onSuccess: async (deletedId) => {
+      await cacheInvalidation.invalidateServiceArea(deletedId);
       queryClient.invalidateQueries({ queryKey: ['service-areas'] });
       toast({ title: 'Service area deleted successfully' });
       setDeleteDialogOpen(false);

@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { cacheInvalidation } from '@/lib/cacheInvalidation';
 import ColorPicker from './ColorPicker';
 
 const BrandTheme = () => {
@@ -74,7 +75,8 @@ const BrandTheme = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      await cacheInvalidation.invalidateSiteSettings();
       queryClient.invalidateQueries({ queryKey: ['site-settings'] });
       
       // Apply to CSS variables

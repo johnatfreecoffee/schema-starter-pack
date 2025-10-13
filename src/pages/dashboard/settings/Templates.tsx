@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { cacheInvalidation } from '@/lib/cacheInvalidation';
 import AdminLayout from '@/components/layout/AdminLayout';
 import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Button } from '@/components/ui/button';
@@ -114,6 +115,7 @@ const Templates = () => {
       return;
     }
 
+    await cacheInvalidation.invalidateTemplate(selectedTemplate.id);
     queryClient.invalidateQueries({ queryKey: ['templates'] });
     setShowAIEditor(false);
     toast({

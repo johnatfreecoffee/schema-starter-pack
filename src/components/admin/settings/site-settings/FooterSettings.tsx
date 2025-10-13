@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
+import { cacheInvalidation } from '@/lib/cacheInvalidation';
 import ColorPicker from './ColorPicker';
 import SocialMediaManager from './SocialMediaManager';
 
@@ -79,7 +80,8 @@ const FooterSettings = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      await cacheInvalidation.invalidateSiteSettings();
       queryClient.invalidateQueries({ queryKey: ['site-settings'] });
       
       // Apply to CSS variables
