@@ -78,8 +78,9 @@ const Projects = () => {
 
   const loadUsers = async () => {
     try {
-      const { data } = await supabase.from('user_roles').select('user_id').in('role', ['admin', 'crm_user']);
-      setUsers(data?.map((ur, idx) => ({ id: ur.user_id, name: `User ${idx + 1}` })) || []);
+      const query: any = supabase.from('user_roles').select('user_id');
+      const { data } = await query.in('role', ['admin', 'crm_user']);
+      setUsers(data?.map((ur: any, idx: number) => ({ id: ur.user_id, name: `User ${idx + 1}` })) || []);
     } catch (error) {
       console.error('Error loading users:', error);
     }

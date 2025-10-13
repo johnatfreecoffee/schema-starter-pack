@@ -198,15 +198,15 @@ const Leads = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
+      const query: any = supabase
         .from('user_roles')
-        .select('user_id')
-        .in('role', ['admin', 'crm_user']);
+        .select('user_id');
+      const { data, error } = await query.in('role', ['admin', 'crm_user']);
 
       if (error) throw error;
 
       // For now, create placeholder user data - in a real app, you'd fetch from a users table
-      const userList = data?.map((ur, idx) => ({
+      const userList = data?.map((ur: any, idx: number) => ({
         id: ur.user_id,
         name: `User ${idx + 1}`
       })) || [];

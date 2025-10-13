@@ -84,14 +84,14 @@ const LeadDetail = () => {
 
   const loadUsers = async () => {
     try {
-      const { data, error } = await supabase
+      const query: any = supabase
         .from('user_roles')
-        .select('user_id')
-        .in('role', ['admin', 'crm_user']);
+        .select('user_id');
+      const { data, error } = await query.in('role', ['admin', 'crm_user']);
 
       if (error) throw error;
 
-      const userList = data?.map((ur, idx) => ({
+      const userList = data?.map((ur: any, idx: number) => ({
         id: ur.user_id,
         name: `User ${idx + 1}`
       })) || [];
