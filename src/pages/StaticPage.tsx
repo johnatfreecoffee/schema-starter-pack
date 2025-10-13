@@ -65,6 +65,12 @@ const StaticPage = () => {
       .replace(/\{\{icon_url\}\}/g, companySettings.icon_url || '');
   }
 
+  // Add lazy loading to images in rendered HTML
+  renderedContent = renderedContent.replace(
+    /<img(?![^>]*loading=)/gi,
+    '<img loading="lazy"'
+  );
+
   return (
     <PublicLayout>
       <div className="container mx-auto px-4 py-8">

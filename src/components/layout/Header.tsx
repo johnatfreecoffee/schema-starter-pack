@@ -5,6 +5,7 @@ import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { Session } from '@supabase/supabase-js';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { LazyImage } from '@/components/ui/lazy-image';
 
 interface HeaderProps {
   session: Session | null;
@@ -33,7 +34,12 @@ const Header = ({ session }: HeaderProps) => {
             <div className="flex items-center gap-4 md:gap-8">
               <Link to="/" className="flex items-center gap-2">
                 {company?.logo_url ? (
-                  <img src={company.logo_url} alt={company.business_name} className="h-8 md:h-10" />
+                  <LazyImage 
+                    src={company.logo_url} 
+                    alt={company.business_name} 
+                    className="h-8 md:h-10 w-auto"
+                    loading="eager"
+                  />
                 ) : (
                   <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
                     {company?.business_name || 'CRM Platform'}

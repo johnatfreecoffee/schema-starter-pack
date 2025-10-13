@@ -93,9 +93,15 @@ const GeneratedPage = () => {
   };
 
   // Render template with data
-  const renderedContent = renderTemplate(
+  let renderedContent = renderTemplate(
     page.service.template.template_html,
     pageData
+  );
+
+  // Add lazy loading to images in rendered HTML
+  renderedContent = renderedContent.replace(
+    /<img(?![^>]*loading=)/gi,
+    '<img loading="lazy"'
   );
 
   // Track view (fire and forget)
