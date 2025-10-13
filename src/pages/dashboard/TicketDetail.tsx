@@ -72,11 +72,11 @@ export default function TicketDetail() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_roles')
-        .select('user_id')
-        .in('role', ['admin', 'crm_user']);
+        .select('user_id, roles(name)')
+        .in('roles.name', ['Admin','Super Admin','CRM User','Sales Manager','Technician','Office Staff','Read-Only User']);
       
       if (error) throw error;
-      return data;
+      return data || [];
     }
   });
 

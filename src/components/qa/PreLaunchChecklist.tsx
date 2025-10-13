@@ -80,7 +80,10 @@ export const PreLaunchChecklist = () => {
     // Security & Access
     { id: 'admin_user', label: 'Admin user created', category: 'Security',
       autoCheck: async () => {
-        const { count } = await supabase.from('user_roles').select('*', { count: 'exact', head: true }).eq('role', 'admin');
+        const { count } = await supabase
+          .from('user_roles')
+          .select('role_id, roles!inner(name)', { count: 'exact', head: true })
+          .in('roles.name', ['Admin', 'Super Admin']);
         return (count || 0) > 0;
       }
     },

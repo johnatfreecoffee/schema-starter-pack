@@ -198,10 +198,10 @@ const Leads = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const query: any = supabase
+      const { data, error } = await supabase
         .from('user_roles')
-        .select('user_id');
-      const { data, error } = await query.in('role', ['admin', 'crm_user']);
+        .select('user_id, roles(name)')
+        .in('roles.name', ['Admin','Super Admin','CRM User','Sales Manager','Technician','Office Staff','Read-Only User']);
 
       if (error) throw error;
 

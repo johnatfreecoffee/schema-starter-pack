@@ -78,11 +78,15 @@ const Projects = () => {
 
   const loadUsers = async () => {
     try {
-      const query: any = supabase.from('user_roles').select('user_id');
-      const { data } = await query.in('role', ['admin', 'crm_user']);
+      const { data } = await supabase
+        .from('user_roles')
+        .select('user_id, roles(name)')
+        .in('roles.name', ['Admin','Super Admin','CRM User','Sales Manager','Technician','Office Staff','Read-Only User']);
+      
       setUsers(data?.map((ur: any, idx: number) => ({ id: ur.user_id, name: `User ${idx + 1}` })) || []);
     } catch (error) {
       console.error('Error loading users:', error);
+      setUsers([]); // Set empty array on error to prevent loops
     }
   };
 
@@ -90,6 +94,10 @@ const Projects = () => {
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setProjects([]);
+        return;
+      }
       
       let query = supabase
         .from('projects')
@@ -140,7 +148,9 @@ const Projects = () => {
 
       setProjects(projectsWithProgress);
     } catch (error: any) {
+      console.error('Error fetching projects:', error);
       toast({ title: 'Error fetching projects', description: error.message, variant: 'destructive' });
+      setProjects([]); // Set empty array on error to prevent loops
     } finally {
       setLoading(false);
     }
