@@ -171,6 +171,7 @@ const App = () => (
           <Route path="/dashboard/settings/email-templates" element={<EmailTemplates />} />
           <Route path="/dashboard/settings/notifications" element={<Notifications />} />
           <Route path="/dashboard/settings/qa-testing" element={<QATesting />} />
+          <Route path="/dashboard/settings/performance" element={<Performance />} />
           <Route path="/dashboard/email-queue" element={<EmailQueue />} />
           <Route path="/dashboard/regenerate-pages" element={<PageRegenerator />} />
           
