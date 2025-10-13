@@ -21,6 +21,7 @@ const SettingsTabs = () => {
     { value: 'notifications', label: 'Notifications' },
     { value: 'analytics', label: 'Analytics' },
     { value: 'seo', label: 'SEO' },
+    { value: 'backup-management', label: 'Backup & Data' },
     { value: 'qa-testing', label: 'QA Testing' },
   ];
 

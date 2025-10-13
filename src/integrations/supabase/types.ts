@@ -347,6 +347,102 @@ export type Database = {
         }
         Relationships: []
       }
+      archive_rules: {
+        Row: {
+          auto_archive: boolean
+          created_at: string
+          days_threshold: number
+          id: string
+          module: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          auto_archive?: boolean
+          created_at?: string
+          days_threshold: number
+          id?: string
+          module: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          auto_archive?: boolean
+          created_at?: string
+          days_threshold?: number
+          id?: string
+          module?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      archived_data: {
+        Row: {
+          archived_at: string
+          archived_by: string | null
+          data: Json
+          id: string
+          original_id: string
+          original_table: string
+        }
+        Insert: {
+          archived_at?: string
+          archived_by?: string | null
+          data: Json
+          id?: string
+          original_id: string
+          original_table: string
+        }
+        Update: {
+          archived_at?: string
+          archived_by?: string | null
+          data?: Json
+          id?: string
+          original_id?: string
+          original_table?: string
+        }
+        Relationships: []
+      }
+      backups: {
+        Row: {
+          backup_type: string
+          created_at: string
+          created_by: string | null
+          error_message: string | null
+          file_path: string | null
+          file_size: number | null
+          id: string
+          record_counts: Json | null
+          status: string
+          tables_included: string[]
+        }
+        Insert: {
+          backup_type: string
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          record_counts?: Json | null
+          status?: string
+          tables_included?: string[]
+        }
+        Update: {
+          backup_type?: string
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          record_counts?: Json | null
+          status?: string
+          tables_included?: string[]
+        }
+        Relationships: []
+      }
       calendar_events: {
         Row: {
           account_id: string | null
@@ -597,6 +693,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      data_health_logs: {
+        Row: {
+          check_type: string
+          checked_at: string
+          checked_by: string | null
+          details: Json | null
+          id: string
+          issues_found: number
+        }
+        Insert: {
+          check_type: string
+          checked_at?: string
+          checked_by?: string | null
+          details?: Json | null
+          id?: string
+          issues_found?: number
+        }
+        Update: {
+          check_type?: string
+          checked_at?: string
+          checked_by?: string | null
+          details?: Json | null
+          id?: string
+          issues_found?: number
+        }
+        Relationships: []
       }
       email_queue: {
         Row: {
@@ -1724,6 +1847,51 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           view_name?: string
+        }
+        Relationships: []
+      }
+      scheduled_exports: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          filters: Json | null
+          format: string
+          id: string
+          is_active: boolean
+          last_run: string | null
+          module: string
+          name: string
+          next_run: string | null
+          schedule: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          filters?: Json | null
+          format: string
+          id?: string
+          is_active?: boolean
+          last_run?: string | null
+          module: string
+          name: string
+          next_run?: string | null
+          schedule: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          filters?: Json | null
+          format?: string
+          id?: string
+          is_active?: boolean
+          last_run?: string | null
+          module?: string
+          name?: string
+          next_run?: string | null
+          schedule?: string
+          updated_at?: string
         }
         Relationships: []
       }
