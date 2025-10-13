@@ -2691,6 +2691,10 @@ export type Database = {
           last_login_at: string | null
           phone: string | null
           status: string
+          two_factor_backup_codes: string | null
+          two_factor_enabled: boolean | null
+          two_factor_enabled_at: string | null
+          two_factor_secret: string | null
           updated_at: string
         }
         Insert: {
@@ -2703,6 +2707,10 @@ export type Database = {
           last_login_at?: string | null
           phone?: string | null
           status?: string
+          two_factor_backup_codes?: string | null
+          two_factor_enabled?: boolean | null
+          two_factor_enabled_at?: string | null
+          two_factor_secret?: string | null
           updated_at?: string
         }
         Update: {
@@ -2715,6 +2723,10 @@ export type Database = {
           last_login_at?: string | null
           phone?: string | null
           status?: string
+          two_factor_backup_codes?: string | null
+          two_factor_enabled?: boolean | null
+          two_factor_enabled_at?: string | null
+          two_factor_secret?: string | null
           updated_at?: string
         }
         Relationships: []

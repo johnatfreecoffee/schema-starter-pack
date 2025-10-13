@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { Loader2 } from 'lucide-react';
+import { TwoFactorVerification } from '@/components/customer/TwoFactorVerification';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -33,6 +34,12 @@ const CustomerAuth = () => {
     confirmPassword: '',
     companyName: ''
   });
+  const [require2FA, setRequire2FA] = useState(false);
+  const [twoFactorData, setTwoFactorData] = useState<{
+    userId: string;
+    secret: string;
+    backupCodes: string[];
+  } | null>(null);
 
   useEffect(() => {
     // Check if already logged in
@@ -95,6 +102,28 @@ const CustomerAuth = () => {
         throw new Error('Invalid credentials for customer portal');
       }
 
+      // Check if 2FA is enabled
+      const { data: profileData } = await supabase
+        .from('user_profiles')
+        .select('two_factor_enabled, two_factor_secret, two_factor_backup_codes')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      if (profileData?.two_factor_enabled && profileData.two_factor_secret) {
+        // Sign out temporarily and require 2FA
+        await supabase.auth.signOut();
+        setRequire2FA(true);
+        setTwoFactorData({
+          userId: data.user.id,
+          secret: profileData.two_factor_secret,
+          backupCodes: profileData.two_factor_backup_codes 
+            ? JSON.parse(profileData.two_factor_backup_codes) 
+            : [],
+        });
+        setLoading(false);
+        return;
+      }
+
       // Update last login
       const { data: accountData } = await supabase
         .from('accounts')
@@ -116,6 +145,48 @@ const CustomerAuth = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handle2FASuccess = async () => {
+    try {
+      // Re-authenticate with original credentials after 2FA success
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: loginData.email,
+        password: loginData.password,
+      });
+
+      if (error) throw error;
+
+      // Update last login
+      const { data: accountData } = await supabase
+        .from('accounts')
+        .select('id')
+        .eq('user_id', data.user.id)
+        .maybeSingle();
+
+      if (accountData) {
+        await supabase
+          .from('accounts')
+          .update({ portal_last_login: new Date().toISOString() })
+          .eq('id', accountData.id);
+      }
+
+      toast.success('Welcome back!');
+      setRequire2FA(false);
+      setTwoFactorData(null);
+      navigate('/customer/dashboard');
+    } catch (error: any) {
+      console.error('Post-2FA login error:', error);
+      toast.error('Authentication failed');
+      setRequire2FA(false);
+      setTwoFactorData(null);
+    }
+  };
+
+  const handle2FACancel = () => {
+    setRequire2FA(false);
+    setTwoFactorData(null);
+    setLoginData({ email: '', password: '' });
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -174,6 +245,18 @@ const CustomerAuth = () => {
       setLoading(false);
     }
   };
+
+  if (require2FA && twoFactorData) {
+    return (
+      <TwoFactorVerification
+        userId={twoFactorData.userId}
+        secret={twoFactorData.secret}
+        hashedBackupCodes={twoFactorData.backupCodes}
+        onSuccess={handle2FASuccess}
+        onCancel={handle2FACancel}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
