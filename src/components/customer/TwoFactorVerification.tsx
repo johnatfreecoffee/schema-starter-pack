@@ -8,10 +8,11 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { verifyTOTPCode, verifyBackupCode } from "@/lib/twoFactor";
 import { supabase } from "@/integrations/supabase/client";
+import { decryptSecret } from "@/lib/encryption";
 
 interface TwoFactorVerificationProps {
   userId: string;
-  secret: string;
+  encryptedSecret: string;
   hashedBackupCodes: string[];
   onSuccess: () => void;
   onCancel: () => void;
@@ -19,7 +20,7 @@ interface TwoFactorVerificationProps {
 
 export const TwoFactorVerification = ({
   userId,
-  secret,
+  encryptedSecret,
   hashedBackupCodes,
   onSuccess,
   onCancel,
@@ -64,8 +65,9 @@ export const TwoFactorVerification = ({
           toast.success(`Backup code accepted. ${remaining} codes remaining.`);
         }
       } else {
-        // Verify TOTP code
-        isValid = verifyTOTPCode(secret, code);
+        // Decrypt and verify TOTP code
+        const decryptedSecret = await decryptSecret(encryptedSecret);
+        isValid = verifyTOTPCode(decryptedSecret, code);
       }
 
       if (isValid) {

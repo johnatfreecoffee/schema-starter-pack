@@ -17,6 +17,8 @@ import {
   downloadBackupCodes,
 } from "@/lib/twoFactor";
 import { supabase } from "@/integrations/supabase/client";
+import { encryptSecret } from "@/lib/encryption";
+import { useCompanySettings } from "@/hooks/useCompanySettings";
 
 interface TwoFactorSetupProps {
   open: boolean;
@@ -34,6 +36,7 @@ export const TwoFactorSetup = ({ open, onOpenChange, onSuccess, userEmail }: Two
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [savedConfirmed, setSavedConfirmed] = useState(false);
+  const { data: companySettings } = useCompanySettings();
 
   useEffect(() => {
     if (open) {
@@ -46,7 +49,8 @@ export const TwoFactorSetup = ({ open, onOpenChange, onSuccess, userEmail }: Two
       const newSecret = generateTOTPSecret();
       setSecret(newSecret);
 
-      const uri = generateTOTPUri(newSecret, userEmail, "Your Company");
+      const issuer = companySettings?.business_name || "Your Company";
+      const uri = generateTOTPUri(newSecret, userEmail, issuer);
       const qrUrl = await generateQRCode(uri);
       setQrCodeUrl(qrUrl);
     } catch (error) {
@@ -75,6 +79,9 @@ export const TwoFactorSetup = ({ open, onOpenChange, onSuccess, userEmail }: Two
       const codes = generateBackupCodes();
       const hashedCodes = await hashBackupCodes(codes);
 
+      // Encrypt the TOTP secret before storing
+      const encryptedSecret = await encryptSecret(secret);
+
       // Save to database
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("No user found");
@@ -83,7 +90,7 @@ export const TwoFactorSetup = ({ open, onOpenChange, onSuccess, userEmail }: Two
         .from("user_profiles")
         .update({
           two_factor_enabled: true,
-          two_factor_secret: secret,
+          two_factor_secret: encryptedSecret,
           two_factor_backup_codes: JSON.stringify(hashedCodes),
           two_factor_enabled_at: new Date().toISOString(),
         })

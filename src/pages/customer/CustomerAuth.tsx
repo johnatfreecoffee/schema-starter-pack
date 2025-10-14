@@ -250,7 +250,7 @@ const CustomerAuth = () => {
     return (
       <TwoFactorVerification
         userId={twoFactorData.userId}
-        secret={twoFactorData.secret}
+        encryptedSecret={twoFactorData.secret}
         hashedBackupCodes={twoFactorData.backupCodes}
         onSuccess={handle2FASuccess}
         onCancel={handle2FACancel}

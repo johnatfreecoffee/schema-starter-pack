@@ -11,7 +11,9 @@ import { toast } from 'sonner';
 import CustomerLayout from '@/components/layout/CustomerLayout';
 import { Loader2, Mail, Phone, MapPin, Shield, CheckCircle2 } from 'lucide-react';
 import { TwoFactorSetup } from '@/components/customer/TwoFactorSetup';
+import { PasswordConfirmDialog } from '@/components/customer/PasswordConfirmDialog';
 import { generateBackupCodes, hashBackupCodes, downloadBackupCodes } from '@/lib/twoFactor';
+import { encryptSecret } from '@/lib/encryption';
 
 const CustomerProfile = () => {
   const [loading, setLoading] = useState(true);
@@ -21,6 +23,7 @@ const CustomerProfile = () => {
   const [addresses, setAddresses] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [twoFactorSetupOpen, setTwoFactorSetupOpen] = useState(false);
+  const [disable2FADialogOpen, setDisable2FADialogOpen] = useState(false);
   const [passwordData, setPasswordData] = useState({
     newPassword: '',
     confirmPassword: '',
@@ -109,11 +112,7 @@ const CustomerProfile = () => {
     }
   };
 
-  const handleDisable2FA = async () => {
-    if (!confirm('Are you sure you want to disable two-factor authentication? This will make your account less secure.')) {
-      return;
-    }
-
+  const confirmDisable2FA = async () => {
     setSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -142,10 +141,6 @@ const CustomerProfile = () => {
   };
 
   const handleRegenerateBackupCodes = async () => {
-    if (!confirm('This will invalidate all existing backup codes. Are you sure?')) {
-      return;
-    }
-
     setSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -399,17 +394,10 @@ const CustomerProfile = () => {
                       </Button>
                       <Button
                         variant="destructive"
-                        onClick={handleDisable2FA}
+                        onClick={() => setDisable2FADialogOpen(true)}
                         disabled={saving}
                       >
-                        {saving ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Disabling...
-                          </>
-                        ) : (
-                          'Disable 2FA'
-                        )}
+                        Disable 2FA
                       </Button>
                     </div>
                   </div>
@@ -425,6 +413,15 @@ const CustomerProfile = () => {
         onOpenChange={setTwoFactorSetupOpen}
         onSuccess={fetchProfileData}
         userEmail={userProfile?.email || ''}
+      />
+
+      <PasswordConfirmDialog
+        open={disable2FADialogOpen}
+        onOpenChange={setDisable2FADialogOpen}
+        onConfirm={confirmDisable2FA}
+        title="Disable Two-Factor Authentication"
+        description="Please enter your password to confirm this action."
+        warningMessage="This will make your account less secure. Are you sure you want to continue?"
       />
     </CustomerLayout>
   );
