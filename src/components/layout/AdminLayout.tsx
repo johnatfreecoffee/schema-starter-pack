@@ -3,12 +3,41 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { useUserRole } from '@/hooks/useUserRole';
-import Header from './Header';
+import { UserMenu } from './UserMenu';
 import BottomNav from './BottomNav';
 import { GlobalSearch } from '@/components/search/GlobalSearch';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, Home, UserPlus, Building2, CheckSquare, Calendar, FolderKanban, DollarSign, Ticket, Star, BarChart3, Users, FileText, Settings, Activity } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useCompanySettings } from '@/hooks/useCompanySettings';
+import { LazyImage } from '@/components/ui/lazy-image';
+import { 
+  Menu, 
+  Home, 
+  UserPlus, 
+  Building2, 
+  CheckSquare, 
+  Calendar, 
+  FolderKanban, 
+  DollarSign, 
+  Ticket, 
+  Star, 
+  BarChart3, 
+  Users, 
+  FileText, 
+  Settings, 
+  Activity,
+  Wrench,
+  Globe,
+  Brain,
+  Package,
+  MapPin,
+  FileCode,
+  FileText as FileTextAlt,
+  ChevronLeft,
+  ChevronRight,
+  User
+} from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
@@ -23,6 +52,8 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   const { role, loading } = useUserRole();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(false);
+  const { data: company } = useCompanySettings();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -50,56 +81,164 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     );
   }
 
-  const navItems = [
-    { path: '/dashboard', icon: Home, label: 'Dashboard' },
-    { path: '/dashboard/leads', icon: UserPlus, label: 'Leads' },
-    { path: '/dashboard/accounts', icon: Building2, label: 'Accounts' },
-    { path: '/dashboard/tasks', icon: CheckSquare, label: 'Tasks' },
-    { path: '/dashboard/calendars', icon: Calendar, label: 'Calendar' },
-    { path: '/dashboard/projects', icon: FolderKanban, label: 'Projects' },
-    { path: '/dashboard/tickets', icon: Ticket, label: 'Tickets' },
-    { path: '/dashboard/reviews', icon: Star, label: 'Reviews' },
-    { path: '/dashboard/money', icon: DollarSign, label: 'Money' },
-    { path: '/dashboard/analytics', icon: BarChart3, label: 'Analytics' },
-    ...((role === 'Super Admin' || role === 'Admin') ? [
-      { path: '/dashboard/team', icon: Users, label: 'Team' },
-      { path: '/dashboard/logs', icon: FileText, label: 'Logs' },
-      { path: '/dashboard/system-health', icon: Activity, label: 'System Health' },
-      { path: '/dashboard/settings', icon: Settings, label: 'Settings' }
-    ] : []),
+  const isAdmin = role === 'Super Admin' || role === 'Admin';
+
+  const navSections = [
+    {
+      title: 'Dashboard',
+      items: [
+        { path: '/dashboard', icon: Home, label: 'Overview' },
+      ]
+    },
+    {
+      title: 'CRM',
+      items: [
+        { path: '/dashboard/leads', icon: UserPlus, label: 'Leads' },
+        { path: '/dashboard/accounts', icon: Building2, label: 'Accounts' },
+        { path: '/dashboard/contacts', icon: User, label: 'Contacts' },
+        { path: '/dashboard/projects', icon: FolderKanban, label: 'Projects' },
+        { path: '/dashboard/tasks', icon: CheckSquare, label: 'Tasks' },
+        { path: '/dashboard/calendars', icon: Calendar, label: 'Calendar' },
+      ]
+    },
+    {
+      title: 'Money',
+      items: [
+        { path: '/dashboard/money', icon: DollarSign, label: 'Quotes & Invoices' },
+      ]
+    },
+    {
+      title: 'Support',
+      items: [
+        { path: '/dashboard/tickets', icon: Ticket, label: 'Tickets' },
+        { path: '/dashboard/reviews', icon: Star, label: 'Reviews' },
+      ]
+    },
+    ...(isAdmin ? [{
+      title: 'Settings',
+      items: [
+        { path: '/dashboard/settings/company', icon: Wrench, label: 'Company' },
+        { path: '/dashboard/settings/site-settings', icon: Globe, label: 'Site Settings' },
+        { path: '/dashboard/settings/ai-training', icon: Brain, label: 'AI Training' },
+        { path: '/dashboard/settings/services', icon: Package, label: 'Services' },
+        { path: '/dashboard/settings/service-areas', icon: MapPin, label: 'Service Areas' },
+        { path: '/dashboard/settings/templates', icon: FileCode, label: 'Templates' },
+        { path: '/dashboard/settings/static-pages', icon: FileTextAlt, label: 'Static Pages' },
+      ]
+    }] : []),
+    ...(isAdmin ? [{
+      title: 'System',
+      items: [
+        { path: '/dashboard/analytics', icon: BarChart3, label: 'Analytics' },
+        { path: '/dashboard/team', icon: Users, label: 'Team' },
+        { path: '/dashboard/logs', icon: FileText, label: 'Logs' },
+        { path: '/dashboard/system-health', icon: Activity, label: 'System Health' },
+      ]
+    }] : []),
   ];
 
-  const SidebarContent = () => (
-    <nav className="space-y-1 px-3">
-      {navItems.map((item) => {
-        const Icon = item.icon;
-        const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
-        
-        return (
-          <Link
-            key={item.path}
-            to={item.path}
-            onClick={() => setSidebarOpen(false)}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-              isActive 
-                ? "bg-primary text-primary-foreground" 
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+  const renderNavItem = (item: any, collapsed: boolean = false) => {
+    const Icon = item.icon;
+    const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+    
+    return (
+      <Link
+        key={item.path}
+        to={item.path}
+        onClick={() => setSidebarOpen(false)}
+        className={cn(
+          "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+          isActive 
+            ? "bg-primary text-primary-foreground" 
+            : "text-muted-foreground hover:text-foreground hover:bg-muted",
+          collapsed && "justify-center"
+        )}
+        title={collapsed ? item.label : undefined}
+      >
+        <Icon className="h-5 w-5 flex-shrink-0" />
+        {!collapsed && <span>{item.label}</span>}
+      </Link>
+    );
+  };
+
+  const DesktopSidebar = () => (
+    <aside 
+      className={cn(
+        "hidden md:flex flex-col border-r bg-background transition-all duration-300",
+        desktopSidebarCollapsed ? "w-16" : "w-60"
+      )}
+    >
+      <div className="flex items-center justify-between h-16 px-4 border-b">
+        {!desktopSidebarCollapsed && (
+          <Link to="/" className="flex items-center gap-2">
+            {company?.logo_url ? (
+              <LazyImage 
+                src={company.logo_url} 
+                alt={company.business_name} 
+                className="h-8 w-auto"
+              />
+            ) : (
+              <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+                {company?.business_name || 'CRM'}
+              </span>
             )}
-          >
-            <Icon className="h-5 w-5" />
-            {item.label}
           </Link>
-        );
-      })}
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setDesktopSidebarCollapsed(!desktopSidebarCollapsed)}
+          className={cn("flex-shrink-0", desktopSidebarCollapsed && "mx-auto")}
+        >
+          {desktopSidebarCollapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
+        </Button>
+      </div>
+      
+      <ScrollArea className="flex-1 py-4">
+        <nav className="space-y-6 px-3">
+          {navSections.map((section) => (
+            <div key={section.title} className="space-y-1">
+              {!desktopSidebarCollapsed && (
+                <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                  {section.title}
+                </h3>
+              )}
+              {section.items.map((item) => renderNavItem(item, desktopSidebarCollapsed))}
+            </div>
+          ))}
+        </nav>
+      </ScrollArea>
+    </aside>
+  );
+
+  const MobileSidebarContent = () => (
+    <nav className="space-y-6 px-3">
+      {navSections.map((section) => (
+        <div key={section.title} className="space-y-1">
+          <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            {section.title}
+          </h3>
+          {section.items.map((item) => renderNavItem(item))}
+        </div>
+      ))}
     </nav>
   );
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex h-16 items-center justify-between gap-4">
+    <div className="flex min-h-screen">
+      {/* Desktop Sidebar */}
+      <DesktopSidebar />
+
+      {/* Main Content Area */}
+      <div className="flex flex-col flex-1 min-w-0">
+        {/* Header */}
+        <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-50">
+          <div className="flex h-16 items-center justify-between gap-4 px-4">
+            {/* Mobile Menu Button */}
             {isMobile && (
               <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
                 <SheetTrigger asChild>
@@ -108,26 +247,49 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-[280px] p-0">
-                  <div className="py-6">
+                  <ScrollArea className="h-full py-6">
                     <div className="px-6 pb-4">
                       <h2 className="text-lg font-semibold">Navigation</h2>
                     </div>
-                    <SidebarContent />
-                  </div>
+                    <MobileSidebarContent />
+                  </ScrollArea>
                 </SheetContent>
               </Sheet>
             )}
-            <Header session={session} />
-            <div className="flex items-center gap-4 ml-auto">
+
+            {/* Mobile Logo (shown when sidebar is hidden) */}
+            {isMobile && (
+              <Link to="/" className="flex items-center gap-2 md:hidden">
+                {company?.logo_url ? (
+                  <LazyImage 
+                    src={company.logo_url} 
+                    alt={company.business_name} 
+                    className="h-8 w-auto"
+                  />
+                ) : (
+                  <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+                    {company?.business_name || 'CRM'}
+                  </span>
+                )}
+              </Link>
+            )}
+
+            {/* Search and User Menu */}
+            <div className="flex items-center gap-2 ml-auto">
               <GlobalSearch />
+              <UserMenu userEmail={session?.user?.email} />
             </div>
           </div>
-        </div>
-      </header>
-      <main className="flex-1 pb-20">
-        {children}
-      </main>
-      <BottomNav isAdmin={role === 'Super Admin' || role === 'Admin'} />
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-1 pb-20 md:pb-4 overflow-auto">
+          {children}
+        </main>
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <BottomNav isAdmin={isAdmin} />
     </div>
   );
 };
