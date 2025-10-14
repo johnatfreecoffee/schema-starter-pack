@@ -566,6 +566,7 @@ export type Database = {
       company_settings: {
         Row: {
           address: string
+          business_hours: string | null
           business_name: string
           business_slogan: string | null
           created_at: string
@@ -577,16 +578,25 @@ export type Database = {
           document_payment_instructions: string | null
           document_terms: string | null
           email: string
+          facebook_url: string | null
           icon_url: string | null
           id: string
+          instagram_url: string | null
+          license_numbers: string | null
+          linkedin_url: string | null
           logo_url: string | null
           phone: string
+          service_radius: number | null
+          service_radius_unit: string | null
           show_tagline_on_documents: boolean | null
+          twitter_url: string | null
           updated_at: string
+          website_url: string | null
           years_experience: number | null
         }
         Insert: {
           address: string
+          business_hours?: string | null
           business_name: string
           business_slogan?: string | null
           created_at?: string
@@ -598,16 +608,25 @@ export type Database = {
           document_payment_instructions?: string | null
           document_terms?: string | null
           email: string
+          facebook_url?: string | null
           icon_url?: string | null
           id?: string
+          instagram_url?: string | null
+          license_numbers?: string | null
+          linkedin_url?: string | null
           logo_url?: string | null
           phone: string
+          service_radius?: number | null
+          service_radius_unit?: string | null
           show_tagline_on_documents?: boolean | null
+          twitter_url?: string | null
           updated_at?: string
+          website_url?: string | null
           years_experience?: number | null
         }
         Update: {
           address?: string
+          business_hours?: string | null
           business_name?: string
           business_slogan?: string | null
           created_at?: string
@@ -619,12 +638,20 @@ export type Database = {
           document_payment_instructions?: string | null
           document_terms?: string | null
           email?: string
+          facebook_url?: string | null
           icon_url?: string | null
           id?: string
+          instagram_url?: string | null
+          license_numbers?: string | null
+          linkedin_url?: string | null
           logo_url?: string | null
           phone?: string
+          service_radius?: number | null
+          service_radius_unit?: string | null
           show_tagline_on_documents?: boolean | null
+          twitter_url?: string | null
           updated_at?: string
+          website_url?: string | null
           years_experience?: number | null
         }
         Relationships: []

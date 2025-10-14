@@ -15,6 +15,7 @@ import { Upload, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const CompanySettings = () => {
   const { data: company } = useCompanySettings();
@@ -29,6 +30,15 @@ const CompanySettings = () => {
     address: '',
     description: '',
     years_experience: 0,
+    website_url: '',
+    license_numbers: '',
+    service_radius: 0,
+    service_radius_unit: 'miles',
+    business_hours: '',
+    facebook_url: '',
+    instagram_url: '',
+    twitter_url: '',
+    linkedin_url: '',
     logo_url: '',
     icon_url: '',
     document_header_color: '#3b82f6',
@@ -39,6 +49,8 @@ const CompanySettings = () => {
     document_payment_instructions: 'Please make payment within the specified due date.',
     show_tagline_on_documents: true,
   });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [iconFile, setIconFile] = useState<File | null>(null);
@@ -56,6 +68,15 @@ const CompanySettings = () => {
         address: company.address || '',
         description: company.description || '',
         years_experience: company.years_experience || 0,
+        website_url: company.website_url || '',
+        license_numbers: company.license_numbers || '',
+        service_radius: company.service_radius || 0,
+        service_radius_unit: company.service_radius_unit || 'miles',
+        business_hours: company.business_hours || '',
+        facebook_url: company.facebook_url || '',
+        instagram_url: company.instagram_url || '',
+        twitter_url: company.twitter_url || '',
+        linkedin_url: company.linkedin_url || '',
         logo_url: company.logo_url || '',
         icon_url: company.icon_url || '',
         document_header_color: company.document_header_color || '#3b82f6',
@@ -181,6 +202,64 @@ const CompanySettings = () => {
     },
   });
 
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateUrl = (url: string): boolean => {
+    if (!url) return true; // Optional fields
+    const urlRegex = /^https?:\/\/.+/;
+    return urlRegex.test(url);
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.business_name.trim()) {
+      newErrors.business_name = 'Business name is required';
+    }
+
+    if (!validateEmail(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (formData.phone.replace(/\D/g, '').length !== 10) {
+      newErrors.phone = 'Phone number must be 10 digits';
+    }
+
+    if (!formData.address.trim()) {
+      newErrors.address = 'Business address is required';
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = 'Company description is required';
+    }
+
+    if (formData.website_url && !validateUrl(formData.website_url)) {
+      newErrors.website_url = 'Please enter a valid URL starting with http:// or https://';
+    }
+
+    if (formData.facebook_url && !validateUrl(formData.facebook_url)) {
+      newErrors.facebook_url = 'Please enter a valid URL starting with http:// or https://';
+    }
+
+    if (formData.instagram_url && !validateUrl(formData.instagram_url)) {
+      newErrors.instagram_url = 'Please enter a valid URL starting with http:// or https://';
+    }
+
+    if (formData.twitter_url && !validateUrl(formData.twitter_url)) {
+      newErrors.twitter_url = 'Please enter a valid URL starting with http:// or https://';
+    }
+
+    if (formData.linkedin_url && !validateUrl(formData.linkedin_url)) {
+      newErrors.linkedin_url = 'Please enter a valid URL starting with http:// or https://';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleReset = () => {
     if (company) {
       setFormData({
@@ -191,6 +270,15 @@ const CompanySettings = () => {
         address: company.address || '',
         description: company.description || '',
         years_experience: company.years_experience || 0,
+        website_url: company.website_url || '',
+        license_numbers: company.license_numbers || '',
+        service_radius: company.service_radius || 0,
+        service_radius_unit: company.service_radius_unit || 'miles',
+        business_hours: company.business_hours || '',
+        facebook_url: company.facebook_url || '',
+        instagram_url: company.instagram_url || '',
+        twitter_url: company.twitter_url || '',
+        linkedin_url: company.linkedin_url || '',
         logo_url: company.logo_url || '',
         icon_url: company.icon_url || '',
         document_header_color: company.document_header_color || '#3b82f6',
@@ -205,17 +293,20 @@ const CompanySettings = () => {
       setIconPreview(company.icon_url || '');
       setLogoFile(null);
       setIconFile(null);
+      setErrors({});
     }
   };
 
-  const isFormValid = () => {
-    return (
-      formData.business_name.length > 0 &&
-      formData.email.includes('@') &&
-      formData.phone.replace(/\D/g, '').length === 10 &&
-      formData.address.length > 0 &&
-      formData.description.length > 0
-    );
+  const handleSave = () => {
+    if (validateForm()) {
+      saveMutation.mutate();
+    } else {
+      toast({
+        title: 'Validation Error',
+        description: 'Please fix the errors in the form before saving.',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
@@ -223,12 +314,24 @@ const CompanySettings = () => {
       <SettingsTabs />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-6">Company Settings</h1>
-        <Card>
-          <CardHeader>
-            <CardTitle>Company Information</CardTitle>
-            <CardDescription>Manage your company details and branding</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
+        
+        <Tabs defaultValue="basic" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="basic">Basic Info</TabsTrigger>
+            <TabsTrigger value="contact">Contact</TabsTrigger>
+            <TabsTrigger value="business">Business Details</TabsTrigger>
+            <TabsTrigger value="social">Social Media</TabsTrigger>
+            <TabsTrigger value="documents">Documents</TabsTrigger>
+          </TabsList>
+
+          {/* Basic Information Tab */}
+          <TabsContent value="basic">
+            <Card>
+              <CardHeader>
+                <CardTitle>Basic Information</CardTitle>
+                <CardDescription>Company name, description, and branding</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
             {/* Business Name */}
             <div className="space-y-2">
               <Label htmlFor="business_name">Business Name *</Label>
