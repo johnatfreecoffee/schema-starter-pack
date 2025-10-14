@@ -332,292 +332,415 @@ const CompanySettings = () => {
                 <CardDescription>Company name, description, and branding</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-            {/* Business Name */}
-            <div className="space-y-2">
-              <Label htmlFor="business_name">Business Name *</Label>
-              <Input
-                id="business_name"
-                value={formData.business_name}
-                onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
-                maxLength={100}
-                required
-              />
-            </div>
-
-            {/* Business Slogan */}
-            <div className="space-y-2">
-              <Label htmlFor="business_slogan">Business Slogan</Label>
-              <Input
-                id="business_slogan"
-                value={formData.business_slogan}
-                onChange={(e) => setFormData({ ...formData, business_slogan: e.target.value })}
-                maxLength={50}
-                placeholder="e.g., Your Trusted Roofing Experts"
-              />
-              <p className="text-xs text-muted-foreground">
-                Short tagline (3-5 words) displayed under your logo
-              </p>
-            </div>
-
-            {/* Logo and Icon Upload */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Logo Upload */}
-              <div className="space-y-2">
-                <Label>Main Logo</Label>
-                <div className="border rounded-lg p-4 space-y-3">
-                  {logoPreview && (
-                    <div className="flex justify-center">
-                      <img src={logoPreview} alt="Logo preview" className="max-h-32 object-contain" />
-                    </div>
-                  )}
+                <div className="space-y-2">
+                  <Label htmlFor="business_name">Business Name *</Label>
                   <Input
-                    type="file"
-                    accept=".png,.jpg,.jpeg,.svg,.webp"
-                    onChange={(e) => handleFileChange(e, 'logo')}
-                    className="cursor-pointer"
+                    id="business_name"
+                    value={formData.business_name}
+                    onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
+                    className={errors.business_name ? 'border-destructive' : ''}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Recommended size: 300-600px width. Max 5MB.
-                  </p>
-                </div>
-              </div>
-
-              {/* Icon Upload */}
-              <div className="space-y-2">
-                <Label>Square Icon / Favicon</Label>
-                <div className="border rounded-lg p-4 space-y-3">
-                  {iconPreview && (
-                    <div className="flex justify-center">
-                      <img src={iconPreview} alt="Icon preview" className="h-32 w-32 object-contain" />
-                    </div>
+                  {errors.business_name && (
+                    <p className="text-sm text-destructive">{errors.business_name}</p>
                   )}
-                  <Input
-                    type="file"
-                    accept=".png,.jpg,.jpeg,.svg,.webp"
-                    onChange={(e) => handleFileChange(e, 'icon')}
-                    className="cursor-pointer"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Recommended size: 512x512px. Max 5MB.
-                  </p>
                 </div>
-              </div>
-            </div>
 
-            {/* Phone Number */}
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number *</Label>
-              <Input
-                id="phone"
-                value={formData.phone}
-                onChange={handlePhoneChange}
-                placeholder="(555) 555-5555"
-                required
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="business_slogan">Business Slogan</Label>
+                  <Input
+                    id="business_slogan"
+                    value={formData.business_slogan}
+                    onChange={(e) => setFormData({ ...formData, business_slogan: e.target.value })}
+                    placeholder="e.g., Your Trusted Roofing Experts"
+                  />
+                </div>
 
-            {/* Email */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address *</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description">Company Description *</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={6}
+                    placeholder="Tell customers about your business..."
+                    className={errors.description ? 'border-destructive' : ''}
+                  />
+                  {errors.description && (
+                    <p className="text-sm text-destructive">{errors.description}</p>
+                  )}
+                </div>
 
-            {/* Years of Experience */}
-            <div className="space-y-2">
-              <Label htmlFor="years_experience">Years of Experience *</Label>
-              <Input
-                id="years_experience"
-                type="number"
-                min="0"
-                max="150"
-                value={formData.years_experience}
-                onChange={(e) => setFormData({ ...formData, years_experience: parseInt(e.target.value) || 0 })}
-                required
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="years_experience">Years in Business</Label>
+                  <Input
+                    id="years_experience"
+                    type="number"
+                    min="0"
+                    value={formData.years_experience}
+                    onChange={(e) => setFormData({ ...formData, years_experience: parseInt(e.target.value) || 0 })}
+                  />
+                </div>
 
-            {/* Business Address */}
-            <div className="space-y-2">
-              <Label htmlFor="address">Business Address *</Label>
-              <Textarea
-                id="address"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                rows={3}
-                placeholder="123 Main St, Suite 100, City, ST 12345"
-                required
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="website_url">Website URL</Label>
+                  <Input
+                    id="website_url"
+                    value={formData.website_url}
+                    onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
+                    placeholder="https://www.yourcompany.com"
+                    className={errors.website_url ? 'border-destructive' : ''}
+                  />
+                  {errors.website_url && (
+                    <p className="text-sm text-destructive">{errors.website_url}</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-            {/* Company Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description">Company Description *</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={6}
-                maxLength={1000}
-                placeholder="Tell customers about your business..."
-                required
-              />
-              <p className="text-xs text-muted-foreground text-right">
-                {formData.description.length} / 1000
-              </p>
-            </div>
+          {/* Contact Tab */}
+          <TabsContent value="contact">
+            <Card>
+              <CardHeader>
+                <CardTitle>Contact Information</CardTitle>
+                <CardDescription>How customers can reach you</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number *</Label>
+                  <Input
+                    id="phone"
+                    value={formData.phone}
+                    onChange={handlePhoneChange}
+                    placeholder="(555) 555-5555"
+                    className={errors.phone ? 'border-destructive' : ''}
+                  />
+                  {errors.phone && (
+                    <p className="text-sm text-destructive">{errors.phone}</p>
+                  )}
+                </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-between pt-4">
-              <Button variant="outline" onClick={handleReset} disabled={uploading}>
-                Reset Changes
-              </Button>
-              <Button
-                onClick={() => saveMutation.mutate()}
-                disabled={!isFormValid() || uploading}
-              >
-                {uploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Company Settings
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className={errors.email ? 'border-destructive' : ''}
+                  />
+                  {errors.email && (
+                    <p className="text-sm text-destructive">{errors.email}</p>
+                  )}
+                </div>
 
-        {/* Document Template Settings */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Document Template Settings</CardTitle>
-            <CardDescription>Customize how your quotes and invoices look</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Header Color */}
-            <div className="space-y-2">
-              <Label htmlFor="document_header_color">Header Color</Label>
-              <div className="flex gap-4 items-center">
-                <Input
-                  id="document_header_color"
-                  type="color"
-                  value={formData.document_header_color}
-                  onChange={(e) => setFormData({ ...formData, document_header_color: e.target.value })}
-                  className="w-20 h-10"
-                />
-                <Input
-                  value={formData.document_header_color}
-                  onChange={(e) => setFormData({ ...formData, document_header_color: e.target.value })}
-                  placeholder="#3b82f6"
-                  className="flex-1"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Color used for document header background
-              </p>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="address">Business Address *</Label>
+                  <Textarea
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    rows={3}
+                    placeholder="123 Main St, Suite 100, City, ST 12345"
+                    className={errors.address ? 'border-destructive' : ''}
+                  />
+                  {errors.address && (
+                    <p className="text-sm text-destructive">{errors.address}</p>
+                  )}
+                </div>
 
-            {/* Logo Position */}
-            <div className="space-y-2">
-              <Label htmlFor="document_logo_position">Logo Position</Label>
-              <Select
-                value={formData.document_logo_position}
-                onValueChange={(value) => setFormData({ ...formData, document_logo_position: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="left">Left</SelectItem>
-                  <SelectItem value="center">Center</SelectItem>
-                  <SelectItem value="right">Right</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="service_radius">Service Radius</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="service_radius"
+                      type="number"
+                      min="0"
+                      value={formData.service_radius}
+                      onChange={(e) => setFormData({ ...formData, service_radius: parseInt(e.target.value) || 0 })}
+                      placeholder="50"
+                      className="flex-1"
+                    />
+                    <Select
+                      value={formData.service_radius_unit}
+                      onValueChange={(value) => setFormData({ ...formData, service_radius_unit: value })}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="miles">Miles</SelectItem>
+                        <SelectItem value="kilometers">Kilometers</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <p className="text-sm text-muted-foreground">How far from your location do you service?</p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-            {/* Font Selection */}
-            <div className="space-y-2">
-              <Label htmlFor="document_font">Font</Label>
-              <Select
-                value={formData.document_font}
-                onValueChange={(value) => setFormData({ ...formData, document_font: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="helvetica">Helvetica</SelectItem>
-                  <SelectItem value="times">Times New Roman</SelectItem>
-                  <SelectItem value="courier">Courier</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Business Details Tab */}
+          <TabsContent value="business">
+            <Card>
+              <CardHeader>
+                <CardTitle>Business Details</CardTitle>
+                <CardDescription>Licenses, hours, and branding assets</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="license_numbers">License Number(s)</Label>
+                  <Textarea
+                    id="license_numbers"
+                    value={formData.license_numbers}
+                    onChange={(e) => setFormData({ ...formData, license_numbers: e.target.value })}
+                    rows={3}
+                    placeholder="Enter business licenses (one per line)"
+                  />
+                  <p className="text-sm text-muted-foreground">Add any relevant business licenses or certifications</p>
+                </div>
 
-            {/* Show Tagline */}
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Show Tagline on Documents</Label>
-                <p className="text-sm text-muted-foreground">
-                  Display your business slogan on quotes and invoices
-                </p>
-              </div>
-              <Switch
-                checked={formData.show_tagline_on_documents}
-                onCheckedChange={(checked) => setFormData({ ...formData, show_tagline_on_documents: checked })}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="business_hours">Business Hours</Label>
+                  <Textarea
+                    id="business_hours"
+                    value={formData.business_hours}
+                    onChange={(e) => setFormData({ ...formData, business_hours: e.target.value })}
+                    rows={4}
+                    placeholder="Monday-Friday: 8:00 AM - 6:00 PM&#10;Saturday: 9:00 AM - 4:00 PM&#10;Sunday: Closed"
+                  />
+                </div>
 
-            <Separator />
+                <Separator />
 
-            {/* Footer Text */}
-            <div className="space-y-2">
-              <Label htmlFor="document_footer_text">Footer Text</Label>
-              <Input
-                id="document_footer_text"
-                value={formData.document_footer_text}
-                onChange={(e) => setFormData({ ...formData, document_footer_text: e.target.value })}
-                placeholder="Thank you for your business!"
-                maxLength={100}
-              />
-              <p className="text-xs text-muted-foreground">
-                Text displayed at the bottom of documents
-              </p>
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label>Main Logo</Label>
+                    <div className="border rounded-lg p-4 space-y-3">
+                      {logoPreview && (
+                        <div className="flex justify-center">
+                          <img src={logoPreview} alt="Logo preview" className="max-h-32 object-contain" />
+                        </div>
+                      )}
+                      <Input
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.svg,.webp"
+                        onChange={(e) => handleFileChange(e, 'logo')}
+                      />
+                      <p className="text-xs text-muted-foreground">Recommended: 300-600px width. Max 5MB.</p>
+                    </div>
+                  </div>
 
-            {/* Terms & Conditions */}
-            <div className="space-y-2">
-              <Label htmlFor="document_terms">Terms & Conditions</Label>
-              <Textarea
-                id="document_terms"
-                value={formData.document_terms}
-                onChange={(e) => setFormData({ ...formData, document_terms: e.target.value })}
-                rows={4}
-                placeholder="Enter your standard terms and conditions..."
-                maxLength={1000}
-              />
-              <p className="text-xs text-muted-foreground text-right">
-                {formData.document_terms.length} / 1000
-              </p>
-            </div>
+                  <div className="space-y-2">
+                    <Label>Square Icon / Favicon</Label>
+                    <div className="border rounded-lg p-4 space-y-3">
+                      {iconPreview && (
+                        <div className="flex justify-center">
+                          <img src={iconPreview} alt="Icon preview" className="h-32 w-32 object-contain" />
+                        </div>
+                      )}
+                      <Input
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.svg,.webp"
+                        onChange={(e) => handleFileChange(e, 'icon')}
+                      />
+                      <p className="text-xs text-muted-foreground">Recommended: 512x512px. Max 5MB.</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-            {/* Payment Instructions */}
-            <div className="space-y-2">
-              <Label htmlFor="document_payment_instructions">Payment Instructions</Label>
-              <Textarea
-                id="document_payment_instructions"
-                value={formData.document_payment_instructions}
-                onChange={(e) => setFormData({ ...formData, document_payment_instructions: e.target.value })}
-                rows={3}
-                placeholder="Enter payment instructions..."
-                maxLength={500}
-              />
-              <p className="text-xs text-muted-foreground text-right">
-                {formData.document_payment_instructions.length} / 500
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Social Media Tab */}
+          <TabsContent value="social">
+            <Card>
+              <CardHeader>
+                <CardTitle>Social Media</CardTitle>
+                <CardDescription>Connect your social media profiles</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="facebook_url">Facebook URL</Label>
+                  <Input
+                    id="facebook_url"
+                    value={formData.facebook_url}
+                    onChange={(e) => setFormData({ ...formData, facebook_url: e.target.value })}
+                    placeholder="https://facebook.com/yourcompany"
+                    className={errors.facebook_url ? 'border-destructive' : ''}
+                  />
+                  {errors.facebook_url && (
+                    <p className="text-sm text-destructive">{errors.facebook_url}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="instagram_url">Instagram URL</Label>
+                  <Input
+                    id="instagram_url"
+                    value={formData.instagram_url}
+                    onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
+                    placeholder="https://instagram.com/yourcompany"
+                    className={errors.instagram_url ? 'border-destructive' : ''}
+                  />
+                  {errors.instagram_url && (
+                    <p className="text-sm text-destructive">{errors.instagram_url}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="twitter_url">Twitter/X URL</Label>
+                  <Input
+                    id="twitter_url"
+                    value={formData.twitter_url}
+                    onChange={(e) => setFormData({ ...formData, twitter_url: e.target.value })}
+                    placeholder="https://twitter.com/yourcompany"
+                    className={errors.twitter_url ? 'border-destructive' : ''}
+                  />
+                  {errors.twitter_url && (
+                    <p className="text-sm text-destructive">{errors.twitter_url}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="linkedin_url">LinkedIn URL</Label>
+                  <Input
+                    id="linkedin_url"
+                    value={formData.linkedin_url}
+                    onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
+                    placeholder="https://linkedin.com/company/yourcompany"
+                    className={errors.linkedin_url ? 'border-destructive' : ''}
+                  />
+                  {errors.linkedin_url && (
+                    <p className="text-sm text-destructive">{errors.linkedin_url}</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Documents Tab */}
+          <TabsContent value="documents">
+            <Card>
+              <CardHeader>
+                <CardTitle>Document Template Settings</CardTitle>
+                <CardDescription>Customize how your quotes and invoices look</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="document_header_color">Header Color</Label>
+                  <div className="flex gap-4 items-center">
+                    <Input
+                      id="document_header_color"
+                      type="color"
+                      value={formData.document_header_color}
+                      onChange={(e) => setFormData({ ...formData, document_header_color: e.target.value })}
+                      className="w-20 h-10"
+                    />
+                    <Input
+                      value={formData.document_header_color}
+                      onChange={(e) => setFormData({ ...formData, document_header_color: e.target.value })}
+                      placeholder="#3b82f6"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="document_logo_position">Logo Position</Label>
+                  <Select
+                    value={formData.document_logo_position}
+                    onValueChange={(value) => setFormData({ ...formData, document_logo_position: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="left">Left</SelectItem>
+                      <SelectItem value="center">Center</SelectItem>
+                      <SelectItem value="right">Right</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="document_font">Font</Label>
+                  <Select
+                    value={formData.document_font}
+                    onValueChange={(value) => setFormData({ ...formData, document_font: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="helvetica">Helvetica</SelectItem>
+                      <SelectItem value="times">Times New Roman</SelectItem>
+                      <SelectItem value="courier">Courier</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Show Tagline on Documents</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Display your business slogan on quotes and invoices
+                    </p>
+                  </div>
+                  <Switch
+                    checked={formData.show_tagline_on_documents}
+                    onCheckedChange={(checked) => setFormData({ ...formData, show_tagline_on_documents: checked })}
+                  />
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <Label htmlFor="document_footer_text">Footer Text</Label>
+                  <Input
+                    id="document_footer_text"
+                    value={formData.document_footer_text}
+                    onChange={(e) => setFormData({ ...formData, document_footer_text: e.target.value })}
+                    placeholder="Thank you for your business!"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="document_terms">Terms & Conditions</Label>
+                  <Textarea
+                    id="document_terms"
+                    value={formData.document_terms}
+                    onChange={(e) => setFormData({ ...formData, document_terms: e.target.value })}
+                    rows={4}
+                    placeholder="Enter your standard terms and conditions..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="document_payment_instructions">Payment Instructions</Label>
+                  <Textarea
+                    id="document_payment_instructions"
+                    value={formData.document_payment_instructions}
+                    onChange={(e) => setFormData({ ...formData, document_payment_instructions: e.target.value })}
+                    rows={3}
+                    placeholder="Enter payment instructions..."
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* Action Buttons - Outside tabs, always visible */}
+        <div className="flex justify-between pt-6">
+          <Button variant="outline" onClick={handleReset} disabled={uploading}>
+            Reset Changes
+          </Button>
+          <Button onClick={handleSave} disabled={uploading}>
+            {uploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save Company Settings
+          </Button>
+        </div>
       </div>
     </AdminLayout>
   );
