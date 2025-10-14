@@ -91,6 +91,7 @@ import TicketDetail from "./pages/dashboard/TicketDetail";
 import CannedResponses from "./pages/dashboard/CannedResponses";
 import TicketTemplates from "./pages/dashboard/TicketTemplates";
 import AutoAssignment from "./pages/dashboard/AutoAssignment";
+import SystemHealth from "./pages/dashboard/SystemHealth";
 
 const queryClient = new QueryClient();
 
@@ -191,6 +192,9 @@ const AppContent = () => {
           
           {/* SEO Management Routes */}
           <Route path="/dashboard/settings/seo" element={<SEO />} />
+          
+          {/* System Health Routes */}
+          <Route path="/dashboard/system-health" element={<SystemHealth />} />
           
           {/* Dynamic Generated Pages */}
           <Route path="/:citySlug/:serviceSlug" element={<GeneratedPage />} />

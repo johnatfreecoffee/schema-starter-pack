@@ -8,7 +8,7 @@ import BottomNav from './BottomNav';
 import { GlobalSearch } from '@/components/search/GlobalSearch';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Menu, Home, UserPlus, Building2, CheckSquare, Calendar, FolderKanban, DollarSign, Ticket, Star, BarChart3, Users, FileText, Settings } from 'lucide-react';
+import { Menu, Home, UserPlus, Building2, CheckSquare, Calendar, FolderKanban, DollarSign, Ticket, Star, BarChart3, Users, FileText, Settings, Activity } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
@@ -64,6 +64,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     ...((role === 'Super Admin' || role === 'Admin') ? [
       { path: '/dashboard/team', icon: Users, label: 'Team' },
       { path: '/dashboard/logs', icon: FileText, label: 'Logs' },
+      { path: '/dashboard/system-health', icon: Activity, label: 'System Health' },
       { path: '/dashboard/settings', icon: Settings, label: 'Settings' }
     ] : []),
   ];
