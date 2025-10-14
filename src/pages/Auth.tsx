@@ -55,12 +55,31 @@ const Auth = () => {
     try {
       const validated = authSchema.pick({ email: true, password: true }).parse(loginData);
       
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: validated.email,
         password: validated.password,
       });
 
       if (error) throw error;
+
+      // Verify user has admin or CRM role (not customer)
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role_id, roles(name)')
+        .eq('user_id', data.user.id)
+        .maybeSingle();
+
+      const roleName = (roleData as any)?.roles?.name;
+      
+      if (roleName === 'customer') {
+        await supabase.auth.signOut();
+        toast.error('Please use the customer portal to log in');
+        setTimeout(() => {
+          window.location.href = '/customer/login';
+        }, 1500);
+        return;
+      }
+
       toast.success('Logged in successfully');
     } catch (error: any) {
       if (error instanceof z.ZodError) {

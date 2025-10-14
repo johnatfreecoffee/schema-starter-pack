@@ -97,9 +97,15 @@ const CustomerAuth = () => {
         .eq('user_id', data.user.id)
         .maybeSingle();
 
-      if ((roleData as any)?.roles?.name !== 'customer') {
+      const roleName = (roleData as any)?.roles?.name;
+      
+      if (roleName !== 'customer') {
         await supabase.auth.signOut();
-        throw new Error('Invalid credentials for customer portal');
+        toast.error('Please use the admin portal to log in');
+        setTimeout(() => {
+          window.location.href = '/auth';
+        }, 1500);
+        return;
       }
 
       // Check if 2FA is enabled
