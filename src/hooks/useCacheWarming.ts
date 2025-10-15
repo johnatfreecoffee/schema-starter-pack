@@ -32,6 +32,19 @@ export const useCacheWarming = () => {
           console.warn('Could not warm company settings cache:', error);
         }
 
+        // Warm site settings (used on every page)
+        try {
+          const { data: siteSettings } = await supabase
+            .from('site_settings')
+            .select('*')
+            .maybeSingle();
+          if (siteSettings) {
+            await cacheService.set('site-settings', siteSettings, 24 * 60 * 60 * 1000);
+          }
+        } catch (error) {
+          console.warn('Could not warm site settings cache:', error);
+        }
+
         // Warm services list (for navigation/forms)
         try {
           const result = await (supabase as any)

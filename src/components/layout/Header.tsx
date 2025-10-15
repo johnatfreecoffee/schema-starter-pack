@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { User } from 'lucide-react';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { Session } from '@supabase/supabase-js';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,6 +14,7 @@ interface HeaderProps {
 
 const Header = ({ session }: HeaderProps) => {
   const { data: company } = useCompanySettings();
+  const { data: siteSettings } = useSiteSettings();
   
   const { data: staticPages } = useQuery({
     queryKey: ['static-pages-nav'],
@@ -27,8 +29,16 @@ const Header = ({ session }: HeaderProps) => {
     }
   });
 
+  const logoSize = siteSettings?.header_logo_size || 32;
+
   return (
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <header 
+        className="border-b sticky top-0 z-50"
+        style={{
+          backgroundColor: siteSettings?.header_bg_color || 'hsl(0, 0%, 100%)',
+          borderBottomColor: siteSettings?.header_border_color || 'hsl(0, 0%, 89%)',
+        }}
+      >
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-4 md:gap-8">
@@ -37,7 +47,8 @@ const Header = ({ session }: HeaderProps) => {
                   <LazyImage 
                     src={company.logo_url} 
                     alt={company.business_name} 
-                    className="h-8 md:h-10 w-auto"
+                    style={{ height: `${logoSize}px` }}
+                    className="w-auto"
                     loading="eager"
                   />
                 ) : (
