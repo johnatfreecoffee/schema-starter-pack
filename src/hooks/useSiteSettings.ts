@@ -73,6 +73,9 @@ export function useSiteSettings() {
       if (settings.button_border_radius !== undefined) {
         root.style.setProperty('--radius', `${settings.button_border_radius / 16}rem`);
       }
+      if (settings.card_border_radius !== undefined) {
+        root.style.setProperty('--card-radius', `${settings.card_border_radius / 16}rem`);
+      }
     }
   }, [settings]);
 
