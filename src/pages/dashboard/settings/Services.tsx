@@ -21,6 +21,7 @@ const ServicesSettings = () => {
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<string>('all');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -37,25 +38,33 @@ const ServicesSettings = () => {
           templates:template_id (name, template_type),
           generated_pages (count)
         `)
-        .order('created_at', { ascending: false });
+        .order('is_active', { ascending: false })
+        .order('name', { ascending: true });
       
       if (error) throw error;
       return data;
     },
   });
 
-  const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: boolean }) => {
+  const toggleActiveMutation = useMutation({
+    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+      const { error: serviceError } = await supabase
+        .from('services')
+        .update({ is_active })
+        .eq('id', id);
+      
+      if (serviceError) throw serviceError;
+
       const { error: pagesError } = await supabase
         .from('generated_pages')
-        .update({ status })
+        .update({ status: is_active })
         .eq('service_id', id);
       
       if (pagesError) throw pagesError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['services'] });
-      toast({ title: 'Pages status updated' });
+      toast({ title: 'Service status updated' });
     },
   });
 
@@ -96,6 +105,8 @@ const ServicesSettings = () => {
   const filteredServices = services?.filter(service => {
     if (categoryFilter !== 'all' && service.category !== categoryFilter) return false;
     if (searchQuery && !service.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (activeFilter === 'active' && !service.is_active) return false;
+    if (activeFilter === 'inactive' && service.is_active) return false;
     return true;
   });
 
@@ -141,6 +152,17 @@ const ServicesSettings = () => {
             </SelectContent>
           </Select>
 
+          <Select value={activeFilter} onValueChange={setActiveFilter}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Services</SelectItem>
+              <SelectItem value="active">Active Only</SelectItem>
+              <SelectItem value="inactive">Inactive Only</SelectItem>
+            </SelectContent>
+          </Select>
+
           <Input
             placeholder="Search services..."
             value={searchQuery}
@@ -161,16 +183,17 @@ const ServicesSettings = () => {
                   <TableHead>Starting Price</TableHead>
                   <TableHead>Template</TableHead>
                   <TableHead>Pages</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredServices?.map((service) => (
-                  <TableRow key={service.id}>
+                  <TableRow key={service.id} className={!service.is_active ? 'opacity-50' : ''}>
                     <TableCell className="font-medium">{service.name}</TableCell>
                     <TableCell>
                       <Badge className={getCategoryBadge(service.category)}>
-                        {service.category.replace('_', ' ')}
+                        {service.category}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-green-600 font-semibold">
@@ -179,6 +202,15 @@ const ServicesSettings = () => {
                     <TableCell>{service.templates?.name || 'N/A'}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">{service.generated_pages?.[0]?.count || 0} pages</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={service.is_active}
+                          onCheckedChange={(checked) => toggleActiveMutation.mutate({ id: service.id, is_active: checked })}
+                        />
+                        <span className="text-sm">{service.is_active ? 'Active' : 'Inactive'}</span>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
@@ -213,29 +245,36 @@ const ServicesSettings = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredServices?.map((service) => (
-              <div key={service.id} className="border rounded-lg p-4 hover:shadow-lg transition-shadow">
+              <div key={service.id} className={`border rounded-lg p-4 hover:shadow-lg transition-shadow ${!service.is_active ? 'opacity-50' : ''}`}>
                 <div className="flex justify-between items-start mb-3">
                   <h3 className="font-semibold text-lg">{service.name}</h3>
                   <Badge className={getCategoryBadge(service.category)}>
-                    {service.category.replace('_', ' ')}
+                    {service.category}
                   </Badge>
                 </div>
                 <p className="text-green-600 font-semibold mb-2">
                   {service.starting_price ? formatPrice(service.starting_price) : 'N/A'}
                 </p>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center mb-3">
                   <Badge variant="secondary">{service.generated_pages?.[0]?.count || 0} pages</Badge>
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsPreviewOpen(true); }}>
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsFormOpen(true); }}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setDeleteDialogOpen(true); }}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={service.is_active}
+                      onCheckedChange={(checked) => toggleActiveMutation.mutate({ id: service.id, is_active: checked })}
+                    />
+                    <span className="text-xs">{service.is_active ? 'Active' : 'Inactive'}</span>
                   </div>
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsPreviewOpen(true); }}>
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsFormOpen(true); }}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setDeleteDialogOpen(true); }}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             ))}

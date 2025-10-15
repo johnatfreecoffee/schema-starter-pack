@@ -22,6 +22,7 @@ const formSchema = z.object({
     message: 'Must be a valid positive number',
   }),
   template_id: z.string().uuid('Please select a template'),
+  is_active: z.boolean().default(true),
 });
 
 interface ServiceFormProps {
@@ -54,6 +55,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
       full_description: service?.full_description || '',
       starting_price: service?.starting_price ? (service.starting_price / 100).toString() : '',
       template_id: service?.template_id || '',
+      is_active: service?.is_active !== undefined ? service.is_active : true,
     },
   });
 
@@ -66,6 +68,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         full_description: service.full_description,
         starting_price: (service.starting_price / 100).toString(),
         template_id: service.template_id,
+        is_active: service.is_active !== undefined ? service.is_active : true,
       });
       setDescriptionLength(service.full_description?.length || 0);
     }
@@ -85,6 +88,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         full_description: values.full_description,
         starting_price: Math.round(parseFloat(values.starting_price) * 100),
         template_id: values.template_id,
+        is_active: values.is_active,
       };
 
       const { data: newService, error: serviceError } = await supabase
@@ -108,7 +112,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         url_path: `/${area.city_slug}/${values.slug}`,
         page_title: `${values.name} in ${area.city_name}, LA | ${companySettings?.business_name || 'Our Company'}`,
         meta_description: values.full_description.substring(0, 160),
-        status: true,
+        status: values.is_active,
       }));
 
       const { error: pagesError } = await supabase
@@ -146,6 +150,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         full_description: values.full_description,
         starting_price: Math.round(parseFloat(values.starting_price) * 100),
         template_id: values.template_id,
+        is_active: values.is_active,
       };
 
       const { error: serviceError } = await supabase
@@ -154,6 +159,14 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         .eq('id', service.id);
 
       if (serviceError) throw serviceError;
+
+      // Update generated pages status if is_active changed
+      if (service.is_active !== values.is_active) {
+        await supabase
+          .from('generated_pages')
+          .update({ status: values.is_active })
+          .eq('service_id', service.id);
+      }
 
       if (service.slug !== values.slug) {
         const { data: pages } = await supabase
@@ -258,9 +271,9 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="authority_hub">Authority Hub</SelectItem>
-                  <SelectItem value="emergency_services">Emergency Services</SelectItem>
-                  <SelectItem value="granular_services">Granular Services</SelectItem>
+                  <SelectItem value="Authority Hub">Authority Hub</SelectItem>
+                  <SelectItem value="Emergency Services">Emergency Services</SelectItem>
+                  <SelectItem value="Granular Services">Granular Services</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -332,6 +345,26 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="is_active"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">Active Status</FormLabel>
+                <FormDescription>
+                  Enable this service to make it visible on the public website
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
 
         <div className="flex gap-4">
           <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>

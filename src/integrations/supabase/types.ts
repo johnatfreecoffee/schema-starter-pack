@@ -2251,6 +2251,7 @@ export type Database = {
           created_at: string
           full_description: string | null
           id: string
+          is_active: boolean
           name: string
           slug: string
           starting_price: number | null
@@ -2262,6 +2263,7 @@ export type Database = {
           created_at?: string
           full_description?: string | null
           id?: string
+          is_active?: boolean
           name: string
           slug: string
           starting_price?: number | null
@@ -2273,6 +2275,7 @@ export type Database = {
           created_at?: string
           full_description?: string | null
           id?: string
+          is_active?: boolean
           name?: string
           slug?: string
           starting_price?: number | null
