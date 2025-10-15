@@ -249,9 +249,15 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
       queryClient.invalidateQueries({ queryKey: ['service-areas'] });
       onSuccess();
     } catch (error: any) {
+      const isDuplicateError = error.message?.includes('duplicate key') || 
+                               error.message?.includes('unique constraint') ||
+                               error.code === '23505';
+      
       toast({
         title: 'Error',
-        description: error.message,
+        description: isDuplicateError 
+          ? 'A service area with this city name already exists. Please use a different city name.'
+          : error.message,
         variant: 'destructive',
       });
     } finally {
