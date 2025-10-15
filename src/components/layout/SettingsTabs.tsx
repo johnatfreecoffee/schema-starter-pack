@@ -8,6 +8,7 @@ const SettingsTabs = () => {
   const tabs = [
     { value: 'company', label: 'Company' },
     { value: 'ai-training', label: 'AI Training' },
+    { value: 'knowledge-base', label: 'Knowledge Base' },
     { value: 'site-settings', label: 'Site Settings' },
     { value: 'services', label: 'Services' },
     { value: 'service-areas', label: 'Service Areas' },

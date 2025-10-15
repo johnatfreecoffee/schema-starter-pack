@@ -38,6 +38,7 @@ import Settings from "./pages/dashboard/Settings";
 // Settings pages
 import CompanySettings from "./pages/dashboard/settings/Company";
 import AITraining from "./pages/dashboard/settings/AITraining";
+import KnowledgeBase from "./pages/dashboard/settings/KnowledgeBase";
 import SiteSettings from "./pages/dashboard/settings/SiteSettings";
 import ServicesSettings from "./pages/dashboard/settings/Services";
 import ServiceAreas from "./pages/dashboard/settings/ServiceAreas";
@@ -169,6 +170,7 @@ const AppContent = () => {
           {/* Settings Sub-routes (Admin Only) */}
           <Route path="/dashboard/settings/company" element={<CompanySettings />} />
           <Route path="/dashboard/settings/ai-training" element={<AITraining />} />
+          <Route path="/dashboard/settings/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/dashboard/settings/site-settings" element={<SiteSettings />} />
           <Route path="/dashboard/settings/services" element={<ServicesSettings />} />
           <Route path="/dashboard/settings/service-areas" element={<ServiceAreas />} />
