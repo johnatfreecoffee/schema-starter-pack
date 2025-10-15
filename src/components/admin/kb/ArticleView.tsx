@@ -1,11 +1,25 @@
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { Pencil, Trash2 } from 'lucide-react';
 
@@ -32,6 +46,41 @@ interface ArticleViewProps {
 }
 
 const ArticleView = ({ open, onOpenChange, article, onEdit, onDelete }: ArticleViewProps) => {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('kb_articles')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['kb-articles'] });
+      toast({ title: 'Article deleted successfully' });
+      setShowDeleteDialog(false);
+      onOpenChange(false);
+      onDelete();
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: 'Error deleting article', 
+        description: error.message,
+        variant: 'destructive' 
+      });
+    },
+  });
+
+  const handleDeleteConfirm = () => {
+    if (article) {
+      deleteMutation.mutate(article.id);
+    }
+  };
+
   if (!article) return null;
 
   return (
@@ -63,7 +112,11 @@ const ArticleView = ({ open, onOpenChange, article, onEdit, onDelete }: ArticleV
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit
               </Button>
-              <Button variant="destructive" size="sm" onClick={onDelete}>
+              <Button 
+                variant="destructive" 
+                size="sm" 
+                onClick={() => setShowDeleteDialog(true)}
+              >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete
               </Button>
@@ -86,6 +139,28 @@ const ArticleView = ({ open, onOpenChange, article, onEdit, onDelete }: ArticleV
           </div>
         )}
       </DialogContent>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Article</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{article.title}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };

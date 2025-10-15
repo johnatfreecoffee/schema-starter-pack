@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useDebounce } from '@/hooks/useDebounce';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -57,8 +58,13 @@ const ArticleList = ({ onCreateClick, onViewClick, onEditClick }: ArticleListPro
   const [categoryFilter, setCategoryFilter] = useState('');
   const [tagFilter, setTagFilter] = useState('');
   const [deleteArticle, setDeleteArticle] = useState<Article | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  // Debounce search query
+  const debouncedSearch = useDebounce(searchQuery, 300);
 
   const { data: articles, isLoading } = useQuery({
     queryKey: ['kb-articles'],
@@ -120,23 +126,38 @@ const ArticleList = ({ onCreateClick, onViewClick, onEditClick }: ArticleListPro
     new Set(articles?.flatMap(a => a.tags || []) || [])
   ).sort();
 
-  // Filter articles
-  const filteredArticles = articles?.filter(article => {
-    const matchesSearch = searchQuery === '' || 
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesCategory = categoryFilter === '' || article.category_id === categoryFilter;
-    const matchesTag = tagFilter === '' || article.tags?.includes(tagFilter);
+  // Filter articles with debounced search
+  const filteredArticles = useMemo(() => {
+    return articles?.filter(article => {
+      const matchesSearch = debouncedSearch === '' || 
+        article.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        article.content.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        article.tags?.some(tag => tag.toLowerCase().includes(debouncedSearch.toLowerCase()));
+      
+      const matchesCategory = categoryFilter === '' || article.category_id === categoryFilter;
+      const matchesTag = tagFilter === '' || article.tags?.includes(tagFilter);
 
-    return matchesSearch && matchesCategory && matchesTag;
-  });
+      return matchesSearch && matchesCategory && matchesTag;
+    });
+  }, [articles, debouncedSearch, categoryFilter, tagFilter]);
+
+  // Pagination
+  const totalPages = Math.ceil((filteredArticles?.length || 0) / itemsPerPage);
+  const paginatedArticles = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredArticles?.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredArticles, currentPage]);
 
   const clearFilters = () => {
     setSearchQuery('');
     setCategoryFilter('');
     setTagFilter('');
+    setCurrentPage(1);
+  };
+
+  const handleTagClick = (tag: string) => {
+    setTagFilter(tag);
+    setCurrentPage(1);
   };
 
   return (
@@ -194,14 +215,47 @@ const ArticleList = ({ onCreateClick, onViewClick, onEditClick }: ArticleListPro
       </div>
 
       {/* Article Count */}
-      <div className="text-sm text-muted-foreground">
-        {filteredArticles?.length || 0} article{filteredArticles?.length !== 1 ? 's' : ''} found
+      <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <div>
+          {searchQuery || categoryFilter || tagFilter ? (
+            <>
+              Showing <span className="font-medium text-foreground">{filteredArticles?.length || 0}</span> of{' '}
+              <span className="font-medium text-foreground">{articles?.length || 0}</span> articles
+              {tagFilter && (
+                <Badge variant="secondary" className="ml-2">
+                  Tag: {tagFilter}
+                  <button
+                    onClick={() => setTagFilter('')}
+                    className="ml-1 hover:text-destructive"
+                  >
+                    ×
+                  </button>
+                </Badge>
+              )}
+            </>
+          ) : (
+            <>
+              <span className="font-medium text-foreground">{articles?.length || 0}</span> total article{articles?.length !== 1 ? 's' : ''}
+            </>
+          )}
+        </div>
+        {totalPages > 1 && (
+          <div className="text-xs">
+            Page {currentPage} of {totalPages}
+          </div>
+        )}
       </div>
 
       {/* Articles Table */}
       {isLoading ? (
-        <div className="text-center py-8 text-muted-foreground">Loading articles...</div>
-      ) : filteredArticles && filteredArticles.length > 0 ? (
+        <div className="border rounded-lg">
+          <div className="animate-pulse space-y-4 p-6">
+            <div className="h-4 bg-muted rounded w-3/4"></div>
+            <div className="h-4 bg-muted rounded w-1/2"></div>
+            <div className="h-4 bg-muted rounded w-5/6"></div>
+          </div>
+        </div>
+      ) : paginatedArticles && paginatedArticles.length > 0 ? (
         <div className="border rounded-lg">
           <Table>
             <TableHeader>
@@ -215,7 +269,7 @@ const ArticleList = ({ onCreateClick, onViewClick, onEditClick }: ArticleListPro
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredArticles.map((article) => (
+              {paginatedArticles.map((article) => (
                 <TableRow key={article.id}>
                   <TableCell className="font-medium">
                     <button
@@ -231,7 +285,12 @@ const ArticleList = ({ onCreateClick, onViewClick, onEditClick }: ArticleListPro
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {article.tags?.slice(0, 2).map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
+                        <Badge 
+                          key={tag} 
+                          variant="secondary" 
+                          className="text-xs cursor-pointer hover:bg-secondary/80 transition-colors"
+                          onClick={() => handleTagClick(tag)}
+                        >
                           {tag}
                         </Badge>
                       ))}
@@ -284,17 +343,62 @@ const ArticleList = ({ onCreateClick, onViewClick, onEditClick }: ArticleListPro
         </div>
       ) : (
         <div className="text-center py-12 border rounded-lg">
-          <p className="text-muted-foreground mb-4">
+          <Filter className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-lg font-medium mb-2">
             {searchQuery || categoryFilter || tagFilter
               ? 'No articles match your filters'
-              : 'No articles yet. Create your first one!'}
+              : 'No articles yet'}
           </p>
-          {!searchQuery && !categoryFilter && !tagFilter && (
+          <p className="text-sm text-muted-foreground mb-4">
+            {searchQuery || categoryFilter || tagFilter
+              ? 'Try adjusting your search or filter criteria'
+              : 'Create your first knowledge base article to get started'}
+          </p>
+          {(searchQuery || categoryFilter || tagFilter) ? (
+            <Button variant="outline" onClick={clearFilters}>
+              Clear Filters
+            </Button>
+          ) : (
             <Button onClick={onCreateClick}>
               <Plus className="h-4 w-4 mr-2" />
               Create First Article
             </Button>
           )}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && paginatedArticles && paginatedArticles.length > 0 && (
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <div className="flex gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                variant={currentPage === page ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setCurrentPage(page)}
+                className="w-10"
+              >
+                {page}
+              </Button>
+            ))}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
         </div>
       )}
 
