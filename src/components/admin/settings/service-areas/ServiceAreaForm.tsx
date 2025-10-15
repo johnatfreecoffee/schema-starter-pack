@@ -10,10 +10,67 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
+const US_STATES = [
+  { value: 'AL', label: 'Alabama' },
+  { value: 'AK', label: 'Alaska' },
+  { value: 'AZ', label: 'Arizona' },
+  { value: 'AR', label: 'Arkansas' },
+  { value: 'CA', label: 'California' },
+  { value: 'CO', label: 'Colorado' },
+  { value: 'CT', label: 'Connecticut' },
+  { value: 'DE', label: 'Delaware' },
+  { value: 'FL', label: 'Florida' },
+  { value: 'GA', label: 'Georgia' },
+  { value: 'HI', label: 'Hawaii' },
+  { value: 'ID', label: 'Idaho' },
+  { value: 'IL', label: 'Illinois' },
+  { value: 'IN', label: 'Indiana' },
+  { value: 'IA', label: 'Iowa' },
+  { value: 'KS', label: 'Kansas' },
+  { value: 'KY', label: 'Kentucky' },
+  { value: 'LA', label: 'Louisiana' },
+  { value: 'ME', label: 'Maine' },
+  { value: 'MD', label: 'Maryland' },
+  { value: 'MA', label: 'Massachusetts' },
+  { value: 'MI', label: 'Michigan' },
+  { value: 'MN', label: 'Minnesota' },
+  { value: 'MS', label: 'Mississippi' },
+  { value: 'MO', label: 'Missouri' },
+  { value: 'MT', label: 'Montana' },
+  { value: 'NE', label: 'Nebraska' },
+  { value: 'NV', label: 'Nevada' },
+  { value: 'NH', label: 'New Hampshire' },
+  { value: 'NJ', label: 'New Jersey' },
+  { value: 'NM', label: 'New Mexico' },
+  { value: 'NY', label: 'New York' },
+  { value: 'NC', label: 'North Carolina' },
+  { value: 'ND', label: 'North Dakota' },
+  { value: 'OH', label: 'Ohio' },
+  { value: 'OK', label: 'Oklahoma' },
+  { value: 'OR', label: 'Oregon' },
+  { value: 'PA', label: 'Pennsylvania' },
+  { value: 'RI', label: 'Rhode Island' },
+  { value: 'SC', label: 'South Carolina' },
+  { value: 'SD', label: 'South Dakota' },
+  { value: 'TN', label: 'Tennessee' },
+  { value: 'TX', label: 'Texas' },
+  { value: 'UT', label: 'Utah' },
+  { value: 'VT', label: 'Vermont' },
+  { value: 'VA', label: 'Virginia' },
+  { value: 'WA', label: 'Washington' },
+  { value: 'WV', label: 'West Virginia' },
+  { value: 'WI', label: 'Wisconsin' },
+  { value: 'WY', label: 'Wyoming' }
+];
+
 const formSchema = z.object({
+  area_name: z.string().max(100).optional(),
   city_name: z.string().min(1, 'City name is required').max(100),
+  state: z.string().length(2, 'State must be a 2-letter code'),
+  zip_code: z.string().regex(/^\d{5}(-\d{4})?$/, 'ZIP code must be 5 digits or ZIP+4 format').optional().or(z.literal('')),
   city_slug: z.string().min(1, 'URL slug is required').max(100).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase with hyphens only'),
   display_name: z.string().min(1, 'Display name is required').max(150),
   local_description: z.string().max(1000).optional(),
@@ -34,7 +91,10 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      area_name: area?.area_name || '',
       city_name: area?.city_name || '',
+      state: area?.state || 'LA',
+      zip_code: area?.zip_code || '',
       city_slug: area?.city_slug || '',
       display_name: area?.display_name || '',
       local_description: area?.local_description || '',
@@ -54,6 +114,14 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
       if (name === 'city_name' && !area) {
         const slug = generateSlug(value.city_name || '');
         form.setValue('city_slug', slug);
+        
+        // Auto-populate display_name if not set
+        if (!value.display_name && value.city_name && value.state) {
+          form.setValue('display_name', `${value.city_name}, ${value.state}`);
+        }
+      }
+      if (name === 'state' && !area && value.city_name && !value.display_name) {
+        form.setValue('display_name', `${value.city_name}, ${value.state}`);
       }
     });
     return () => subscription.unsubscribe();
@@ -67,7 +135,10 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
         const { error: updateError } = await supabase
           .from('service_areas')
           .update({
+            area_name: data.area_name || null,
             city_name: data.city_name,
+            state: data.state,
+            zip_code: data.zip_code || null,
             city_slug: data.city_slug,
             display_name: data.display_name,
             local_description: data.local_description,
@@ -110,7 +181,10 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
         const { data: newArea, error: insertError } = await supabase
           .from('service_areas')
           .insert({
+            area_name: data.area_name || null,
             city_name: data.city_name,
+            state: data.state,
+            zip_code: data.zip_code || null,
             city_slug: data.city_slug,
             display_name: data.display_name,
             local_description: data.local_description,
@@ -190,6 +264,21 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
+          name="area_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Area Name (Optional)</FormLabel>
+              <FormControl>
+                <Input placeholder="e.g., Greater Atlanta Area" {...field} />
+              </FormControl>
+              <FormDescription>Custom name for this service area (if different from city)</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="city_name"
           render={({ field }) => (
             <FormItem>
@@ -197,11 +286,53 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
               <FormControl>
                 <Input placeholder="e.g., New Orleans" {...field} />
               </FormControl>
-              <FormDescription>The name of the city or area</FormDescription>
+              <FormDescription>The name of the city</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>State</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select state" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {US_STATES.map((state) => (
+                      <SelectItem key={state.value} value={state.value}>
+                        {state.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="zip_code"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>ZIP Code (Optional)</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g., 70112" {...field} />
+                </FormControl>
+                <FormDescription>5 digits or ZIP+4 format</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}

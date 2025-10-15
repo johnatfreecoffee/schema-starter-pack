@@ -2214,34 +2214,43 @@ export type Database = {
       }
       service_areas: {
         Row: {
+          area_name: string | null
           city_name: string
           city_slug: string
           created_at: string
           display_name: string
           id: string
           local_description: string | null
+          state: string
           status: boolean
           updated_at: string
+          zip_code: string | null
         }
         Insert: {
+          area_name?: string | null
           city_name: string
           city_slug: string
           created_at?: string
           display_name: string
           id?: string
           local_description?: string | null
+          state?: string
           status?: boolean
           updated_at?: string
+          zip_code?: string | null
         }
         Update: {
+          area_name?: string | null
           city_name?: string
           city_slug?: string
           created_at?: string
           display_name?: string
           id?: string
           local_description?: string | null
+          state?: string
           status?: boolean
           updated_at?: string
+          zip_code?: string | null
         }
         Relationships: []
       }

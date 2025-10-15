@@ -162,7 +162,10 @@ const ServiceAreas = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>City Name</TableHead>
+                  <TableHead>Area Name</TableHead>
+                  <TableHead>City</TableHead>
+                  <TableHead>State</TableHead>
+                  <TableHead>ZIP</TableHead>
                   <TableHead>Display Name</TableHead>
                   <TableHead>Pages</TableHead>
                   <TableHead>Services</TableHead>
@@ -173,7 +176,10 @@ const ServiceAreas = () => {
               <TableBody>
                 {filteredAreas?.map((area) => (
                   <TableRow key={area.id}>
-                    <TableCell className="font-medium">{area.city_name}</TableCell>
+                    <TableCell className="font-medium">{area.area_name || '-'}</TableCell>
+                    <TableCell>{area.city_name}</TableCell>
+                    <TableCell>{area.state}</TableCell>
+                    <TableCell>{area.zip_code || '-'}</TableCell>
                     <TableCell>{area.display_name}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">{area.generated_pages?.[0]?.count || 0} pages</Badge>
@@ -232,8 +238,11 @@ const ServiceAreas = () => {
               <div key={area.id} className="border rounded-lg p-4 hover:shadow-lg transition-shadow">
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h3 className="font-semibold text-lg">{area.city_name}</h3>
+                    <h3 className="font-semibold text-lg">{area.area_name || area.city_name}</h3>
                     <p className="text-sm text-muted-foreground">{area.display_name}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {area.city_name}, {area.state} {area.zip_code}
+                    </p>
                   </div>
                   <Switch
                     checked={area.status}
