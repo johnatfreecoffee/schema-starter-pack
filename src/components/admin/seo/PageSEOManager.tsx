@@ -13,28 +13,33 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, Edit, ExternalLink } from 'lucide-react';
+import { Search, Edit, ExternalLink, Sparkles } from 'lucide-react';
 import { SEOMetaEditor } from './SEOMetaEditor';
+import AIPageEditor from '../ai-editor/AIPageEditor';
+import { useToast } from '@/hooks/use-toast';
 
 export const PageSEOManager = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPage, setSelectedPage] = useState<any>(null);
+  const [showAIEditor, setShowAIEditor] = useState(false);
+  const [aiEditingPage, setAiEditingPage] = useState<any>(null);
+  const { toast } = useToast();
 
-  const { data: pages, isLoading } = useQuery({
+  const { data: pages, isLoading, refetch } = useQuery({
     queryKey: ['pages-seo'],
     queryFn: async () => {
       const results: any[] = [];
 
       // Fetch static pages
       // @ts-ignore
-      const staticPagesQuery = supabase.from('static_pages').select('id, title, slug, created_at');
+      const staticPagesQuery = supabase.from('static_pages').select('id, title, slug, created_at, content_html');
       // @ts-ignore
       const staticPagesResult = await staticPagesQuery.eq('status', true);
       const staticPages = staticPagesResult.data;
 
       // Fetch generated pages
       // @ts-ignore
-      const generatedPagesQuery = supabase.from('generated_pages').select('id, page_title, url_path, created_at');
+      const generatedPagesQuery = supabase.from('generated_pages').select('id, page_title, url_path, created_at, rendered_html');
       // @ts-ignore
       const generatedPagesResult = await generatedPagesQuery.eq('status', true);
       const generatedPages = generatedPagesResult.data;
@@ -53,6 +58,7 @@ export const PageSEOManager = () => {
             title: page.title,
             url: `/${page.slug}`,
             created_at: page.created_at,
+            content: page.content_html,
             seo: seo || null
           });
         }
@@ -68,6 +74,7 @@ export const PageSEOManager = () => {
             title: page.page_title,
             url: page.url_path,
             created_at: page.created_at,
+            content: page.rendered_html,
             seo: seo || null
           });
         }
@@ -81,6 +88,37 @@ export const PageSEOManager = () => {
     page.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     page.url.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleEditWithAI = (page: any) => {
+    setAiEditingPage(page);
+    setShowAIEditor(true);
+  };
+
+  const handleSaveAIEdits = async (content: string) => {
+    if (!aiEditingPage) return;
+
+    try {
+      const table = aiEditingPage.type === 'static' ? 'static_pages' : 'generated_pages';
+      const field = aiEditingPage.type === 'static' ? 'content_html' : 'rendered_html';
+
+      const { error } = await supabase
+        .from(table)
+        .update({ [field]: content })
+        .eq('id', aiEditingPage.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Success',
+        description: 'Page content updated successfully',
+      });
+
+      refetch();
+    } catch (error) {
+      console.error('Save error:', error);
+      throw error;
+    }
+  };
 
   if (selectedPage) {
     return <SEOMetaEditor page={selectedPage} onClose={() => setSelectedPage(null)} />;
@@ -140,6 +178,15 @@ export const PageSEOManager = () => {
                           <Edit className="h-3 w-3 mr-1" />
                           Edit SEO
                         </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => handleEditWithAI(page)}
+                          disabled={!page.content}
+                        >
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          Edit with AI
+                        </Button>
                         <Button size="sm" variant="ghost" onClick={() => window.open(page.url, '_blank')}>
                           <ExternalLink className="h-3 w-3" />
                         </Button>
@@ -154,6 +201,21 @@ export const PageSEOManager = () => {
           <div className="text-center py-8 text-muted-foreground">No pages found</div>
         )}
       </CardContent>
+
+      {showAIEditor && aiEditingPage && (
+        <AIPageEditor
+          open={showAIEditor}
+          onClose={() => {
+            setShowAIEditor(false);
+            setAiEditingPage(null);
+          }}
+          pageId={aiEditingPage.id}
+          pageType={aiEditingPage.type}
+          initialContent={aiEditingPage.content || ''}
+          pageTitle={aiEditingPage.title}
+          onSave={handleSaveAIEdits}
+        />
+      )}
     </Card>
   );
 };
