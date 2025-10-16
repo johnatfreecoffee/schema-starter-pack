@@ -9,7 +9,7 @@ import { useCachedQuery } from '@/hooks/useCachedQuery';
 
 const GeneratedPage = () => {
   const { citySlug, serviceSlug } = useParams<{ citySlug: string; serviceSlug: string }>();
-  const urlPath = `/${citySlug}/${serviceSlug}`;
+  const urlPath = `/services/${serviceSlug}/${citySlug}`;
 
   const { data: page, isLoading, error } = useCachedQuery({
     queryKey: ['generated-page', urlPath],
