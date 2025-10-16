@@ -234,6 +234,7 @@ const Templates = () => {
                           size="icon"
                           onClick={() => setDeleteId(template.id)}
                           disabled={(template.services?.[0]?.count || 0) > 0}
+                          title={(template.services?.[0]?.count || 0) > 0 ? 'Cannot delete: template is in use by services' : 'Delete template'}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -295,11 +296,19 @@ const Templates = () => {
               <AlertDialogTitle>Delete Template</AlertDialogTitle>
               <AlertDialogDescription>
                 Are you sure you want to delete this template? This action cannot be undone.
+                {deleteId && templates?.find(t => t.id === deleteId)?.services?.[0]?.count > 0 && (
+                  <span className="block mt-2 text-destructive font-semibold">
+                    Warning: This template is currently in use by {templates.find(t => t.id === deleteId).services[0].count} service(s).
+                  </span>
+                )}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => deleteId && deleteMutation.mutate(deleteId)}>
+              <AlertDialogAction 
+                onClick={() => deleteId && deleteMutation.mutate(deleteId)}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
                 Delete
               </AlertDialogAction>
             </AlertDialogFooter>

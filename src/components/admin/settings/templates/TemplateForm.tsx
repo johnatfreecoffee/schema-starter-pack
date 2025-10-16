@@ -22,10 +22,28 @@ const TemplateForm = ({ template, onSuccess, onCancel }: TemplateFormProps) => {
   const [templateType, setTemplateType] = useState(template?.template_type || 'service');
   const [description, setDescription] = useState(template?.description || '');
   const [templateHtml, setTemplateHtml] = useState(template?.template_html || '');
+  const [detectedVariables, setDetectedVariables] = useState<string[]>([]);
   const { toast } = useToast();
+
+  // Extract variables from template HTML
+  useEffect(() => {
+    const regex = /\{\{([^}]+)\}\}/g;
+    const matches = templateHtml.matchAll(regex);
+    const variables = Array.from(matches, m => m[1].trim());
+    const uniqueVariables = [...new Set(variables)];
+    setDetectedVariables(uniqueVariables);
+  }, [templateHtml]);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      // Validate HTML syntax
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(templateHtml, 'text/html');
+      const parseErrors = doc.querySelector('parsererror');
+      if (parseErrors) {
+        throw new Error('Invalid HTML: Please check your template syntax');
+      }
+
       const user = await supabase.auth.getUser();
       if (!user.data.user) throw new Error('Not authenticated');
 
@@ -142,6 +160,21 @@ const TemplateForm = ({ template, onSuccess, onCancel }: TemplateFormProps) => {
         </div>
 
         <div className="w-80 border-l p-6 overflow-auto bg-muted/30">
+          {detectedVariables.length > 0 && (
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h3 className="font-semibold text-sm mb-2">Detected Variables</h3>
+              <div className="flex flex-wrap gap-1">
+                {detectedVariables.map((variable) => (
+                  <span
+                    key={variable}
+                    className="inline-flex items-center px-2 py-1 text-xs font-mono bg-blue-100 text-blue-700 rounded"
+                  >
+                    {`{{${variable}}}`}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
           <VariableReference templateType={templateType} />
         </div>
       </div>
