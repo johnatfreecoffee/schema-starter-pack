@@ -16,6 +16,7 @@ import Contact from "./pages/Contact";
 import Contacts from "./pages/dashboard/Contacts";
 import ContactDetail from "./pages/dashboard/ContactDetail";
 import GeneratedPage from "./pages/GeneratedPage";
+import ServiceOverviewPage from "./pages/ServiceOverviewPage";
 import StaticPage from "./pages/StaticPage";
 
 // Dashboard pages
@@ -110,6 +111,7 @@ const AppContent = () => {
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/services/:serviceSlug" element={<ServiceOverviewPage />} />
           <Route path="/services/:serviceSlug/:citySlug" element={<GeneratedPage />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />

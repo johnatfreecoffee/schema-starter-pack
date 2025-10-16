@@ -1,0 +1,204 @@
+import { useParams, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import PublicLayout from '@/components/layout/PublicLayout';
+import NotFound from './NotFound';
+import { renderTemplate, formatPrice, formatPhone } from '@/lib/templateEngine';
+import { useCachedQuery } from '@/hooks/useCachedQuery';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+const ServiceOverviewPage = () => {
+  const { serviceSlug } = useParams<{ serviceSlug: string }>();
+
+  const { data: service, isLoading: serviceLoading, error: serviceError } = useCachedQuery({
+    queryKey: ['service', serviceSlug],
+    cacheKey: `services:${serviceSlug}`,
+    cacheTTL: 60 * 60 * 1000, // 1 hour
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('services')
+        .select('*, template:templates(*)')
+        .eq('slug', serviceSlug)
+        .eq('is_active', true)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: serviceAreas, isLoading: areasLoading } = useCachedQuery({
+    queryKey: ['service-areas', service?.id],
+    cacheKey: `service-areas:${service?.id}`,
+    cacheTTL: 60 * 60 * 1000, // 1 hour
+    queryFn: async () => {
+      if (!service?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('generated_pages')
+        .select(`
+          *,
+          service_area:service_areas(*)
+        `)
+        .eq('service_id', service.id)
+        .eq('status', true);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!service?.id,
+  });
+
+  const { data: company } = useCachedQuery({
+    queryKey: ['company-settings'],
+    cacheKey: 'company:settings',
+    cacheTTL: 24 * 60 * 60 * 1000, // 24 hours
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('company_settings')
+        .select('*')
+        .single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  if (serviceLoading || areasLoading) {
+    return (
+      <PublicLayout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-muted rounded w-3/4"></div>
+            <div className="h-4 bg-muted rounded w-full"></div>
+            <div className="h-4 bg-muted rounded w-5/6"></div>
+          </div>
+        </div>
+      </PublicLayout>
+    );
+  }
+
+  if (serviceError || !service || !company) {
+    return <NotFound />;
+  }
+
+  // Build page data for template rendering (without city-specific data)
+  const pageData = {
+    service_name: service.name,
+    service_slug: service.slug,
+    service_description: service.full_description || '',
+    service_starting_price: formatPrice(service.starting_price || 0),
+    service_category: service.category,
+    company_name: company.business_name,
+    company_phone: formatPhone(company.phone),
+    company_email: company.email,
+    company_address: company.address,
+    company_description: company.description || '',
+    company_slogan: company.business_slogan || '',
+    years_experience: company.years_experience || 0,
+    logo_url: company.logo_url || '',
+    icon_url: company.icon_url || '',
+    // Placeholder for city-specific variables
+    city_name: '[Select a city below]',
+    city_slug: '',
+    display_name: '',
+    local_description: '',
+  };
+
+  // Render template if available
+  let renderedContent = '';
+  if (service.template?.template_html) {
+    renderedContent = renderTemplate(service.template.template_html, pageData);
+    renderedContent = renderedContent.replace(
+      /<img(?![^>]*loading=)/gi,
+      '<img loading="lazy"'
+    );
+  }
+
+  return (
+    <PublicLayout>
+      {/* SEO Meta Tags */}
+      <head>
+        <title>{service.name} Services | {company.business_name}</title>
+        <meta name="description" content={service.full_description || `Professional ${service.name} services from ${company.business_name}`} />
+        <meta property="og:title" content={`${service.name} Services | ${company.business_name}`} />
+        <meta property="og:description" content={service.full_description || ''} />
+      </head>
+
+      {/* Breadcrumbs */}
+      <nav aria-label="Breadcrumb" className="bg-muted/30 border-b">
+        <div className="container mx-auto px-4 py-3">
+          <ol className="flex items-center gap-2 text-sm">
+            <li>
+              <Link to="/" className="text-primary hover:underline">
+                Home
+              </Link>
+            </li>
+            <li className="text-muted-foreground">›</li>
+            <li>
+              <Link to="/services" className="text-primary hover:underline">
+                Services
+              </Link>
+            </li>
+            <li className="text-muted-foreground">›</li>
+            <li className="font-medium" aria-current="page">
+              {service.name}
+            </li>
+          </ol>
+        </div>
+      </nav>
+
+      {/* Service Overview Content */}
+      <div className="container mx-auto px-4 py-8">
+        {renderedContent ? (
+          <div
+            className="prose prose-lg max-w-none mb-12"
+            dangerouslySetInnerHTML={{ __html: renderedContent }}
+          />
+        ) : (
+          <div className="mb-12">
+            <h1 className="text-4xl font-bold mb-4">{service.name} Services</h1>
+            <p className="text-lg text-muted-foreground mb-6">
+              {service.full_description || `Professional ${service.name} services from ${company.business_name}`}
+            </p>
+            {service.starting_price && (
+              <p className="text-xl font-semibold mb-4">
+                Starting at {formatPrice(service.starting_price)}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Service Areas */}
+        {serviceAreas && serviceAreas.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-bold mb-6">Available Service Areas</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {serviceAreas.map((area) => (
+                <Card key={area.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <CardTitle>{area.service_area.display_name || area.service_area.city_name}</CardTitle>
+                    {area.service_area.local_description && (
+                      <CardDescription className="line-clamp-2">
+                        {area.service_area.local_description}
+                      </CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                    <Button asChild className="w-full">
+                      <Link to={`/services/${serviceSlug}/${area.service_area.city_slug}`}>
+                        View {service.name} in {area.service_area.city_name}
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </PublicLayout>
+  );
+};
+
+export default ServiceOverviewPage;
