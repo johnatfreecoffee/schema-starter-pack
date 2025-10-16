@@ -66,7 +66,6 @@ Return the complete updated HTML now.`;
         messages: [
           { role: 'user', content: prompt }
         ],
-        temperature: 0.7,
         max_tokens: 4000,
       }),
     });
