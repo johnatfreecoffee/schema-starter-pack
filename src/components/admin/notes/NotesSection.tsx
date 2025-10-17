@@ -287,7 +287,7 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
           {notes.map((note) => (
             <Card
               key={note.id}
-              className={`p-4 ${note.is_pinned ? 'border-yellow-400 bg-yellow-50 dark:bg-yellow-950/10' : ''}`}
+              className={`p-4 ${note.is_pinned ? 'border-primary bg-accent/30' : ''}`}
             >
               <div className="flex items-start gap-3">
                 <Avatar className="h-8 w-8">
@@ -299,7 +299,7 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center gap-2">
                     {note.is_pinned && (
-                      <Pin className="h-4 w-4 text-yellow-600" fill="currentColor" />
+                      <Pin className="h-4 w-4 text-primary" fill="currentColor" />
                     )}
                     <span className="font-medium text-sm">{note.author_name}</span>
                     <span className="text-xs text-muted-foreground">
