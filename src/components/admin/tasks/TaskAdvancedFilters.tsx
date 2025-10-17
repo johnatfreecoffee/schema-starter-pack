@@ -42,16 +42,16 @@ export function TaskAdvancedFilters({ values, onChange }: TaskAdvancedFiltersPro
   ];
 
   const statusOptions = [
-    { value: 'not_started', label: 'Not Started' },
+    { value: 'pending', label: 'Pending' },
     { value: 'in_progress', label: 'In Progress' },
-    { value: 'completed', label: 'Completed' }
+    { value: 'completed', label: 'Completed' },
+    { value: 'cancelled', label: 'Cancelled' }
   ];
 
   const priorityOptions = [
     { value: 'low', label: 'Low' },
     { value: 'medium', label: 'Medium' },
-    { value: 'high', label: 'High' },
-    { value: 'urgent', label: 'Urgent' }
+    { value: 'high', label: 'High' }
   ];
 
   return (

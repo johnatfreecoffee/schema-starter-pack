@@ -33,10 +33,36 @@ const TaskDetail = () => {
   const [relatedEntity, setRelatedEntity] = useState<string | null>(null);
   const [showEditForm, setShowEditForm] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [users, setUsers] = useState<Array<{ id: string; first_name: string; last_name: string }>>([]);
+  const [currentUserId, setCurrentUserId] = useState("");
 
   useEffect(() => {
     fetchTaskDetails();
+    loadUsers();
   }, [id]);
+
+  const loadUsers = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) setCurrentUserId(user.id);
+
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('id, full_name, email');
+      
+      if (error) throw error;
+      
+      const usersList = (data || []).map(user => ({
+        id: user.id,
+        first_name: user.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'Unknown',
+        last_name: user.full_name?.split(' ').slice(1).join(' ') || 'User'
+      }));
+      
+      setUsers(usersList);
+    } catch (error: any) {
+      console.error('Error loading users:', error);
+    }
+  };
 
   const fetchTaskDetails = async () => {
     try {
@@ -246,8 +272,8 @@ const TaskDetail = () => {
           open={showEditForm}
           onClose={() => setShowEditForm(false)}
           task={task}
-          users={[]}
-          currentUserId=""
+          users={users}
+          currentUserId={currentUserId}
           onSuccess={() => {
             setShowEditForm(false);
             fetchTaskDetails();

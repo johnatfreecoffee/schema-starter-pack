@@ -24,6 +24,7 @@ import {
 import TaskStatusBadge from "@/components/admin/tasks/TaskStatusBadge";
 import TaskPriorityBadge from "@/components/admin/tasks/TaskPriorityBadge";
 import { format } from "date-fns";
+import TaskForm from "@/components/admin/tasks/TaskForm";
 
 const TasksAdvanced = () => {
   const navigate = useNavigate();
@@ -33,6 +34,8 @@ const TasksAdvanced = () => {
   const [tasks, setTasks] = useState<any[]>([]);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("");
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [users, setUsers] = useState<Array<{ id: string; first_name: string; last_name: string }>>([]);
 
   const filterCount = Object.keys(filters).filter(
     key => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
@@ -40,6 +43,7 @@ const TasksAdvanced = () => {
 
   useEffect(() => {
     loadTasks();
+    loadUsers();
   }, [filters]);
 
   const loadTasks = async () => {
@@ -107,6 +111,26 @@ const TasksAdvanced = () => {
     }
   };
 
+  const loadUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('id, full_name, email');
+      
+      if (error) throw error;
+      
+      const usersList = (data || []).map(user => ({
+        id: user.id,
+        first_name: user.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'Unknown',
+        last_name: user.full_name?.split(' ').slice(1).join(' ') || 'User'
+      }));
+      
+      setUsers(usersList);
+    } catch (error: any) {
+      console.error('Error loading users:', error);
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="container mx-auto p-6 space-y-6">
@@ -134,7 +158,7 @@ const TasksAdvanced = () => {
               isFiltered={filterCount > 0}
               filteredCount={tasks.length}
             />
-            <Button onClick={() => navigate("/dashboard/tasks/new")}>
+            <Button onClick={() => setShowCreateForm(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Create Task
             </Button>
@@ -208,6 +232,17 @@ const TasksAdvanced = () => {
         >
           <TaskAdvancedFilters values={filters} onChange={updateFilter} />
         </FilterPanel>
+
+        <TaskForm
+          open={showCreateForm}
+          onClose={() => setShowCreateForm(false)}
+          onSuccess={() => {
+            setShowCreateForm(false);
+            loadTasks();
+          }}
+          users={users}
+          currentUserId={currentUserId}
+        />
       </div>
     </AdminLayout>
   );

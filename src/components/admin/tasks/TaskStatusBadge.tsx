@@ -6,22 +6,22 @@ interface TaskStatusBadgeProps {
 
 const statusConfig = {
   pending: { 
-    color: "bg-blue-500/10 text-blue-700 border-blue-300", 
+    color: "bg-primary/10 text-primary border-primary/20", 
     text: "Pending", 
     icon: "○" 
   },
   in_progress: { 
-    color: "bg-purple-500/10 text-purple-700 border-purple-300", 
+    color: "bg-accent/10 text-accent border-accent/20", 
     text: "In Progress", 
     icon: "◐" 
   },
   completed: { 
-    color: "bg-green-500/10 text-green-700 border-green-300", 
+    color: "bg-success/10 text-success border-success/20", 
     text: "Completed", 
     icon: "✓" 
   },
   cancelled: { 
-    color: "bg-gray-500/10 text-gray-700 border-gray-300", 
+    color: "bg-muted-foreground/10 text-muted-foreground border-muted-foreground/20", 
     text: "Cancelled", 
     icon: "×" 
   }

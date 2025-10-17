@@ -6,17 +6,17 @@ interface TaskPriorityBadgeProps {
 
 const priorityConfig = {
   low: { 
-    color: "bg-green-500/10 text-green-700 border-green-300", 
+    color: "bg-success/10 text-success border-success/20", 
     text: "Low", 
     icon: "🟢" 
   },
   medium: { 
-    color: "bg-yellow-500/10 text-yellow-700 border-yellow-300", 
+    color: "bg-warning/10 text-warning border-warning/20", 
     text: "Medium", 
     icon: "🟡" 
   },
   high: { 
-    color: "bg-red-500/10 text-red-700 border-red-300", 
+    color: "bg-destructive/10 text-destructive border-destructive/20", 
     text: "High", 
     icon: "🔴" 
   }
