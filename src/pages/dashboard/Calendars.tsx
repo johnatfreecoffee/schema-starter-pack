@@ -27,12 +27,12 @@ const localizer = dateFnsLocalizer({
 });
 
 const eventTypeColors = {
-  meeting: '#3B82F6',
-  call: '#10B981',
-  appointment: '#8B5CF6',
-  deadline: '#EF4444',
-  task: '#F59E0B',
-  custom: '#6B7280',
+  meeting: 'hsl(var(--primary))',
+  call: 'hsl(var(--success))',
+  appointment: 'hsl(var(--accent))',
+  deadline: 'hsl(var(--destructive))',
+  task: 'hsl(var(--warning))',
+  custom: 'hsl(var(--muted-foreground))',
 };
 
 const Calendars = () => {

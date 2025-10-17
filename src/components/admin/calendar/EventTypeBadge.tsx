@@ -9,32 +9,32 @@ const eventTypeConfig = {
   meeting: {
     label: 'Meeting',
     icon: Users,
-    className: 'bg-blue-500 hover:bg-blue-600 text-white',
+    className: 'bg-primary text-primary-foreground hover:bg-primary/90',
   },
   call: {
     label: 'Call',
     icon: Phone,
-    className: 'bg-green-500 hover:bg-green-600 text-white',
+    className: 'bg-success text-success-foreground hover:bg-success/90',
   },
   appointment: {
     label: 'Appointment',
     icon: MapPin,
-    className: 'bg-purple-500 hover:bg-purple-600 text-white',
+    className: 'bg-accent text-accent-foreground hover:bg-accent/90',
   },
   deadline: {
     label: 'Deadline',
     icon: Flag,
-    className: 'bg-red-500 hover:bg-red-600 text-white',
+    className: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
   },
   task: {
     label: 'Task',
     icon: CheckSquare,
-    className: 'bg-orange-500 hover:bg-orange-600 text-white',
+    className: 'bg-warning text-warning-foreground hover:bg-warning/90',
   },
   custom: {
     label: 'Custom',
     icon: Calendar,
-    className: 'bg-gray-500 hover:bg-gray-600 text-white',
+    className: 'bg-muted text-muted-foreground hover:bg-muted/90',
   },
 };
 
