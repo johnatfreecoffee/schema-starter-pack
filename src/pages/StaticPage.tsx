@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import PublicLayout from '@/components/layout/PublicLayout';
 import { useCachedQuery } from '@/hooks/useCachedQuery';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 const StaticPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -76,7 +77,7 @@ const StaticPage = () => {
       <div className="container mx-auto px-4 py-8">
         <article 
           className="prose prose-lg max-w-none"
-          dangerouslySetInnerHTML={{ __html: renderedContent }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
         />
       </div>
     </PublicLayout>

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { sanitizeEmailHtml } from '@/lib/sanitize';
 import {
   Table,
   TableBody,
@@ -327,7 +328,7 @@ const EmailQueue = () => {
                 <span className="font-semibold block mb-2">Body:</span>
                 <div
                   className="p-4 bg-gray-50 border rounded max-h-96 overflow-y-auto"
-                  dangerouslySetInnerHTML={{ __html: selectedEmail.body }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeEmailHtml(selectedEmail.body) }}
                 />
               </div>
             </div>

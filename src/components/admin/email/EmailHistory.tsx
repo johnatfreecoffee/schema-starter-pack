@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Mail, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { format } from 'date-fns';
+import { sanitizeEmailHtml } from '@/lib/sanitize';
 
 interface EmailHistoryProps {
   entityType: string;
@@ -126,7 +127,7 @@ const EmailHistory = ({ entityType, entityId, limit = 20 }: EmailHistoryProps) =
               </summary>
               <div
                 className="mt-2 p-3 bg-gray-50 rounded text-sm border"
-                dangerouslySetInnerHTML={{ __html: email.body }}
+                dangerouslySetInnerHTML={{ __html: sanitizeEmailHtml(email.body) }}
               />
             </details>
           </CardContent>

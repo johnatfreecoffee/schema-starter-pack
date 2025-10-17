@@ -4,6 +4,7 @@ import PublicLayout from '@/components/layout/PublicLayout';
 import Index from './Index';
 import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { useEffect } from 'react';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 const Home = () => {
   const startTime = performance.now();
@@ -82,7 +83,7 @@ const Home = () => {
         <div className="container mx-auto px-4 py-8">
           <article 
             className="prose prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: renderedContent }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
           />
         </div>
       </PublicLayout>

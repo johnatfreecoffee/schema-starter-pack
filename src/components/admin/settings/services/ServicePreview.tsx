@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Badge } from '@/components/ui/badge';
+import { sanitizeRichText } from '@/lib/sanitize';
 
 interface ServicePreviewProps {
   service: any;
@@ -50,7 +51,9 @@ export default function ServicePreview({ service }: ServicePreviewProps) {
   ];
 
   const highlightVariables = (html: string) => {
-    let highlighted = html;
+    // Sanitize first to prevent XSS
+    const sanitized = sanitizeRichText(html);
+    let highlighted = sanitized;
     variables.forEach(({ name }) => {
       const regex = new RegExp(name.replace(/[{}]/g, '\\$&'), 'g');
       highlighted = highlighted.replace(
