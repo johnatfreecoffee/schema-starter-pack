@@ -7,23 +7,18 @@ interface InvoiceStatusBadgeProps {
 }
 
 const InvoiceStatusBadge = ({ status }: InvoiceStatusBadgeProps) => {
-  const statusConfig: Record<InvoiceStatus, { variant: 'default' | 'secondary' | 'destructive' | 'outline', label: string }> = {
-    pending: { variant: 'outline', label: 'Pending' },
-    paid: { variant: 'default', label: 'Paid' },
-    partial: { variant: 'default', label: 'Partial' },
-    overdue: { variant: 'destructive', label: 'Overdue' },
-    cancelled: { variant: 'secondary', label: 'Cancelled' },
+  const statusConfig: Record<InvoiceStatus, { className: string, label: string }> = {
+    pending: { className: 'bg-warning/10 text-warning border-warning/20', label: 'Pending' },
+    paid: { className: 'bg-success/10 text-success border-success/20', label: 'Paid' },
+    partial: { className: 'bg-primary/10 text-primary border-primary/20', label: 'Partial' },
+    overdue: { className: 'bg-destructive/10 text-destructive border-destructive/20', label: 'Overdue' },
+    cancelled: { className: 'bg-muted/50 text-muted-foreground border-muted', label: 'Cancelled' },
   };
 
   const config = statusConfig[status];
 
   return (
-    <Badge variant={config.variant} className={
-      status === 'paid' ? 'bg-green-600 hover:bg-green-700' :
-      status === 'pending' ? 'bg-yellow-600 hover:bg-yellow-700 text-white' :
-      status === 'partial' ? 'bg-blue-600 hover:bg-blue-700' :
-      ''
-    }>
+    <Badge variant="outline" className={config.className}>
       {config.label}
     </Badge>
   );
