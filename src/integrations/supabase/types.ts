@@ -3109,6 +3109,13 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_assignable_users: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          role_name: string
+          user_id: string
+        }[]
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_role"]

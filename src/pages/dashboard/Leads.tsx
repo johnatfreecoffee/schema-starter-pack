@@ -200,22 +200,14 @@ const Leads = () => {
 
   const loadUsers = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
 
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('user_id, roles(name)')
-        .in('roles.name', ['Admin','Super Admin','CRM User','Sales Manager','Technician','Office Staff','Read-Only User']);
-
+      const { data, error } = await supabase.rpc('get_assignable_users');
       if (error) throw error;
 
-      // For now, create placeholder user data - in a real app, you'd fetch from a users table
-      const userList = data?.map((ur: any, idx: number) => ({
-        id: ur.user_id,
-        name: `User ${idx + 1}`
-      })) || [];
-
+      const unique = Array.from(new Set((data || []).map((u: any) => u.user_id)));
+      const userList = unique.map((id: string, idx: number) => ({ id, name: `User ${idx + 1}` }));
       setUsers(userList);
     } catch (error: any) {
       console.error('Error loading users:', error);
