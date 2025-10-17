@@ -28,7 +28,7 @@ export function MobileCard({ children, className, onClick }: MobileCardProps) {
   return (
     <Card 
       className={cn(
-        "p-4 mb-3 hover:shadow-md transition-shadow cursor-pointer",
+        "p-4 mb-3 hover:shadow-md transition-shadow cursor-pointer w-full",
         className
       )}
       onClick={onClick}
@@ -46,9 +46,9 @@ interface MobileCardFieldProps {
 
 export function MobileCardField({ label, value, className }: MobileCardFieldProps) {
   return (
-    <div className={cn("flex justify-between items-start py-2 border-b last:border-0", className)}>
-      <span className="text-sm font-medium text-muted-foreground min-w-[100px]">{label}</span>
-      <span className="text-sm text-right flex-1">{value}</span>
+    <div className={cn("flex flex-col sm:flex-row sm:justify-between sm:items-start py-2 border-b last:border-0 gap-1", className)}>
+      <span className="text-sm font-medium text-muted-foreground sm:min-w-[100px]">{label}</span>
+      <span className="text-sm sm:text-right sm:flex-1 break-words">{value}</span>
     </div>
   );
 }
@@ -73,7 +73,7 @@ export function ResponsiveList({ items, renderCard, renderTable, emptyMessage = 
 
   if (isMobile) {
     return (
-      <div className="space-y-3">
+      <div className="space-y-3 w-full overflow-x-hidden px-1">
         {items.map((item, index) => renderCard(item, index))}
       </div>
     );

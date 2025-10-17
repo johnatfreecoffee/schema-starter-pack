@@ -201,16 +201,25 @@ const Leads = () => {
   const loadUsers = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) return;
+      if (!session?.user) {
+        setUsers([]);
+        return;
+      }
 
       const { data, error } = await supabase.rpc('get_assignable_users');
-      if (error) throw error;
+      
+      if (error) {
+        console.error('Error loading users:', error);
+        setUsers([]);
+        return;
+      }
 
       const unique = Array.from(new Set((data || []).map((u: any) => u.user_id)));
       const userList = unique.map((id: string, idx: number) => ({ id, name: `User ${idx + 1}` }));
       setUsers(userList);
     } catch (error: any) {
       console.error('Error loading users:', error);
+      setUsers([]);
     }
   };
 

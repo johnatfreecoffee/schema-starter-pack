@@ -29,8 +29,15 @@ const formatFilterLabel = (key: string): string => {
 };
 
 export function FilterChips({ filters, onRemove, onClearAll }: FilterChipsProps) {
+  // Filter out internal/debug keys that shouldn't be displayed
+  const internalKeys = ['_lovable_token', 'token', 'session', 'auth'];
+  
   const activeFilters = Object.entries(filters).filter(
-    ([_, value]) => value !== null && value !== undefined && value !== ''
+    ([key, value]) => 
+      value !== null && 
+      value !== undefined && 
+      value !== '' &&
+      !internalKeys.some(internal => key.toLowerCase().includes(internal))
   );
 
   if (activeFilters.length === 0) return null;
