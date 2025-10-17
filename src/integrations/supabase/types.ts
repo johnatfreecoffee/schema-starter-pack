@@ -3089,7 +3089,12 @@ export type Database = {
     }
     Enums: {
       account_status: "active" | "inactive" | "archived"
-      activity_action: "created" | "updated" | "deleted"
+      activity_action:
+        | "created"
+        | "updated"
+        | "deleted"
+        | "status_changed"
+        | "converted"
       appointment_status: "scheduled" | "completed" | "canceled" | "requested"
       appointment_type: "onsite" | "virtual" | "phone"
       invoice_status: "pending" | "paid" | "overdue" | "cancelled"
@@ -3266,7 +3271,13 @@ export const Constants = {
   public: {
     Enums: {
       account_status: ["active", "inactive", "archived"],
-      activity_action: ["created", "updated", "deleted"],
+      activity_action: [
+        "created",
+        "updated",
+        "deleted",
+        "status_changed",
+        "converted",
+      ],
       appointment_status: ["scheduled", "completed", "canceled", "requested"],
       appointment_type: ["onsite", "virtual", "phone"],
       invoice_status: ["pending", "paid", "overdue", "cancelled"],
