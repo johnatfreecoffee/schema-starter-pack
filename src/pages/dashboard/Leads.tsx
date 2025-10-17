@@ -625,7 +625,7 @@ const Leads = () => {
         />
 
         {/* Stats */}
-        <div className="grid grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-4 w-full">
           {Object.entries(statusCounts).map(([status, count]) => (
             <Card key={status} className="p-4">
               <div className="flex items-center justify-between">
