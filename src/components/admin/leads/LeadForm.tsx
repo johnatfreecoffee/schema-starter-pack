@@ -73,9 +73,28 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
     try {
       console.log('🚀 1. Form submission started');
 
-      // 2) Get user with timeout
-      const userRes = await withTimeout(supabase.auth.getUser(), 7000, 'Auth check');
-      const user = userRes.data.user;
+      // 2) Get user via cached session first (fast), fallback to network
+      let user: any = null;
+      try {
+        const sessionRes = await withTimeout(
+          supabase.auth.getSession(),
+          3000,
+          'Auth session'
+        );
+        user = sessionRes.data.session?.user ?? null;
+      } catch (e) {
+        console.warn('Auth session lookup failed or timed out, falling back to getUser()', e);
+      }
+
+      if (!user) {
+        const userRes = await withTimeout(
+          supabase.auth.getUser(),
+          15000,
+          'Auth check'
+        );
+        user = userRes.data.user;
+      }
+
       if (!user) throw new Error('Not authenticated');
       console.log('✅ 2. Got user:', user.id);
 
