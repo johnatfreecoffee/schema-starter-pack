@@ -47,26 +47,26 @@ const ProjectTimeline = ({ projectId }: ProjectTimelineProps) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle2 className="h-6 w-6 text-green-500" />;
+        return <CheckCircle2 className="h-6 w-6 text-success" />;
       case 'current':
-        return <Clock className="h-6 w-6 text-blue-500" />;
+        return <Clock className="h-6 w-6 text-primary" />;
       case 'overdue':
-        return <AlertCircle className="h-6 w-6 text-red-500" />;
+        return <AlertCircle className="h-6 w-6 text-destructive" />;
       default:
-        return <Circle className="h-6 w-6 text-gray-400" />;
+        return <Circle className="h-6 w-6 text-muted-foreground" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-500';
+        return 'bg-success/10 text-success border-success/20';
       case 'current':
-        return 'bg-blue-500';
+        return 'bg-primary/10 text-primary border-primary/20';
       case 'overdue':
-        return 'bg-red-500';
+        return 'bg-destructive/10 text-destructive border-destructive/20';
       default:
-        return 'bg-gray-400';
+        return 'bg-muted/50 text-muted-foreground border-muted';
     }
   };
 
@@ -129,7 +129,7 @@ const ProjectTimeline = ({ projectId }: ProjectTimelineProps) => {
                 <div className="flex-1 pb-8 sm:pb-0">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
                     <h4 className="font-semibold text-lg">{phase.phase_name}</h4>
-                    <Badge className={getStatusColor(status)}>
+                    <Badge variant="outline" className={getStatusColor(status)}>
                       {phase.status.replace('_', ' ')}
                     </Badge>
                   </div>

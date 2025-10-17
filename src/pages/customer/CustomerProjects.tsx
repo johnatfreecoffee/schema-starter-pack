@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { FolderKanban, Search, Calendar, User } from 'lucide-react';
 import { format } from 'date-fns';
+import ProjectStatusBadge from '@/components/admin/projects/ProjectStatusBadge';
 
 const CustomerProjects = () => {
   const navigate = useNavigate();
@@ -93,16 +94,6 @@ const CustomerProjects = () => {
     setFilteredProjects(filtered);
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      'active': 'bg-blue-500',
-      'planning': 'bg-purple-500',
-      'on_hold': 'bg-yellow-500',
-      'completed': 'bg-green-500',
-      'cancelled': 'bg-red-500'
-    };
-    return colors[status] || 'bg-gray-500';
-  };
 
   const calculateProgress = (project: any) => {
     if (project.status === 'completed') return 100;
@@ -213,9 +204,7 @@ const CustomerProjects = () => {
                 <CardHeader>
                   <div className="flex items-start justify-between mb-2">
                     <CardTitle className="text-lg line-clamp-2">{project.project_name}</CardTitle>
-                    <Badge className={getStatusColor(project.status)}>
-                      {project.status.replace('_', ' ')}
-                    </Badge>
+                    <ProjectStatusBadge status={project.status} />
                   </div>
                   {project.description && (
                     <p className="text-sm text-muted-foreground line-clamp-2">{project.description}</p>

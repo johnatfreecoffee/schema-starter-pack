@@ -14,6 +14,7 @@ import ProjectTimeline from '@/components/customer/ProjectTimeline';
 import ProjectNotes from '@/components/customer/ProjectNotes';
 import ProjectFiles from '@/components/customer/ProjectFiles';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import ProjectStatusBadge from '@/components/admin/projects/ProjectStatusBadge';
 
 const CustomerProjectDetail = () => {
   const { id } = useParams();
@@ -59,16 +60,6 @@ const CustomerProjectDetail = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      'active': 'bg-blue-500',
-      'planning': 'bg-purple-500',
-      'on_hold': 'bg-yellow-500',
-      'completed': 'bg-green-500',
-      'cancelled': 'bg-red-500'
-    };
-    return colors[status] || 'bg-gray-500';
-  };
 
   const calculateProgress = (project: any) => {
     if (project.status === 'completed') return 100;
@@ -153,9 +144,7 @@ const CustomerProjectDetail = () => {
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <CardTitle className="text-2xl">{project.project_name}</CardTitle>
-                  <Badge className={getStatusColor(project.status)}>
-                    {project.status.replace('_', ' ')}
-                  </Badge>
+                  <ProjectStatusBadge status={project.status} />
                 </div>
                 {project.description && (
                   <p className="text-muted-foreground">{project.description}</p>

@@ -4,20 +4,19 @@ interface ProjectStatusBadgeProps {
   status: string;
 }
 
-const statusConfig: Record<string, { color: string; text: string; icon: string }> = {
-  planning: { color: 'bg-blue-500', text: 'Planning', icon: '📋' },
-  active: { color: 'bg-green-500', text: 'Active', icon: '🚀' },
-  completed: { color: 'bg-purple-500', text: 'Completed', icon: '✅' },
-  on_hold: { color: 'bg-yellow-500', text: 'On Hold', icon: '⏸️' },
-  cancelled: { color: 'bg-gray-500', text: 'Cancelled', icon: '❌' },
+const statusConfig: Record<string, { className: string; text: string }> = {
+  planning: { className: 'bg-primary/10 text-primary border-primary/20', text: 'Planning' },
+  active: { className: 'bg-success/10 text-success border-success/20', text: 'Active' },
+  completed: { className: 'bg-accent/10 text-accent-foreground border-accent/20', text: 'Completed' },
+  on_hold: { className: 'bg-warning/10 text-warning border-warning/20', text: 'On Hold' },
+  cancelled: { className: 'bg-destructive/10 text-destructive border-destructive/20', text: 'Cancelled' },
 };
 
 const ProjectStatusBadge = ({ status }: ProjectStatusBadgeProps) => {
   const config = statusConfig[status] || statusConfig.planning;
   
   return (
-    <Badge className={`${config.color} text-white`}>
-      <span className="mr-1">{config.icon}</span>
+    <Badge variant="outline" className={config.className}>
       {config.text}
     </Badge>
   );
