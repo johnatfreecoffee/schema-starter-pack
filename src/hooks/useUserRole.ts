@@ -1,72 +1,93 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export type UserRole = 'Super Admin' | 'Admin' | 'Sales Manager' | 'Technician' | 'Office Staff' | 'Read-Only User' | 'customer' | null;
 
+// Global, singleton subscription and simple cache to avoid duplicate work across multiple hook instances
+let globalAuthSubscribed = false;
+let lastFetchedUserId: string | null = null;
+let lastFetchedAt = 0;
+let globalListeners: Array<() => void> = []; // notify hook instances to refetch when auth changes
+
 export const useUserRole = () => {
   const [role, setRole] = useState<UserRole>(null);
   const [loading, setLoading] = useState(true);
+  const fetchingRef = useRef(false);
 
   useEffect(() => {
+    const notifyRefetch = () => {
+      // Defer to avoid doing async work inside auth callback
+      setTimeout(() => {
+        void fetchUserRole();
+      }, 0);
+    };
+
+    // Register this instance to global listeners
+    globalListeners.push(notifyRefetch);
+
+    // Create a single global auth subscription
+    if (!globalAuthSubscribed) {
+      globalAuthSubscribed = true;
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+        // Notify all hook instances to refetch
+        globalListeners.forEach((fn) => fn());
+      });
+      // Intentionally not unsubscribing the global subscription on unmount to avoid re-subscribing storms
+      // Supabase client survives for app lifetime
+      // window.addEventListener('beforeunload', () => subscription.unsubscribe()); // optional
+    }
+
     const fetchUserRole = async () => {
-      console.log('🔍 useUserRole: Starting to fetch user role...');
+      if (fetchingRef.current) return;
+      fetchingRef.current = true;
       try {
+        // Avoid hammering the auth endpoint across many instances
+        const now = Date.now();
         const { data: { user } } = await supabase.auth.getUser();
-        console.log('✅ useUserRole: Got user:', user?.id);
-        
-        if (!user) {
-          console.log('❌ useUserRole: No user found');
+        const userId = user?.id || null;
+
+        if (!userId) {
           setRole(null);
           setLoading(false);
           return;
         }
 
-        console.log('🔍 useUserRole: Fetching role from user_roles table...');
+        // If we recently fetched for this user within 10s, skip re-fetch
+        if (lastFetchedUserId === userId && now - lastFetchedAt < 10_000) {
+          setLoading(false);
+          return;
+        }
+
         const { data, error } = await supabase
           .from('user_roles')
           .select('role_id, roles(name)')
-          .eq('user_id', user.id)
+          .eq('user_id', userId)
           .maybeSingle();
 
-        console.log('📊 useUserRole: Query result:', { data, error });
-
         if (error) {
-          console.error('❌ useUserRole: Error fetching role:', error);
-          setRole('customer'); // Default to customer
-          setLoading(false);
-        } else if (data && data.roles) {
-          console.log('✅ useUserRole: Found role:', data.roles.name);
-          setRole(data.roles.name as UserRole);
-          setLoading(false);
-        } else {
-          console.log('⚠️ useUserRole: No role found, defaulting to customer');
+          // Default to customer if role cannot be fetched (RLS may restrict non-admins)
           setRole('customer');
-          setLoading(false);
+        } else if (data && (data as any).roles) {
+          setRole((data as any).roles.name as UserRole);
+        } else {
+          setRole('customer');
         }
+        lastFetchedUserId = userId;
+        lastFetchedAt = now;
       } catch (err) {
-        console.error('❌ useUserRole: Unexpected error:', err);
         setRole('customer');
+      } finally {
         setLoading(false);
+        fetchingRef.current = false;
       }
     };
 
-    // Set a timeout to prevent infinite loading
-    const timeout = setTimeout(() => {
-      console.warn('⏱️ useUserRole: Timeout reached, forcing load complete');
-      setLoading(false);
-      setRole('customer');
-    }, 5000); // 5 second timeout
-
-    fetchUserRole().then(() => clearTimeout(timeout));
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      console.log('🔄 useUserRole: Auth state changed, refetching role...');
-      fetchUserRole();
-    });
+    // Initial fetch
+    void fetchUserRole();
 
     return () => {
-      clearTimeout(timeout);
-      subscription.unsubscribe();
+      // Remove this instance from listeners
+      globalListeners = globalListeners.filter((fn) => fn !== notifyRefetch);
     };
   }, []);
 
