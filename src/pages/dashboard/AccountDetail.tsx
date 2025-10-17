@@ -17,6 +17,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { formatDistanceToNow } from 'date-fns';
 import NotesSection from '@/components/admin/notes/NotesSection';
 import ActivityFeed from '@/components/admin/ActivityFeed';
+import { CRUDLogger } from '@/lib/crudLogger';
 
 const AccountDetail = () => {
   const { id } = useParams();
@@ -106,12 +107,25 @@ const AccountDetail = () => {
 
   const handleDeleteContact = async (contactId: string) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const contact = contacts.find(c => c.id === contactId);
+      const contactName = contact ? `${contact.first_name} ${contact.last_name}` : 'Unknown';
+
       const { error } = await supabase
         .from('contacts')
         .delete()
         .eq('id', contactId);
 
       if (error) throw error;
+
+      await CRUDLogger.logDelete({
+        userId: user.id,
+        entityType: 'contact',
+        entityId: contactId,
+        entityName: contactName
+      });
 
       toast({ title: 'Success', description: 'Contact deleted successfully' });
       fetchAccountData();

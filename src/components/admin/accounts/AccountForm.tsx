@@ -134,15 +134,12 @@ export const AccountForm = ({ open, onOpenChange, account, onSuccess }: AccountF
         if (addressError) throw addressError;
 
         // Log activity
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          await supabase.from('activity_logs').insert([{
-            user_id: user.id,
-            action: 'created' as const,
-            entity_type: 'account',
-            entity_id: accountData.id
-          }]);
-        }
+        await CRUDLogger.logCreate({
+          userId: user.id,
+          entityType: 'account',
+          entityId: accountData.id,
+          entityName: formData.account_name
+        });
 
         toast({
           title: 'Success',

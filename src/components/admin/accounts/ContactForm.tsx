@@ -9,6 +9,7 @@ import { PhoneInput } from '@/components/lead-form/PhoneInput';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { CRUDLogger } from '@/lib/crudLogger';
 
 interface ContactFormProps {
   open: boolean;
@@ -50,29 +51,49 @@ export const ContactForm = ({ open, onOpenChange, accountId, contact, onSuccess 
       }
 
       const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
       if (contact) {
         // Update existing contact
+        const changes = CRUDLogger.calculateChanges(contact, formData);
+        
         const { error } = await supabase
           .from('contacts')
           .update({
             ...formData,
-            updated_by: user?.id
+            updated_by: user.id
           })
           .eq('id', contact.id);
 
         if (error) throw error;
+
+        await CRUDLogger.logUpdate({
+          userId: user.id,
+          entityType: 'contact',
+          entityId: contact.id,
+          entityName: `${formData.first_name} ${formData.last_name}`,
+          changes
+        });
       } else {
         // Create new contact
-        const { error } = await supabase
+        const { data: newContact, error } = await supabase
           .from('contacts')
           .insert({
             ...formData,
             account_id: accountId,
-            created_by: user?.id
-          });
+            created_by: user.id
+          })
+          .select()
+          .single();
 
         if (error) throw error;
+
+        await CRUDLogger.logCreate({
+          userId: user.id,
+          entityType: 'contact',
+          entityId: newContact.id,
+          entityName: `${formData.first_name} ${formData.last_name}`
+        });
       }
 
       toast({

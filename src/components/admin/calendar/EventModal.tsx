@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { CRUDLogger } from '@/lib/crudLogger';
 
 interface EventModalProps {
   open: boolean;
@@ -100,6 +101,8 @@ export const EventModal = ({ open, onClose, onSuccess, event, defaultDate }: Eve
       };
 
       if (event) {
+        const changes = CRUDLogger.calculateChanges(event, eventData);
+        
         const { error } = await supabase
           .from('calendar_events')
           .update(eventData)
@@ -107,13 +110,12 @@ export const EventModal = ({ open, onClose, onSuccess, event, defaultDate }: Eve
         
         if (error) throw error;
 
-        await supabase.from('activity_logs').insert({
-          user_id: user.id,
-          action: 'updated',
-          entity_type: 'calendar_event',
-          entity_id: event.id,
-          parent_entity_type: relatedToType || null,
-          parent_entity_id: data.related_to_id || null,
+        await CRUDLogger.logUpdate({
+          userId: user.id,
+          entityType: 'appointment',
+          entityId: event.id,
+          entityName: data.title,
+          changes
         });
 
         toast.success('Event updated successfully');
@@ -126,13 +128,11 @@ export const EventModal = ({ open, onClose, onSuccess, event, defaultDate }: Eve
         
         if (error) throw error;
 
-        await supabase.from('activity_logs').insert({
-          user_id: user.id,
-          action: 'created',
-          entity_type: 'calendar_event',
-          entity_id: newEvent.id,
-          parent_entity_type: relatedToType || null,
-          parent_entity_id: data.related_to_id || null,
+        await CRUDLogger.logCreate({
+          userId: user.id,
+          entityType: 'appointment',
+          entityId: newEvent.id,
+          entityName: data.title
         });
 
         toast.success('Event created successfully');

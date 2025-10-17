@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { CRUDLogger } from '@/lib/crudLogger';
 
 interface ProjectFormProps {
   isOpen: boolean;
@@ -91,6 +92,8 @@ const ProjectForm = ({ isOpen, onClose, onSuccess, project, accountId }: Project
       };
 
       if (project) {
+        const changes = CRUDLogger.calculateChanges(project, projectData);
+        
         const { error } = await supabase
           .from('projects')
           .update(projectData)
@@ -98,11 +101,12 @@ const ProjectForm = ({ isOpen, onClose, onSuccess, project, accountId }: Project
 
         if (error) throw error;
 
-        await supabase.from('activity_logs').insert({
-          entity_type: 'project',
-          entity_id: project.id,
-          action: 'updated',
-          user_id: user.id,
+        await CRUDLogger.logUpdate({
+          userId: user.id,
+          entityType: 'project',
+          entityId: project.id,
+          entityName: formData.project_name,
+          changes
         });
 
         toast({ title: 'Project updated successfully' });
@@ -115,11 +119,11 @@ const ProjectForm = ({ isOpen, onClose, onSuccess, project, accountId }: Project
 
         if (error) throw error;
 
-        await supabase.from('activity_logs').insert({
-          entity_type: 'project',
-          entity_id: newProject.id,
-          action: 'created',
-          user_id: user.id,
+        await CRUDLogger.logCreate({
+          userId: user.id,
+          entityType: 'project',
+          entityId: newProject.id,
+          entityName: formData.project_name
         });
 
         toast({ title: 'Project created successfully' });

@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import NotesSection from '@/components/admin/notes/NotesSection';
 import ActivityFeed from '@/components/admin/ActivityFeed';
+import { CRUDLogger } from '@/lib/crudLogger';
 import { 
   ArrowLeft, 
   Mail, 
@@ -165,9 +166,21 @@ const LeadDetail = () => {
 
   const handleDelete = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const leadName = lead ? `${lead.first_name} ${lead.last_name}` : 'Unknown';
+      
       const { error } = await supabase.from('leads').delete().eq('id', id);
 
       if (error) throw error;
+
+      await CRUDLogger.logDelete({
+        userId: user.id,
+        entityType: 'lead',
+        entityId: id!,
+        entityName: leadName
+      });
 
       toast({
         title: 'Success',

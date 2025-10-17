@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { MapPin, Calendar, Clock, FileText, Link as LinkIcon, Trash2, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { CRUDLogger } from '@/lib/crudLogger';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,11 +45,11 @@ export const EventDetail = ({ open, onClose, event, onEdit, onDelete }: EventDet
 
       if (error) throw error;
 
-      await supabase.from('activity_logs').insert({
-        user_id: user.id,
-        action: 'deleted',
-        entity_type: 'calendar_event',
-        entity_id: event.id,
+      await CRUDLogger.logDelete({
+        userId: user.id,
+        entityType: 'appointment',
+        entityId: event.id,
+        entityName: event.title
       });
 
       toast.success('Event deleted successfully');

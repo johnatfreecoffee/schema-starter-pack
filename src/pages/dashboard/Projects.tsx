@@ -36,6 +36,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { CRUDLogger } from '@/lib/crudLogger';
 
 const Projects = () => {
   const navigate = useNavigate();
@@ -161,15 +162,19 @@ const Projects = () => {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const project = projects.find(p => p.id === id);
+      const projectName = project?.project_name || 'Unknown';
       
       const { error } = await supabase.from('projects').delete().eq('id', id);
       if (error) throw error;
 
-      await supabase.from('activity_logs').insert({
-        entity_type: 'project',
-        entity_id: id,
-        action: 'deleted',
-        user_id: user?.id,
+      await CRUDLogger.logDelete({
+        userId: user.id,
+        entityType: 'project',
+        entityId: id,
+        entityName: projectName
       });
 
       toast({ title: 'Project deleted successfully' });

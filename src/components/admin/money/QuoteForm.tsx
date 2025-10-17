@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import LineItemsEditor, { LineItem } from './LineItemsEditor';
+import { CRUDLogger } from '@/lib/crudLogger';
 
 type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'declined' | 'expired' | 'converted';
 
@@ -222,15 +223,22 @@ const QuoteForm = ({ open, onOpenChange, quote, onSuccess }: QuoteFormProps) => 
       if (itemsError) throw itemsError;
 
       // Log activity
-      await supabase.from('activity_logs').insert({
-        user_id: user.id,
-        action: quote ? 'updated' : 'created',
-        entity_type: 'quote',
-        entity_id: quoteId,
-        parent_entity_type: 'account',
-        parent_entity_id: formData.account_id,
-        description: `${quote ? 'Updated' : 'Created'} quote ${quoteNumber}`,
-      });
+      if (quote) {
+        await CRUDLogger.logUpdate({
+          userId: user.id,
+          entityType: 'quote',
+          entityId: quoteId!,
+          entityName: quoteNumber,
+          changes: { total_amount: { old: quote.total_amount, new: totalAmount } }
+        });
+      } else {
+        await CRUDLogger.logCreate({
+          userId: user.id,
+          entityType: 'quote',
+          entityId: quoteId!,
+          entityName: quoteNumber
+        });
+      }
 
       toast({
         title: 'Success',

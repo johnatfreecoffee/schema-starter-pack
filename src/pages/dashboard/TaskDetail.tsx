@@ -12,6 +12,7 @@ import TaskPriorityBadge from "@/components/admin/tasks/TaskPriorityBadge";
 import NotesSection from "@/components/admin/notes/NotesSection";
 import TaskForm from "@/components/admin/tasks/TaskForm";
 import { format } from "date-fns";
+import { CRUDLogger } from "@/lib/crudLogger";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -137,9 +138,19 @@ const TaskDetail = () => {
 
   const handleDelete = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
       const { error } = await supabase.from("tasks").delete().eq("id", id);
 
       if (error) throw error;
+
+      await CRUDLogger.logDelete({
+        userId: user.id,
+        entityType: 'task',
+        entityId: id!,
+        entityName: task?.title || 'Unknown'
+      });
 
       toast({
         title: "Success",

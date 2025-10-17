@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { CRUDLogger } from "@/lib/crudLogger";
 
 interface TaskFormProps {
   open: boolean;
@@ -128,8 +129,13 @@ export default function TaskForm({ open, onClose, onSuccess, task, relatedTo, us
         updated_at: new Date().toISOString()
       };
 
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) throw new Error('Not authenticated');
+
       if (task) {
         // Update existing task
+        const changes = CRUDLogger.calculateChanges(task, taskData);
+        
         const { error } = await supabase
           .from("tasks")
           .update(taskData)
@@ -137,13 +143,12 @@ export default function TaskForm({ open, onClose, onSuccess, task, relatedTo, us
 
         if (error) throw error;
 
-        // Log activity
-        await supabase.from("activity_logs").insert({
-          action: "updated",
-          entity_type: "task",
-          entity_id: task.id,
-          parent_entity_type: taskData.related_to_type as any,
-          parent_entity_id: taskData.related_to_id
+        await CRUDLogger.logUpdate({
+          userId: currentUser.id,
+          entityType: 'task',
+          entityId: task.id,
+          entityName: title,
+          changes
         });
 
         toast({
@@ -160,13 +165,11 @@ export default function TaskForm({ open, onClose, onSuccess, task, relatedTo, us
 
         if (error) throw error;
 
-        // Log activity
-        await supabase.from("activity_logs").insert({
-          action: "created",
-          entity_type: "task",
-          entity_id: newTask.id,
-          parent_entity_type: taskData.related_to_type as any,
-          parent_entity_id: taskData.related_to_id
+        await CRUDLogger.logCreate({
+          userId: currentUser.id,
+          entityType: 'task',
+          entityId: newTask.id,
+          entityName: title
         });
 
         toast({

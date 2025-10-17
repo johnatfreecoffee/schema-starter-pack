@@ -2,7 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface LogActivity {
   userId: string;
-  entityType: 'lead' | 'account' | 'task' | 'appointment' | 'project' | 'quote' | 'invoice';
+  entityType: 'lead' | 'account' | 'contact' | 'task' | 'appointment' | 'project' | 'quote' | 'invoice';
   entityId: string;
   entityName?: string;
   action: 'created' | 'updated' | 'deleted' | 'status_changed' | 'converted';

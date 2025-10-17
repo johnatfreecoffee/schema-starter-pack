@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import LineItemsEditor, { LineItem } from './LineItemsEditor';
 import { format, addDays } from 'date-fns';
+import { CRUDLogger } from '@/lib/crudLogger';
 
 type InvoiceStatus = 'pending' | 'paid' | 'partial' | 'overdue' | 'cancelled';
 
@@ -235,15 +236,22 @@ const InvoiceForm = ({ open, onOpenChange, invoice, onSuccess }: InvoiceFormProp
       if (itemsError) throw itemsError;
 
       // Log activity
-      await supabase.from('activity_logs').insert({
-        user_id: user.id,
-        action: invoice ? 'updated' : 'created',
-        entity_type: 'invoice',
-        entity_id: invoiceId,
-        parent_entity_type: 'account',
-        parent_entity_id: formData.account_id,
-        description: `${invoice ? 'Updated' : 'Created'} invoice ${invoiceNumber}`,
-      });
+      if (invoice) {
+        await CRUDLogger.logUpdate({
+          userId: user.id,
+          entityType: 'invoice',
+          entityId: invoiceId!,
+          entityName: invoiceNumber,
+          changes: { total_amount: { old: invoice.total_amount, new: totalAmount } }
+        });
+      } else {
+        await CRUDLogger.logCreate({
+          userId: user.id,
+          entityType: 'invoice',
+          entityId: invoiceId!,
+          entityName: invoiceNumber
+        });
+      }
 
       toast({
         title: 'Success',
