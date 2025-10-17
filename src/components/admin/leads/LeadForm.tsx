@@ -48,7 +48,7 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
     is_emergency: lead?.is_emergency || false,
     status: lead?.status || 'new',
     source: lead?.source || 'manual',
-    assigned_to: lead?.assigned_to || ''
+    assigned_to: lead?.assigned_to ?? null
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,14 +79,18 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
       const user = session?.user;
       if (!user) throw new Error('Not authenticated');
       console.log('✅ 2. Got user:', user.id);
+      // Normalize payload (convert empty/placeholder values to null)
+      const payload = {
+        ...formData,
+        assigned_to: formData.assigned_to ?? null,
+      };
 
-      if (lead?.id) {
-        // Update existing lead
+        if (lead?.id) {
         console.log('📝 3a. Updating lead:', lead.id);
         const changes = CRUDLogger.calculateChanges(lead, formData);
 
         const updateRes = (await withTimeout(
-          supabase.from('leads').update(formData).eq('id', lead.id),
+          supabase.from('leads').update(payload).eq('id', lead.id),
           10000,
           'Lead update'
         )) as { data: any; error: any };
@@ -124,7 +128,7 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
         console.log('➕ 3b. Creating new lead with data:', formData);
 
         const insertRes = (await withTimeout(
-          supabase.from('leads').insert(formData).select().single(),
+          supabase.from('leads').insert(payload).select().maybeSingle(),
           10000,
           'Lead insert'
         )) as { data: any; error: any };
@@ -367,8 +371,8 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
           <div>
             <Label htmlFor="assigned_to">Assigned To</Label>
             <Select 
-              value={formData.assigned_to || 'unassigned'}
-              onValueChange={(value) => setFormData({ ...formData, assigned_to: value === 'unassigned' ? '' : value })}
+              value={formData.assigned_to ?? 'unassigned'}
+              onValueChange={(value) => setFormData({ ...formData, assigned_to: value === 'unassigned' ? null : value })}
             >
               <SelectTrigger className="min-h-[44px]">
                 <SelectValue />
