@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -85,9 +85,9 @@ const Leads = () => {
   const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
-
   // Bulk operations state
   const bulkSelection = useBulkSelection(leads);
+  const hasLoadedOnce = useRef(false);
   const [bulkOperationModal, setBulkOperationModal] = useState<{
     open: boolean;
     type: 'status' | 'assign' | null;
@@ -108,10 +108,16 @@ const Leads = () => {
   const { role: userRole } = useUserRole();
   const { undoState, saveUndoState, performUndo, clearUndo } = useBulkUndo();
 
+  // Load leads when filters change
   useEffect(() => {
     loadLeads();
-    loadUsers();
   }, [filters]);
+
+  // Load users once (avoid repeated RPC + flicker)
+  useEffect(() => {
+    loadUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -130,72 +136,86 @@ const Leads = () => {
   }, [leads, bulkSelection.selectedCount]);
 
   const loadLeads = async () => {
-    setLoading(true);
-    try {
-      let query = supabase
-        .from('leads')
-        .select('*, service:services(id, name)');
+    // Avoid flicker: only show skeleton on first load
+    if (!hasLoadedOnce.current) setLoading(true);
 
-      // Apply advanced filters
-      if (filters.status?.length > 0) {
-        query = query.in('status', filters.status);
-      }
-      if (filters.source) {
-        query = query.eq('source', filters.source);
-      }
-      if (filters.serviceId) {
-        query = query.eq('service_id', filters.serviceId);
-      }
-      if (filters.assignedTo) {
-        if (filters.assignedTo === 'unassigned') {
-          query = query.is('assigned_to', null);
-        } else {
-          query = query.eq('assigned_to', filters.assignedTo);
+    let lastError: any = null;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        let query = supabase
+          .from('leads')
+          .select('*, service:services(id, name)');
+
+        // Apply advanced filters
+        if (filters.status?.length > 0) {
+          query = query.in('status', filters.status);
+        }
+        if (filters.source) {
+          query = query.eq('source', filters.source);
+        }
+        if (filters.serviceId) {
+          query = query.eq('service_id', filters.serviceId);
+        }
+        if (filters.assignedTo) {
+          if (filters.assignedTo === 'unassigned') {
+            query = query.is('assigned_to', null);
+          } else {
+            query = query.eq('assigned_to', filters.assignedTo);
+          }
+        }
+        if (filters.createdFrom) {
+          query = query.gte('created_at', new Date(filters.createdFrom).toISOString());
+        }
+        if (filters.createdTo) {
+          query = query.lte('created_at', new Date(filters.createdTo).toISOString());
+        }
+        if (filters.search) {
+          query = query.or(`first_name.ilike.%${filters.search}%,last_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`);
+        }
+
+        const { data, error } = await query.order('created_at', { ascending: false });
+        if (error) throw error;
+
+        setLeads(data || []);
+
+        // Calculate status counts
+        const counts: Record<string, number> = {
+          new: 0,
+          contacted: 0,
+          qualified: 0,
+          converted: 0,
+          lost: 0
+        };
+        data?.forEach(lead => {
+          if (counts[lead.status] !== undefined) {
+            counts[lead.status]++;
+          }
+        });
+        setStatusCounts(counts);
+
+        // Get unique services
+        const uniqueServices = [...new Set(data?.map(lead => lead.service_needed).filter(Boolean))];
+        setServices(uniqueServices as string[]);
+
+        hasLoadedOnce.current = true;
+        lastError = null;
+        break; // success, exit retry loop
+      } catch (error: any) {
+        lastError = error;
+        // Retry once for transient network errors
+        const isNetwork = String(error?.message || error).includes('Failed to fetch');
+        if (isNetwork && attempt === 0) {
+          await new Promise(r => setTimeout(r, 400));
+          continue;
         }
       }
-      if (filters.createdFrom) {
-        query = query.gte('created_at', new Date(filters.createdFrom).toISOString());
-      }
-      if (filters.createdTo) {
-        query = query.lte('created_at', new Date(filters.createdTo).toISOString());
-      }
-      if (filters.search) {
-        query = query.or(`first_name.ilike.%${filters.search}%,last_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`);
-      }
-
-      const { data, error } = await query.order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      setLeads(data || []);
-
-      // Calculate status counts
-      const counts: Record<string, number> = {
-        new: 0,
-        contacted: 0,
-        qualified: 0,
-        converted: 0,
-        lost: 0
-      };
-      data?.forEach(lead => {
-        if (counts[lead.status] !== undefined) {
-          counts[lead.status]++;
-        }
-      });
-      setStatusCounts(counts);
-
-      // Get unique services
-      const uniqueServices = [...new Set(data?.map(lead => lead.service_needed).filter(Boolean))];
-      setServices(uniqueServices as string[]);
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive'
-      });
-    } finally {
-      setLoading(false);
     }
+
+    if (lastError && !hasLoadedOnce.current) {
+      toast({ title: 'Error', description: String(lastError?.message || lastError), variant: 'destructive' });
+    }
+
+    setLoading(false);
   };
 
   const loadUsers = async () => {
@@ -659,7 +679,7 @@ const Leads = () => {
 
           {/* Leads Table */}
           <div className="lg:col-span-3">
-            {loading ? (
+            {(!hasLoadedOnce.current && loading) ? (
               <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
                   <Skeleton key={i} className="h-32 w-full" />
