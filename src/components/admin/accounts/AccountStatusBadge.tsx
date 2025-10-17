@@ -6,17 +6,17 @@ interface AccountStatusBadgeProps {
 
 const statusConfig = {
   active: { 
-    color: 'bg-green-500/10 text-green-700 border-green-200',
+    color: 'bg-success/10 text-success border-success/20',
     icon: '●',
     text: 'Active' 
   },
   inactive: { 
-    color: 'bg-gray-500/10 text-gray-700 border-gray-200',
+    color: 'bg-muted-foreground/10 text-muted-foreground border-muted-foreground/20',
     icon: '●',
     text: 'Inactive' 
   },
   archived: { 
-    color: 'bg-slate-500/10 text-slate-700 border-slate-200',
+    color: 'bg-muted/50 text-muted-foreground border-muted',
     icon: '□',
     text: 'Archived' 
   }
