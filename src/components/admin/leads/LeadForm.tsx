@@ -52,11 +52,15 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
     setLoading(true);
 
     try {
+      console.log('🚀 1. Form submission started');
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
+      console.log('✅ 2. Got user:', user.id);
 
       if (lead?.id) {
         // Update existing lead
+        console.log('📝 3a. Updating lead:', lead.id);
         const changes = CRUDLogger.calculateChanges(lead, formData);
         
         const { error } = await supabase
@@ -64,16 +68,27 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
           .update(formData)
           .eq('id', lead.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('❌ 4a. Lead update error:', error);
+          throw error;
+        }
+        console.log('✅ 4a. Lead updated successfully');
 
-        // Log activity
-        await CRUDLogger.logUpdate({
-          userId: user.id,
-          entityType: 'lead',
-          entityId: lead.id,
-          entityName: `${formData.first_name} ${formData.last_name}`,
-          changes
-        });
+        // Try to log activity - don't fail if logging fails
+        try {
+          console.log('📊 5a. Attempting to log update...');
+          await CRUDLogger.logUpdate({
+            userId: user.id,
+            entityType: 'lead',
+            entityId: lead.id,
+            entityName: `${formData.first_name} ${formData.last_name}`,
+            changes
+          });
+          console.log('✅ 5a. Update logged successfully');
+        } catch (logError) {
+          console.error('⚠️ Logging failed (non-critical):', logError);
+          // Continue anyway - logging failure shouldn't block the operation
+        }
 
         toast({
           title: 'Success',
@@ -81,21 +96,34 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
         });
       } else {
         // Create new lead
-        const { data: newLead, error } = await supabase
+        console.log('➕ 3b. Creating new lead with data:', formData);
+        
+        const { data: newLead, error: insertError } = await supabase
           .from('leads')
           .insert(formData)
           .select()
           .single();
 
-        if (error) throw error;
+        if (insertError) {
+          console.error('❌ 4b. Lead insert error:', insertError);
+          throw insertError;
+        }
+        console.log('✅ 4b. Lead created:', newLead?.id);
 
-        // Log activity
-        await CRUDLogger.logCreate({
-          userId: user.id,
-          entityType: 'lead',
-          entityId: newLead.id,
-          entityName: `${formData.first_name} ${formData.last_name}`
-        });
+        // Try to log activity - don't fail if logging fails
+        try {
+          console.log('📊 5b. Attempting to log create...');
+          await CRUDLogger.logCreate({
+            userId: user.id,
+            entityType: 'lead',
+            entityId: newLead.id,
+            entityName: `${formData.first_name} ${formData.last_name}`
+          });
+          console.log('✅ 5b. Create logged successfully');
+        } catch (logError) {
+          console.error('⚠️ Logging failed (non-critical):', logError);
+          // Continue anyway - logging failure shouldn't block the operation
+        }
 
         toast({
           title: 'Success',
@@ -103,15 +131,18 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
         });
       }
 
+      console.log('✅ 6. Calling onSuccess and onClose');
       onSuccess();
       onClose();
     } catch (error: any) {
+      console.error('❌ FINAL ERROR:', error);
       toast({
         title: 'Error',
-        description: error.message,
+        description: error.message || 'Failed to save lead',
         variant: 'destructive'
       });
     } finally {
+      console.log('🏁 7. Setting loading to false');
       setLoading(false);
     }
   };
