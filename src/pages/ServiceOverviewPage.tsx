@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLeadFormModal } from '@/hooks/useLeadFormModal';
 import { MessageSquare } from 'lucide-react';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 const ServiceOverviewPage = () => {
   const { serviceSlug } = useParams<{ serviceSlug: string }>();
@@ -108,10 +109,11 @@ const ServiceOverviewPage = () => {
     local_description: '',
   };
 
-  // Render template if available
+  // Render template if available and sanitize to prevent XSS
   let renderedContent = '';
   if (service.template?.template_html) {
     renderedContent = renderTemplate(service.template.template_html, pageData);
+    renderedContent = sanitizeHtml(renderedContent);
     renderedContent = renderedContent.replace(
       /<img(?![^>]*loading=)/gi,
       '<img loading="lazy"'

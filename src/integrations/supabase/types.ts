@@ -1200,6 +1200,36 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_submission_rate_limit: {
+        Row: {
+          blocked_until: string | null
+          created_at: string
+          first_submission_at: string
+          id: string
+          ip_address: string
+          last_submission_at: string
+          submission_count: number
+        }
+        Insert: {
+          blocked_until?: string | null
+          created_at?: string
+          first_submission_at?: string
+          id?: string
+          ip_address: string
+          last_submission_at?: string
+          submission_count?: number
+        }
+        Update: {
+          blocked_until?: string | null
+          created_at?: string
+          first_submission_at?: string
+          id?: string
+          ip_address?: string
+          last_submission_at?: string
+          submission_count?: number
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           assigned_to: string | null

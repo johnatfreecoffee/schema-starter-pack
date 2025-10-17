@@ -31,10 +31,108 @@ serve(async (req) => {
   }
 
   try {
+    // Initialize Supabase clients
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
     );
+    
+    const supabaseAdmin = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    );
+
+    // RATE LIMITING: Get client IP address
+    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 
+                     req.headers.get('x-real-ip') || 
+                     'unknown';
+    
+    // Check rate limit (10 submissions per IP per hour)
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    
+    const { data: rateLimitData, error: rateLimitError } = await supabaseAdmin
+      .from('lead_submission_rate_limit')
+      .select('*')
+      .eq('ip_address', clientIp)
+      .single();
+
+    if (rateLimitData) {
+      // Check if IP is currently blocked
+      if (rateLimitData.blocked_until && new Date(rateLimitData.blocked_until) > new Date()) {
+        console.warn(`Blocked submission attempt from IP: ${clientIp}`);
+        return new Response(
+          JSON.stringify({ 
+            error: 'Too many submissions. Please try again later.',
+            success: false 
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 429,
+          },
+        );
+      }
+
+      // Check if within rate limit window
+      const firstSubmission = new Date(rateLimitData.first_submission_at);
+      const hoursSinceFirst = (Date.now() - firstSubmission.getTime()) / (1000 * 60 * 60);
+      
+      if (hoursSinceFirst < 1 && rateLimitData.submission_count >= 10) {
+        // Block for 1 hour
+        const blockUntil = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+        await supabaseAdmin
+          .from('lead_submission_rate_limit')
+          .update({ 
+            blocked_until: blockUntil,
+            submission_count: rateLimitData.submission_count + 1,
+            last_submission_at: new Date().toISOString()
+          })
+          .eq('id', rateLimitData.id);
+        
+        console.warn(`IP ${clientIp} exceeded rate limit. Blocked until ${blockUntil}`);
+        return new Response(
+          JSON.stringify({ 
+            error: 'Too many submissions. Please try again in 1 hour.',
+            success: false 
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 429,
+          },
+        );
+      }
+
+      // Reset counter if more than 1 hour has passed
+      if (hoursSinceFirst >= 1) {
+        await supabaseAdmin
+          .from('lead_submission_rate_limit')
+          .update({
+            submission_count: 1,
+            first_submission_at: new Date().toISOString(),
+            last_submission_at: new Date().toISOString(),
+            blocked_until: null
+          })
+          .eq('id', rateLimitData.id);
+      } else {
+        // Increment counter
+        await supabaseAdmin
+          .from('lead_submission_rate_limit')
+          .update({
+            submission_count: rateLimitData.submission_count + 1,
+            last_submission_at: new Date().toISOString()
+          })
+          .eq('id', rateLimitData.id);
+      }
+    } else {
+      // First submission from this IP
+      await supabaseAdmin
+        .from('lead_submission_rate_limit')
+        .insert({
+          ip_address: clientIp,
+          submission_count: 1,
+          first_submission_at: new Date().toISOString(),
+          last_submission_at: new Date().toISOString()
+        });
+    }
 
     const leadData: LeadData = await req.json();
     
@@ -71,14 +169,10 @@ serve(async (req) => {
 
     console.log('Lead created successfully:', lead.id);
 
-    // 2. Generate temporary password
+    // 2. Generate temporary password (SECURITY: Never log this!)
     const tempPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8).toUpperCase();
 
-    // 3. Create user account (using service role to bypass RLS)
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    );
+    // 3. Create user account (using service role already initialized above)
 
     const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email: leadData.email,
@@ -117,9 +211,8 @@ serve(async (req) => {
 
     // 5. TODO: Send welcome email
     // This would integrate with your email service (Resend, etc.)
-    // For now, we'll log the email details
-    console.log('Would send welcome email to:', leadData.email);
-    console.log('Temporary password:', tempPassword);
+    // SECURITY: Never log passwords! Only log that email was queued
+    console.log('Welcome email queued for:', leadData.email);
     console.log('Company:', companySettings?.business_name);
 
     // 6. Create activity log

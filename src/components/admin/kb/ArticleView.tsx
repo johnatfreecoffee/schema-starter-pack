@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { Pencil, Trash2 } from 'lucide-react';
+import { sanitizeRichText } from '@/lib/sanitize';
 
 interface Article {
   id: string;
@@ -127,7 +128,7 @@ const ArticleView = ({ open, onOpenChange, article, onEdit, onDelete }: ArticleV
         <div className="mt-6">
           <div 
             className="prose prose-sm max-w-none"
-            dangerouslySetInnerHTML={{ __html: article.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeRichText(article.content) }}
           />
         </div>
 

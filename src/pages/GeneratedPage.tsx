@@ -9,6 +9,7 @@ import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { Button } from '@/components/ui/button';
 import { useLeadFormModal } from '@/hooks/useLeadFormModal';
 import { MessageSquare } from 'lucide-react';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 const GeneratedPage = () => {
   const { citySlug, serviceSlug } = useParams<{ citySlug: string; serviceSlug: string }>();
@@ -96,11 +97,12 @@ const GeneratedPage = () => {
     url_path: page.url_path,
   };
 
-  // Render template with data
+  // Render template with data and sanitize to prevent XSS
   let renderedContent = renderTemplate(
     page.service.template.template_html,
     pageData
   );
+  renderedContent = sanitizeHtml(renderedContent);
 
   // Add lazy loading to images in rendered HTML
   renderedContent = renderedContent.replace(

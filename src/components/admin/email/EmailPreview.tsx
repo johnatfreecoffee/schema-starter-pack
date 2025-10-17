@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { EmailService } from '@/services/emailService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { sanitizeEmailHtml } from '@/lib/sanitize';
 
 interface EmailPreviewProps {
   template: any;
@@ -72,7 +73,7 @@ const EmailPreview = ({ template }: EmailPreviewProps) => {
             <span className="text-sm font-semibold text-muted-foreground">Body:</span>
             <div
               className="mt-1 p-4 bg-white rounded border"
-              dangerouslySetInnerHTML={{ __html: preview.body }}
+              dangerouslySetInnerHTML={{ __html: sanitizeEmailHtml(preview.body) }}
             />
           </div>
         </CardContent>

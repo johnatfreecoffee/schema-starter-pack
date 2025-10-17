@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Monitor, Tablet, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { sanitizeRichText } from '@/lib/sanitize';
 
 interface PagePreviewProps {
   content: string;
