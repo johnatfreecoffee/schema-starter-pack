@@ -7,27 +7,27 @@ interface LeadStatusBadgeProps {
 
 const statusConfig = {
   new: { 
-    color: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+    color: 'bg-primary/10 text-primary border-primary/20',
     text: 'New', 
     icon: '●' 
   },
   contacted: { 
-    color: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20',
+    color: 'bg-warning/10 text-warning border-warning/20',
     text: 'Contacted', 
     icon: '●' 
   },
   qualified: { 
-    color: 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20',
+    color: 'bg-success/10 text-success border-success/20',
     text: 'Qualified', 
     icon: '●' 
   },
   converted: { 
-    color: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
+    color: 'bg-accent/10 text-accent border-accent/20',
     text: 'Converted', 
     icon: '✓' 
   },
   lost: { 
-    color: 'bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20',
+    color: 'bg-muted-foreground/10 text-muted-foreground border-muted-foreground/20',
     text: 'Lost', 
     icon: '×' 
   },
