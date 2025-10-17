@@ -3101,6 +3101,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_user_has_role: {
+        Args: { _role: string }
+        Returns: boolean
+      }
       generate_ticket_number: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -3110,10 +3114,12 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_role"]
       }
       has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["user_role"]
-          _user_id: string
-        }
+        Args:
+          | {
+              _role: Database["public"]["Enums"]["user_role"]
+              _user_id: string
+            }
+          | { _role: string; _user_id: string }
         Returns: boolean
       }
     }
