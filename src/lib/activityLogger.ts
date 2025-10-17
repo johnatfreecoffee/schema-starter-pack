@@ -25,9 +25,13 @@ export class ActivityLogger {
           metadata: activity.metadata || null
         }]);
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Activity Log Insert Error:', error);
+        throw error;
+      }
+      console.log('✅ Activity logged:', activity.entityType, activity.action, activity.entityName);
     } catch (error) {
-      console.error('Failed to log activity:', error);
+      console.error('❌ Failed to log activity:', error);
       // Don't throw - logging should not break the main operation
     }
   }
