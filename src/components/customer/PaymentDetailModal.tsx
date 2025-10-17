@@ -244,9 +244,9 @@ const PaymentDetailModal = ({ document, open, onOpenChange }: PaymentDetailModal
 
           {/* Payment Instructions for Unpaid Invoices */}
           {document.type === 'invoice' && document.status !== 'paid' && (
-            <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <h4 className="font-semibold mb-2 text-blue-900 dark:text-blue-100">Payment Instructions</h4>
-              <p className="text-sm text-blue-800 dark:text-blue-200">
+            <div className="bg-accent/50 border border-border rounded-lg p-4">
+              <h4 className="font-semibold mb-2">Payment Instructions</h4>
+              <p className="text-sm text-muted-foreground">
                 Please contact us to arrange payment or use the payment button above.
                 Payment methods and instructions will be provided upon request.
               </p>
