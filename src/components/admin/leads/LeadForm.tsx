@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -51,10 +51,27 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
     e.preventDefault();
     setLoading(true);
 
+    // Helper to prevent indefinite hangs on awaited calls
+    const withTimeout = <T,>(promise: Promise<T> | PromiseLike<T>, ms: number, label: string) =>
+      new Promise<T>((resolve, reject) => {
+        const id = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+        Promise.resolve(promise)
+          .then((res) => {
+            clearTimeout(id);
+            resolve(res);
+          })
+          .catch((err) => {
+            clearTimeout(id);
+            reject(err);
+          });
+      });
+
     try {
       console.log('🚀 1. Form submission started');
-      
-      const { data: { user } } = await supabase.auth.getUser();
+
+      // 2) Get user with timeout
+      const userRes = await withTimeout(supabase.auth.getUser(), 7000, 'Auth check');
+      const user = userRes.data.user;
       if (!user) throw new Error('Not authenticated');
       console.log('✅ 2. Got user:', user.id);
 
@@ -62,32 +79,35 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
         // Update existing lead
         console.log('📝 3a. Updating lead:', lead.id);
         const changes = CRUDLogger.calculateChanges(lead, formData);
-        
-        const { error } = await supabase
-          .from('leads')
-          .update(formData)
-          .eq('id', lead.id);
 
-        if (error) {
-          console.error('❌ 4a. Lead update error:', error);
-          throw error;
+        const updateRes = (await withTimeout(
+          supabase.from('leads').update(formData).eq('id', lead.id),
+          10000,
+          'Lead update'
+        )) as { data: any; error: any };
+        if (updateRes.error) {
+          console.error('❌ 4a. Lead update error:', updateRes.error);
+          throw updateRes.error;
         }
         console.log('✅ 4a. Lead updated successfully');
 
-        // Try to log activity - don't fail if logging fails
+        // Try to log activity - don't fail if logging fails (3s timeout)
         try {
           console.log('📊 5a. Attempting to log update...');
-          await CRUDLogger.logUpdate({
-            userId: user.id,
-            entityType: 'lead',
-            entityId: lead.id,
-            entityName: `${formData.first_name} ${formData.last_name}`,
-            changes
-          });
+          await withTimeout(
+            CRUDLogger.logUpdate({
+              userId: user.id,
+              entityType: 'lead',
+              entityId: lead.id,
+              entityName: `${formData.first_name} ${formData.last_name}`,
+              changes
+            }),
+            3000,
+            'Activity log (update)'
+          );
           console.log('✅ 5a. Update logged successfully');
         } catch (logError) {
-          console.error('⚠️ Logging failed (non-critical):', logError);
-          // Continue anyway - logging failure shouldn't block the operation
+          console.error('⚠️ Logging failed or timed out (non-critical):', logError);
         }
 
         toast({
@@ -97,32 +117,36 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
       } else {
         // Create new lead
         console.log('➕ 3b. Creating new lead with data:', formData);
-        
-        const { data: newLead, error: insertError } = await supabase
-          .from('leads')
-          .insert(formData)
-          .select()
-          .single();
 
-        if (insertError) {
-          console.error('❌ 4b. Lead insert error:', insertError);
-          throw insertError;
+        const insertRes = (await withTimeout(
+          supabase.from('leads').insert(formData).select().single(),
+          10000,
+          'Lead insert'
+        )) as { data: any; error: any };
+
+        if (insertRes.error) {
+          console.error('❌ 4b. Lead insert error:', insertRes.error);
+          throw insertRes.error;
         }
+        const newLead = insertRes.data as any;
         console.log('✅ 4b. Lead created:', newLead?.id);
 
-        // Try to log activity - don't fail if logging fails
+        // Try to log activity - don't fail if logging fails (3s timeout)
         try {
           console.log('📊 5b. Attempting to log create...');
-          await CRUDLogger.logCreate({
-            userId: user.id,
-            entityType: 'lead',
-            entityId: newLead.id,
-            entityName: `${formData.first_name} ${formData.last_name}`
-          });
+          await withTimeout(
+            CRUDLogger.logCreate({
+              userId: user.id,
+              entityType: 'lead',
+              entityId: newLead.id,
+              entityName: `${formData.first_name} ${formData.last_name}`
+            }),
+            3000,
+            'Activity log (create)'
+          );
           console.log('✅ 5b. Create logged successfully');
         } catch (logError) {
-          console.error('⚠️ Logging failed (non-critical):', logError);
-          // Continue anyway - logging failure shouldn't block the operation
+          console.error('⚠️ Logging failed or timed out (non-critical):', logError);
         }
 
         toast({
@@ -132,8 +156,8 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
       }
 
       console.log('✅ 6. Calling onSuccess and onClose');
-      onSuccess();
-      onClose();
+      onSuccess?.();
+      onClose?.();
     } catch (error: any) {
       console.error('❌ FINAL ERROR:', error);
       toast({
@@ -387,6 +411,9 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{lead ? 'Edit Lead' : 'Create New Lead'}</DialogTitle>
+          <DialogDescription>
+            {lead ? 'Update lead details' : 'Enter lead details to create a new lead'}
+          </DialogDescription>
         </DialogHeader>
         {formContent}
       </DialogContent>
