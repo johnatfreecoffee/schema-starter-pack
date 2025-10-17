@@ -64,7 +64,7 @@ const PagePreview = ({ content }: PagePreviewProps) => {
           >
             <div
               className="prose prose-sm max-w-none p-6"
-              dangerouslySetInnerHTML={{ __html: content }}
+              dangerouslySetInnerHTML={{ __html: sanitizeRichText(content) }}
             />
           </div>
         </div>
