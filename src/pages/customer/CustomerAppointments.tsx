@@ -143,16 +143,16 @@ const CustomerAppointments = () => {
   }, [filteredAndSortedEvents]);
 
   const eventStyleGetter = (event: CalendarEvent) => {
-    let backgroundColor = '#3b82f6';
-    if (event.status === 'completed') backgroundColor = '#10b981';
-    if (event.status === 'cancelled') backgroundColor = '#ef4444';
+    let backgroundColor = 'hsl(var(--primary))';
+    if (event.status === 'completed') backgroundColor = 'hsl(var(--success))';
+    if (event.status === 'cancelled') backgroundColor = 'hsl(var(--destructive))';
 
     return {
       style: {
         backgroundColor,
         borderRadius: '4px',
         opacity: 0.8,
-        color: 'white',
+        color: 'hsl(var(--primary-foreground))',
         border: '0px',
         display: 'block',
       },
