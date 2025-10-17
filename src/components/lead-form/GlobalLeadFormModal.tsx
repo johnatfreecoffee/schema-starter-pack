@@ -2,7 +2,7 @@ import { useLeadFormModal } from '@/hooks/useLeadFormModal';
 import { LeadFormModal } from './LeadFormModal';
 
 export const GlobalLeadFormModal = () => {
-  const { isOpen, headerText, closeModal } = useLeadFormModal();
+  const { isOpen, headerText, context, closeModal } = useLeadFormModal();
 
   return (
     <LeadFormModal
@@ -10,6 +10,7 @@ export const GlobalLeadFormModal = () => {
       headerText={headerText}
       onClose={closeModal}
       onSuccess={closeModal}
+      context={context}
     />
   );
 };

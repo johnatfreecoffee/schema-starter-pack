@@ -19,6 +19,9 @@ interface LeadData {
   zip: string;
   project_details?: string;
   is_emergency: boolean;
+  service_id?: string;
+  originating_url?: string;
+  lead_source?: string;
 }
 
 serve(async (req) => {
@@ -54,6 +57,9 @@ serve(async (req) => {
         project_details: leadData.project_details,
         is_emergency: leadData.is_emergency,
         status: 'new',
+        service_id: leadData.service_id || null,
+        originating_url: leadData.originating_url || null,
+        lead_source: leadData.lead_source || 'web_form',
       })
       .select()
       .single();

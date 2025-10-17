@@ -1204,6 +1204,7 @@ export type Database = {
         Row: {
           assigned_to: string | null
           city: string
+          city_context: string | null
           converted_account_id: string | null
           created_at: string
           email: string
@@ -1212,8 +1213,11 @@ export type Database = {
           is_emergency: boolean
           is_test_data: boolean | null
           last_name: string
+          lead_source: string | null
+          originating_url: string | null
           phone: string
           project_details: string | null
+          service_id: string | null
           service_needed: string
           source: string | null
           state: string
@@ -1226,6 +1230,7 @@ export type Database = {
         Insert: {
           assigned_to?: string | null
           city: string
+          city_context?: string | null
           converted_account_id?: string | null
           created_at?: string
           email: string
@@ -1234,8 +1239,11 @@ export type Database = {
           is_emergency?: boolean
           is_test_data?: boolean | null
           last_name: string
+          lead_source?: string | null
+          originating_url?: string | null
           phone: string
           project_details?: string | null
+          service_id?: string | null
           service_needed: string
           source?: string | null
           state: string
@@ -1248,6 +1256,7 @@ export type Database = {
         Update: {
           assigned_to?: string | null
           city?: string
+          city_context?: string | null
           converted_account_id?: string | null
           created_at?: string
           email?: string
@@ -1256,8 +1265,11 @@ export type Database = {
           is_emergency?: boolean
           is_test_data?: boolean | null
           last_name?: string
+          lead_source?: string | null
+          originating_url?: string | null
           phone?: string
           project_details?: string | null
+          service_id?: string | null
           service_needed?: string
           source?: string | null
           state?: string
@@ -1273,6 +1285,13 @@ export type Database = {
             columns: ["converted_account_id"]
             isOneToOne: false
             referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
             referencedColumns: ["id"]
           },
         ]

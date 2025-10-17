@@ -132,7 +132,9 @@ const Leads = () => {
   const loadLeads = async () => {
     setLoading(true);
     try {
-      let query = supabase.from('leads').select('*');
+      let query = supabase
+        .from('leads')
+        .select('*, service:services(id, name)');
 
       // Apply advanced filters
       if (filters.status?.length > 0) {
@@ -140,6 +142,9 @@ const Leads = () => {
       }
       if (filters.source) {
         query = query.eq('source', filters.source);
+      }
+      if (filters.serviceId) {
+        query = query.eq('service_id', filters.serviceId);
       }
       if (filters.assignedTo) {
         if (filters.assignedTo === 'unassigned') {
@@ -689,7 +694,16 @@ const Leads = () => {
                     
                     <MobileCardField 
                       label="Service" 
-                      value={lead.service_needed || 'N/A'} 
+                      value={
+                        <div className="space-y-1">
+                          <div>{lead.service?.name || lead.service_needed || 'N/A'}</div>
+                          {lead.lead_source && lead.lead_source !== 'web_form' && (
+                            <Badge variant="outline" className="text-xs">
+                              {lead.lead_source === 'service_page' ? 'Service Page' : lead.lead_source}
+                            </Badge>
+                          )}
+                        </div>
+                      } 
                     />
                     <MobileCardField 
                       label="Email" 
@@ -803,7 +817,18 @@ const Leads = () => {
                                   {lead.first_name} {lead.last_name}
                                 </button>
                               </TableCell>
-                              <TableCell>{lead.service_needed}</TableCell>
+                              <TableCell>
+                                <div className="space-y-1">
+                                  <div className="font-medium">
+                                    {lead.service?.name || lead.service_needed}
+                                  </div>
+                                  {lead.lead_source && lead.lead_source !== 'web_form' && (
+                                    <Badge variant="outline" className="text-xs">
+                                      {lead.lead_source === 'service_page' ? 'Service Page' : lead.lead_source}
+                                    </Badge>
+                                  )}
+                                </div>
+                              </TableCell>
                               <TableCell>
                                 <div className="space-y-1">
                                   <a

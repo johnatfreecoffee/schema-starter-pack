@@ -1,18 +1,27 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { UniversalLeadForm } from './UniversalLeadForm';
 
+interface LeadFormContext {
+  serviceId?: string;
+  serviceName?: string;
+  city?: string;
+  originatingUrl?: string;
+}
+
 interface LeadFormModalProps {
   isOpen: boolean;
   headerText: string;
   onClose: () => void;
   onSuccess?: () => void;
+  context?: LeadFormContext | null;
 }
 
 export const LeadFormModal = ({ 
   isOpen, 
   headerText, 
   onClose, 
-  onSuccess 
+  onSuccess,
+  context 
 }: LeadFormModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -29,6 +38,7 @@ export const LeadFormModal = ({
           }}
           onCancel={onClose}
           showHeader={false}
+          context={context}
         />
       </DialogContent>
     </Dialog>

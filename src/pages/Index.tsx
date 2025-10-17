@@ -2,6 +2,7 @@ import PublicLayout from '@/components/layout/PublicLayout';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { FeaturedReviewsWidget } from '@/components/reviews/FeaturedReviewsWidget';
+import { LeadFormEmbed } from '@/components/lead-form/LeadFormEmbed';
 
 const Index = () => {
   return (
@@ -25,6 +26,22 @@ const Index = () => {
               </Button>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Lead Form Section */}
+      <div className="py-16 bg-muted/30">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Get Your Free Quote Today</h2>
+            <p className="text-lg text-muted-foreground">
+              Fill out the form below and we'll get back to you within 24 hours
+            </p>
+          </div>
+          <LeadFormEmbed 
+            headerText="Request a Quote"
+            showHeader={false}
+          />
         </div>
       </div>
 

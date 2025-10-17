@@ -31,12 +31,20 @@ const leadFormSchema = z.object({
 
 type LeadFormData = z.infer<typeof leadFormSchema>;
 
+interface LeadFormContext {
+  serviceId?: string;
+  serviceName?: string;
+  city?: string;
+  originatingUrl?: string;
+}
+
 interface UniversalLeadFormProps {
   mode: 'modal' | 'embed';
   modalHeader?: string;
   onSuccess?: () => void;
   onCancel?: () => void;
   showHeader?: boolean;
+  context?: LeadFormContext | null;
 }
 
 export const UniversalLeadForm = ({ 
@@ -44,7 +52,8 @@ export const UniversalLeadForm = ({
   modalHeader, 
   onSuccess, 
   onCancel,
-  showHeader = true 
+  showHeader = true,
+  context 
 }: UniversalLeadFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -57,10 +66,10 @@ export const UniversalLeadForm = ({
       last_name: '',
       email: '',
       phone: '',
-      service_needed: '',
+      service_needed: context?.serviceName || '',
       street_address: '',
       unit: '',
-      city: '',
+      city: context?.city || '',
       state: '',
       zip: '',
       project_details: '',
@@ -72,7 +81,12 @@ export const UniversalLeadForm = ({
     setIsSubmitting(true);
     try {
       const { data: leadData, error } = await supabase.functions.invoke('submit-lead', {
-        body: data,
+        body: {
+          ...data,
+          service_id: context?.serviceId,
+          originating_url: context?.originatingUrl || window.location.href,
+          lead_source: mode === 'modal' ? 'service_page' : 'homepage',
+        },
       });
 
       if (error) throw error;

@@ -7,9 +7,12 @@ import { renderTemplate, formatPrice, formatPhone } from '@/lib/templateEngine';
 import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useLeadFormModal } from '@/hooks/useLeadFormModal';
+import { MessageSquare } from 'lucide-react';
 
 const ServiceOverviewPage = () => {
   const { serviceSlug } = useParams<{ serviceSlug: string }>();
+  const { openModal } = useLeadFormModal();
 
   const { data: service, isLoading: serviceLoading, error: serviceError } = useCachedQuery({
     queryKey: ['service', serviceSlug],
@@ -150,6 +153,34 @@ const ServiceOverviewPage = () => {
 
       {/* Service Overview Content */}
       <div className="container mx-auto px-4 py-8">
+        {/* Hero CTA Section */}
+        <div className="text-center mb-12 bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg p-8 border">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{service.name} Services</h1>
+          <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
+            {service.full_description || `Professional ${service.name} services from ${company.business_name}`}
+          </p>
+          {service.starting_price && (
+            <p className="text-2xl font-bold mb-6 text-primary">
+              Starting at {formatPrice(service.starting_price)}
+            </p>
+          )}
+          <Button 
+            size="lg" 
+            className="text-lg py-6 px-8"
+            onClick={() => openModal(
+              `Get a Free Quote for ${service.name}`,
+              {
+                serviceId: service.id,
+                serviceName: service.name,
+                originatingUrl: window.location.href,
+              }
+            )}
+          >
+            <MessageSquare className="mr-2 h-5 w-5" />
+            Get Your Free Quote
+          </Button>
+        </div>
+
         {renderedContent ? (
           <div
             className="prose prose-lg max-w-none mb-12"
@@ -157,17 +188,34 @@ const ServiceOverviewPage = () => {
           />
         ) : (
           <div className="mb-12">
-            <h1 className="text-4xl font-bold mb-4">{service.name} Services</h1>
-            <p className="text-lg text-muted-foreground mb-6">
-              {service.full_description || `Professional ${service.name} services from ${company.business_name}`}
+            <h2 className="text-2xl font-bold mb-4">About Our {service.name} Services</h2>
+            <p className="text-muted-foreground">
+              {service.full_description}
             </p>
-            {service.starting_price && (
-              <p className="text-xl font-semibold mb-4">
-                Starting at {formatPrice(service.starting_price)}
-              </p>
-            )}
           </div>
         )}
+
+        {/* Bottom CTA */}
+        <div className="bg-muted/30 rounded-lg p-8 text-center mb-12">
+          <h2 className="text-2xl font-bold mb-4">Ready to Get Started?</h2>
+          <p className="text-muted-foreground mb-6">
+            Request a free quote and we'll get back to you within 24 hours
+          </p>
+          <Button 
+            size="lg"
+            onClick={() => openModal(
+              `Get a Free Quote for ${service.name}`,
+              {
+                serviceId: service.id,
+                serviceName: service.name,
+                originatingUrl: window.location.href,
+              }
+            )}
+          >
+            <MessageSquare className="mr-2 h-5 w-5" />
+            Request Service
+          </Button>
+        </div>
 
         {/* Service Areas */}
         {serviceAreas && serviceAreas.length > 0 && (
