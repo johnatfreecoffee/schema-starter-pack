@@ -28,6 +28,10 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
   const { data: formSettings } = useFormSettings();
   const [loading, setLoading] = useState(false);
   const isMobile = useIsMobile();
+
+  // Debug: Log form settings when they load
+  console.log('🔍 LeadForm: formSettings loaded:', formSettings);
+  console.log('🔍 LeadForm: service_options:', formSettings?.service_options);
   
   const [formData, setFormData] = useState({
     first_name: lead?.first_name || '',
