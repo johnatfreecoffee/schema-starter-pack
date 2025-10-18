@@ -109,12 +109,44 @@ export const useEmailTriggers = () => {
       )
       .subscribe();
 
-    // Cleanup subscriptions
+    // Subscribe to quote status changes
+    const quotesChannel = supabase
+      .channel('quotes-email-triggers')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'quotes'
+        },
+        async (payload) => {
+          // Check if status changed to 'sent'
+          if (payload.old && payload.old.status !== 'sent' && payload.new.status === 'sent') {
+            console.log('🔔 Quote sent, checking for email trigger');
+            
+            if (payload.new.account_id) {
+              await AutomatedEmailTriggers.onQuoteSent(payload.new, payload.new.account_id);
+            }
+          }
+          
+          // Check if status changed to 'accepted'
+          if (payload.old && payload.old.status !== 'accepted' && payload.new.status === 'accepted') {
+            console.log('🔔 Quote accepted, checking for email trigger');
+            
+            if (payload.new.account_id) {
+              await AutomatedEmailTriggers.onQuoteAccepted(payload.new, payload.new.account_id);
+            }
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(leadsChannel);
       supabase.removeChannel(appointmentsChannel);
       supabase.removeChannel(projectsChannel);
       supabase.removeChannel(invoicesChannel);
+      supabase.removeChannel(quotesChannel);
     };
   }, []);
 };

@@ -32,14 +32,37 @@ interface EmailTemplateFormProps {
   onCancel: () => void;
 }
 
-const commonVariables = [
-  'first_name', 'last_name', 'email', 'phone',
-  'company_name', 'company_email', 'company_phone', 'company_address',
+// List of all valid template variables
+const VALID_VARIABLES = [
+  'first_name', 'last_name', 'email', 'phone', 'mobile',
+  'company_name', 'company_phone', 'company_email', 'company_address',
   'current_date', 'current_year',
-  'account_name', 'invoice_number', 'amount_due', 'due_date',
+  'account_name', 'account_type',
+  'service_needed', 'project_details', 'street_address', 'city', 'state', 'zip',
+  'project_name', 'project_status', 'project_description',
+  'appointment_date', 'appointment_time', 'appointment_title', 'appointment_location',
+  'quote_number', 'total_amount', 'valid_until',
+  'invoice_number', 'due_date', 'payment_link',
   'task_title', 'task_due_date', 'task_priority',
-  'project_name', 'project_status', 'user_name'
+  'old_status', 'new_status'
 ];
+
+const commonVariables = VALID_VARIABLES;
+
+// Extract variables from template text
+const extractVariables = (text: string): string[] => {
+  const matches = text.match(/\{\{([^}]+)\}\}/g) || [];
+  return matches.map(match => match.replace(/\{\{|\}\}/g, '').trim());
+};
+
+// Validate variables and return invalid ones
+const validateVariables = (subject: string, body: string): string[] => {
+  const subjectVars = extractVariables(subject);
+  const bodyVars = extractVariables(body);
+  const allVars = [...new Set([...subjectVars, ...bodyVars])];
+  
+  return allVars.filter(v => !VALID_VARIABLES.includes(v));
+};
 
 const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormProps) => {
   const [name, setName] = useState(template?.name || '');
@@ -65,6 +88,25 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
       setSelectedVariables(template.variables || []);
     }
   }, [template]);
+
+  const handleSubmit = () => {
+    if (!name || !subject || !body) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    // Validate variables
+    const invalidVars = validateVariables(subject, body);
+    if (invalidVars.length > 0) {
+      toast.warning(
+        `Unknown variables detected: ${invalidVars.join(', ')}. These may not be replaced correctly.`,
+        { duration: 5000 }
+      );
+      // Continue anyway - just a warning, not blocking
+    }
+
+    saveMutation.mutate();
+  };
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -318,7 +360,7 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
           Cancel
         </Button>
         <Button
-          onClick={() => saveMutation.mutate()}
+          onClick={handleSubmit}
           disabled={!name || !subject || !body || saveMutation.isPending}
         >
           {saveMutation.isPending ? 'Saving...' : template ? 'Update Template' : 'Create Template'}

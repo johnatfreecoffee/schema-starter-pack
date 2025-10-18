@@ -170,6 +170,43 @@ export class AutomatedEmailTriggers {
   }
 
   /**
+   * Trigger: Quote Accepted
+   */
+  static async onQuoteAccepted(quote: any, accountId: string): Promise<void> {
+    try {
+      const { data: account } = await supabase
+        .from('accounts')
+        .select('account_name, contacts(email, first_name, last_name, is_primary)')
+        .eq('id', accountId)
+        .single();
+
+      if (!account) return;
+
+      const primaryContact = account.contacts?.find((c: any) => c.is_primary) || account.contacts?.[0];
+      if (!primaryContact?.email) return;
+
+      const formatCurrency = (cents: number) => {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD'
+        }).format(cents / 100);
+      };
+
+      const variables: TemplateVariables = {
+        first_name: primaryContact.first_name || '',
+        last_name: primaryContact.last_name || '',
+        account_name: account.account_name || '',
+        quote_number: quote.quote_number || '',
+        total_amount: formatCurrency(quote.total_amount),
+      };
+
+      await this.sendTriggeredEmail('quote_accepted', primaryContact.email, variables, 'quote', quote.id);
+    } catch (error) {
+      console.error('Error in onQuoteAccepted:', error);
+    }
+  }
+
+  /**
    * Trigger: Invoice Sent
    */
   static async onInvoiceSent(invoice: any, accountId: string): Promise<void> {
