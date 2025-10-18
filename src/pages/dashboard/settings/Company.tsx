@@ -28,6 +28,11 @@ const CompanySettings = () => {
     phone: '',
     email: '',
     address: '',
+    address_street: '',
+    address_unit: '',
+    address_city: '',
+    address_state: '',
+    address_zip: '',
     description: '',
     years_experience: 0,
     website_url: '',
@@ -60,12 +65,20 @@ const CompanySettings = () => {
 
   useEffect(() => {
     if (company) {
+      // Parse existing address if it exists
+      const addressParts = company.address ? company.address.split('\n') : [];
+      
       setFormData({
         business_name: company.business_name || '',
         business_slogan: company.business_slogan || '',
         phone: formatPhoneNumber(company.phone || ''),
         email: company.email || '',
         address: company.address || '',
+        address_street: addressParts[0] || '',
+        address_unit: '',
+        address_city: '',
+        address_state: '',
+        address_zip: '',
         description: company.description || '',
         years_experience: company.years_experience || 0,
         website_url: company.website_url || '',
@@ -156,9 +169,19 @@ const CompanySettings = () => {
         iconUrl = await uploadImage(iconFile, 'icon');
       }
 
+      // Build full address from parts
+      const fullAddress = [
+        formData.address_street,
+        formData.address_unit ? `Unit ${formData.address_unit}` : '',
+        formData.address_city,
+        formData.address_state,
+        formData.address_zip
+      ].filter(Boolean).join(', ');
+
       const updateData = {
         ...formData,
         phone: formData.phone.replace(/\D/g, ''),
+        address: fullAddress,
         logo_url: logoUrl,
         icon_url: iconUrl,
       };
@@ -228,8 +251,22 @@ const CompanySettings = () => {
       newErrors.phone = 'Phone number must be 10 digits';
     }
 
-    if (!formData.address.trim()) {
-      newErrors.address = 'Business address is required';
+    if (!formData.address_street.trim()) {
+      newErrors.address_street = 'Street address is required';
+    }
+
+    if (!formData.address_city.trim()) {
+      newErrors.address_city = 'City is required';
+    }
+
+    if (!formData.address_state.trim()) {
+      newErrors.address_state = 'State is required';
+    }
+
+    if (!formData.address_zip.trim()) {
+      newErrors.address_zip = 'Zip code is required';
+    } else if (!/^\d{5}(-\d{4})?$/.test(formData.address_zip)) {
+      newErrors.address_zip = 'Invalid zip code format';
     }
 
     if (!formData.description.trim()) {
@@ -262,12 +299,19 @@ const CompanySettings = () => {
 
   const handleReset = () => {
     if (company) {
+      const addressParts = company.address ? company.address.split('\n') : [];
+      
       setFormData({
         business_name: company.business_name || '',
         business_slogan: company.business_slogan || '',
         phone: formatPhoneNumber(company.phone || ''),
         email: company.email || '',
         address: company.address || '',
+        address_street: addressParts[0] || '',
+        address_unit: '',
+        address_city: '',
+        address_state: '',
+        address_zip: '',
         description: company.description || '',
         years_experience: company.years_experience || 0,
         website_url: company.website_url || '',
@@ -434,19 +478,128 @@ const CompanySettings = () => {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="address">Business Address *</Label>
-                  <Textarea
-                    id="address"
-                    value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    rows={3}
-                    placeholder="123 Main St, Suite 100, City, ST 12345"
-                    className={errors.address ? 'border-destructive' : ''}
-                  />
-                  {errors.address && (
-                    <p className="text-sm text-destructive">{errors.address}</p>
-                  )}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="address_street">Street Address *</Label>
+                    <Input
+                      id="address_street"
+                      value={formData.address_street}
+                      onChange={(e) => setFormData({ ...formData, address_street: e.target.value })}
+                      placeholder="123 Main Street"
+                      className={errors.address_street ? 'border-destructive' : ''}
+                    />
+                    {errors.address_street && (
+                      <p className="text-sm text-destructive">{errors.address_street}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="address_unit">Apartment / Unit Number</Label>
+                    <Input
+                      id="address_unit"
+                      value={formData.address_unit}
+                      onChange={(e) => setFormData({ ...formData, address_unit: e.target.value })}
+                      placeholder="Suite 100"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="address_city">City *</Label>
+                      <Input
+                        id="address_city"
+                        value={formData.address_city}
+                        onChange={(e) => setFormData({ ...formData, address_city: e.target.value })}
+                        placeholder="City"
+                        className={errors.address_city ? 'border-destructive' : ''}
+                      />
+                      {errors.address_city && (
+                        <p className="text-sm text-destructive">{errors.address_city}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="address_state">State *</Label>
+                      <Select
+                        value={formData.address_state}
+                        onValueChange={(value) => setFormData({ ...formData, address_state: value })}
+                      >
+                        <SelectTrigger className={errors.address_state ? 'border-destructive' : ''}>
+                          <SelectValue placeholder="Select state" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="AL">AL</SelectItem>
+                          <SelectItem value="AK">AK</SelectItem>
+                          <SelectItem value="AZ">AZ</SelectItem>
+                          <SelectItem value="AR">AR</SelectItem>
+                          <SelectItem value="CA">CA</SelectItem>
+                          <SelectItem value="CO">CO</SelectItem>
+                          <SelectItem value="CT">CT</SelectItem>
+                          <SelectItem value="DE">DE</SelectItem>
+                          <SelectItem value="FL">FL</SelectItem>
+                          <SelectItem value="GA">GA</SelectItem>
+                          <SelectItem value="HI">HI</SelectItem>
+                          <SelectItem value="ID">ID</SelectItem>
+                          <SelectItem value="IL">IL</SelectItem>
+                          <SelectItem value="IN">IN</SelectItem>
+                          <SelectItem value="IA">IA</SelectItem>
+                          <SelectItem value="KS">KS</SelectItem>
+                          <SelectItem value="KY">KY</SelectItem>
+                          <SelectItem value="LA">LA</SelectItem>
+                          <SelectItem value="ME">ME</SelectItem>
+                          <SelectItem value="MD">MD</SelectItem>
+                          <SelectItem value="MA">MA</SelectItem>
+                          <SelectItem value="MI">MI</SelectItem>
+                          <SelectItem value="MN">MN</SelectItem>
+                          <SelectItem value="MS">MS</SelectItem>
+                          <SelectItem value="MO">MO</SelectItem>
+                          <SelectItem value="MT">MT</SelectItem>
+                          <SelectItem value="NE">NE</SelectItem>
+                          <SelectItem value="NV">NV</SelectItem>
+                          <SelectItem value="NH">NH</SelectItem>
+                          <SelectItem value="NJ">NJ</SelectItem>
+                          <SelectItem value="NM">NM</SelectItem>
+                          <SelectItem value="NY">NY</SelectItem>
+                          <SelectItem value="NC">NC</SelectItem>
+                          <SelectItem value="ND">ND</SelectItem>
+                          <SelectItem value="OH">OH</SelectItem>
+                          <SelectItem value="OK">OK</SelectItem>
+                          <SelectItem value="OR">OR</SelectItem>
+                          <SelectItem value="PA">PA</SelectItem>
+                          <SelectItem value="RI">RI</SelectItem>
+                          <SelectItem value="SC">SC</SelectItem>
+                          <SelectItem value="SD">SD</SelectItem>
+                          <SelectItem value="TN">TN</SelectItem>
+                          <SelectItem value="TX">TX</SelectItem>
+                          <SelectItem value="UT">UT</SelectItem>
+                          <SelectItem value="VT">VT</SelectItem>
+                          <SelectItem value="VA">VA</SelectItem>
+                          <SelectItem value="WA">WA</SelectItem>
+                          <SelectItem value="WV">WV</SelectItem>
+                          <SelectItem value="WI">WI</SelectItem>
+                          <SelectItem value="WY">WY</SelectItem>
+                          <SelectItem value="DC">DC</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {errors.address_state && (
+                        <p className="text-sm text-destructive">{errors.address_state}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="address_zip">Zip Code *</Label>
+                      <Input
+                        id="address_zip"
+                        value={formData.address_zip}
+                        onChange={(e) => setFormData({ ...formData, address_zip: e.target.value })}
+                        placeholder="12345"
+                        className={errors.address_zip ? 'border-destructive' : ''}
+                      />
+                      {errors.address_zip && (
+                        <p className="text-sm text-destructive">{errors.address_zip}</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
