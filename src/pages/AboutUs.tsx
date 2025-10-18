@@ -1,12 +1,10 @@
-import PublicLayout from '@/components/layout/PublicLayout';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 
 const AboutUs = () => {
   const { data: company } = useCompanySettings();
 
   return (
-    <PublicLayout>
-      <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold mb-8 text-center">About Us</h1>
         <div className="max-w-3xl mx-auto space-y-6">
           <p className="text-lg">
@@ -21,7 +19,6 @@ const AboutUs = () => {
           )}
         </div>
       </div>
-    </PublicLayout>
   );
 };
 

@@ -1,7 +1,6 @@
 import { useParams, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import PublicLayout from '@/components/layout/PublicLayout';
 import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { sanitizeHtml } from '@/lib/sanitize';
 
@@ -41,11 +40,9 @@ const StaticPage = () => {
 
   if (isLoading) {
     return (
-      <PublicLayout>
-        <div className="container mx-auto px-4 py-16 text-center">
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </PublicLayout>
+      <div className="container mx-auto px-4 py-16 text-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
     );
   }
 
@@ -73,14 +70,12 @@ const StaticPage = () => {
   );
 
   return (
-    <PublicLayout>
-      <div className="container mx-auto px-4 py-8">
-        <article 
-          className="prose prose-lg max-w-none"
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
-        />
-      </div>
-    </PublicLayout>
+    <div className="container mx-auto px-4 py-8">
+      <article 
+        className="prose prose-lg max-w-none"
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
+      />
+    </div>
   );
 };
 

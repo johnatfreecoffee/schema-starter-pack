@@ -1,4 +1,3 @@
-import PublicLayout from '@/components/layout/PublicLayout';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { FeaturedReviewsWidget } from '@/components/reviews/FeaturedReviewsWidget';
@@ -6,7 +5,7 @@ import { LeadFormEmbed } from '@/components/lead-form/LeadFormEmbed';
 
 const Index = () => {
   return (
-    <PublicLayout>
+    <>
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-br from-background via-secondary to-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -78,7 +77,7 @@ const Index = () => {
 
       {/* Featured Reviews Section */}
       <FeaturedReviewsWidget />
-    </PublicLayout>
+    </>
   );
 };
 

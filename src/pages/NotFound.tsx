@@ -1,6 +1,5 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import PublicLayout from "@/components/layout/PublicLayout";
 import { Button } from "@/components/ui/button";
 
 const NotFound = () => {
@@ -11,8 +10,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <PublicLayout>
-      <div className="container mx-auto px-4 py-16">
+    <div className="container mx-auto px-4 py-16">
         <div className="text-center max-w-2xl mx-auto">
           <h1 className="mb-4 text-6xl font-bold text-primary">404</h1>
           <h2 className="mb-4 text-3xl font-bold">Page Not Found</h2>
@@ -40,7 +38,6 @@ const NotFound = () => {
           </p>
         </div>
       </div>
-    </PublicLayout>
   );
 };
 

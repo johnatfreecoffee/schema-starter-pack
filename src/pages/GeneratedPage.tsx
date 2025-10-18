@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import PublicLayout from '@/components/layout/PublicLayout';
 import NotFound from './NotFound';
 import { renderTemplate, formatPrice, formatPhone } from '@/lib/templateEngine';
 import { ServiceReviews } from '@/components/reviews/ServiceReviews';
@@ -56,15 +55,13 @@ const GeneratedPage = () => {
 
   if (isLoading) {
     return (
-      <PublicLayout>
-        <div className="container mx-auto px-4 py-12">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-muted rounded w-3/4"></div>
-            <div className="h-4 bg-muted rounded w-full"></div>
-            <div className="h-4 bg-muted rounded w-5/6"></div>
-          </div>
+      <div className="container mx-auto px-4 py-12">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-muted rounded w-3/4"></div>
+          <div className="h-4 bg-muted rounded w-full"></div>
+          <div className="h-4 bg-muted rounded w-5/6"></div>
         </div>
-      </PublicLayout>
+      </div>
     );
   }
 
@@ -121,7 +118,7 @@ const GeneratedPage = () => {
     .then(() => {});
 
   return (
-    <PublicLayout>
+    <>
       {/* SEO Meta Tags */}
       <head>
         <title>{pageData.page_title}</title>
@@ -230,7 +227,7 @@ const GeneratedPage = () => {
           serviceName={page.service.name}
         />
       )}
-    </PublicLayout>
+    </>
   );
 };
 

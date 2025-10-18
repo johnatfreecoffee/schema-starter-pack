@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import PublicLayout from '@/components/layout/PublicLayout';
 import { supabase } from '@/integrations/supabase/client';
 import { ReviewCard } from '@/components/reviews/ReviewCard';
 import { StarRating } from '@/components/reviews/StarRating';
@@ -98,7 +97,7 @@ export default function Reviews() {
     : 0;
 
   return (
-    <PublicLayout>
+    <>
       <ReviewSchemaMarkup
         reviews={reviews}
         aggregateRating={{
@@ -202,6 +201,6 @@ export default function Reviews() {
           )}
         </div>
       </main>
-    </PublicLayout>
+    </>
   );
 }
