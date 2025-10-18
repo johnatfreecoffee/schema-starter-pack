@@ -119,9 +119,9 @@ const Logs = () => {
 
   return (
     <AdminLayout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
         <div className="mb-6">
-          <h1 className="text-4xl font-bold mb-2">Activity Logs</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 truncate">Activity Logs</h1>
           <p className="text-muted-foreground">
             Complete audit trail of all system activities
           </p>

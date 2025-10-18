@@ -237,7 +237,7 @@ const Accounts = () => {
 
   return (
     <AdminLayout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
         {/* Saved Views */}
         <SavedViewsBar
           module="accounts"
@@ -245,9 +245,9 @@ const Accounts = () => {
           onViewSelect={(viewFilters) => setFilters(viewFilters)}
         />
 
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-4xl font-bold">Accounts</h1>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold truncate">Accounts</h1>
             <p className="text-muted-foreground mt-1">
               Showing {totalAccounts} account{totalAccounts !== 1 ? 's' : ''}
             </p>

@@ -9,6 +9,8 @@ import { StarRating } from '@/components/reviews/StarRating';
 import { ReviewStatusBadge } from '@/components/reviews/ReviewStatusBadge';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileActionButton } from '@/components/ui/mobile-action-button';
 import {
   Table,
   TableBody,
@@ -28,6 +30,7 @@ import {
 export default function Reviews() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -229,17 +232,26 @@ export default function Reviews() {
 
   return (
     <AdminLayout>
-      <div className="container mx-auto py-8 space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Reviews & Testimonials</h1>
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden space-y-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold truncate">Reviews & Testimonials</h1>
             <p className="text-muted-foreground">Manage customer reviews and testimonials</p>
           </div>
-          <Button onClick={() => navigate('/dashboard/reviews/new')}>
-            <Plus className="w-4 h-4 mr-2" />
-            Add Review
-          </Button>
+          {!isMobile && (
+            <Button onClick={() => navigate('/dashboard/reviews/new')}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Review
+            </Button>
+          )}
         </div>
+
+        {/* Mobile Action Button */}
+        <MobileActionButton
+          onClick={() => navigate('/dashboard/reviews/new')}
+          icon={<Plus className="h-5 w-5" />}
+          label="Add Review"
+        />
 
         <div className="flex flex-wrap gap-4">
           <div className="flex-1 min-w-[200px] relative">

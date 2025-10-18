@@ -263,7 +263,7 @@ const Contacts = () => {
 
   return (
     <AdminLayout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
         {/* Saved Views */}
         <SavedViewsBar
           module="contacts"
@@ -271,15 +271,16 @@ const Contacts = () => {
           onViewSelect={(viewFilters) => setFilters(viewFilters)}
         />
 
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Contacts</h1>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold truncate">Contacts</h1>
             <p className="text-muted-foreground">Manage your contact relationships</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button
               variant="outline"
               onClick={() => setFilterPanelOpen(true)}
+              className="min-h-[44px]"
             >
               <Filter className="mr-2 h-4 w-4" />
               Filters
@@ -303,16 +304,29 @@ const Contacts = () => {
               isFiltered={activeFilterCount > 0}
               filteredCount={filteredContacts.length}
             />
-            <Button onClick={() => {
-              setEditingContact(null);
-              setSelectedAccountId('');
-              setShowContactForm(true);
-            }}>
-              <Plus className="h-4 w-4 mr-2" />
-              New Contact
-            </Button>
+            {!isMobile && (
+              <Button onClick={() => {
+                setEditingContact(null);
+                setSelectedAccountId('');
+                setShowContactForm(true);
+              }}>
+                <Plus className="h-4 w-4 mr-2" />
+                New Contact
+              </Button>
+            )}
           </div>
         </div>
+
+        {/* Mobile Action Button */}
+        <MobileActionButton
+          onClick={() => {
+            setEditingContact(null);
+            setSelectedAccountId('');
+            setShowContactForm(true);
+          }}
+          icon={<Plus className="h-5 w-5" />}
+          label="New Contact"
+        />
 
         {/* Select All Filtered Prompt */}
         {bulk.selectedCount > 0 && bulk.selectedCount < totalCount && (

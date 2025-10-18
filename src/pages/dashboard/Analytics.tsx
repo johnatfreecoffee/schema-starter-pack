@@ -193,11 +193,11 @@ const Analytics = () => {
 
   return (
     <AdminLayout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Analytics Dashboard</h1>
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 truncate">Analytics Dashboard</h1>
             <p className="text-muted-foreground">
               Comprehensive insights across your CRM system
             </p>
@@ -206,7 +206,7 @@ const Analytics = () => {
               Last updated: {formatDistanceToNow(lastUpdatedAt, { addSuffix: true })}
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button onClick={handleRefresh} variant="outline" size="sm" disabled={loading}>
               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               Refresh

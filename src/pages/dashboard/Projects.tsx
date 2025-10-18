@@ -242,16 +242,16 @@ const Projects = () => {
 
   return (
     <AdminLayout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
         <SavedViewsBar module="projects" currentFilters={filters} onViewSelect={setFilters} />
         
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-4xl font-bold">Projects</h1>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold truncate">Projects</h1>
             <p className="text-muted-foreground mt-2">Manage customer projects and track progress</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setFilterPanelOpen(true)}>
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="outline" onClick={() => setFilterPanelOpen(true)} className="min-h-[44px]">
               <Filter className="mr-2 h-4 w-4" />
               Filters
               {activeFilterCount > 0 && <Badge variant="secondary" className="ml-2">{activeFilterCount}</Badge>}
@@ -263,12 +263,21 @@ const Projects = () => {
               isFiltered={activeFilterCount > 0}
               filteredCount={projects.length}
             />
-            <Button onClick={() => setIsFormOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Create New Project
-            </Button>
+            {!isMobile && (
+              <Button onClick={() => setIsFormOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Create New Project
+              </Button>
+            )}
           </div>
         </div>
+
+        {/* Mobile Action Button */}
+        <MobileActionButton
+          onClick={() => setIsFormOpen(true)}
+          icon={<Plus className="h-5 w-5" />}
+          label="Create New Project"
+        />
 
         <FilterChips filters={filters} onRemove={(key) => updateFilter(key, null)} onClearAll={clearFilters} />
 

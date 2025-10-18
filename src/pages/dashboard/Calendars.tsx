@@ -201,10 +201,10 @@ const Calendars = () => {
 
   return (
     <AdminLayout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-          <div className="flex items-center space-x-4 flex-wrap gap-2">
-            <h1 className="text-4xl font-bold">Calendar</h1>
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between mb-6 gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 flex-wrap min-w-0">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold truncate">Calendar</h1>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" onClick={navigateToday}>
                 Today
@@ -266,7 +266,7 @@ const Calendars = () => {
                     Day
                   </Button>
                 </div>
-                <Button onClick={() => { setDefaultDate(undefined); setEditingEvent(null); setShowEventModal(true); }}>
+                <Button onClick={() => { setDefaultDate(undefined); setEditingEvent(null); setShowEventModal(true); }} className="hidden sm:flex">
                   <Plus className="h-4 w-4 mr-2" />
                   Create Event
                 </Button>
@@ -274,6 +274,19 @@ const Calendars = () => {
             )}
           </div>
         </div>
+
+        {/* Mobile Action Button */}
+        {!isMobile && (
+          <MobileActionButton
+            onClick={() => {
+              setDefaultDate(undefined);
+              setEditingEvent(null);
+              setShowEventModal(true);
+            }}
+            icon={<Plus className="h-5 w-5" />}
+            label="Create Event"
+          />
+        )}
 
         <div className="text-lg font-medium mb-4">
           {view === 'month' && format(date, 'MMMM yyyy')}

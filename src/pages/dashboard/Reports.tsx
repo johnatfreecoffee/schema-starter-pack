@@ -12,11 +12,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Search, BarChart3, LineChart, PieChart, Table as TableIcon, Clock, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { REPORT_TEMPLATES } from '@/data/reportTemplates';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileActionButton } from '@/components/ui/mobile-action-button';
 
 const Reports = () => {
   const navigate = useNavigate();
   const { canCreate, hasAccess } = useUserPermissions('reports');
   const [searchQuery, setSearchQuery] = useState('');
+  const isMobile = useIsMobile();
 
   const { data: reports, isLoading } = useQuery({
     queryKey: ['reports'],
@@ -80,21 +83,31 @@ const Reports = () => {
 
   return (
     <AdminLayout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">Reports & Analytics</h1>
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold truncate">Reports & Analytics</h1>
             <p className="text-muted-foreground mt-1">
               Create custom reports and visualize your CRM data
             </p>
           </div>
-          {canCreate && (
+          {canCreate && !isMobile && (
             <Button onClick={() => navigate('/dashboard/reports/new')}>
               <Plus className="mr-2 h-4 w-4" />
               Create New Report
             </Button>
           )}
         </div>
+
+        {/* Mobile Action Button */}
+        {canCreate && (
+          <MobileActionButton
+            onClick={() => navigate('/dashboard/reports/new')}
+            icon={<Plus className="h-5 w-5" />}
+            label="Create New Report"
+          />
+        )}
 
         <div className="mb-6">
           <div className="relative max-w-md">

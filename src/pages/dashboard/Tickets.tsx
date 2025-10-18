@@ -11,9 +11,12 @@ import { TicketPriorityBadge } from '@/components/admin/tickets/TicketPriorityBa
 import { TicketStatusBadge } from '@/components/admin/tickets/TicketStatusBadge';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileActionButton } from '@/components/ui/mobile-action-button';
 
 export default function Tickets() {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
@@ -70,20 +73,29 @@ export default function Tickets() {
 
   return (
     <AdminLayout>
-      <div className="container mx-auto p-6 space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Support Tickets</h1>
+      <div className="container mx-auto px-4 py-6 sm:p-6 max-w-full overflow-x-hidden space-y-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold truncate">Support Tickets</h1>
             <p className="text-muted-foreground">Manage customer support requests</p>
           </div>
-          <Button onClick={() => navigate('/dashboard/tickets/new')}>
-            <Plus className="mr-2 h-4 w-4" />
-            New Ticket
-          </Button>
+          {!isMobile && (
+            <Button onClick={() => navigate('/dashboard/tickets/new')}>
+              <Plus className="mr-2 h-4 w-4" />
+              New Ticket
+            </Button>
+          )}
         </div>
 
+        {/* Mobile Action Button */}
+        <MobileActionButton
+          onClick={() => navigate('/dashboard/tickets/new')}
+          icon={<Plus className="h-5 w-5" />}
+          label="New Ticket"
+        />
+
         {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           <Card className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">

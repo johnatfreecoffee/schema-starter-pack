@@ -516,13 +516,13 @@ const Money = () => {
 
   return (
     <AdminLayout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold">Money Management</h1>
+      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold truncate">Money Management</h1>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Outstanding Quotes</CardTitle>
