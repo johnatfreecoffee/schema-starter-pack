@@ -27,7 +27,7 @@ export function MobileActionButton({
         variant={variant}
         size="lg"
         className={cn(
-          "fixed bottom-24 right-4 h-14 w-14 rounded-full shadow-lg z-40",
+          "fixed bottom-20 right-4 sm:bottom-6 sm:right-6 h-14 w-14 rounded-full shadow-lg z-50",
           "md:hidden",
           className
         )}

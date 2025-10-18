@@ -9,6 +9,7 @@ import { Download, FileText, FileSpreadsheet } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ExportService } from '@/services/exportService';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface ExportButtonProps {
   data: any[];
@@ -17,6 +18,7 @@ interface ExportButtonProps {
   filters?: Record<string, any>;
   isFiltered?: boolean;
   filteredCount?: number;
+  className?: string;
 }
 
 export function ExportButton({
@@ -26,6 +28,7 @@ export function ExportButton({
   filters,
   isFiltered = false,
   filteredCount,
+  className,
 }: ExportButtonProps) {
   const { toast } = useToast();
 
@@ -64,7 +67,7 @@ export function ExportButton({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" className={cn("gap-2", className)}>
           <Download className="h-4 w-4" />
           Export
           {isFiltered && (

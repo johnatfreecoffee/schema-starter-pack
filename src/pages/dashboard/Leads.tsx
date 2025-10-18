@@ -545,7 +545,7 @@ const Leads = () => {
 
   return (
     <AdminLayout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-full overflow-x-hidden">
         {/* Saved Views */}
         <SavedViewsBar
           module="leads"
@@ -554,17 +554,18 @@ const Leads = () => {
         />
 
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6 w-full">
           <div>
             <h1 className="text-4xl font-bold">Leads</h1>
             <p className="text-muted-foreground mt-1">
               Manage incoming leads and convert them to accounts
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
             <Button
               variant="outline"
               onClick={() => setFilterPanelOpen(true)}
+              className="w-full sm:w-auto min-h-[44px]"
             >
               <Filter className="mr-2 h-4 w-4" />
               Filters
@@ -585,6 +586,7 @@ const Leads = () => {
               filters={filters}
               isFiltered={activeFilterCount > 0}
               filteredCount={leads.length}
+              className="w-full sm:w-auto min-h-[44px]"
             />
             {!isMobile && (
               <Button onClick={() => setShowCreateForm(true)}>
@@ -625,7 +627,7 @@ const Leads = () => {
         />
 
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-4 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-4 w-full">
           {Object.entries(statusCounts).map(([status, count]) => (
             <Card key={status} className="p-4">
               <div className="flex items-center justify-between">
@@ -639,7 +641,7 @@ const Leads = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-w-0">
           {/* Filters Sidebar */}
           <div className="lg:col-span-1">
             <Card className="p-4">
@@ -678,7 +680,7 @@ const Leads = () => {
           </div>
 
           {/* Leads Table */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 min-w-0">
             {(!hasLoadedOnce.current && loading) ? (
               <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
@@ -692,15 +694,15 @@ const Leads = () => {
                 renderCard={(lead, index) => (
                   <MobileCard key={lead.id} onClick={() => navigate(`/dashboard/leads/${lead.id}`)}>
                     <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 min-w-0">
                           <div onClick={(e) => e.stopPropagation()}>
                             <Checkbox
                               checked={bulkSelection.isSelected(lead.id)}
                               onCheckedChange={() => bulkSelection.toggleItem(lead.id)}
                             />
                           </div>
-                          <h3 className="font-bold text-lg">
+                          <h3 className="font-bold text-lg truncate max-w-full">
                             {lead.first_name} {lead.last_name}
                           </h3>
                         </div>

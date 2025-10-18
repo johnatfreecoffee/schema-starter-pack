@@ -211,3 +211,9 @@ All colors MUST be HSL.
     @apply bg-destructive;
   }
 }
+
+@layer utilities {
+  /* Hide scrollbar but keep scroll functionality */
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}

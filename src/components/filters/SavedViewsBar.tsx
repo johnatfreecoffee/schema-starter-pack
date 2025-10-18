@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Star, Trash2, Sparkles } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import {
   Dialog,
   DialogContent,
@@ -64,8 +64,8 @@ export function SavedViewsBar({ module, currentFilters, onViewSelect }: SavedVie
 
   return (
     <div className="mb-4">
-      <ScrollArea className="w-full">
-        <div className="flex items-center gap-2 pb-2">
+      <div className="w-full overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-2 pb-2 snap-x snap-mandatory">
           {/* System Default Views */}
           {systemViews.length > 0 && (
             <>
@@ -75,26 +75,26 @@ export function SavedViewsBar({ module, currentFilters, onViewSelect }: SavedVie
                   variant="secondary"
                   size="sm"
                   onClick={() => onViewSelect(view.filters)}
-                  className="whitespace-nowrap"
+                  className="whitespace-nowrap snap-start flex-shrink-0"
                 >
                   <Sparkles className="h-3 w-3 mr-1" />
                   {view.name}
                 </Button>
               ))}
               {views.length > 0 && (
-                <div className="h-6 w-px bg-border mx-1" />
+                <div className="h-6 w-px bg-border mx-1 flex-shrink-0" />
               )}
             </>
           )}
 
           {/* User Saved Views */}
           {views.map((view) => (
-            <div key={view.id} className="flex items-center gap-1">
+            <div key={view.id} className="flex items-center gap-1 flex-shrink-0">
               <Button
                 variant={JSON.stringify(view.filters) === JSON.stringify(currentFilters) ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => onViewSelect(view.filters)}
-                className="gap-2"
+                className="gap-2 whitespace-nowrap snap-start flex-shrink-0"
               >
                 {view.is_default && <Star className="h-3 w-3 fill-current" />}
                 {view.view_name}
@@ -135,7 +135,7 @@ export function SavedViewsBar({ module, currentFilters, onViewSelect }: SavedVie
 
           <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button variant="outline" size="sm" className="gap-2 whitespace-nowrap snap-start flex-shrink-0">
                 <Plus className="h-3 w-3" />
                 Save View
               </Button>
@@ -179,7 +179,7 @@ export function SavedViewsBar({ module, currentFilters, onViewSelect }: SavedVie
             </DialogContent>
           </Dialog>
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }
