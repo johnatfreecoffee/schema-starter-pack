@@ -52,6 +52,7 @@ export const BottomNavMore = ({ isAdmin }: BottomNavMoreProps) => {
     { path: '/dashboard/reports', icon: ChartBar, label: 'Reports' },
     { path: '/dashboard/logs', icon: FileText, label: 'Logs' },
     ...(isAdmin ? [{ path: '/dashboard/team', icon: Users, label: 'Team' }] : []),
+    { path: '/dashboard/settings', icon: Settings, label: 'Settings' },
   ];
 
   return (
