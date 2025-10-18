@@ -107,8 +107,7 @@ const AppContent = () => {
       <Toaster />
       <Sonner />
       <GlobalLeadFormModal />
-      <BrowserRouter>
-        <Routes>
+      <Routes>
           {/* Public Routes */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
