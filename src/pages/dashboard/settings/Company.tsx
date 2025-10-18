@@ -178,8 +178,11 @@ const CompanySettings = () => {
         formData.address_zip
       ].filter(Boolean).join(', ');
 
+      // Exclude the individual address fields as they're not in the database
+      const { address_street, address_unit, address_city, address_state, address_zip, ...dbFormData } = formData;
+
       const updateData = {
-        ...formData,
+        ...dbFormData,
         phone: formData.phone.replace(/\D/g, ''),
         address: fullAddress,
         logo_url: logoUrl,
