@@ -30,12 +30,12 @@ const SettingsTabs = () => {
     <div className="border-b bg-background">
       <div className="container mx-auto px-4">
         <Tabs value={currentTab} className="w-full">
-          <TabsList className="w-full justify-start rounded-none h-auto p-0 bg-transparent">
+          <TabsList className="w-full justify-start rounded-none h-auto p-0 bg-transparent flex-wrap">
             {tabs.map((tab) => (
               <Link key={tab.value} to={`/dashboard/settings/${tab.value}`}>
                 <TabsTrigger
                   value={tab.value}
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary whitespace-nowrap"
                 >
                   {tab.label}
                 </TabsTrigger>
