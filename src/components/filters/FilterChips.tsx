@@ -43,22 +43,23 @@ export function FilterChips({ filters, onRemove, onClearAll }: FilterChipsProps)
   if (activeFilters.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap items-center gap-2 mb-4">
+    <div className="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-4 px-4 scrollbar-hide snap-x snap-mandatory">
       {activeFilters.map(([key, value]) => (
-        <Badge key={key} variant="secondary" className="gap-2 pr-1">
+        <Badge key={key} variant="secondary" className="flex-shrink-0 gap-2 pr-1 whitespace-nowrap snap-start">
           <span className="text-xs">
             {formatFilterLabel(key)}: {formatFilterValue(value)}
           </span>
           <button
             onClick={() => onRemove(key)}
-            className="ml-1 hover:bg-muted rounded-full p-0.5"
+            className="ml-1 hover:bg-muted rounded-full p-0.5 min-h-[24px] min-w-[24px] flex items-center justify-center"
+            aria-label={`Remove ${formatFilterLabel(key)} filter`}
           >
             <X className="h-3 w-3" />
           </button>
         </Badge>
       ))}
       {activeFilters.length > 1 && (
-        <Button variant="ghost" size="sm" onClick={onClearAll} className="h-6 text-xs">
+        <Button variant="ghost" size="sm" onClick={onClearAll} className="flex-shrink-0 h-6 text-xs min-h-[44px] snap-start whitespace-nowrap">
           Clear all
         </Button>
       )}

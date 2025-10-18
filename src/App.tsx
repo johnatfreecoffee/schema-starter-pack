@@ -105,7 +105,7 @@ const AppContent = () => {
   useCacheWarming();
   
   return (
-    <>
+    <div className="w-full max-w-full overflow-x-hidden min-h-screen">
       <Toaster />
       <Sonner />
       <GlobalLeadFormModal />
@@ -211,7 +211,7 @@ const AppContent = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
-    </>
+    </div>
   );
 };
 

@@ -591,12 +591,12 @@ const Money = () => {
                     <CardTitle>Quotes</CardTitle>
                     <CardDescription>Manage customer quotes</CardDescription>
                   </div>
-                  {!isMobile && (
+                  <div className="hidden sm:flex">
                     <Button onClick={() => setShowQuoteForm(true)}>
                       <Plus className="h-4 w-4 mr-2" />
                       Create Quote
                     </Button>
-                  )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -759,12 +759,12 @@ const Money = () => {
                     <CardTitle>Invoices</CardTitle>
                     <CardDescription>Track invoices and payments</CardDescription>
                   </div>
-                  {!isMobile && (
+                  <div className="hidden sm:flex">
                     <Button onClick={() => setShowInvoiceForm(true)}>
                       <Plus className="h-4 w-4 mr-2" />
                       Create Invoice
                     </Button>
-                  )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
