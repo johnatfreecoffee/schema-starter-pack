@@ -139,7 +139,7 @@ serve(async (req) => {
     console.log('Received lead submission:', leadData.email);
 
     // 1. Create lead record
-    const { data: lead, error: leadError } = await supabaseClient
+    const { data: lead, error: leadError } = await supabaseAdmin
       .from('leads')
       .insert({
         first_name: leadData.first_name,
@@ -249,7 +249,7 @@ serve(async (req) => {
         });
 
         // Log email to queue
-        await supabaseClient
+        await supabaseAdmin
           .from('email_queue')
           .insert({
             to_email: leadData.email,
@@ -270,7 +270,7 @@ serve(async (req) => {
     }
 
     // 6. Create activity log
-    const { error: logError } = await supabaseClient
+    const { error: logError } = await supabaseAdmin
       .from('activity_logs')
       .insert({
         action: 'created',
