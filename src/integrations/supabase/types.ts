@@ -581,6 +581,11 @@ export type Database = {
       company_settings: {
         Row: {
           address: string
+          address_city: string | null
+          address_state: string | null
+          address_street: string | null
+          address_unit: string | null
+          address_zip: string | null
           business_hours: string | null
           business_name: string
           business_slogan: string | null
@@ -611,6 +616,11 @@ export type Database = {
         }
         Insert: {
           address: string
+          address_city?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          address_unit?: string | null
+          address_zip?: string | null
           business_hours?: string | null
           business_name: string
           business_slogan?: string | null
@@ -641,6 +651,11 @@ export type Database = {
         }
         Update: {
           address?: string
+          address_city?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          address_unit?: string | null
+          address_zip?: string | null
           business_hours?: string | null
           business_name?: string
           business_slogan?: string | null

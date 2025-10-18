@@ -1,16 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { cacheInvalidation } from '@/lib/cacheInvalidation';
 import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
@@ -21,6 +20,9 @@ const CompanySettings = () => {
   const { data: company } = useCompanySettings();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
+  const [isSaving, setIsSaving] = useState(false);
 
   const [formData, setFormData] = useState({
     business_name: '',
@@ -65,42 +67,17 @@ const CompanySettings = () => {
 
   useEffect(() => {
     if (company) {
-      // Parse existing address if it exists
-      let addressStreet = '';
-      let addressUnit = '';
-      let addressCity = '';
-      let addressState = '';
-      let addressZip = '';
-      
-      if (company.address) {
-        // Try to parse the combined address: "123 Main St, Unit 100, City, ST, 12345"
-        const parts = company.address.split(',').map(p => p.trim());
-        
-        if (parts.length >= 1) addressStreet = parts[0];
-        
-        // Check if second part contains "Unit" or "Suite"
-        let cityIndex = 1;
-        if (parts.length >= 2 && (parts[1].toLowerCase().includes('unit') || parts[1].toLowerCase().includes('suite'))) {
-          addressUnit = parts[1].replace(/^(unit|suite)\s*/i, '');
-          cityIndex = 2;
-        }
-        
-        if (parts.length > cityIndex) addressCity = parts[cityIndex];
-        if (parts.length > cityIndex + 1) addressState = parts[cityIndex + 1];
-        if (parts.length > cityIndex + 2) addressZip = parts[cityIndex + 2];
-      }
-      
       setFormData({
         business_name: company.business_name || '',
         business_slogan: company.business_slogan || '',
         phone: formatPhoneNumber(company.phone || ''),
         email: company.email || '',
         address: company.address || '',
-        address_street: addressStreet,
-        address_unit: addressUnit,
-        address_city: addressCity,
-        address_state: addressState,
-        address_zip: addressZip,
+        address_street: company.address_street || '',
+        address_unit: company.address_unit || '',
+        address_city: company.address_city || '',
+        address_state: company.address_state || '',
+        address_zip: company.address_zip || '',
         description: company.description || '',
         years_experience: company.years_experience || 0,
         website_url: company.website_url || '',
@@ -136,7 +113,7 @@ const CompanySettings = () => {
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhoneNumber(e.target.value);
-    setFormData({ ...formData, phone: formatted });
+    handleFieldChange('phone', formatted);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'icon') => {
@@ -178,34 +155,31 @@ const CompanySettings = () => {
   };
 
   const saveMutation = useMutation({
-    mutationFn: async () => {
-      setUploading(true);
-      
-      let logoUrl = formData.logo_url;
-      let iconUrl = formData.icon_url;
+    mutationFn: async (dataToSave: any) => {
+      let logoUrl = dataToSave.logo_url;
+      let iconUrl = dataToSave.icon_url;
 
       if (logoFile) {
+        setUploading(true);
         logoUrl = await uploadImage(logoFile, 'logo');
       }
       if (iconFile) {
+        setUploading(true);
         iconUrl = await uploadImage(iconFile, 'icon');
       }
 
-      // Build full address from parts
+      // Build full address from parts for backward compatibility
       const fullAddress = [
-        formData.address_street,
-        formData.address_unit ? `Unit ${formData.address_unit}` : '',
-        formData.address_city,
-        formData.address_state,
-        formData.address_zip
+        dataToSave.address_street,
+        dataToSave.address_unit ? `Unit ${dataToSave.address_unit}` : '',
+        dataToSave.address_city,
+        dataToSave.address_state,
+        dataToSave.address_zip
       ].filter(Boolean).join(', ');
 
-      // Exclude the individual address fields as they're not in the database
-      const { address_street, address_unit, address_city, address_state, address_zip, ...dbFormData } = formData;
-
       const updateData = {
-        ...dbFormData,
-        phone: formData.phone.replace(/\D/g, ''),
+        ...dataToSave,
+        phone: dataToSave.phone.replace(/\D/g, ''),
         address: fullAddress,
         logo_url: logoUrl,
         icon_url: iconUrl,
@@ -235,16 +209,14 @@ const CompanySettings = () => {
       setLogoFile(null);
       setIconFile(null);
       setUploading(false);
-      toast({
-        title: 'Success',
-        description: 'Company settings saved successfully',
-      });
+      setIsSaving(false);
     },
     onError: (error) => {
       setUploading(false);
+      setIsSaving(false);
       toast({
         title: 'Error',
-        description: 'Failed to save settings: ' + error.message,
+        description: 'Failed to save: ' + error.message,
         variant: 'destructive',
       });
     },
@@ -322,84 +294,23 @@ const CompanySettings = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleReset = () => {
-    if (company) {
-      // Parse existing address if it exists
-      let addressStreet = '';
-      let addressUnit = '';
-      let addressCity = '';
-      let addressState = '';
-      let addressZip = '';
-      
-      if (company.address) {
-        // Try to parse the combined address: "123 Main St, Unit 100, City, ST, 12345"
-        const parts = company.address.split(',').map(p => p.trim());
-        
-        if (parts.length >= 1) addressStreet = parts[0];
-        
-        // Check if second part contains "Unit" or "Suite"
-        let cityIndex = 1;
-        if (parts.length >= 2 && (parts[1].toLowerCase().includes('unit') || parts[1].toLowerCase().includes('suite'))) {
-          addressUnit = parts[1].replace(/^(unit|suite)\s*/i, '');
-          cityIndex = 2;
-        }
-        
-        if (parts.length > cityIndex) addressCity = parts[cityIndex];
-        if (parts.length > cityIndex + 1) addressState = parts[cityIndex + 1];
-        if (parts.length > cityIndex + 2) addressZip = parts[cityIndex + 2];
-      }
-      
-      setFormData({
-        business_name: company.business_name || '',
-        business_slogan: company.business_slogan || '',
-        phone: formatPhoneNumber(company.phone || ''),
-        email: company.email || '',
-        address: company.address || '',
-        address_street: addressStreet,
-        address_unit: addressUnit,
-        address_city: addressCity,
-        address_state: addressState,
-        address_zip: addressZip,
-        description: company.description || '',
-        years_experience: company.years_experience || 0,
-        website_url: company.website_url || '',
-        license_numbers: company.license_numbers || '',
-        service_radius: company.service_radius || 0,
-        service_radius_unit: company.service_radius_unit || 'miles',
-        business_hours: company.business_hours || '',
-        facebook_url: company.facebook_url || '',
-        instagram_url: company.instagram_url || '',
-        twitter_url: company.twitter_url || '',
-        linkedin_url: company.linkedin_url || '',
-        logo_url: company.logo_url || '',
-        icon_url: company.icon_url || '',
-        document_header_color: company.document_header_color || '#3b82f6',
-        document_logo_position: company.document_logo_position || 'left',
-        document_font: company.document_font || 'helvetica',
-        document_footer_text: company.document_footer_text || 'Thank you for your business!',
-        document_terms: company.document_terms || '',
-        document_payment_instructions: company.document_payment_instructions || 'Please make payment within the specified due date.',
-        show_tagline_on_documents: company.show_tagline_on_documents ?? true,
-      });
-      setLogoPreview(company.logo_url || '');
-      setIconPreview(company.icon_url || '');
-      setLogoFile(null);
-      setIconFile(null);
-      setErrors({});
+  // Auto-save with debounce
+  const autoSave = useCallback((data: any) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
     }
-  };
+    
+    setIsSaving(true);
+    saveTimeoutRef.current = setTimeout(() => {
+      saveMutation.mutate(data);
+    }, 1000);
+  }, [saveMutation]);
 
-  const handleSave = () => {
-    if (validateForm()) {
-      saveMutation.mutate();
-    } else {
-      toast({
-        title: 'Validation Error',
-        description: 'Please fix the errors in the form before saving.',
-        variant: 'destructive',
-      });
-    }
-  };
+  const handleFieldChange = useCallback((field: string, value: any) => {
+    const newFormData = { ...formData, [field]: value };
+    setFormData(newFormData);
+    autoSave(newFormData);
+  }, [formData, autoSave]);
 
   return (
     <>
@@ -429,7 +340,7 @@ const CompanySettings = () => {
                   <Input
                     id="business_name"
                     value={formData.business_name}
-                    onChange={(e) => setFormData({ ...formData, business_name: e.target.value })}
+                    onChange={(e) => handleFieldChange('business_name', e.target.value)}
                     className={errors.business_name ? 'border-destructive' : ''}
                   />
                   {errors.business_name && (
@@ -442,7 +353,7 @@ const CompanySettings = () => {
                   <Input
                     id="business_slogan"
                     value={formData.business_slogan}
-                    onChange={(e) => setFormData({ ...formData, business_slogan: e.target.value })}
+                    onChange={(e) => handleFieldChange('business_slogan', e.target.value)}
                     placeholder="e.g., Your Trusted Roofing Experts"
                   />
                 </div>
@@ -452,7 +363,7 @@ const CompanySettings = () => {
                   <Textarea
                     id="description"
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={(e) => handleFieldChange('description', e.target.value)}
                     rows={6}
                     placeholder="Tell customers about your business..."
                     className={errors.description ? 'border-destructive' : ''}
@@ -469,7 +380,7 @@ const CompanySettings = () => {
                     type="number"
                     min="0"
                     value={formData.years_experience}
-                    onChange={(e) => setFormData({ ...formData, years_experience: parseInt(e.target.value) || 0 })}
+                    onChange={(e) => handleFieldChange('years_experience', parseInt(e.target.value) || 0)}
                   />
                 </div>
 
@@ -478,7 +389,7 @@ const CompanySettings = () => {
                   <Input
                     id="website_url"
                     value={formData.website_url}
-                    onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
+                    onChange={(e) => handleFieldChange('website_url', e.target.value)}
                     placeholder="https://www.yourcompany.com"
                     className={errors.website_url ? 'border-destructive' : ''}
                   />
@@ -518,7 +429,7 @@ const CompanySettings = () => {
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(e) => handleFieldChange('email', e.target.value)}
                     className={errors.email ? 'border-destructive' : ''}
                   />
                   {errors.email && (
@@ -532,7 +443,7 @@ const CompanySettings = () => {
                     <Input
                       id="address_street"
                       value={formData.address_street}
-                      onChange={(e) => setFormData({ ...formData, address_street: e.target.value })}
+                      onChange={(e) => handleFieldChange('address_street', e.target.value)}
                       placeholder="123 Main Street"
                       className={errors.address_street ? 'border-destructive' : ''}
                     />
@@ -546,7 +457,7 @@ const CompanySettings = () => {
                     <Input
                       id="address_unit"
                       value={formData.address_unit}
-                      onChange={(e) => setFormData({ ...formData, address_unit: e.target.value })}
+                      onChange={(e) => handleFieldChange('address_unit', e.target.value)}
                       placeholder="Suite 100"
                     />
                   </div>
@@ -557,7 +468,7 @@ const CompanySettings = () => {
                       <Input
                         id="address_city"
                         value={formData.address_city}
-                        onChange={(e) => setFormData({ ...formData, address_city: e.target.value })}
+                        onChange={(e) => handleFieldChange('address_city', e.target.value)}
                         placeholder="City"
                         className={errors.address_city ? 'border-destructive' : ''}
                       />
@@ -570,7 +481,7 @@ const CompanySettings = () => {
                       <Label htmlFor="address_state">State *</Label>
                       <Select
                         value={formData.address_state}
-                        onValueChange={(value) => setFormData({ ...formData, address_state: value })}
+                        onValueChange={(value) => handleFieldChange('address_state', value)}
                       >
                         <SelectTrigger className={errors.address_state ? 'border-destructive' : ''}>
                           <SelectValue placeholder="Select state" />
@@ -639,7 +550,7 @@ const CompanySettings = () => {
                       <Input
                         id="address_zip"
                         value={formData.address_zip}
-                        onChange={(e) => setFormData({ ...formData, address_zip: e.target.value })}
+                        onChange={(e) => handleFieldChange('address_zip', e.target.value)}
                         placeholder="12345"
                         className={errors.address_zip ? 'border-destructive' : ''}
                       />
@@ -658,13 +569,13 @@ const CompanySettings = () => {
                       type="number"
                       min="0"
                       value={formData.service_radius}
-                      onChange={(e) => setFormData({ ...formData, service_radius: parseInt(e.target.value) || 0 })}
+                      onChange={(e) => handleFieldChange('service_radius', parseInt(e.target.value) || 0)}
                       placeholder="50"
                       className="flex-1"
                     />
                     <Select
                       value={formData.service_radius_unit}
-                      onValueChange={(value) => setFormData({ ...formData, service_radius_unit: value })}
+                      onValueChange={(value) => handleFieldChange('service_radius_unit', value)}
                     >
                       <SelectTrigger className="w-32">
                         <SelectValue />
@@ -694,7 +605,7 @@ const CompanySettings = () => {
                   <Textarea
                     id="license_numbers"
                     value={formData.license_numbers}
-                    onChange={(e) => setFormData({ ...formData, license_numbers: e.target.value })}
+                    onChange={(e) => handleFieldChange('license_numbers', e.target.value)}
                     rows={3}
                     placeholder="Enter business licenses (one per line)"
                   />
@@ -706,7 +617,7 @@ const CompanySettings = () => {
                   <Textarea
                     id="business_hours"
                     value={formData.business_hours}
-                    onChange={(e) => setFormData({ ...formData, business_hours: e.target.value })}
+                    onChange={(e) => handleFieldChange('business_hours', e.target.value)}
                     rows={4}
                     placeholder="Monday-Friday: 8:00 AM - 6:00 PM&#10;Saturday: 9:00 AM - 4:00 PM&#10;Sunday: Closed"
                   />
@@ -781,12 +692,12 @@ const CompanySettings = () => {
                       id="document_header_color"
                       type="color"
                       value={formData.document_header_color}
-                      onChange={(e) => setFormData({ ...formData, document_header_color: e.target.value })}
+                      onChange={(e) => handleFieldChange('document_header_color', e.target.value)}
                       className="w-20 h-10"
                     />
                     <Input
                       value={formData.document_header_color}
-                      onChange={(e) => setFormData({ ...formData, document_header_color: e.target.value })}
+                      onChange={(e) => handleFieldChange('document_header_color', e.target.value)}
                       placeholder="#3b82f6"
                       className="flex-1"
                     />
@@ -797,7 +708,7 @@ const CompanySettings = () => {
                   <Label htmlFor="document_logo_position">Logo Position</Label>
                   <Select
                     value={formData.document_logo_position}
-                    onValueChange={(value) => setFormData({ ...formData, document_logo_position: value })}
+                    onValueChange={(value) => handleFieldChange('document_logo_position', value)}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -814,7 +725,7 @@ const CompanySettings = () => {
                   <Label htmlFor="document_font">Font</Label>
                   <Select
                     value={formData.document_font}
-                    onValueChange={(value) => setFormData({ ...formData, document_font: value })}
+                    onValueChange={(value) => handleFieldChange('document_font', value)}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -836,7 +747,7 @@ const CompanySettings = () => {
                   </div>
                   <Switch
                     checked={formData.show_tagline_on_documents}
-                    onCheckedChange={(checked) => setFormData({ ...formData, show_tagline_on_documents: checked })}
+                    onCheckedChange={(checked) => handleFieldChange('show_tagline_on_documents', checked)}
                   />
                 </div>
 
@@ -847,7 +758,7 @@ const CompanySettings = () => {
                   <Input
                     id="document_footer_text"
                     value={formData.document_footer_text}
-                    onChange={(e) => setFormData({ ...formData, document_footer_text: e.target.value })}
+                    onChange={(e) => handleFieldChange('document_footer_text', e.target.value)}
                     placeholder="Thank you for your business!"
                   />
                 </div>
@@ -857,7 +768,7 @@ const CompanySettings = () => {
                   <Textarea
                     id="document_terms"
                     value={formData.document_terms}
-                    onChange={(e) => setFormData({ ...formData, document_terms: e.target.value })}
+                    onChange={(e) => handleFieldChange('document_terms', e.target.value)}
                     rows={4}
                     placeholder="Enter your standard terms and conditions..."
                   />
@@ -868,7 +779,7 @@ const CompanySettings = () => {
                   <Textarea
                     id="document_payment_instructions"
                     value={formData.document_payment_instructions}
-                    onChange={(e) => setFormData({ ...formData, document_payment_instructions: e.target.value })}
+                    onChange={(e) => handleFieldChange('document_payment_instructions', e.target.value)}
                     rows={3}
                     placeholder="Enter payment instructions..."
                   />
@@ -878,16 +789,13 @@ const CompanySettings = () => {
           </TabsContent>
         </Tabs>
 
-        {/* Action Buttons - Outside tabs, always visible */}
-        <div className="flex justify-between pt-6 pb-12">
-          <Button variant="outline" onClick={handleReset} disabled={uploading}>
-            Reset Changes
-          </Button>
-          <Button onClick={handleSave} disabled={uploading}>
-            {uploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Company Settings
-          </Button>
-        </div>
+        {/* Auto-save indicator */}
+        {(isSaving || uploading) && (
+          <div className="flex items-center justify-end pt-6 pb-12 text-sm text-muted-foreground">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Saving...
+          </div>
+        )}
       </div>
     </>
   );
