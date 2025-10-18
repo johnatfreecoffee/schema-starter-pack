@@ -190,16 +190,29 @@ serve(async (req) => {
     } else {
       console.log('User account created:', authUser.user.id);
 
-      // Assign customer role
-      const { error: roleError } = await supabaseAdmin
-        .from('user_roles')
-        .insert({
-          user_id: authUser.user.id,
-          role: 'customer',
-        });
+      // Get customer role ID first
+      const { data: customerRole } = await supabaseAdmin
+        .from('roles')
+        .select('id')
+        .eq('name', 'customer')
+        .single();
 
-      if (roleError) {
-        console.error('Error assigning role:', roleError);
+      if (customerRole) {
+        // Assign customer role using role_id
+        const { error: roleError } = await supabaseAdmin
+          .from('user_roles')
+          .insert({
+            user_id: authUser.user.id,
+            role_id: customerRole.id,
+          });
+
+        if (roleError) {
+          console.error('Error assigning role:', roleError);
+        } else {
+          console.log('✅ Customer role assigned successfully');
+        }
+      } else {
+        console.error('❌ Customer role not found in roles table');
       }
     }
 
@@ -210,6 +223,7 @@ serve(async (req) => {
       .single();
 
     // 5. Send confirmation email to customer
+    console.log('📧 Attempting to send confirmation email...');
     try {
       const { data: emailTemplate } = await supabaseClient
         .from('email_templates')
@@ -219,6 +233,7 @@ serve(async (req) => {
         .single();
 
       if (emailTemplate) {
+        console.log('✅ Email template found:', emailTemplate.name);
         // Replace variables in template
         const replaceVariables = (text: string) => {
           return text
@@ -238,8 +253,9 @@ serve(async (req) => {
         const subject = replaceVariables(emailTemplate.subject);
         const body = replaceVariables(emailTemplate.body);
 
+        console.log('✅ Calling send-email function...');
         // Call send-email edge function
-        await supabaseClient.functions.invoke('send-email', {
+        const emailResponse = await supabaseClient.functions.invoke('send-email', {
           body: {
             to: leadData.email,
             subject,
@@ -247,6 +263,12 @@ serve(async (req) => {
             from: companySettings?.email || 'noreply@yourdomain.com'
           }
         });
+
+        if (emailResponse.error) {
+          console.error('❌ Send-email function error:', emailResponse.error);
+        } else {
+          console.log('✅ Send-email function completed successfully');
+        }
 
         // Log email to queue
         await supabaseAdmin
@@ -263,9 +285,11 @@ serve(async (req) => {
           });
 
         console.log('✅ Confirmation email sent to:', leadData.email);
+      } else {
+        console.error('❌ Email template not found: lead-submission-confirmation');
       }
     } catch (emailError) {
-      console.error('Error sending confirmation email:', emailError);
+      console.error('❌ Email sending failed:', emailError);
       // Don't fail the whole request if email fails
     }
 
