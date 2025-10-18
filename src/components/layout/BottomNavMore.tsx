@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -31,6 +32,7 @@ interface BottomNavMoreProps {
 
 export const BottomNavMore = ({ isAdmin }: BottomNavMoreProps) => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -56,7 +58,7 @@ export const BottomNavMore = ({ isAdmin }: BottomNavMoreProps) => {
   ];
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" className="flex flex-col items-center justify-center p-0 h-auto">
           <div className="h-5 w-5 flex items-center justify-center">•••</div>
@@ -74,6 +76,7 @@ export const BottomNavMore = ({ isAdmin }: BottomNavMoreProps) => {
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={() => setOpen(false)}
                 className={cn(
                   "flex flex-col items-center justify-center p-4 rounded-lg",
                   "bg-muted/50 hover:bg-muted transition-colors touch-manipulation"
