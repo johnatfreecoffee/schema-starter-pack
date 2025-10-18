@@ -15,8 +15,12 @@ import {
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, Code, Eye, Edit3 } from 'lucide-react';
+import { Sparkles, Code, Eye, Edit3, Undo2 } from 'lucide-react';
 import Editor from '@monaco-editor/react';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Link from '@tiptap/extension-link';
+import { Switch } from '@/components/ui/switch';
 
 interface EmailTemplateFormProps {
   template?: any;
@@ -41,10 +45,26 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
   const [selectedVariables, setSelectedVariables] = useState<string[]>(
     template?.variables || []
   );
-  const [activeTab, setActiveTab] = useState<'form' | 'ai' | 'code' | 'preview'>('form');
+  const [activeTab, setActiveTab] = useState<'form' | 'ai' | 'editor'>('form');
+  const [editorMode, setEditorMode] = useState<'code' | 'visual'>('visual');
   const [aiPrompt, setAiPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [previousBody, setPreviousBody] = useState<string>('');
+  const [canRevert, setCanRevert] = useState(false);
   const queryClient = useQueryClient();
+
+  const richEditor = useEditor({
+    extensions: [
+      StarterKit,
+      Link.configure({
+        openOnClick: false,
+      }),
+    ],
+    content: body,
+    onUpdate: ({ editor }) => {
+      setBody(editor.getHTML());
+    },
+  });
 
   useEffect(() => {
     if (template) {
@@ -55,6 +75,12 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
       setSelectedVariables(template.variables || []);
     }
   }, [template]);
+
+  useEffect(() => {
+    if (richEditor && richEditor.getHTML() !== body) {
+      richEditor.commands.setContent(body);
+    }
+  }, [body, richEditor]);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -122,6 +148,9 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
 
     setIsGenerating(true);
     try {
+      // Save current state for revert
+      setPreviousBody(body);
+      
       const { data, error } = await supabase.functions.invoke('generate-email-template', {
         body: { prompt: aiPrompt }
       });
@@ -130,11 +159,17 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
 
       if (data?.name) setName(data.name);
       if (data?.subject) setSubject(data.subject);
-      if (data?.body) setBody(data.body);
+      if (data?.body) {
+        setBody(data.body);
+        if (richEditor) {
+          richEditor.commands.setContent(data.body);
+        }
+      }
       if (data?.category) setCategory(data.category);
       
-      toast.success('Template generated! Review and edit as needed.');
-      setActiveTab('form');
+      setCanRevert(true);
+      toast.success('Template generated! Switch to Editor to refine it.');
+      setActiveTab('editor');
     } catch (error: any) {
       console.error('AI generation error:', error);
       toast.error(error.message || 'Failed to generate template');
@@ -143,10 +178,31 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
     }
   };
 
+  const revertAIGeneration = () => {
+    setBody(previousBody);
+    if (richEditor) {
+      richEditor.commands.setContent(previousBody);
+    }
+    setCanRevert(false);
+    toast.success('Reverted to previous version');
+  };
+
+  const insertVariableInEditor = (variable: string) => {
+    const varTag = `{{${variable}}}`;
+    if (editorMode === 'visual' && richEditor) {
+      richEditor.commands.insertContent(varTag);
+    } else {
+      setBody(prev => prev + varTag);
+    }
+    if (!selectedVariables.includes(variable)) {
+      setSelectedVariables(prev => [...prev, variable]);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="form" className="flex items-center gap-2">
             <Edit3 className="h-4 w-4" />
             Form
@@ -155,13 +211,9 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
             <Sparkles className="h-4 w-4" />
             AI Generate
           </TabsTrigger>
-          <TabsTrigger value="code" className="flex items-center gap-2">
+          <TabsTrigger value="editor" className="flex items-center gap-2">
             <Code className="h-4 w-4" />
-            HTML Code
-          </TabsTrigger>
-          <TabsTrigger value="preview" className="flex items-center gap-2">
-            <Eye className="h-4 w-4" />
-            Preview
+            Editor
           </TabsTrigger>
         </TabsList>
 
@@ -262,6 +314,15 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
 
         <TabsContent value="ai" className="space-y-4 mt-4">
           <div className="space-y-4">
+            {canRevert && (
+              <div className="flex items-center justify-between p-3 bg-muted rounded-md">
+                <span className="text-sm text-muted-foreground">AI generation applied</span>
+                <Button variant="outline" size="sm" onClick={revertAIGeneration}>
+                  <Undo2 className="h-4 w-4 mr-2" />
+                  Revert to Previous
+                </Button>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="ai-prompt">Describe Your Email Template</Label>
               <Textarea
@@ -288,58 +349,108 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
               )}
             </Button>
             <p className="text-sm text-muted-foreground">
-              AI will generate a professional email template based on your description. You can then switch to Form or Code view to make adjustments.
+              AI will generate and replace the current template content. You can revert if needed.
             </p>
           </div>
         </TabsContent>
 
-        <TabsContent value="code" className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <Label>HTML Code</Label>
-            <div className="border rounded-md overflow-hidden">
-              <Editor
-                height="400px"
-                defaultLanguage="html"
-                value={body}
-                onChange={(value) => setBody(value || '')}
-                theme="vs-dark"
-                options={{
-                  minimap: { enabled: false },
-                  fontSize: 13,
-                  lineNumbers: 'on',
-                  scrollBeyondLastLine: false,
-                  wordWrap: 'on',
-                  automaticLayout: true,
-                }}
-              />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Edit HTML directly with syntax highlighting. Available variables: {commonVariables.map(v => `{{${v}}}`).join(', ')}
-            </p>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="preview" className="space-y-4 mt-4">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Subject Preview</Label>
-              <div className="p-3 bg-muted rounded-md text-sm font-medium">
-                {subject || 'No subject line yet...'}
+        <TabsContent value="editor" className="space-y-4 mt-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Label className="text-sm">View Mode:</Label>
+              <div className="flex items-center gap-2">
+                <Code className="h-4 w-4" />
+                <Switch 
+                  checked={editorMode === 'visual'} 
+                  onCheckedChange={(checked) => setEditorMode(checked ? 'visual' : 'code')}
+                />
+                <Eye className="h-4 w-4" />
               </div>
+              <span className="text-sm text-muted-foreground">
+                {editorMode === 'visual' ? 'Rich Editor' : 'Code Editor'}
+              </span>
             </div>
-            <div className="space-y-2">
-              <Label>Email Body Preview</Label>
-              <div 
-                className="p-4 bg-background border rounded-md min-h-[300px]"
-                dangerouslySetInnerHTML={{ 
-                  __html: body.replace(/\{\{(\w+)\}\}/g, '<span class="bg-primary/20 px-1 rounded">$1</span>') || '<p class="text-muted-foreground">No content yet...</p>'
-                }}
-              />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              This preview shows how your email will look. Variables are highlighted and will be replaced with actual data when sent.
-            </p>
+            <Select onValueChange={insertVariableInEditor}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Insert variable" />
+              </SelectTrigger>
+              <SelectContent>
+                {commonVariables.map(variable => (
+                  <SelectItem key={variable} value={variable}>
+                    {`{{${variable}}}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+
+          {editorMode === 'code' ? (
+            <div className="space-y-2">
+              <div className="border rounded-md overflow-hidden">
+                <Editor
+                  height="400px"
+                  defaultLanguage="html"
+                  value={body}
+                  onChange={(value) => setBody(value || '')}
+                  theme="vs-dark"
+                  options={{
+                    minimap: { enabled: false },
+                    fontSize: 13,
+                    lineNumbers: 'on',
+                    scrollBeyondLastLine: false,
+                    wordWrap: 'on',
+                    automaticLayout: true,
+                  }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Edit HTML directly with syntax highlighting
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="border rounded-md p-4 min-h-[400px] prose prose-sm max-w-none">
+                <EditorContent editor={richEditor} />
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => richEditor?.chain().focus().toggleBold().run()}
+                >
+                  Bold
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => richEditor?.chain().focus().toggleItalic().run()}
+                >
+                  Italic
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => richEditor?.chain().focus().toggleHeading({ level: 2 }).run()}
+                >
+                  Heading
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => richEditor?.chain().focus().toggleBulletList().run()}
+                >
+                  List
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Use the rich editor to format your email visually
+              </p>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 

@@ -237,3 +237,45 @@ All colors MUST be HSL.
     min-width: 44px;
   }
 }
+
+/* TipTap Editor Styles */
+.ProseMirror {
+  @apply focus:outline-none min-h-[300px];
+}
+
+.ProseMirror p {
+  @apply my-2;
+}
+
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3 {
+  @apply font-bold mt-4 mb-2;
+}
+
+.ProseMirror h1 { @apply text-2xl; }
+.ProseMirror h2 { @apply text-xl; }
+.ProseMirror h3 { @apply text-lg; }
+
+.ProseMirror ul,
+.ProseMirror ol {
+  @apply pl-6 my-2;
+}
+
+.ProseMirror ul { @apply list-disc; }
+.ProseMirror ol { @apply list-decimal; }
+
+.ProseMirror li {
+  @apply my-1;
+}
+
+.ProseMirror strong { @apply font-bold; }
+.ProseMirror em { @apply italic; }
+
+.ProseMirror a {
+  @apply text-primary underline;
+}
+
+.ProseMirror code {
+  @apply bg-muted px-1 py-0.5 rounded text-sm;
+}
