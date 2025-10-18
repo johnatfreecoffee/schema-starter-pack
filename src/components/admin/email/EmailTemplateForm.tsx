@@ -14,6 +14,9 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Sparkles, Code, Eye, Edit3 } from 'lucide-react';
+import Editor from '@monaco-editor/react';
 
 interface EmailTemplateFormProps {
   template?: any;
@@ -38,6 +41,9 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
   const [selectedVariables, setSelectedVariables] = useState<string[]>(
     template?.variables || []
   );
+  const [activeTab, setActiveTab] = useState<'form' | 'ai' | 'code' | 'preview'>('form');
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -108,9 +114,59 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
     }
   };
 
+  const generateWithAI = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error('Please describe the email template you want to create');
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-email-template', {
+        body: { prompt: aiPrompt }
+      });
+
+      if (error) throw error;
+
+      if (data?.name) setName(data.name);
+      if (data?.subject) setSubject(data.subject);
+      if (data?.body) setBody(data.body);
+      if (data?.category) setCategory(data.category);
+      
+      toast.success('Template generated! Review and edit as needed.');
+      setActiveTab('form');
+    } catch (error: any) {
+      console.error('AI generation error:', error);
+      toast.error(error.message || 'Failed to generate template');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-4">
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="form" className="flex items-center gap-2">
+            <Edit3 className="h-4 w-4" />
+            Form
+          </TabsTrigger>
+          <TabsTrigger value="ai" className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            AI Generate
+          </TabsTrigger>
+          <TabsTrigger value="code" className="flex items-center gap-2">
+            <Code className="h-4 w-4" />
+            HTML Code
+          </TabsTrigger>
+          <TabsTrigger value="preview" className="flex items-center gap-2">
+            <Eye className="h-4 w-4" />
+            Preview
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="form" className="space-y-4 mt-4">
+          <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="name">Template Name *</Label>
           <Input
@@ -190,18 +246,102 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
         </p>
       </div>
 
-      {selectedVariables.length > 0 && (
-        <div className="space-y-2">
-          <Label>Selected Variables</Label>
-          <div className="flex flex-wrap gap-2">
-            {selectedVariables.map(variable => (
-              <Badge key={variable} variant="secondary">
-                {`{{${variable}}}`}
-              </Badge>
-            ))}
+          {selectedVariables.length > 0 && (
+            <div className="space-y-2">
+              <Label>Selected Variables</Label>
+              <div className="flex flex-wrap gap-2">
+                {selectedVariables.map(variable => (
+                  <Badge key={variable} variant="secondary">
+                    {`{{${variable}}}`}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="ai" className="space-y-4 mt-4">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="ai-prompt">Describe Your Email Template</Label>
+              <Textarea
+                id="ai-prompt"
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                placeholder="E.g., Create a welcome email for new customers that thanks them for signing up, includes their account details, and has a call-to-action button to get started..."
+                rows={8}
+                className="resize-none"
+              />
+            </div>
+            <Button 
+              onClick={generateWithAI} 
+              disabled={isGenerating || !aiPrompt.trim()}
+              className="w-full"
+            >
+              {isGenerating ? (
+                <>Generating...</>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Generate Template with AI
+                </>
+              )}
+            </Button>
+            <p className="text-sm text-muted-foreground">
+              AI will generate a professional email template based on your description. You can then switch to Form or Code view to make adjustments.
+            </p>
           </div>
-        </div>
-      )}
+        </TabsContent>
+
+        <TabsContent value="code" className="space-y-4 mt-4">
+          <div className="space-y-2">
+            <Label>HTML Code</Label>
+            <div className="border rounded-md overflow-hidden">
+              <Editor
+                height="400px"
+                defaultLanguage="html"
+                value={body}
+                onChange={(value) => setBody(value || '')}
+                theme="vs-dark"
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 13,
+                  lineNumbers: 'on',
+                  scrollBeyondLastLine: false,
+                  wordWrap: 'on',
+                  automaticLayout: true,
+                }}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Edit HTML directly with syntax highlighting. Available variables: {commonVariables.map(v => `{{${v}}}`).join(', ')}
+            </p>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="preview" className="space-y-4 mt-4">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Subject Preview</Label>
+              <div className="p-3 bg-muted rounded-md text-sm font-medium">
+                {subject || 'No subject line yet...'}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Email Body Preview</Label>
+              <div 
+                className="p-4 bg-background border rounded-md min-h-[300px]"
+                dangerouslySetInnerHTML={{ 
+                  __html: body.replace(/\{\{(\w+)\}\}/g, '<span class="bg-primary/20 px-1 rounded">$1</span>') || '<p class="text-muted-foreground">No content yet...</p>'
+                }}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              This preview shows how your email will look. Variables are highlighted and will be replaced with actual data when sent.
+            </p>
+          </div>
+        </TabsContent>
+      </Tabs>
 
       <div className="flex justify-end space-x-2 pt-4 border-t">
         <Button variant="outline" onClick={onCancel}>
