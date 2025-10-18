@@ -603,54 +603,58 @@ const Tasks = () => {
           currentUserId={currentUserId}
         />
 
-        <div className="flex-1 p-8">
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-4">
-              <h1 className="text-4xl font-bold">Tasks</h1>
-              <Badge variant="secondary">{tasks.length}</Badge>
+        <div className="flex-1 px-4 py-6 sm:p-6 lg:p-8 max-w-full overflow-x-hidden">
+          <div className="mb-6 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4 flex-wrap min-w-0">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Tasks</h1>
+                <Badge variant="secondary">{tasks.length}</Badge>
+              </div>
               <div className="flex gap-2">
                 <Button
-                  variant={!showMyTasks ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setShowMyTasks(false)}
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setViewMode("table")}
+                  className="hidden md:flex"
                 >
-                  All Tasks
+                  <List className="h-4 w-4" />
                 </Button>
                 <Button
-                  variant={showMyTasks ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setShowMyTasks(true)}
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setViewMode("card")}
+                  className="hidden md:flex"
                 >
-                  My Tasks
+                  <Grid className="h-4 w-4" />
                 </Button>
+                {!isMobile && (
+                  <Button onClick={() => {
+                    setSelectedTask(null);
+                    setShowTaskForm(true);
+                  }}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create New Task
+                  </Button>
+                )}
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
               <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setViewMode("table")}
-                className="hidden md:flex"
+                variant={!showMyTasks ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowMyTasks(false)}
+                className="whitespace-nowrap snap-start flex-shrink-0"
               >
-                <List className="h-4 w-4" />
+                All Tasks
               </Button>
               <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setViewMode("card")}
-                className="hidden md:flex"
+                variant={showMyTasks ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowMyTasks(true)}
+                className="whitespace-nowrap snap-start flex-shrink-0"
               >
-                <Grid className="h-4 w-4" />
+                My Tasks
               </Button>
-              {!isMobile && (
-                <Button onClick={() => {
-                  setSelectedTask(null);
-                  setShowTaskForm(true);
-                }}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create New Task
-                </Button>
-              )}
             </div>
           </div>
 
@@ -685,8 +689,8 @@ const Tasks = () => {
               renderCard={(task) => (
                 <MobileCard key={task.id} onClick={() => navigate(`/dashboard/tasks/${task.id}`)}>
                   <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <div onClick={(e) => e.stopPropagation()}>
                           <Checkbox
                             checked={bulkSelection.isSelected(task.id)}
@@ -696,7 +700,7 @@ const Tasks = () => {
                         <TaskPriorityBadge priority={task.priority} />
                         <TaskStatusBadge status={task.status} />
                       </div>
-                      <h3 className="font-bold text-lg mb-1">{task.title}</h3>
+                      <h3 className="font-bold text-lg mb-1 truncate max-w-full">{task.title}</h3>
                       {task.description && (
                         <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
                           {task.description}
