@@ -671,6 +671,44 @@ export type Database = {
         }
         Relationships: []
       }
+      company_social_media: {
+        Row: {
+          created_at: string
+          custom_name: string | null
+          handle: string | null
+          id: string
+          link: string
+          outlet_type_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          custom_name?: string | null
+          handle?: string | null
+          id?: string
+          link: string
+          outlet_type_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          custom_name?: string | null
+          handle?: string | null
+          id?: string
+          link?: string
+          outlet_type_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_social_media_outlet_type_id_fkey"
+            columns: ["outlet_type_id"]
+            isOneToOne: false
+            referencedRelation: "social_media_outlet_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contacts: {
         Row: {
           account_id: string
@@ -2452,6 +2490,27 @@ export type Database = {
           id?: string
           platform?: string
           url?: string
+        }
+        Relationships: []
+      }
+      social_media_outlet_types: {
+        Row: {
+          created_at: string
+          icon_url: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          icon_url: string
+          id: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          icon_url?: string
+          id?: string
+          name?: string
         }
         Relationships: []
       }

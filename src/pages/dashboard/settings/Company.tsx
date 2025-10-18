@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { SocialMediaManager } from '@/components/admin/settings/site-settings/SocialMediaManager';
 
 const CompanySettings = () => {
   const { data: company } = useCompanySettings();
@@ -556,64 +557,10 @@ const CompanySettings = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Social Media</CardTitle>
-                <CardDescription>Connect your social media profiles</CardDescription>
+                <CardDescription>Manage your social media profiles</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="facebook_url">Facebook URL</Label>
-                  <Input
-                    id="facebook_url"
-                    value={formData.facebook_url}
-                    onChange={(e) => setFormData({ ...formData, facebook_url: e.target.value })}
-                    placeholder="https://facebook.com/yourcompany"
-                    className={errors.facebook_url ? 'border-destructive' : ''}
-                  />
-                  {errors.facebook_url && (
-                    <p className="text-sm text-destructive">{errors.facebook_url}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="instagram_url">Instagram URL</Label>
-                  <Input
-                    id="instagram_url"
-                    value={formData.instagram_url}
-                    onChange={(e) => setFormData({ ...formData, instagram_url: e.target.value })}
-                    placeholder="https://instagram.com/yourcompany"
-                    className={errors.instagram_url ? 'border-destructive' : ''}
-                  />
-                  {errors.instagram_url && (
-                    <p className="text-sm text-destructive">{errors.instagram_url}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="twitter_url">Twitter/X URL</Label>
-                  <Input
-                    id="twitter_url"
-                    value={formData.twitter_url}
-                    onChange={(e) => setFormData({ ...formData, twitter_url: e.target.value })}
-                    placeholder="https://twitter.com/yourcompany"
-                    className={errors.twitter_url ? 'border-destructive' : ''}
-                  />
-                  {errors.twitter_url && (
-                    <p className="text-sm text-destructive">{errors.twitter_url}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="linkedin_url">LinkedIn URL</Label>
-                  <Input
-                    id="linkedin_url"
-                    value={formData.linkedin_url}
-                    onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
-                    placeholder="https://linkedin.com/company/yourcompany"
-                    className={errors.linkedin_url ? 'border-destructive' : ''}
-                  />
-                  {errors.linkedin_url && (
-                    <p className="text-sm text-destructive">{errors.linkedin_url}</p>
-                  )}
-                </div>
+              <CardContent>
+                <SocialMediaManager />
               </CardContent>
             </Card>
           </TabsContent>

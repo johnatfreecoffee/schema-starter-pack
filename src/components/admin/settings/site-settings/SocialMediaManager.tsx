@@ -2,275 +2,260 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Pencil, Trash2, Plus } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { Plus, ExternalLink, Trash2 } from 'lucide-react';
 
-const PLATFORMS = [
-  'Facebook',
-  'Twitter',
-  'Instagram',
-  'LinkedIn',
-  'YouTube',
-  'TikTok',
-  'Custom',
-];
+interface OutletType {
+  id: string;
+  name: string;
+  icon_url: string;
+}
 
-const SocialMediaManager = () => {
+interface SocialMedia {
+  id: string;
+  outlet_type_id: string;
+  custom_name: string | null;
+  handle: string | null;
+  link: string;
+  social_media_outlet_types: OutletType;
+}
+
+export const SocialMediaManager = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOutlet, setSelectedOutlet] = useState<string>('');
+  const [customName, setCustomName] = useState('');
+  const [handle, setHandle] = useState('');
+  const [link, setLink] = useState('');
   const queryClient = useQueryClient();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingLink, setEditingLink] = useState<any>(null);
-  const [platform, setPlatform] = useState('Facebook');
-  const [url, setUrl] = useState('');
 
-  const { data: socialLinks } = useQuery({
-    queryKey: ['social-links'],
+  // Fetch outlet types
+  const { data: outletTypes = [] } = useQuery({
+    queryKey: ['social-media-outlet-types'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('social_links')
+        .from('social_media_outlet_types')
         .select('*')
-        .order('display_order', { ascending: true });
-
+        .order('name');
       if (error) throw error;
-      return data;
+      return data as OutletType[];
     },
   });
 
-  const createMutation = useMutation({
-    mutationFn: async (newLink: { platform: string; url: string }) => {
-      const maxOrder = socialLinks?.reduce((max, link) => 
-        Math.max(max, link.display_order), 0) || 0;
-
+  // Fetch company social media
+  const { data: socialMedia = [], isLoading } = useQuery({
+    queryKey: ['company-social-media'],
+    queryFn: async () => {
       const { data, error } = await supabase
-        .from('social_links')
-        .insert({
-          platform: newLink.platform,
-          url: newLink.url,
-          display_order: maxOrder + 1,
-        })
-        .select()
-        .single();
-
+        .from('company_social_media')
+        .select(`
+          *,
+          social_media_outlet_types (*)
+        `)
+        .order('created_at');
       if (error) throw error;
-      return data;
+      return data as SocialMedia[];
+    },
+  });
+
+  // Add mutation
+  const addMutation = useMutation({
+    mutationFn: async (values: { outlet_type_id: string; custom_name?: string; handle?: string; link: string }) => {
+      const { error } = await supabase
+        .from('company_social_media')
+        .insert([values]);
+      if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['social-links'] });
-      toast.success('Social link added successfully');
-      handleCloseDialog();
+      queryClient.invalidateQueries({ queryKey: ['company-social-media'] });
+      toast.success('Social media link added successfully');
+      setIsOpen(false);
+      resetForm();
     },
-    onError: () => {
-      toast.error('Failed to add social link');
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
-      const { data, error } = await supabase
-        .from('social_links')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['social-links'] });
-      toast.success('Social link updated successfully');
-      handleCloseDialog();
-    },
-    onError: () => {
-      toast.error('Failed to update social link');
+    onError: (error) => {
+      toast.error(`Failed to add social media: ${error.message}`);
     },
   });
 
+  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('social_links')
+        .from('company_social_media')
         .delete()
         .eq('id', id);
-
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['social-links'] });
-      toast.success('Social link deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ['company-social-media'] });
+      toast.success('Social media link removed');
     },
-    onError: () => {
-      toast.error('Failed to delete social link');
+    onError: (error) => {
+      toast.error(`Failed to remove social media: ${error.message}`);
     },
   });
 
-  const handleOpenDialog = (link?: any) => {
-    if (link) {
-      setEditingLink(link);
-      setPlatform(link.platform);
-      setUrl(link.url);
-    } else {
-      setEditingLink(null);
-      setPlatform('Facebook');
-      setUrl('');
-    }
-    setIsDialogOpen(true);
+  const resetForm = () => {
+    setSelectedOutlet('');
+    setCustomName('');
+    setHandle('');
+    setLink('');
   };
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-    setEditingLink(null);
-    setPlatform('Facebook');
-    setUrl('');
-  };
-
-  const handleSave = () => {
-    if (!url) {
-      toast.error('Please enter a URL');
+  const handleSubmit = () => {
+    if (!selectedOutlet || !link) {
+      toast.error('Please select an outlet and enter a link');
       return;
     }
 
-    if (editingLink) {
-      updateMutation.mutate({
-        id: editingLink.id,
-        updates: { platform, url },
-      });
-    } else {
-      createMutation.mutate({ platform, url });
+    if (selectedOutlet === 'other' && !customName) {
+      toast.error('Please enter a custom name for "Other"');
+      return;
     }
+
+    addMutation.mutate({
+      outlet_type_id: selectedOutlet,
+      custom_name: selectedOutlet === 'other' ? customName : null,
+      handle: handle || null,
+      link,
+    });
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this social link?')) {
-      deleteMutation.mutate(id);
-    }
-  };
+  const isOtherSelected = selectedOutlet === 'other';
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h4 className="font-semibold">Social Links</h4>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-medium">Social Media Links</h3>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => handleOpenDialog()} size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Link
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Social Media
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>
-                {editingLink ? 'Edit Social Link' : 'Add Social Link'}
-              </DialogTitle>
+              <DialogTitle>Add Social Media Link</DialogTitle>
               <DialogDescription>
-                Add or update a social media link for your footer.
+                Select a social media outlet and provide the link details.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <div>
-                <Label htmlFor="platform">Platform</Label>
-                <Select value={platform} onValueChange={setPlatform}>
-                  <SelectTrigger id="platform">
-                    <SelectValue />
+              <div className="space-y-2">
+                <Label htmlFor="outlet">Social Media Outlet *</Label>
+                <Select value={selectedOutlet} onValueChange={setSelectedOutlet}>
+                  <SelectTrigger id="outlet">
+                    <SelectValue placeholder="Select outlet" />
                   </SelectTrigger>
                   <SelectContent>
-                    {PLATFORMS.map((p) => (
-                      <SelectItem key={p} value={p}>
-                        {p}
+                    {outletTypes.map((outlet) => (
+                      <SelectItem key={outlet.id} value={outlet.id}>
+                        <div className="flex items-center gap-2">
+                          <img src={outlet.icon_url} alt={outlet.name} className="h-4 w-4" />
+                          {outlet.name}
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label htmlFor="url">URL</Label>
+
+              {isOtherSelected && (
+                <div className="space-y-2">
+                  <Label htmlFor="customName">Custom Name *</Label>
+                  <Input
+                    id="customName"
+                    value={customName}
+                    onChange={(e) => setCustomName(e.target.value)}
+                    placeholder="Enter custom social media name"
+                  />
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="handle">Handle</Label>
                 <Input
-                  id="url"
+                  id="handle"
+                  value={handle}
+                  onChange={(e) => setHandle(e.target.value)}
+                  placeholder="@username (optional)"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="link">Link *</Label>
+                <Input
+                  id="link"
                   type="url"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
                   placeholder="https://..."
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={handleCloseDialog}>
+              <Button variant="outline" onClick={() => setIsOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSave}>
-                {editingLink ? 'Update' : 'Add'}
+              <Button onClick={handleSubmit} disabled={addMutation.isPending}>
+                {addMutation.isPending ? 'Adding...' : 'Add'}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
 
-      {socialLinks && socialLinks.length > 0 ? (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Platform</TableHead>
-              <TableHead>URL</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {socialLinks.map((link) => (
-              <TableRow key={link.id}>
-                <TableCell>{link.platform}</TableCell>
-                <TableCell className="max-w-xs truncate">{link.url}</TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleOpenDialog(link)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(link.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      ) : socialMedia.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No social media links added yet.</p>
       ) : (
-        <p className="text-sm text-muted-foreground text-center py-4">
-          No social links yet. Add one to get started!
-        </p>
+        <div className="grid gap-4 md:grid-cols-2">
+          {socialMedia.map((item) => (
+            <Card key={item.id}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <img 
+                    src={item.social_media_outlet_types.icon_url} 
+                    alt={item.social_media_outlet_types.name}
+                    className="h-5 w-5"
+                  />
+                  {item.custom_name || item.social_media_outlet_types.name}
+                </CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => deleteMutation.mutate(item.id)}
+                  disabled={deleteMutation.isPending}
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {item.handle && (
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Handle: {item.handle}
+                  </p>
+                )}
+                <a
+                  href={item.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary hover:underline flex items-center gap-1"
+                >
+                  {item.link}
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       )}
     </div>
   );
 };
-
-export default SocialMediaManager;

@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { cacheInvalidation } from '@/lib/cacheInvalidation';
 import ColorPicker from './ColorPicker';
-import SocialMediaManager from './SocialMediaManager';
+import { SocialMediaManager } from './SocialMediaManager';
 
 const FooterSettings = () => {
   const queryClient = useQueryClient();
