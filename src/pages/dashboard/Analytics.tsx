@@ -3,6 +3,7 @@ import AdminLayout from '@/components/layout/AdminLayout';
 import { MetricCard } from '@/components/analytics/MetricCard';
 import { RevenueChart } from '@/components/analytics/RevenueChart';
 import { LeadFunnelChart } from '@/components/analytics/LeadFunnelChart';
+import { LeadSourceChart } from '@/components/analytics/LeadSourceChart';
 import { ProjectStatusChart } from '@/components/analytics/ProjectStatusChart';
 import { TasksCompletedChart } from '@/components/analytics/TasksCompletedChart';
 import { ActivityFeedWidget } from '@/components/analytics/ActivityFeedWidget';
@@ -280,6 +281,10 @@ const Analytics = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <ProjectStatusChart data={metrics.projects.byStatus} />
                 <TasksCompletedChart data={historicalData} />
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <LeadSourceChart data={metrics.leads.bySource} />
               </div>
             </>
           )}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
-import { TrendingUp, MapPin, UserPlus } from 'lucide-react';
+import { TrendingUp, MapPin, UserPlus, DollarSign } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface TopService {
@@ -25,10 +25,19 @@ interface TopLeadSource {
   percentage: number;
 }
 
+interface TopAccount {
+  accountId: string;
+  accountName: string;
+  totalRevenue: number;
+  invoiceCount: number;
+  percentage: number;
+}
+
 export function TopPerformersWidget() {
   const [topServices, setTopServices] = useState<TopService[]>([]);
   const [topAreas, setTopAreas] = useState<TopServiceArea[]>([]);
   const [topSources, setTopSources] = useState<TopLeadSource[]>([]);
+  const [topAccounts, setTopAccounts] = useState<TopAccount[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,6 +51,7 @@ export function TopPerformersWidget() {
         loadTopServices(),
         loadTopServiceAreas(),
         loadTopLeadSources(),
+        loadTopAccounts(),
       ]);
     } catch (error) {
       console.error('Error loading top performers:', error);
@@ -145,10 +155,49 @@ export function TopPerformersWidget() {
     setTopSources(sources);
   };
 
+  const loadTopAccounts = async () => {
+    const { data: invoices } = await supabase
+      .from('invoices')
+      .select('account_id, total_amount, accounts(account_name)')
+      .eq('status', 'paid');
+
+    if (!invoices) return;
+
+    const accountMap = new Map<string, { name: string; revenue: number; count: number }>();
+    invoices.forEach((invoice: any) => {
+      if (!invoice.account_id) return;
+      const existing = accountMap.get(invoice.account_id) || {
+        name: invoice.accounts?.account_name || 'Unknown',
+        revenue: 0,
+        count: 0,
+      };
+      accountMap.set(invoice.account_id, {
+        name: existing.name,
+        revenue: existing.revenue + (invoice.total_amount || 0),
+        count: existing.count + 1,
+      });
+    });
+
+    const maxRevenue = Math.max(...Array.from(accountMap.values()).map(a => a.revenue), 1);
+    
+    const accounts = Array.from(accountMap.entries())
+      .map(([id, data]) => ({
+        accountId: id,
+        accountName: data.name,
+        totalRevenue: data.revenue,
+        invoiceCount: data.count,
+        percentage: (data.revenue / maxRevenue) * 100,
+      }))
+      .sort((a, b) => b.totalRevenue - a.totalRevenue)
+      .slice(0, 5);
+
+    setTopAccounts(accounts);
+  };
+
   if (loading) {
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {[1, 2, 3].map((i) => (
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map((i) => (
           <Card key={i}>
             <CardHeader>
               <Skeleton className="h-6 w-48" />
@@ -167,7 +216,7 @@ export function TopPerformersWidget() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
       {/* Top Services by Revenue */}
       <Card>
         <CardHeader>
@@ -281,6 +330,48 @@ export function TopPerformersWidget() {
                     <div
                       className="bg-purple-500 h-full rounded-full transition-all"
                       style={{ width: `${source.percentage}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Top Accounts by Revenue */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <div className="p-2 rounded-full bg-emerald-100 text-emerald-600">
+              <DollarSign className="h-4 w-4" />
+            </div>
+            Top Accounts by Revenue
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {topAccounts.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-8">
+              No account revenue data available yet
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {topAccounts.map((account, index) => (
+                <div key={index} className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-sm truncate">{account.accountName}</span>
+                    <span className="font-bold text-sm">
+                      ${(account.totalRevenue / 100).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>{account.invoiceCount} invoices</span>
+                    <span>{account.percentage.toFixed(0)}%</span>
+                  </div>
+                  <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
+                    <div
+                      className="bg-emerald-500 h-full rounded-full transition-all"
+                      style={{ width: `${account.percentage}%` }}
                     />
                   </div>
                 </div>

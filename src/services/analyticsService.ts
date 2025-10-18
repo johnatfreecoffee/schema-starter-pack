@@ -8,12 +8,20 @@ export interface AnalyticsMetrics {
     converted: number;
     conversionRate: number;
     byStatus: { status: string; count: number }[];
+    bySource: Record<string, number>;
   };
   accounts: {
     total: number;
     new: number;
     active: number;
     withPortalAccess: number;
+    topByRevenue: {
+      accountId: string;
+      accountName: string;
+      totalRevenue: number;
+      invoiceCount: number;
+      percentage: number;
+    }[];
   };
   tasks: {
     total: number;
@@ -144,17 +152,35 @@ export class AnalyticsService {
       .gte('updated_at', start.toISOString())
       .lte('updated_at', end.toISOString());
 
-    // Leads by status
-    const { data: byStatus } = await supabase
+    // Leads by status and source
+    const { data: leads } = await supabase
       .from('leads')
-      .select('status')
+      .select('status, source')
       .gte('created_at', start.toISOString())
       .lte('created_at', end.toISOString());
 
-    const statusCounts = byStatus?.reduce((acc, lead) => {
+    const statusCounts = leads?.reduce((acc, lead) => {
       acc[lead.status] = (acc[lead.status] || 0) + 1;
       return acc;
     }, {} as Record<string, number>) || {};
+
+    // Leads by source with standardized names
+    const sourceCounts: Record<string, number> = {
+      'Website Form': 0,
+      'Phone Call': 0,
+      'Email': 0,
+      'Referral': 0,
+      'Other': 0,
+    };
+
+    leads?.forEach((lead) => {
+      const source = lead.source || 'Other';
+      const normalizedSource = source === 'web_form' ? 'Website Form' :
+                               source === 'phone' ? 'Phone Call' :
+                               source === 'email' ? 'Email' :
+                               source === 'referral' ? 'Referral' : 'Other';
+      sourceCounts[normalizedSource] = (sourceCounts[normalizedSource] || 0) + 1;
+    });
 
     const conversionRate = newLeads ? ((converted || 0) / newLeads) * 100 : 0;
 
@@ -164,6 +190,7 @@ export class AnalyticsService {
       converted: converted || 0,
       conversionRate: Math.round(conversionRate * 100) / 100,
       byStatus: Object.entries(statusCounts).map(([status, count]) => ({ status, count })),
+      bySource: sourceCounts,
     };
   }
 
@@ -192,11 +219,45 @@ export class AnalyticsService {
       .select('*', { count: 'exact', head: true })
       .eq('portal_enabled', true);
 
+    // Top accounts by revenue
+    const { data: accountRevenue } = await supabase
+      .from('invoices')
+      .select('account_id, total_amount, accounts(account_name)')
+      .eq('status', 'paid');
+
+    const revenueMap = new Map<string, { name: string; revenue: number; count: number }>();
+    accountRevenue?.forEach((invoice: any) => {
+      if (!invoice.account_id) return;
+      const existing = revenueMap.get(invoice.account_id) || {
+        name: invoice.accounts?.account_name || 'Unknown',
+        revenue: 0,
+        count: 0,
+      };
+      revenueMap.set(invoice.account_id, {
+        name: existing.name,
+        revenue: existing.revenue + (invoice.total_amount || 0),
+        count: existing.count + 1,
+      });
+    });
+
+    const maxRevenue = Math.max(...Array.from(revenueMap.values()).map(a => a.revenue), 1);
+    const topByRevenue = Array.from(revenueMap.entries())
+      .map(([id, data]) => ({
+        accountId: id,
+        accountName: data.name,
+        totalRevenue: data.revenue,
+        invoiceCount: data.count,
+        percentage: (data.revenue / maxRevenue) * 100,
+      }))
+      .sort((a, b) => b.totalRevenue - a.totalRevenue)
+      .slice(0, 5);
+
     return {
       total: total || 0,
       new: newAccounts || 0,
       active: active || 0,
       withPortalAccess: withPortalAccess || 0,
+      topByRevenue,
     };
   }
 

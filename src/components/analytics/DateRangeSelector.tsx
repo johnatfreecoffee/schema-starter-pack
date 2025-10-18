@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
-import { format, subDays } from 'date-fns';
+import { format, subDays, startOfYear } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { DateRange } from 'react-day-picker';
 
@@ -22,11 +22,22 @@ export function DateRangeSelector({ onChange }: DateRangeSelectorProps) {
     { label: 'Last 7 days', days: 7 },
     { label: 'Last 30 days', days: 30 },
     { label: 'Last 90 days', days: 90 },
+    { label: 'This Year', days: -1 }, // Special value for year
   ];
 
   const handlePresetClick = (days: number) => {
     const end = new Date();
-    const start = days === 0 ? end : subDays(end, days);
+    let start: Date;
+    
+    if (days === -1) {
+      // This Year: from Jan 1st to today
+      start = startOfYear(end);
+    } else if (days === 0) {
+      start = end;
+    } else {
+      start = subDays(end, days);
+    }
+    
     const newRange = { from: start, to: end };
     setDate(newRange);
     onChange({ start, end });
