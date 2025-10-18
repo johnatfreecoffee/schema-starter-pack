@@ -14,7 +14,7 @@ export interface TemplateVariables {
 
 export class EmailService {
   /**
-   * Queue an email to be sent
+   * Send email immediately using SendGrid
    */
   static async sendEmail(
     to: string,
@@ -25,7 +25,27 @@ export class EmailService {
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
-      const { error } = await supabase
+      // Get company settings for "from" email
+      const { data: company } = await supabase
+        .from('company_settings')
+        .select('email')
+        .single();
+
+      // Call SendGrid edge function
+      const { data, error: sendError } = await supabase.functions.invoke('send-email', {
+        body: {
+          to,
+          subject,
+          html: body,
+          from: company?.email || options.cc || 'noreply@yourdomain.com'
+        }
+      });
+
+      const status = data?.success ? 'sent' : 'failed';
+      const errorMessage = data?.success ? null : (sendError?.message || 'Unknown error');
+
+      // Log to email_queue for tracking
+      await supabase
         .from('email_queue')
         .insert({
           to_email: to,
@@ -37,51 +57,65 @@ export class EmailService {
           entity_type: options.entityType,
           entity_id: options.entityId,
           created_by: user?.id,
-          status: 'pending'
+          status,
+          sent_at: status === 'sent' ? new Date().toISOString() : null,
+          error_message: errorMessage
         });
 
-      if (error) throw error;
+      if (!data?.success) {
+        throw new Error(errorMessage || 'Failed to send email');
+      }
 
-      // Mock sending - in production, this would trigger an email service
-      console.log('📧 Email queued:', { to, subject, body: body.substring(0, 100) + '...' });
+      console.log('✅ Email sent successfully:', { to, subject });
 
       return { success: true };
     } catch (error: any) {
-      console.error('Error queuing email:', error);
+      console.error('Error sending email:', error);
       return { success: false, error: error.message };
     }
   }
 
   /**
-   * Send email using a template
+   * Send email using a template (by ID or name)
    */
   static async sendTemplateEmail(
-    templateId: string,
+    templateIdOrName: string,
     to: string,
     variables: TemplateVariables,
     options: EmailOptions = {}
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      // Fetch template
-      const { data: template, error: templateError } = await supabase
+      // Try to fetch template by ID first, then by name
+      let query = supabase
         .from('email_templates')
         .select('*')
-        .eq('id', templateId)
-        .eq('is_active', true)
-        .single();
+        .eq('is_active', true);
 
-      if (templateError || !template) {
-        throw new Error('Template not found or inactive');
+      // Check if it looks like a UUID
+      if (templateIdOrName.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+        query = query.eq('id', templateIdOrName);
+      } else {
+        query = query.eq('name', templateIdOrName);
       }
 
-      // Replace variables in subject and body
-      const subject = this.replaceVariables(template.subject, variables);
-      const body = this.replaceVariables(template.body, variables);
+      const { data: template, error: templateError } = await query.single();
 
-      // Queue email
+      if (templateError || !template) {
+        throw new Error(`Template "${templateIdOrName}" not found or inactive`);
+      }
+
+      // Merge with default variables
+      const defaultVars = await this.getDefaultVariables();
+      const allVariables = { ...defaultVars, ...variables };
+
+      // Replace variables in subject and body
+      const subject = this.replaceVariables(template.subject, allVariables);
+      const body = this.replaceVariables(template.body, allVariables);
+
+      // Send email
       return await this.sendEmail(to, subject, body, {
         ...options,
-        templateId
+        templateId: template.id
       });
     } catch (error: any) {
       console.error('Error sending template email:', error);

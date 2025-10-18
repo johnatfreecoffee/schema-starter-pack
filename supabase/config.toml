@@ -12,5 +12,8 @@ verify_jwt = false
 [functions.submit-lead]
 verify_jwt = false
 
+[functions.send-email]
+verify_jwt = false
+
 [functions.ai-edit-page]
 verify_jwt = true

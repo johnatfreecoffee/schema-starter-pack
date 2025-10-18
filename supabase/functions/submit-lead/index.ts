@@ -209,11 +209,65 @@ serve(async (req) => {
       .select('*')
       .single();
 
-    // 5. TODO: Send welcome email
-    // This would integrate with your email service (Resend, etc.)
-    // SECURITY: Never log passwords! Only log that email was queued
-    console.log('Welcome email queued for:', leadData.email);
-    console.log('Company:', companySettings?.business_name);
+    // 5. Send confirmation email to customer
+    try {
+      const { data: emailTemplate } = await supabaseClient
+        .from('email_templates')
+        .select('*')
+        .eq('name', 'lead-submission-confirmation')
+        .eq('is_active', true)
+        .single();
+
+      if (emailTemplate) {
+        // Replace variables in template
+        const replaceVariables = (text: string) => {
+          return text
+            .replace(/\{\{customer_name\}\}/g, `${leadData.first_name} ${leadData.last_name}`)
+            .replace(/\{\{customer_email\}\}/g, leadData.email)
+            .replace(/\{\{customer_phone\}\}/g, leadData.phone)
+            .replace(/\{\{service_name\}\}/g, leadData.service_needed)
+            .replace(/\{\{lead_message\}\}/g, leadData.project_details || 'No additional details provided')
+            .replace(/\{\{company_name\}\}/g, companySettings?.business_name || 'Your Company')
+            .replace(/\{\{company_phone\}\}/g, companySettings?.phone || '')
+            .replace(/\{\{company_email\}\}/g, companySettings?.email || '')
+            .replace(/\{\{company_address\}\}/g, companySettings?.address || '')
+            .replace(/\{\{current_date\}\}/g, new Date().toLocaleDateString())
+            .replace(/\{\{current_year\}\}/g, new Date().getFullYear().toString());
+        };
+
+        const subject = replaceVariables(emailTemplate.subject);
+        const body = replaceVariables(emailTemplate.body);
+
+        // Call send-email edge function
+        await supabaseClient.functions.invoke('send-email', {
+          body: {
+            to: leadData.email,
+            subject,
+            html: body,
+            from: companySettings?.email || 'noreply@yourdomain.com'
+          }
+        });
+
+        // Log email to queue
+        await supabaseClient
+          .from('email_queue')
+          .insert({
+            to_email: leadData.email,
+            subject,
+            body,
+            template_id: emailTemplate.id,
+            entity_type: 'lead',
+            entity_id: lead.id,
+            status: 'sent',
+            sent_at: new Date().toISOString()
+          });
+
+        console.log('✅ Confirmation email sent to:', leadData.email);
+      }
+    } catch (emailError) {
+      console.error('Error sending confirmation email:', emailError);
+      // Don't fail the whole request if email fails
+    }
 
     // 6. Create activity log
     const { error: logError } = await supabaseClient
