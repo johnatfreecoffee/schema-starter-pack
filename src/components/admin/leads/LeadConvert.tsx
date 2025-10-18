@@ -98,7 +98,8 @@ export const LeadConvert = ({ isOpen, onClose, lead }: LeadConvertProps) => {
         entityType: 'lead',
         entityId: lead.id,
         entityName: `${lead.first_name} ${lead.last_name}`,
-        convertedTo: account.id
+        convertedTo: 'account',
+        convertedToId: account.id
       });
 
       await CRUDLogger.logCreate({

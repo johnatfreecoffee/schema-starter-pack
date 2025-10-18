@@ -1,18 +1,23 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { User, Clock, FileText } from 'lucide-react';
+import { User, Clock, FileText, Globe, Monitor } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 interface ActivityLog {
   id: string;
   user_id: string;
+  company_id?: string | null;
   entity_type: string;
   entity_id: string;
   entity_name: string | null;
   action: 'created' | 'updated' | 'deleted' | 'status_changed' | 'converted';
   changes: Record<string, { old: any; new: any }> | null;
+  old_values?: Record<string, any> | null;
+  new_values?: Record<string, any> | null;
   metadata: Record<string, any> | null;
+  ip_address?: string | null;
+  user_agent?: string | null;
   created_at: string;
   user_name?: string;
   user_email?: string;
@@ -86,8 +91,73 @@ export function ActivityLogDetail({ log, open, onOpenChange }: ActivityLogDetail
             </div>
           </div>
 
-          {/* Changes */}
-          {log.changes && Object.keys(log.changes).length > 0 && (
+          {/* IP Address & User Agent */}
+          {(log.ip_address || log.user_agent) && (
+            <>
+              <Separator />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Globe className="h-4 w-4" />
+                    <span>IP Address</span>
+                  </div>
+                  <p className="text-sm font-mono">{log.ip_address || 'Not captured'}</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Monitor className="h-4 w-4" />
+                    <span>User Agent</span>
+                  </div>
+                  <p className="text-xs break-all font-mono">{log.user_agent || 'Not captured'}</p>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Changes - Support both old format (changes) and new format (old_values/new_values) */}
+          {(log.old_values || log.new_values) && (
+            <>
+              <Separator />
+              <div className="space-y-4">
+                <h3 className="font-semibold">Changes Made</h3>
+                <div className="space-y-3">
+                  {/* Show old_values/new_values comparison if available */}
+                  {log.new_values && Object.keys(log.new_values).map((field) => {
+                    const oldValue = log.old_values?.[field];
+                    const newValue = log.new_values?.[field];
+                    
+                    // Skip if values are identical
+                    if (JSON.stringify(oldValue) === JSON.stringify(newValue)) return null;
+                    
+                    return (
+                      <div key={field} className="border-l-2 border-primary pl-3">
+                        <div className="text-sm font-medium mb-2">
+                          {field.replace(/_/g, ' ').toUpperCase()}
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div className="space-y-1">
+                            <span className="text-xs text-muted-foreground">Old Value:</span>
+                            <div className="text-red-600 font-mono bg-red-50 dark:bg-red-950/20 p-2 rounded border">
+                              {formatValue(oldValue)}
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <span className="text-xs text-muted-foreground">New Value:</span>
+                            <div className="text-green-600 font-mono bg-green-50 dark:bg-green-950/20 p-2 rounded border">
+                              {formatValue(newValue)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+          
+          {/* Fallback to old changes format if new format not available */}
+          {!log.old_values && !log.new_values && log.changes && Object.keys(log.changes).length > 0 && (
             <>
               <Separator />
               <div className="space-y-4">
