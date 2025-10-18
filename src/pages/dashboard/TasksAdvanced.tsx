@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminLayout from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -132,8 +131,7 @@ const TasksAdvanced = () => {
   };
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <h1 className="text-4xl font-bold">Tasks</h1>
@@ -244,7 +242,6 @@ const TasksAdvanced = () => {
           currentUserId={currentUserId}
         />
       </div>
-    </AdminLayout>
   );
 };
 
