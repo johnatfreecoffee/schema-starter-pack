@@ -35,7 +35,7 @@ const SettingsTabs = () => {
               <Link key={tab.value} to={`/dashboard/settings/${tab.value}`}>
                 <TabsTrigger
                   value={tab.value}
-                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary whitespace-nowrap"
+                  className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"
                 >
                   {tab.label}
                 </TabsTrigger>
