@@ -494,7 +494,7 @@ const CompanySettings = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="address_unit">Apartment / Unit Number</Label>
+                    <Label htmlFor="address_unit">Unit/Suite</Label>
                     <Input
                       id="address_unit"
                       value={formData.address_unit}
