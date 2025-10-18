@@ -164,7 +164,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
   const DesktopSidebar = () => (
     <aside 
       className={cn(
-        "hidden md:flex flex-col border-r bg-background transition-all duration-300 sticky top-0 h-screen",
+        "hidden md:flex flex-col border-r bg-background transition-all duration-300",
         desktopSidebarCollapsed ? "w-16" : "w-60"
       )}
     >
