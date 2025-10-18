@@ -66,7 +66,29 @@ const CompanySettings = () => {
   useEffect(() => {
     if (company) {
       // Parse existing address if it exists
-      const addressParts = company.address ? company.address.split('\n') : [];
+      let addressStreet = '';
+      let addressUnit = '';
+      let addressCity = '';
+      let addressState = '';
+      let addressZip = '';
+      
+      if (company.address) {
+        // Try to parse the combined address: "123 Main St, Unit 100, City, ST, 12345"
+        const parts = company.address.split(',').map(p => p.trim());
+        
+        if (parts.length >= 1) addressStreet = parts[0];
+        
+        // Check if second part contains "Unit" or "Suite"
+        let cityIndex = 1;
+        if (parts.length >= 2 && (parts[1].toLowerCase().includes('unit') || parts[1].toLowerCase().includes('suite'))) {
+          addressUnit = parts[1].replace(/^(unit|suite)\s*/i, '');
+          cityIndex = 2;
+        }
+        
+        if (parts.length > cityIndex) addressCity = parts[cityIndex];
+        if (parts.length > cityIndex + 1) addressState = parts[cityIndex + 1];
+        if (parts.length > cityIndex + 2) addressZip = parts[cityIndex + 2];
+      }
       
       setFormData({
         business_name: company.business_name || '',
@@ -74,11 +96,11 @@ const CompanySettings = () => {
         phone: formatPhoneNumber(company.phone || ''),
         email: company.email || '',
         address: company.address || '',
-        address_street: addressParts[0] || '',
-        address_unit: '',
-        address_city: '',
-        address_state: '',
-        address_zip: '',
+        address_street: addressStreet,
+        address_unit: addressUnit,
+        address_city: addressCity,
+        address_state: addressState,
+        address_zip: addressZip,
         description: company.description || '',
         years_experience: company.years_experience || 0,
         website_url: company.website_url || '',
@@ -302,7 +324,30 @@ const CompanySettings = () => {
 
   const handleReset = () => {
     if (company) {
-      const addressParts = company.address ? company.address.split('\n') : [];
+      // Parse existing address if it exists
+      let addressStreet = '';
+      let addressUnit = '';
+      let addressCity = '';
+      let addressState = '';
+      let addressZip = '';
+      
+      if (company.address) {
+        // Try to parse the combined address: "123 Main St, Unit 100, City, ST, 12345"
+        const parts = company.address.split(',').map(p => p.trim());
+        
+        if (parts.length >= 1) addressStreet = parts[0];
+        
+        // Check if second part contains "Unit" or "Suite"
+        let cityIndex = 1;
+        if (parts.length >= 2 && (parts[1].toLowerCase().includes('unit') || parts[1].toLowerCase().includes('suite'))) {
+          addressUnit = parts[1].replace(/^(unit|suite)\s*/i, '');
+          cityIndex = 2;
+        }
+        
+        if (parts.length > cityIndex) addressCity = parts[cityIndex];
+        if (parts.length > cityIndex + 1) addressState = parts[cityIndex + 1];
+        if (parts.length > cityIndex + 2) addressZip = parts[cityIndex + 2];
+      }
       
       setFormData({
         business_name: company.business_name || '',
@@ -310,11 +355,11 @@ const CompanySettings = () => {
         phone: formatPhoneNumber(company.phone || ''),
         email: company.email || '',
         address: company.address || '',
-        address_street: addressParts[0] || '',
-        address_unit: '',
-        address_city: '',
-        address_state: '',
-        address_zip: '',
+        address_street: addressStreet,
+        address_unit: addressUnit,
+        address_city: addressCity,
+        address_state: addressState,
+        address_zip: addressZip,
         description: company.description || '',
         years_experience: company.years_experience || 0,
         website_url: company.website_url || '',
