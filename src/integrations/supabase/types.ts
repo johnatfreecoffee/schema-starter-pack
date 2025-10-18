@@ -598,6 +598,11 @@ export type Database = {
           document_payment_instructions: string | null
           document_terms: string | null
           email: string
+          email_from_address: string | null
+          email_from_name: string | null
+          email_notifications_enabled: boolean | null
+          email_reply_to: string | null
+          email_signature: string | null
           facebook_url: string | null
           icon_url: string | null
           id: string
@@ -633,6 +638,11 @@ export type Database = {
           document_payment_instructions?: string | null
           document_terms?: string | null
           email: string
+          email_from_address?: string | null
+          email_from_name?: string | null
+          email_notifications_enabled?: boolean | null
+          email_reply_to?: string | null
+          email_signature?: string | null
           facebook_url?: string | null
           icon_url?: string | null
           id?: string
@@ -668,6 +678,11 @@ export type Database = {
           document_payment_instructions?: string | null
           document_terms?: string | null
           email?: string
+          email_from_address?: string | null
+          email_from_name?: string | null
+          email_notifications_enabled?: boolean | null
+          email_reply_to?: string | null
+          email_signature?: string | null
           facebook_url?: string | null
           icon_url?: string | null
           id?: string
@@ -885,6 +900,7 @@ export type Database = {
           is_active: boolean | null
           name: string
           subject: string
+          trigger_type: string | null
           updated_at: string | null
           updated_by: string | null
           variables: Json | null
@@ -898,6 +914,7 @@ export type Database = {
           is_active?: boolean | null
           name: string
           subject: string
+          trigger_type?: string | null
           updated_at?: string | null
           updated_by?: string | null
           variables?: Json | null
@@ -911,6 +928,7 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           subject?: string
+          trigger_type?: string | null
           updated_at?: string | null
           updated_by?: string | null
           variables?: Json | null

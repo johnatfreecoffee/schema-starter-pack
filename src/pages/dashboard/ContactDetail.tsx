@@ -10,8 +10,10 @@ import NotesSection from '@/components/admin/notes/NotesSection';
 import ActivityFeed from '@/components/admin/ActivityFeed';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Edit, Building2, Mail, Phone, Smartphone, Briefcase, FileText } from 'lucide-react';
+import { ArrowLeft, Edit, Building2, Mail, Phone, Smartphone, Briefcase, FileText, Send } from 'lucide-react';
 import { EntityActivityTab } from '@/components/admin/EntityActivityTab';
+import { SendEmailModal } from '@/components/admin/email/SendEmailModal';
+import EmailHistory from '@/components/admin/email/EmailHistory';
 
 const ContactDetail = () => {
   const { id } = useParams();
@@ -22,6 +24,7 @@ const ContactDetail = () => {
   const [account, setAccount] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showContactForm, setShowContactForm] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   useEffect(() => {
     fetchContactData();
@@ -106,16 +109,23 @@ const ContactDetail = () => {
               )}
             </div>
           </div>
-          <Button onClick={() => setShowContactForm(true)}>
-            <Edit className="h-4 w-4 mr-2" />
-            Edit Contact
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setShowEmailModal(true)}>
+              <Send className="h-4 w-4 mr-2" />
+              Send Email
+            </Button>
+            <Button onClick={() => setShowContactForm(true)}>
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Contact
+            </Button>
+          </div>
         </div>
 
         <Tabs defaultValue="details" className="space-y-4">
           <TabsList>
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="addresses">Addresses</TabsTrigger>
+            <TabsTrigger value="emails">Emails</TabsTrigger>
             <TabsTrigger value="notes">Notes</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
@@ -220,6 +230,10 @@ const ContactDetail = () => {
             />
           </TabsContent>
 
+          <TabsContent value="emails">
+            <EmailHistory entityType="contact" entityId={id!} />
+          </TabsContent>
+
           <TabsContent value="notes">
             <NotesSection entityType="account" entityId={id!} />
           </TabsContent>
@@ -236,6 +250,15 @@ const ContactDetail = () => {
         accountId={contact.account_id}
         contact={contact}
         onSuccess={fetchContactData}
+      />
+
+      <SendEmailModal
+        open={showEmailModal}
+        onOpenChange={setShowEmailModal}
+        entityType="contact"
+        entityId={id!}
+        recipientEmail={contact.email}
+        recipientName={`${contact.first_name} ${contact.last_name}`}
       />
     </AdminLayout>
   );

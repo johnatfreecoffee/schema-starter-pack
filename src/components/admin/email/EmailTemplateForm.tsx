@@ -46,6 +46,7 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
   const [subject, setSubject] = useState(template?.subject || '');
   const [body, setBody] = useState(template?.body || '');
   const [category, setCategory] = useState(template?.category || 'custom');
+  const [triggerType, setTriggerType] = useState(template?.trigger_type || 'manual');
   const [selectedVariables, setSelectedVariables] = useState<string[]>(
     template?.variables || []
   );
@@ -74,6 +75,7 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
         subject,
         body,
         category,
+        trigger_type: triggerType,
         variables: selectedVariables,
         updated_by: user?.id,
         updated_at: new Date().toISOString()
@@ -180,6 +182,27 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="trigger">Trigger Type *</Label>
+        <Select value={triggerType} onValueChange={setTriggerType}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="manual">Manual (No automatic trigger)</SelectItem>
+            <SelectItem value="lead_created">Lead Created</SelectItem>
+            <SelectItem value="lead_status_changed">Lead Status Changed</SelectItem>
+            <SelectItem value="appointment_scheduled">Appointment Scheduled</SelectItem>
+            <SelectItem value="appointment_reminder">Appointment Reminder (24h before)</SelectItem>
+            <SelectItem value="quote_sent">Quote Sent</SelectItem>
+            <SelectItem value="quote_accepted">Quote Accepted</SelectItem>
+            <SelectItem value="invoice_sent">Invoice Sent</SelectItem>
+            <SelectItem value="invoice_overdue">Invoice Overdue</SelectItem>
+            <SelectItem value="project_status_changed">Project Status Changed</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="space-y-2">

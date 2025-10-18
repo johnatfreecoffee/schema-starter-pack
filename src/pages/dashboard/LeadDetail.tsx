@@ -13,6 +13,8 @@ import NotesSection from '@/components/admin/notes/NotesSection';
 import ActivityFeed from '@/components/admin/ActivityFeed';
 import { CRUDLogger } from '@/lib/crudLogger';
 import { EntityActivityTab } from '@/components/admin/EntityActivityTab';
+import { SendEmailModal } from '@/components/admin/email/SendEmailModal';
+import EmailHistory from '@/components/admin/email/EmailHistory';
 import { 
   ArrowLeft, 
   Mail, 
@@ -26,7 +28,8 @@ import {
   MapPin,
   Calendar,
   User,
-  Loader2
+  Loader2,
+  Send
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import {
@@ -58,6 +61,7 @@ const LeadDetail = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   useEffect(() => {
     loadLead();
@@ -248,6 +252,7 @@ const LeadDetail = () => {
         <Tabs defaultValue="details" className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="emails">Emails</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
 
@@ -354,6 +359,10 @@ const LeadDetail = () => {
                       <Mail className="mr-2 h-4 w-4" />
                       Email
                     </a>
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setShowEmailModal(true)}>
+                    <Send className="mr-2 h-4 w-4" />
+                    Send Template
                   </Button>
                 </div>
                 <div className="flex items-center justify-between">
@@ -511,6 +520,10 @@ const LeadDetail = () => {
         </div>
           </TabsContent>
 
+          <TabsContent value="emails">
+            <EmailHistory entityType="lead" entityId={id!} />
+          </TabsContent>
+
           <TabsContent value="activity">
             <EntityActivityTab entityType="lead" entityId={id!} />
           </TabsContent>
@@ -538,6 +551,15 @@ const LeadDetail = () => {
           lead={lead}
         />
       )}
+
+      <SendEmailModal
+        open={showEmailModal}
+        onOpenChange={setShowEmailModal}
+        entityType="lead"
+        entityId={id!}
+        recipientEmail={lead.email}
+        recipientName={`${lead.first_name} ${lead.last_name}`}
+      />
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>

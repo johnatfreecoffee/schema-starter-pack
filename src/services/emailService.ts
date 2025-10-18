@@ -125,15 +125,21 @@ export class EmailService {
 
   /**
    * Replace template variables with actual values
+   * Handles missing data gracefully by replacing with empty string
    */
   static replaceVariables(content: string, variables: TemplateVariables): string {
     let result = content;
 
     Object.keys(variables).forEach(key => {
-      const value = variables[key] || '';
+      const value = variables[key];
+      // Handle missing or undefined values gracefully
+      const safeValue = value !== null && value !== undefined ? String(value) : '';
       const regex = new RegExp(`{{${key}}}`, 'g');
-      result = result.replace(regex, String(value));
+      result = result.replace(regex, safeValue);
     });
+
+    // Replace any remaining unreplaced variables with empty string
+    result = result.replace(/\{\{[^}]+\}\}/g, '');
 
     return result;
   }

@@ -2,8 +2,7 @@ import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { GlobalLeadFormModal } from "@/components/lead-form/GlobalLeadFormModal";
 import { useCacheWarming } from "@/hooks/useCacheWarming";
 import AdminLayout from "./components/layout/AdminLayout";
@@ -53,6 +52,7 @@ import Analytics from "./pages/dashboard/Analytics";
 import QATesting from "./pages/dashboard/settings/QATesting";
 import PageRegenerator from "./pages/dashboard/PageRegenerator";
 import EmailTemplates from "./pages/dashboard/settings/EmailTemplates";
+import EmailSettings from "./pages/dashboard/settings/EmailSettings";
 import Notifications from "./pages/dashboard/settings/Notifications";
 import PerformanceSettings from "./pages/dashboard/settings/Performance";
 import BackupManagement from "./pages/dashboard/settings/BackupManagement";
@@ -97,8 +97,6 @@ import CannedResponses from "./pages/dashboard/CannedResponses";
 import TicketTemplates from "./pages/dashboard/TicketTemplates";
 import AutoAssignment from "./pages/dashboard/AutoAssignment";
 import SystemHealth from "./pages/dashboard/SystemHealth";
-
-const queryClient = new QueryClient();
 
 const AppContent = () => {
   // Warm cache on app initialization
@@ -188,6 +186,7 @@ const AppContent = () => {
             <Route path="settings/static-pages" element={<StaticPages />} />
             <Route path="settings/form-fields" element={<FormFields />} />
             <Route path="settings/email-templates" element={<EmailTemplates />} />
+            <Route path="settings/email-settings" element={<EmailSettings />} />
             <Route path="settings/notifications" element={<Notifications />} />
             <Route path="settings/qa-testing" element={<QATesting />} />
             <Route path="settings/performance" element={<PerformanceSettings />} />
@@ -210,17 +209,17 @@ const AppContent = () => {
           {/* Catch-all */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
-    </div>
-  );
-};
+      </div>
+    );
+  };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AppContent />
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+  const App = () => {
+    return (
+      <TooltipProvider>
+        <AppContent />
+        <GlobalLeadFormModal />
+      </TooltipProvider>
+    );
+  };
 
-export default App;
+  export default App;
