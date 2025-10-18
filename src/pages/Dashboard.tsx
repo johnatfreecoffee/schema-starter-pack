@@ -1,4 +1,3 @@
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import DashboardActivityWidget from '@/components/admin/DashboardActivityWidget';
 import { ReviewsAnalyticsWidget } from '@/components/admin/ReviewsAnalyticsWidget';
@@ -8,8 +7,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   
   return (
-    <AdminLayout>
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-6">Dashboard</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
@@ -89,7 +87,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    </AdminLayout>
   );
 };
 

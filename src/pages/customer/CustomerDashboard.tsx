@@ -1,4 +1,3 @@
-import CustomerLayout from '@/components/layout/CustomerLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -87,17 +86,14 @@ const CustomerDashboard = () => {
 
   if (loading) {
     return (
-      <CustomerLayout>
-        <div className="flex items-center justify-center py-12">
-          <p className="text-muted-foreground">Loading your dashboard...</p>
-        </div>
-      </CustomerLayout>
+      <div className="flex items-center justify-center py-12">
+        <p className="text-muted-foreground">Loading your dashboard...</p>
+      </div>
     );
   }
 
   return (
-    <CustomerLayout>
-      <div className="space-y-6">
+    <div className="container mx-auto px-4 py-6 space-y-6">
         {/* Welcome Section */}
         <div>
           <h1 className="text-3xl font-bold">Welcome Back!</h1>
@@ -195,8 +191,7 @@ const CustomerDashboard = () => {
 
         {/* Recent Payments Widget */}
         <RecentPayments />
-      </div>
-    </CustomerLayout>
+    </div>
   );
 };
 

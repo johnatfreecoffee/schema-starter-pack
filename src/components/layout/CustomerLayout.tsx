@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useNavigate, Link, useLocation, Outlet } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
@@ -22,10 +22,10 @@ import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { cn } from '@/lib/utils';
 
 interface CustomerLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
-const CustomerLayout = ({ children }: CustomerLayoutProps) => {
+const CustomerLayout = ({ children }: CustomerLayoutProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [session, setSession] = useState<Session | null>(null);
@@ -193,7 +193,7 @@ const CustomerLayout = ({ children }: CustomerLayoutProps) => {
 
         {/* Main Content */}
         <main className="flex-1 pb-20 lg:pb-4">
-          {children}
+          {children || <Outlet />}
         </main>
       </div>
 

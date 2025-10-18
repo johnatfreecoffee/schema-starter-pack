@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useNavigate, Link, useLocation, Outlet } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session } from '@supabase/supabase-js';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -42,10 +42,10 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
 interface AdminLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
-const AdminLayout = ({ children }: AdminLayoutProps) => {
+const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [session, setSession] = useState<Session | null>(null);
@@ -284,7 +284,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 
         {/* Main Content */}
         <main className="flex-1 pb-20 md:pb-4 overflow-auto">
-          {children}
+          {children || <Outlet />}
         </main>
       </div>
 

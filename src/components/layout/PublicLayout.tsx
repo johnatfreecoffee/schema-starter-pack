@@ -1,14 +1,15 @@
 import { ReactNode, useEffect, useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session } from '@supabase/supabase-js';
 import Header from './Header';
 import Footer from './Footer';
 
 interface PublicLayoutProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
-const PublicLayout = ({ children }: PublicLayoutProps) => {
+const PublicLayout = ({ children }: PublicLayoutProps = {}) => {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
@@ -27,7 +28,7 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
     <div className="flex flex-col min-h-screen">
       <Header session={session} />
       <main className="flex-1">
-        {children}
+        {children || <Outlet />}
       </main>
       <Footer />
     </div>

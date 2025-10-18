@@ -6,6 +6,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { GlobalLeadFormModal } from "@/components/lead-form/GlobalLeadFormModal";
 import { useCacheWarming } from "@/hooks/useCacheWarming";
+import AdminLayout from "./components/layout/AdminLayout";
+import CustomerLayout from "./components/layout/CustomerLayout";
+import PublicLayout from "./components/layout/PublicLayout";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -109,102 +112,102 @@ const AppContent = () => {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/services/:serviceSlug" element={<ServiceOverviewPage />} />
-          <Route path="/services/:serviceSlug/:citySlug" element={<GeneratedPage />} />
-          <Route path="/about-us" element={<AboutUs />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/reviews" element={<ReviewsPage />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/accept-invite" element={<AcceptInvite />} />
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/services/:serviceSlug" element={<ServiceOverviewPage />} />
+            <Route path="/services/:serviceSlug/:citySlug" element={<GeneratedPage />} />
+            <Route path="/about-us" element={<AboutUs />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/reviews" element={<ReviewsPage />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/accept-invite" element={<AcceptInvite />} />
+            <Route path="/:slug" element={<StaticPage />} />
+          </Route>
           
           {/* Customer Portal Routes */}
           <Route path="/customer/login" element={<CustomerAuth />} />
-          <Route path="/customer/dashboard" element={<CustomerDashboard />} />
-          <Route path="/customer/profile" element={<CustomerProfile />} />
-          <Route path="/customer/projects" element={<CustomerProjects />} />
-          <Route path="/customer/projects/:id" element={<CustomerProjectDetail />} />
-          <Route path="/customer/appointments" element={<CustomerAppointments />} />
-          <Route path="/customer/invoices" element={<CustomerInvoices />} />
-          <Route path="/customer/support" element={<CustomerSupport />} />
-          <Route path="/customer/support/new" element={<CustomerSubmitTicket />} />
-          <Route path="/customer/support/:id" element={<CustomerTicketDetail />} />
+          <Route path="/customer" element={<CustomerLayout />}>
+            <Route path="dashboard" element={<CustomerDashboard />} />
+            <Route path="profile" element={<CustomerProfile />} />
+            <Route path="projects" element={<CustomerProjects />} />
+            <Route path="projects/:id" element={<CustomerProjectDetail />} />
+            <Route path="appointments" element={<CustomerAppointments />} />
+            <Route path="invoices" element={<CustomerInvoices />} />
+            <Route path="support" element={<CustomerSupport />} />
+            <Route path="support/new" element={<CustomerSubmitTicket />} />
+            <Route path="support/:id" element={<CustomerTicketDetail />} />
+          </Route>
           <Route path="/portal/submit-review" element={<CustomerSubmitReview />} />
           <Route path="/portal/my-reviews" element={<CustomerMyReviews />} />
           
           {/* Dashboard Routes */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/analytics" element={<Analytics />} />
-          <Route path="/dashboard/team" element={<Team />} />
-          <Route path="/dashboard/import" element={<Import />} />
-          <Route path="/dashboard/import/history" element={<ImportHistory />} />
-          <Route path="/dashboard/leads" element={<Leads />} />
-          <Route path="/dashboard/leads/:id" element={<LeadDetail />} />
-          <Route path="/dashboard/accounts" element={<Accounts />} />
-          <Route path="/dashboard/accounts/:id" element={<AccountDetail />} />
-          <Route path="/dashboard/contacts" element={<Contacts />} />
-          <Route path="/dashboard/contacts/:id" element={<ContactDetail />} />
-          <Route path="/dashboard/projects/:id" element={<ProjectDetail />} />
-          <Route path="/dashboard/tasks" element={<TasksAdvanced />} />
-          <Route path="/dashboard/tasks/:id" element={<TaskDetail />} />
-          <Route path="/dashboard/appointments" element={<AppointmentsAdvanced />} />
-          <Route path="/dashboard/appointments/:id" element={<AppointmentDetail />} />
-          <Route path="/dashboard/calendars" element={<AppointmentsAdvanced />} />
-          <Route path="/dashboard/projects" element={<Projects />} />
-          <Route path="/dashboard/money" element={<MoneyAdvanced />} />
-          <Route path="/dashboard/quotes/:id" element={<QuoteDetail />} />
-          <Route path="/dashboard/invoices/:id" element={<InvoiceDetail />} />
-          <Route path="/dashboard/logs" element={<Logs />} />
-          <Route path="/dashboard/settings" element={<Settings />} />
-          <Route path="/dashboard/reports" element={<Reports />} />
-          <Route path="/dashboard/reports/new" element={<ReportBuilder />} />
-          <Route path="/dashboard/reports/:id" element={<ReportDetail />} />
-          <Route path="/dashboard/reviews" element={<Reviews />} />
-          <Route path="/dashboard/reviews/new" element={<ReviewNew />} />
-          <Route path="/dashboard/reviews/:id" element={<ReviewDetail />} />
-          <Route path="/dashboard/tickets" element={<Tickets />} />
-          <Route path="/dashboard/tickets/new" element={<TicketNew />} />
-          <Route path="/dashboard/tickets/:id" element={<TicketDetail />} />
-          <Route path="/dashboard/settings/canned-responses" element={<CannedResponses />} />
-          <Route path="/dashboard/settings/ticket-templates" element={<TicketTemplates />} />
-          <Route path="/dashboard/settings/auto-assignment" element={<AutoAssignment />} />
-          
-          {/* Settings Sub-routes (Admin Only) */}
-          <Route path="/dashboard/settings/company" element={<CompanySettings />} />
-          <Route path="/dashboard/settings/ai-training" element={<AITraining />} />
-          <Route path="/dashboard/settings/knowledge-base" element={<KnowledgeBase />} />
-          <Route path="/dashboard/settings/site-settings" element={<SiteSettings />} />
-          <Route path="/dashboard/settings/services" element={<ServicesSettings />} />
-          <Route path="/dashboard/settings/service-areas" element={<ServiceAreas />} />
-          <Route path="/dashboard/settings/templates" element={<Templates />} />
-          <Route path="/dashboard/settings/static-pages" element={<StaticPages />} />
-          <Route path="/dashboard/settings/form-fields" element={<FormFields />} />
-          <Route path="/dashboard/settings/email-templates" element={<EmailTemplates />} />
-          <Route path="/dashboard/settings/notifications" element={<Notifications />} />
-          <Route path="/dashboard/settings/qa-testing" element={<QATesting />} />
-          <Route path="/dashboard/settings/performance" element={<PerformanceSettings />} />
-          <Route path="/dashboard/settings/backup-management" element={<BackupManagement />} />
-          <Route path="/dashboard/email-queue" element={<EmailQueue />} />
-          <Route path="/dashboard/regenerate-pages" element={<PageRegenerator />} />
+          <Route path="/dashboard" element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="team" element={<Team />} />
+            <Route path="import" element={<Import />} />
+            <Route path="import/history" element={<ImportHistory />} />
+            <Route path="leads" element={<Leads />} />
+            <Route path="leads/:id" element={<LeadDetail />} />
+            <Route path="accounts" element={<Accounts />} />
+            <Route path="accounts/:id" element={<AccountDetail />} />
+            <Route path="contacts" element={<Contacts />} />
+            <Route path="contacts/:id" element={<ContactDetail />} />
+            <Route path="projects" element={<Projects />} />
+            <Route path="projects/:id" element={<ProjectDetail />} />
+            <Route path="tasks" element={<TasksAdvanced />} />
+            <Route path="tasks/:id" element={<TaskDetail />} />
+            <Route path="appointments" element={<AppointmentsAdvanced />} />
+            <Route path="appointments/:id" element={<AppointmentDetail />} />
+            <Route path="calendars" element={<AppointmentsAdvanced />} />
+            <Route path="money" element={<MoneyAdvanced />} />
+            <Route path="quotes/:id" element={<QuoteDetail />} />
+            <Route path="invoices/:id" element={<InvoiceDetail />} />
+            <Route path="logs" element={<Logs />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="reports/new" element={<ReportBuilder />} />
+            <Route path="reports/:id" element={<ReportDetail />} />
+            <Route path="reviews" element={<Reviews />} />
+            <Route path="reviews/new" element={<ReviewNew />} />
+            <Route path="reviews/:id" element={<ReviewDetail />} />
+            <Route path="tickets" element={<Tickets />} />
+            <Route path="tickets/new" element={<TicketNew />} />
+            <Route path="tickets/:id" element={<TicketDetail />} />
+            <Route path="settings/canned-responses" element={<CannedResponses />} />
+            <Route path="settings/ticket-templates" element={<TicketTemplates />} />
+            <Route path="settings/auto-assignment" element={<AutoAssignment />} />
+            <Route path="settings/company" element={<CompanySettings />} />
+            <Route path="settings/ai-training" element={<AITraining />} />
+            <Route path="settings/knowledge-base" element={<KnowledgeBase />} />
+            <Route path="settings/site-settings" element={<SiteSettings />} />
+            <Route path="settings/services" element={<ServicesSettings />} />
+            <Route path="settings/service-areas" element={<ServiceAreas />} />
+            <Route path="settings/templates" element={<Templates />} />
+            <Route path="settings/static-pages" element={<StaticPages />} />
+            <Route path="settings/form-fields" element={<FormFields />} />
+            <Route path="settings/email-templates" element={<EmailTemplates />} />
+            <Route path="settings/notifications" element={<Notifications />} />
+            <Route path="settings/qa-testing" element={<QATesting />} />
+            <Route path="settings/performance" element={<PerformanceSettings />} />
+            <Route path="settings/backup-management" element={<BackupManagement />} />
+            <Route path="settings/seo" element={<SEO />} />
+            <Route path="email-queue" element={<EmailQueue />} />
+            <Route path="regenerate-pages" element={<PageRegenerator />} />
+            <Route path="system-health" element={<SystemHealth />} />
+          </Route>
           
           {/* Workflow Automation Routes */}
-          <Route path="/admin/automation/workflows" element={<Workflows />} />
-          <Route path="/admin/automation/workflows/:id" element={<WorkflowBuilder />} />
-          <Route path="/admin/automation/monitor" element={<WorkflowMonitor />} />
-          <Route path="/admin/automation/templates" element={<WorkflowTemplates />} />
-          <Route path="/admin/automation/testing" element={<WorkflowTesting />} />
+          <Route path="/admin/automation" element={<AdminLayout />}>
+            <Route path="workflows" element={<Workflows />} />
+            <Route path="workflows/:id" element={<WorkflowBuilder />} />
+            <Route path="monitor" element={<WorkflowMonitor />} />
+            <Route path="templates" element={<WorkflowTemplates />} />
+            <Route path="testing" element={<WorkflowTesting />} />
+          </Route>
           
-          {/* SEO Management Routes */}
-          <Route path="/dashboard/settings/seo" element={<SEO />} />
-          
-          {/* System Health Routes */}
-          <Route path="/dashboard/system-health" element={<SystemHealth />} />
-          
-          {/* Static Pages (must be after all other routes) */}
-          <Route path="/:slug" element={<StaticPage />} />
-          
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          {/* Catch-all */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
