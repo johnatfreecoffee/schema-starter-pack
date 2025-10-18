@@ -3,7 +3,6 @@ import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { cacheInvalidation } from '@/lib/cacheInvalidation';
-import AdminLayout from '@/components/layout/AdminLayout';
 import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -310,7 +309,7 @@ const CompanySettings = () => {
   };
 
   return (
-    <AdminLayout>
+    <>
       <SettingsTabs />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-6">Company Settings</h1>
@@ -742,7 +741,7 @@ const CompanySettings = () => {
           </Button>
         </div>
       </div>
-    </AdminLayout>
+    </>
   );
 };
 

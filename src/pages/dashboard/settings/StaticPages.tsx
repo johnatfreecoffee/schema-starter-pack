@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import AdminLayout from '@/components/layout/AdminLayout';
 import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -80,7 +79,7 @@ const StaticPages = () => {
   };
 
   return (
-    <AdminLayout>
+    <>
       <SettingsTabs />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
@@ -202,7 +201,7 @@ const StaticPages = () => {
           />
         )}
       </div>
-    </AdminLayout>
+    </>
   );
 };
 

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -130,7 +129,7 @@ const Performance = () => {
   const performance = stats ? getPerformanceGrade(stats.hitRate) : { grade: 'N/A', color: 'text-gray-600' };
 
   return (
-    <AdminLayout>
+    <>
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -453,7 +452,7 @@ const Performance = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </AdminLayout>
+    </>
   );
 };
 

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import AdminLayout from '@/components/layout/AdminLayout';
 import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -122,7 +121,7 @@ const EmailTemplates = () => {
   });
 
   return (
-    <AdminLayout>
+    <>
       <SettingsTabs />
       <div className="container mx-auto px-4 py-8 space-y-6">
         <div className="flex justify-between items-center">
@@ -293,7 +292,7 @@ const EmailTemplates = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </AdminLayout>
+    </>
   );
 };
 

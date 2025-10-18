@@ -1,4 +1,3 @@
-import AdminLayout from '@/components/layout/AdminLayout';
 import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SystemHealthCheck } from '@/components/qa/SystemHealthCheck';
@@ -9,7 +8,7 @@ import { PreLaunchChecklist } from '@/components/qa/PreLaunchChecklist';
 
 const QATesting = () => {
   return (
-    <AdminLayout>
+    <>
       <SettingsTabs />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
@@ -49,7 +48,7 @@ const QATesting = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </AdminLayout>
+    </>
   );
 };
 

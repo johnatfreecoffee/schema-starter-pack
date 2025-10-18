@@ -1,6 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SettingsTabs from '@/components/layout/SettingsTabs';
-import AdminLayout from '@/components/layout/AdminLayout';
 import BackupTab from '@/components/admin/backup/BackupTab';
 import RestoreTab from '@/components/admin/backup/RestoreTab';
 import ArchiveTab from '@/components/admin/backup/ArchiveTab';
@@ -10,7 +9,7 @@ import ExportImportTab from '@/components/admin/backup/ExportImportTab';
 
 const BackupManagement = () => {
   return (
-    <AdminLayout>
+    <>
       <SettingsTabs />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
@@ -55,7 +54,7 @@ const BackupManagement = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </AdminLayout>
+    </>
   );
 };
 

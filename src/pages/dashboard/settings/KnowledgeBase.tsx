@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import AdminLayout from '@/components/layout/AdminLayout';
 import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -61,7 +60,7 @@ const KnowledgeBase = () => {
   };
 
   return (
-    <AdminLayout>
+    <>
       <SettingsTabs />
       
       <div className="container mx-auto p-6">
@@ -111,7 +110,7 @@ const KnowledgeBase = () => {
         open={showCategoryManager}
         onOpenChange={setShowCategoryManager}
       />
-    </AdminLayout>
+    </>
   );
 };
 

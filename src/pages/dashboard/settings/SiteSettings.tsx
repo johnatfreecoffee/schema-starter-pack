@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import AdminLayout from '@/components/layout/AdminLayout';
 import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
@@ -11,7 +10,7 @@ const SiteSettings = () => {
   const [activeTab, setActiveTab] = useState('header');
 
   return (
-    <AdminLayout>
+    <>
       <SettingsTabs />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-6">Site Settings</h1>
@@ -38,7 +37,7 @@ const SiteSettings = () => {
           </Tabs>
         </Card>
       </div>
-    </AdminLayout>
+    </>
   );
 };
 
