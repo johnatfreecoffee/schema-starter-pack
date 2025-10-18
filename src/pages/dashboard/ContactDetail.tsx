@@ -11,6 +11,7 @@ import ActivityFeed from '@/components/admin/ActivityFeed';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Edit, Building2, Mail, Phone, Smartphone, Briefcase, FileText } from 'lucide-react';
+import { EntityActivityTab } from '@/components/admin/EntityActivityTab';
 
 const ContactDetail = () => {
   const { id } = useParams();
@@ -224,14 +225,7 @@ const ContactDetail = () => {
           </TabsContent>
 
           <TabsContent value="activity">
-            <div className="bg-card rounded-lg border p-6">
-              <h3 className="text-lg font-semibold mb-4">Activity History</h3>
-              <ActivityFeed 
-                entityType="account" 
-                entityId={id!} 
-                limit={50}
-              />
-            </div>
+            <EntityActivityTab entityType="contact" entityId={id!} />
           </TabsContent>
         </Tabs>
       </div>

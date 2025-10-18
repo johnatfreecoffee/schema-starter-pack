@@ -18,6 +18,7 @@ import { formatDistanceToNow } from 'date-fns';
 import NotesSection from '@/components/admin/notes/NotesSection';
 import ActivityFeed from '@/components/admin/ActivityFeed';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { EntityActivityTab } from '@/components/admin/EntityActivityTab';
 
 const AccountDetail = () => {
   const { id } = useParams();
@@ -259,6 +260,7 @@ const AccountDetail = () => {
             <TabsTrigger value="projects">Projects ({projects.length})</TabsTrigger>
             <TabsTrigger value="tasks">Tasks ({tasks.length})</TabsTrigger>
             <TabsTrigger value="notes">Notes ({notes.length})</TabsTrigger>
+            <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -501,14 +503,7 @@ const AccountDetail = () => {
 
           {/* Activity Tab */}
           <TabsContent value="activity">
-            <div className="bg-card rounded-lg border p-6">
-              <h3 className="text-lg font-semibold mb-4">Activity History</h3>
-              <ActivityFeed 
-                entityType="account" 
-                entityId={id!} 
-                limit={50}
-              />
-            </div>
+            <EntityActivityTab entityType="account" entityId={id!} />
           </TabsContent>
         </Tabs>
       </div>

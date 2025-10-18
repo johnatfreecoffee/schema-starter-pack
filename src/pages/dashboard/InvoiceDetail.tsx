@@ -12,6 +12,7 @@ import DocumentActions from "@/components/admin/money/DocumentActions";
 import ActivityFeed from "@/components/admin/ActivityFeed";
 import InvoiceStatusBadge from "@/components/admin/money/InvoiceStatusBadge";
 import { format } from "date-fns";
+import { EntityActivityTab } from "@/components/admin/EntityActivityTab";
 import {
   Table,
   TableBody,
@@ -257,14 +258,7 @@ const InvoiceDetail = () => {
           </TabsContent>
 
           <TabsContent value="activity" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Activity History</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ActivityFeed entityType="invoice" entityId={id!} limit={50} />
-              </CardContent>
-            </Card>
+            <EntityActivityTab entityType="invoice" entityId={id!} />
           </TabsContent>
         </Tabs>
       </div>

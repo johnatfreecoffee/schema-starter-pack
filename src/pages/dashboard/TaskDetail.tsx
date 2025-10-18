@@ -13,6 +13,7 @@ import NotesSection from "@/components/admin/notes/NotesSection";
 import TaskForm from "@/components/admin/tasks/TaskForm";
 import { format } from "date-fns";
 import { CRUDLogger } from "@/lib/crudLogger";
+import { EntityActivityTab } from "@/components/admin/EntityActivityTab";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -212,6 +213,7 @@ const TaskDetail = () => {
           <TabsList>
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="notes">Notes</TabsTrigger>
+            <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
 
           <TabsContent value="details" className="mt-6">
@@ -276,6 +278,10 @@ const TaskDetail = () => {
 
           <TabsContent value="notes" className="mt-6">
             <NotesSection entityType="task" entityId={id!} />
+          </TabsContent>
+
+          <TabsContent value="activity" className="mt-6">
+            <EntityActivityTab entityType="task" entityId={id!} />
           </TabsContent>
         </Tabs>
 

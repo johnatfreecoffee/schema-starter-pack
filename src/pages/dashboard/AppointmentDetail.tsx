@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import NotesSection from "@/components/admin/notes/NotesSection";
 import ActivityFeed from "@/components/admin/ActivityFeed";
 import { format } from "date-fns";
+import { EntityActivityTab } from "@/components/admin/EntityActivityTab";
 
 const AppointmentDetail = () => {
   const { id } = useParams();
@@ -243,14 +244,7 @@ const AppointmentDetail = () => {
           </TabsContent>
 
           <TabsContent value="activity" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Activity History</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ActivityFeed entityType="appointment" entityId={id!} limit={50} />
-              </CardContent>
-            </Card>
+            <EntityActivityTab entityType="appointment" entityId={id!} />
           </TabsContent>
         </Tabs>
       </div>

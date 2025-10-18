@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LeadStatusBadge } from '@/components/admin/leads/LeadStatusBadge';
 import { LeadForm } from '@/components/admin/leads/LeadForm';
 import { LeadConvert } from '@/components/admin/leads/LeadConvert';
@@ -11,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import NotesSection from '@/components/admin/notes/NotesSection';
 import ActivityFeed from '@/components/admin/ActivityFeed';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { EntityActivityTab } from '@/components/admin/EntityActivityTab';
 import { 
   ArrowLeft, 
   Mail, 
@@ -243,7 +245,14 @@ const LeadDetail = () => {
           Back to Leads
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Tabs defaultValue="details" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="activity">Activity</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="details">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Panel (70%) */}
           <div className="lg:col-span-2 space-y-6">
             {/* Lead Information Card */}
@@ -500,6 +509,12 @@ const LeadDetail = () => {
             </Card>
           </div>
         </div>
+          </TabsContent>
+
+          <TabsContent value="activity">
+            <EntityActivityTab entityType="lead" entityId={id!} />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Modals */}

@@ -18,6 +18,7 @@ import { Progress } from '@/components/ui/progress';
 import { format } from 'date-fns';
 import NotesSection from '@/components/admin/notes/NotesSection';
 import ActivityFeed from '@/components/admin/ActivityFeed';
+import { EntityActivityTab } from '@/components/admin/EntityActivityTab';
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -570,14 +571,7 @@ const ProjectDetail = () => {
           </TabsContent>
 
           <TabsContent value="activity">
-            <Card>
-              <CardHeader>
-                <CardTitle>Activity History</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ActivityFeed entityType="project" entityId={id!} limit={50} />
-              </CardContent>
-            </Card>
+            <EntityActivityTab entityType="project" entityId={id!} />
           </TabsContent>
 
           <TabsContent value="notes">
