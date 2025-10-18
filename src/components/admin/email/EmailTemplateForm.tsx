@@ -15,9 +15,7 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, Code, Eye } from 'lucide-react';
 import Editor from '@monaco-editor/react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Link from '@tiptap/extension-link';
+import GrapesEditor from './GrapesEditor';
 import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
@@ -57,19 +55,6 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
   const [isGenerating, setIsGenerating] = useState(false);
   const queryClient = useQueryClient();
 
-  const richEditor = useEditor({
-    extensions: [
-      StarterKit,
-      Link.configure({
-        openOnClick: false,
-      }),
-    ],
-    content: body,
-    onUpdate: ({ editor }) => {
-      setBody(editor.getHTML());
-    },
-  });
-
   useEffect(() => {
     if (template) {
       setName(template.name);
@@ -79,12 +64,6 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
       setSelectedVariables(template.variables || []);
     }
   }, [template]);
-
-  useEffect(() => {
-    if (richEditor && richEditor.getHTML() !== body) {
-      richEditor.commands.setContent(body);
-    }
-  }, [body, richEditor]);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -138,11 +117,7 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
 
   const insertVariableInEditor = (variable: string) => {
     const varTag = `{{${variable}}}`;
-    if (editorMode === 'visual' && richEditor) {
-      richEditor.commands.insertContent(varTag);
-    } else {
-      setBody(prev => prev + varTag);
-    }
+    setBody(prev => prev + ' ' + varTag);
     if (!selectedVariables.includes(variable)) {
       setSelectedVariables(prev => [...prev, variable]);
     }
@@ -164,12 +139,7 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
 
       if (data?.name) setName(data.name);
       if (data?.subject) setSubject(data.subject);
-      if (data?.body) {
-        setBody(data.body);
-        if (richEditor) {
-          richEditor.commands.setContent(data.body);
-        }
-      }
+      if (data?.body) setBody(data.body);
       if (data?.category) setCategory(data.category);
       
       toast.success('Template generated successfully!');
@@ -281,7 +251,7 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
         {editorMode === 'code' ? (
           <div className="border rounded-md overflow-hidden">
             <Editor
-              height="400px"
+              height="500px"
               defaultLanguage="html"
               value={body}
               onChange={(value) => setBody(value || '')}
@@ -297,51 +267,13 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
             />
           </div>
         ) : (
-          <div className="space-y-2">
-            <div className="border rounded-md p-4 min-h-[400px] prose prose-sm max-w-none bg-background">
-              <EditorContent editor={richEditor} />
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => richEditor?.chain().focus().toggleBold().run()}
-              >
-                Bold
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => richEditor?.chain().focus().toggleItalic().run()}
-              >
-                Italic
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => richEditor?.chain().focus().toggleHeading({ level: 2 }).run()}
-              >
-                Heading
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => richEditor?.chain().focus().toggleBulletList().run()}
-              >
-                List
-              </Button>
-            </div>
-          </div>
+          <GrapesEditor value={body} onChange={setBody} />
         )}
         
         <p className="text-xs text-muted-foreground">
           {editorMode === 'code' 
             ? 'Edit HTML directly with syntax highlighting' 
-            : 'Use the rich editor to format your email visually'}
+            : 'Drag and drop components, style with visual CSS tools, and build professional email templates'}
         </p>
       </div>
 

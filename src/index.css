@@ -238,44 +238,49 @@ All colors MUST be HSL.
   }
 }
 
-/* TipTap Editor Styles */
-.ProseMirror {
-  @apply focus:outline-none min-h-[300px];
+/* GrapesJS Editor Styles */
+.grapes-editor-wrapper {
+  --gjs-primary-color: hsl(var(--primary));
+  --gjs-secondary-color: hsl(var(--secondary));
+  --gjs-tertiary-color: hsl(var(--muted));
+  --gjs-quaternary-color: hsl(var(--accent));
 }
 
-.ProseMirror p {
-  @apply my-2;
+.grapes-editor-wrapper .gjs-one-bg {
+  background-color: hsl(var(--background));
 }
 
-.ProseMirror h1,
-.ProseMirror h2,
-.ProseMirror h3 {
-  @apply font-bold mt-4 mb-2;
+.grapes-editor-wrapper .gjs-two-color {
+  color: hsl(var(--foreground));
 }
 
-.ProseMirror h1 { @apply text-2xl; }
-.ProseMirror h2 { @apply text-xl; }
-.ProseMirror h3 { @apply text-lg; }
-
-.ProseMirror ul,
-.ProseMirror ol {
-  @apply pl-6 my-2;
+.grapes-editor-wrapper .gjs-three-bg {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
 }
 
-.ProseMirror ul { @apply list-disc; }
-.ProseMirror ol { @apply list-decimal; }
-
-.ProseMirror li {
-  @apply my-1;
+.grapes-editor-wrapper .gjs-four-color,
+.grapes-editor-wrapper .gjs-four-color-h:hover {
+  color: hsl(var(--primary));
 }
 
-.ProseMirror strong { @apply font-bold; }
-.ProseMirror em { @apply italic; }
-
-.ProseMirror a {
-  @apply text-primary underline;
+.grapes-editor-wrapper .gjs-btn-prim {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
 }
 
-.ProseMirror code {
-  @apply bg-muted px-1 py-0.5 rounded text-sm;
+.grapes-editor-wrapper .gjs-btn-prim:active {
+  background-color: hsl(var(--primary) / 0.9);
+}
+
+.panel__top button {
+  @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  @apply border border-input bg-background hover:bg-accent hover:text-accent-foreground;
+  @apply h-9 w-9;
+}
+
+.panel__top button svg {
+  width: 20px;
+  height: 20px;
 }
