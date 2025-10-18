@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Pencil, Plus, Trash2, MessageSquare, Send } from 'lucide-react';
+import { ArrowLeft, Pencil, Plus, Trash2, MessageSquare, Send, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import ProjectStatusBadge from '@/components/admin/projects/ProjectStatusBadge';
@@ -19,6 +19,8 @@ import { format } from 'date-fns';
 import NotesSection from '@/components/admin/notes/NotesSection';
 import ActivityFeed from '@/components/admin/ActivityFeed';
 import { EntityActivityTab } from '@/components/admin/EntityActivityTab';
+import { SendEmailModal } from '@/components/admin/email/SendEmailModal';
+import EmailHistory from '@/components/admin/email/EmailHistory';
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -36,6 +38,7 @@ const ProjectDetail = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [requestingReview, setRequestingReview] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -332,6 +335,10 @@ const ProjectDetail = () => {
                 Request Review
               </Button>
             )}
+            <Button variant="outline" onClick={() => setShowEmailModal(true)}>
+              <Mail className="mr-2 h-4 w-4" />
+              Send Email
+            </Button>
             <Button onClick={() => setIsEditFormOpen(true)}>
               <Pencil className="mr-2 h-4 w-4" />
               Edit Project
@@ -401,6 +408,7 @@ const ProjectDetail = () => {
             <TabsTrigger value="tasks">Tasks ({tasks.length})</TabsTrigger>
             <TabsTrigger value="calendar">Calendar ({events.length})</TabsTrigger>
             <TabsTrigger value="phases">Phases ({phases.length})</TabsTrigger>
+            <TabsTrigger value="emails">Emails</TabsTrigger>
             <TabsTrigger value="notes">Notes</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
@@ -602,6 +610,17 @@ const ProjectDetail = () => {
           users={users}
           currentUserId={currentUserId}
         />
+
+        {project && primaryContact && (
+          <SendEmailModal
+            open={showEmailModal}
+            onOpenChange={setShowEmailModal}
+            entityType="project"
+            entityId={project.id}
+            recipientEmail={primaryContact.email || ''}
+            recipientName={`${primaryContact.first_name} ${primaryContact.last_name}`}
+          />
+        )}
       </div>
     </AdminLayout>
   );

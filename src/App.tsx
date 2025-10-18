@@ -212,13 +212,12 @@ const AppContent = () => {
     );
   };
 
-  const App = () => {
-    return (
-      <TooltipProvider>
-        <AppContent />
-        <GlobalLeadFormModal />
-      </TooltipProvider>
-    );
-  };
+const App = () => {
+  return (
+    <TooltipProvider>
+      <AppContent />
+    </TooltipProvider>
+  );
+};
 
-  export default App;
+export default App;

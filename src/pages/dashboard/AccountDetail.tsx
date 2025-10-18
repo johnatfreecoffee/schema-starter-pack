@@ -12,13 +12,15 @@ import { ContactForm } from '@/components/admin/accounts/ContactForm';
 import { AddressManager } from '@/components/admin/accounts/AddressManager';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Edit, Plus, Phone, Mail, MapPin, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit, Plus, Phone, Mail, MapPin, Trash2, Send } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { formatDistanceToNow } from 'date-fns';
 import NotesSection from '@/components/admin/notes/NotesSection';
 import ActivityFeed from '@/components/admin/ActivityFeed';
 import { CRUDLogger } from '@/lib/crudLogger';
 import { EntityActivityTab } from '@/components/admin/EntityActivityTab';
+import { SendEmailModal } from '@/components/admin/email/SendEmailModal';
+import EmailHistory from '@/components/admin/email/EmailHistory';
 
 const AccountDetail = () => {
   const { id } = useParams();
@@ -36,6 +38,7 @@ const AccountDetail = () => {
   const [showAccountForm, setShowAccountForm] = useState(false);
   const [showContactForm, setShowContactForm] = useState(false);
   const [editingContact, setEditingContact] = useState<any>(null);
+  const [showEmailModal, setShowEmailModal] = useState(false);
 
   const fetchAccountData = async () => {
     if (!id) return;
@@ -221,6 +224,10 @@ const AccountDetail = () => {
             </div>
 
             <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowEmailModal(true)}>
+                <Send className="h-4 w-4 mr-2" />
+                Send Email
+              </Button>
               <Button variant="outline" onClick={() => setShowAccountForm(true)}>
                 <Edit className="h-4 w-4 mr-2" />
                 Edit Account
@@ -257,6 +264,7 @@ const AccountDetail = () => {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="contacts">Contacts ({contacts.length})</TabsTrigger>
             <TabsTrigger value="addresses">Addresses ({addresses.length})</TabsTrigger>
+            <TabsTrigger value="emails">Emails</TabsTrigger>
             <TabsTrigger value="projects">Projects ({projects.length})</TabsTrigger>
             <TabsTrigger value="tasks">Tasks ({tasks.length})</TabsTrigger>
             <TabsTrigger value="notes">Notes ({notes.length})</TabsTrigger>
@@ -468,6 +476,11 @@ const AccountDetail = () => {
             />
           </TabsContent>
 
+          {/* Emails Tab */}
+          <TabsContent value="emails">
+            <EmailHistory entityType="account" entityId={id!} />
+          </TabsContent>
+
           {/* Projects Tab */}
           <TabsContent value="projects">
             <Card>
@@ -526,6 +539,17 @@ const AccountDetail = () => {
             fetchAccountData();
             setEditingContact(null);
           }}
+        />
+      )}
+
+      {account && primaryContact && (
+        <SendEmailModal
+          open={showEmailModal}
+          onOpenChange={setShowEmailModal}
+          entityType="account"
+          entityId={account.id}
+          recipientEmail={primaryContact.email || account.email || ''}
+          recipientName={account.account_name}
         />
       )}
     </AdminLayout>

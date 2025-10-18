@@ -16,6 +16,7 @@ const SettingsTabs = () => {
     { value: 'static-pages', label: 'Static Pages' },
     { value: 'form-fields', label: 'Form Fields' },
     { value: 'email-templates', label: 'Email Templates' },
+    { value: 'email-settings', label: 'Email Settings' },
     { value: 'canned-responses', label: 'Canned Responses' },
     { value: 'ticket-templates', label: 'Ticket Templates' },
     { value: 'auto-assignment', label: 'Auto-Assignment' },

@@ -77,6 +77,7 @@ export class EmailService {
 
   /**
    * Send email using a template (by ID or name)
+   * Includes global email signature if configured
    */
   static async sendTemplateEmail(
     templateIdOrName: string,
@@ -110,7 +111,17 @@ export class EmailService {
 
       // Replace variables in subject and body
       const subject = this.replaceVariables(template.subject, allVariables);
-      const body = this.replaceVariables(template.body, allVariables);
+      let body = this.replaceVariables(template.body, allVariables);
+
+      // Append global email signature if configured
+      const { data: company } = await supabase
+        .from('company_settings')
+        .select('email_signature')
+        .single();
+
+      if (company?.email_signature) {
+        body += `\n\n${company.email_signature}`;
+      }
 
       // Send email
       return await this.sendEmail(to, subject, body, {
