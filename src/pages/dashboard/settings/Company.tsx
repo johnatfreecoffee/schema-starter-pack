@@ -678,7 +678,7 @@ const CompanySettings = () => {
         </Tabs>
 
         {/* Action Buttons - Outside tabs, always visible */}
-        <div className="flex justify-between pt-6">
+        <div className="flex justify-between pt-6 pb-12">
           <Button variant="outline" onClick={handleReset} disabled={uploading}>
             Reset Changes
           </Button>
