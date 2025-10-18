@@ -153,8 +153,10 @@ const EmailTemplates = () => {
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
                   <SelectItem value="system">System</SelectItem>
+                  <SelectItem value="crm">CRM</SelectItem>
                   <SelectItem value="marketing">Marketing</SelectItem>
                   <SelectItem value="transactional">Transactional</SelectItem>
+                  <SelectItem value="ticket">Tickets</SelectItem>
                   <SelectItem value="custom">Custom</SelectItem>
                 </SelectContent>
               </Select>

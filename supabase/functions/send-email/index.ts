@@ -26,6 +26,11 @@ serve(async (req) => {
 
     console.log('📧 Sending email via SendGrid:', { to, subject, from });
 
+    // Determine sender email and name
+    // If no 'from' provided, use a sensible default
+    const senderEmail = from || 'noreply@yourdomain.com';
+    const senderName = 'Your Business'; // SendGrid requires a name
+
     const response = await fetch(SENDGRID_API_URL, {
       method: 'POST',
       headers: {
@@ -39,8 +44,8 @@ serve(async (req) => {
           },
         ],
         from: {
-          email: from || 'noreply@yourdomain.com',
-          name: 'Your Business Name'
+          email: senderEmail,
+          name: senderName
         },
         subject: subject,
         content: [
