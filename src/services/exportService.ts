@@ -309,7 +309,7 @@ export class ExportService {
   }
 
   /**
-   * Export module data to PDF format
+   * Export module data to PDF format with landscape orientation and text wrapping
    */
   static async exportModuleToPDF(
     data: any[],
@@ -323,18 +323,30 @@ export class ExportService {
     }
 
     try {
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      // Use LANDSCAPE orientation for better column visibility
+      const pdf = new jsPDF('l', 'mm', 'letter'); // 'l' = landscape, letter = 8.5" x 11"
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      let yPosition = 20;
+      const margin = 12.7; // 0.5 inch margins
+      const contentWidth = pageWidth - (margin * 2);
+      let yPosition = margin;
+
+      // Technical fields to exclude from PDF exports
+      const excludedFields = ['__lovable_token', 'user_id', 'company_id'];
+      
+      // Get columns and filter out technical fields
+      let exportColumns = columns || (data[0] ? Object.keys(data[0]) : []);
+      exportColumns = exportColumns.filter(col => 
+        !excludedFields.includes(col) && !col.startsWith('_')
+      );
 
       // Header
-      pdf.setFontSize(18);
+      pdf.setFontSize(16);
       pdf.setTextColor(59, 130, 246);
       pdf.text(`${moduleName} Export`, pageWidth / 2, yPosition, { align: 'center' });
       
-      yPosition += 10;
-      pdf.setFontSize(10);
+      yPosition += 8;
+      pdf.setFontSize(9);
       pdf.setTextColor(100, 100, 100);
       pdf.text(
         `Generated: ${format(new Date(), 'PPpp')}`,
@@ -343,7 +355,7 @@ export class ExportService {
         { align: 'center' }
       );
 
-      yPosition += 5;
+      yPosition += 6;
       pdf.text(
         `Total Records: ${data.length}`,
         pageWidth / 2,
@@ -351,69 +363,130 @@ export class ExportService {
         { align: 'center' }
       );
 
-      // Applied filters
-      if (filters && Object.keys(filters).length > 0) {
-        yPosition += 10;
-        pdf.setFontSize(12);
-        pdf.setTextColor(0, 0, 0);
-        pdf.text('Applied Filters:', 20, yPosition);
-        yPosition += 7;
-        
-        pdf.setFontSize(9);
-        Object.entries(filters).forEach(([key, value]) => {
-          if (yPosition > pageHeight - 20) {
-            pdf.addPage();
-            yPosition = 20;
-          }
-          pdf.text(`${key}: ${JSON.stringify(value)}`, 25, yPosition);
-          yPosition += 5;
-        });
-      }
-
       yPosition += 10;
 
-      // Data table
-      const exportColumns = columns || (data[0] ? Object.keys(data[0]) : []);
-      const maxRecords = 50; // Limit records for PDF
+      // Calculate optimal font size and column width based on number of columns
+      const numColumns = exportColumns.length;
+      let fontSize = 8;
+      if (numColumns > 15) fontSize = 6;
+      else if (numColumns > 10) fontSize = 7;
+      
+      const colWidth = contentWidth / numColumns;
+      const maxRecords = 100; // Increased from 50
       const recordsToExport = data.slice(0, maxRecords);
 
-      pdf.setFontSize(10);
+      // Helper function to wrap text within column width
+      const wrapText = (text: string, maxWidth: number): string[] => {
+        const words = text.split(' ');
+        const lines: string[] = [];
+        let currentLine = '';
+
+        words.forEach(word => {
+          const testLine = currentLine ? `${currentLine} ${word}` : word;
+          const textWidth = pdf.getTextWidth(testLine);
+          
+          if (textWidth > maxWidth - 2) {
+            if (currentLine) lines.push(currentLine);
+            currentLine = word;
+          } else {
+            currentLine = testLine;
+          }
+        });
+        
+        if (currentLine) lines.push(currentLine);
+        return lines;
+      };
+
+      // Table headers (bold)
+      pdf.setFontSize(fontSize);
+      pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(0, 0, 0);
       
-      // Table headers
-      const colWidth = (pageWidth - 40) / exportColumns.length;
       exportColumns.forEach((col, i) => {
-        pdf.text(String(col), 20 + (i * colWidth), yPosition);
+        const headerText = String(col).replace(/_/g, ' ').toUpperCase();
+        const lines = wrapText(headerText, colWidth);
+        lines.forEach((line, lineIndex) => {
+          pdf.text(line, margin + (i * colWidth), yPosition + (lineIndex * 4), { maxWidth: colWidth - 2 });
+        });
       });
-      yPosition += 7;
+      
+      yPosition += Math.max(6, exportColumns.length > 10 ? 8 : 10);
 
       // Table rows
+      pdf.setFont('helvetica', 'normal');
+      let rowIndex = 0;
+      
       recordsToExport.forEach((row) => {
-        if (yPosition > pageHeight - 20) {
+        // Check if we need a new page
+        if (yPosition > pageHeight - margin - 20) {
           pdf.addPage();
-          yPosition = 20;
+          yPosition = margin;
         }
 
+        // Alternate row background for readability
+        if (rowIndex % 2 === 0) {
+          pdf.setFillColor(245, 245, 245);
+          pdf.rect(margin, yPosition - 3, contentWidth, fontSize + 2, 'F');
+        }
+
+        // Calculate row height needed for wrapped text
+        let maxLines = 1;
         exportColumns.forEach((col, i) => {
           const value = row[col];
-          const text = value !== null && value !== undefined ? String(value).substring(0, 20) : '';
-          pdf.text(text, 20 + (i * colWidth), yPosition);
+          let text = '';
+          
+          if (value === null || value === undefined) {
+            text = '';
+          } else if (typeof value === 'boolean') {
+            text = value ? 'Yes' : 'No';
+          } else if (value instanceof Date) {
+            text = format(value, 'PP');
+          } else {
+            text = String(value);
+          }
+          
+          const lines = wrapText(text, colWidth);
+          maxLines = Math.max(maxLines, lines.length);
         });
-        yPosition += 7;
+
+        // Render each column with wrapped text
+        exportColumns.forEach((col, i) => {
+          const value = row[col];
+          let text = '';
+          
+          if (value === null || value === undefined) {
+            text = '';
+          } else if (typeof value === 'boolean') {
+            text = value ? 'Yes' : 'No';
+          } else if (value instanceof Date) {
+            text = format(value, 'PP');
+          } else {
+            text = String(value);
+          }
+          
+          const lines = wrapText(text, colWidth);
+          lines.forEach((line, lineIndex) => {
+            pdf.text(line, margin + (i * colWidth), yPosition + (lineIndex * (fontSize - 2)), { maxWidth: colWidth - 2 });
+          });
+        });
+        
+        yPosition += maxLines * (fontSize - 2) + 2;
+        rowIndex++;
       });
 
       if (data.length > maxRecords) {
         yPosition += 5;
+        pdf.setFontSize(8);
         pdf.setTextColor(100, 100, 100);
         pdf.text(
-          `Note: Showing first ${maxRecords} of ${data.length} records`,
+          `Note: Showing first ${maxRecords} of ${data.length} records. Export to CSV for complete data.`,
           pageWidth / 2,
           yPosition,
           { align: 'center' }
         );
       }
 
-      // Footer
+      // Footer with page numbers
       const totalPages = pdf.internal.pages.length - 1;
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i);
@@ -422,14 +495,13 @@ export class ExportService {
         pdf.text(
           `Page ${i} of ${totalPages}`,
           pageWidth / 2,
-          pageHeight - 10,
+          pageHeight - (margin / 2),
           { align: 'center' }
         );
       }
 
       const today = new Date().toISOString().split('T')[0];
-      const hasFilters = filters && Object.keys(filters).length > 0;
-      const filename = hasFilters ? `${moduleName}_filtered_${today}.pdf` : `${moduleName}_${today}.pdf`;
+      const filename = `${moduleName}_${today}.pdf`;
       pdf.save(filename);
     } catch (error) {
       console.error('Error exporting to PDF:', error);
