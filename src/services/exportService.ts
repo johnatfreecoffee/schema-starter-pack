@@ -250,8 +250,16 @@ export class ExportService {
       return;
     }
 
-    // If no columns specified, use all keys from first object
-    const exportColumns = columns || Object.keys(data[0]);
+    // Technical fields to exclude from exports
+    const excludedFields = ['__lovable_token', 'user_id', 'company_id'];
+    
+    // If no columns specified, use all keys from first object, excluding technical fields
+    let exportColumns = columns || Object.keys(data[0]);
+    
+    // Filter out technical fields and fields starting with underscore
+    exportColumns = exportColumns.filter(col => 
+      !excludedFields.includes(col) && !col.startsWith('_')
+    );
 
     // Filter data to only include specified columns
     const filteredData = data.map(row => {
@@ -262,20 +270,8 @@ export class ExportService {
       return filteredRow;
     });
 
-    // Convert to CSV
-    let csvContent = '';
-    
-    // Add filter information if filters are applied
-    if (filters && Object.keys(filters).length > 0) {
-      csvContent += `Filtered Export - Applied Filters:\n`;
-      Object.entries(filters).forEach(([key, value]) => {
-        csvContent += `${key}: ${JSON.stringify(value)}\n`;
-      });
-      csvContent += '\n';
-    }
-    
-    // Add headers
-    csvContent += exportColumns.join(',') + '\n';
+    // Convert to CSV - start directly with headers (no extra text)
+    let csvContent = exportColumns.join(',') + '\n';
     
     // Add data rows
     filteredData.forEach(row => {
