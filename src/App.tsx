@@ -49,6 +49,7 @@ import Templates from "./pages/dashboard/settings/Templates";
 import StaticPages from "./pages/dashboard/settings/StaticPages";
 import FormFields from "./pages/dashboard/settings/FormFields";
 import Analytics from "./pages/dashboard/Analytics";
+import ReviewAnalytics from "./pages/dashboard/analytics/ReviewAnalytics";
 import QATesting from "./pages/dashboard/settings/QATesting";
 import PageRegenerator from "./pages/dashboard/PageRegenerator";
 import EmailTemplates from "./pages/dashboard/settings/EmailTemplates";
