@@ -1948,11 +1948,15 @@ export type Database = {
           filters: Json | null
           grouping: Json | null
           id: string
+          is_pinned: boolean | null
+          is_public: boolean | null
           is_scheduled: boolean | null
           name: string
+          pin_order: number | null
           schedule_frequency: string | null
           schedule_recipients: string[] | null
           selected_fields: Json
+          shared_with: string[] | null
           updated_at: string | null
           visualization_type: string
         }
@@ -1965,11 +1969,15 @@ export type Database = {
           filters?: Json | null
           grouping?: Json | null
           id?: string
+          is_pinned?: boolean | null
+          is_public?: boolean | null
           is_scheduled?: boolean | null
           name: string
+          pin_order?: number | null
           schedule_frequency?: string | null
           schedule_recipients?: string[] | null
           selected_fields: Json
+          shared_with?: string[] | null
           updated_at?: string | null
           visualization_type: string
         }
@@ -1982,11 +1990,15 @@ export type Database = {
           filters?: Json | null
           grouping?: Json | null
           id?: string
+          is_pinned?: boolean | null
+          is_public?: boolean | null
           is_scheduled?: boolean | null
           name?: string
+          pin_order?: number | null
           schedule_frequency?: string | null
           schedule_recipients?: string[] | null
           selected_fields?: Json
+          shared_with?: string[] | null
           updated_at?: string | null
           visualization_type?: string
         }

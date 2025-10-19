@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { executeReport } from '@/lib/reportEngine';
+import { exportReportToPDF, exportReportToExcel, exportReportToCSV } from '@/lib/reportExport';
 import { ReportChart } from '@/components/reports/ReportChart';
+import ShareReportModal from '@/components/admin/reports/ShareReportModal';
 import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -11,8 +13,10 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ArrowLeft, Play, Download, Calendar, Edit, Loader2, ChevronDown } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { ArrowLeft, Play, Download, Calendar, Edit, Loader2, ChevronDown, Pin, Share2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
 
 const ReportDetail = () => {
   const { id } = useParams();
@@ -24,6 +28,19 @@ const ReportDetail = () => {
   const [scheduleEnabled, setScheduleEnabled] = useState(false);
   const [scheduleFrequency, setScheduleFrequency] = useState('weekly');
   const [scheduleRecipients, setScheduleRecipients] = useState('');
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+
+  // Fetch company settings for PDF export
+  const { data: companySettings } = useQuery({
+    queryKey: ['company-settings'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('company_settings')
+        .select('business_name, logo_url, address, phone')
+        .maybeSingle();
+      return data;
+    }
+  });
 
   useEffect(() => {
     loadReport();
@@ -61,9 +78,9 @@ const ReportDetail = () => {
       // Execute report
       const data = await executeReport({
         dataSource: config.data_source,
-        selectedFields: config.selected_fields,
-        filters: config.filters,
-        grouping: config.grouping
+        selectedFields: config.selected_fields as string[],
+        filters: config.filters as any[],
+        grouping: config.grouping as any
       });
 
       setReportData(data);
@@ -86,39 +103,90 @@ const ReportDetail = () => {
     }
   }
 
-  async function exportToCSV() {
+  async function handleExport(format: 'csv' | 'pdf' | 'excel') {
     if (!reportData || reportData.length === 0) {
       toast.error('No data to export');
       return;
     }
 
     try {
-      const headers = Object.keys(reportData[0]);
-      const csv = [
-        headers.join(','),
-        ...reportData.map(row => 
-          headers.map(h => {
-            const value = row[h];
-            // Escape values that contain commas or quotes
-            if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
-              return `"${value.replace(/"/g, '""')}"`;
-            }
-            return value;
-          }).join(',')
-        )
-      ].join('\n');
+      const companyInfo = companySettings ? {
+        name: companySettings.business_name || 'Company',
+        logo: companySettings.logo_url || undefined,
+        address: companySettings.address || undefined,
+        phone: companySettings.phone || undefined
+      } : undefined;
 
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${report.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
-      link.click();
-      URL.revokeObjectURL(url);
+      switch (format) {
+        case 'csv':
+          exportReportToCSV(reportData, report.name);
+          break;
+        case 'pdf':
+          await exportReportToPDF(reportData, report.name, companyInfo);
+          break;
+        case 'excel':
+          exportReportToExcel(reportData, report.name);
+          break;
+      }
 
-      toast.success('Report exported successfully');
+      toast.success(`Report exported as ${format.toUpperCase()}`);
+    } catch (error: any) {
+      console.error('Export error:', error);
+      toast.error(`Failed to export as ${format.toUpperCase()}`);
+    }
+  }
+
+  async function togglePin() {
+    if (!report) return;
+
+    try {
+      const { error } = await supabase
+        .from('reports')
+        .update({ is_pinned: !report.is_pinned })
+        .eq('id', report.id);
+
+      if (error) throw error;
+
+      setReport({ ...report, is_pinned: !report.is_pinned });
+      toast.success(report.is_pinned ? 'Unpinned from dashboard' : 'Pinned to dashboard');
     } catch (error) {
-      toast.error('Failed to export report');
+      toast.error('Failed to update pin status');
+    }
+  }
+
+  async function duplicateReport() {
+    if (!report) return;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const { data, error } = await supabase
+        .from('reports')
+        .insert({
+          name: `${report.name} (Copy)`,
+          description: report.description,
+          data_source: report.data_source,
+          selected_fields: report.selected_fields,
+          filters: report.filters,
+          grouping: report.grouping,
+          visualization_type: report.visualization_type,
+          chart_config: report.chart_config,
+          created_by: user?.id,
+          // Don't copy schedule, pin status, or sharing
+          is_scheduled: false,
+          is_pinned: false,
+          shared_with: [],
+          is_public: false
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success('Report duplicated successfully');
+      navigate(`/dashboard/reports/${data.id}`);
+    } catch (error) {
+      toast.error('Failed to duplicate report');
     }
   }
 
@@ -192,10 +260,43 @@ const ReportDetail = () => {
               )}
               Run Report
             </Button>
-            <Button variant="outline" onClick={exportToCSV} disabled={reportData.length === 0}>
-              <Download className="w-4 h-4 mr-2" />
-              Export CSV
+            
+            {/* Export Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" disabled={reportData.length === 0}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => handleExport('csv')}>
+                  Export as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport('pdf')}>
+                  Export as PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport('excel')}>
+                  Export as Excel (.xlsx)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button variant="outline" onClick={togglePin}>
+              <Pin className={`w-4 h-4 mr-2 ${report?.is_pinned ? 'fill-current' : ''}`} />
+              {report?.is_pinned ? 'Unpin' : 'Pin to Dashboard'}
             </Button>
+
+            <Button variant="outline" onClick={() => setShareModalOpen(true)}>
+              <Share2 className="w-4 h-4 mr-2" />
+              Share
+            </Button>
+
+            <Button variant="outline" onClick={duplicateReport}>
+              <Copy className="w-4 h-4 mr-2" />
+              Duplicate
+            </Button>
+
             <Button variant="outline" onClick={() => navigate(`/dashboard/reports/${id}/edit`)}>
               <Edit className="w-4 h-4 mr-2" />
               Edit
@@ -325,6 +426,16 @@ const ReportDetail = () => {
           )}
         </Card>
       </div>
+
+      {/* Share Report Modal */}
+      <ShareReportModal
+        open={shareModalOpen}
+        onOpenChange={setShareModalOpen}
+        reportId={id!}
+        currentSharedWith={report?.shared_with || []}
+        currentIsPublic={report?.is_public || false}
+        onUpdate={loadReport}
+      />
     </AdminLayout>
   );
 };

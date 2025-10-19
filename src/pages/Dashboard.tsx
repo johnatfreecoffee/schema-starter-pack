@@ -1,10 +1,29 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import DashboardActivityWidget from '@/components/admin/DashboardActivityWidget';
 import { ReviewsAnalyticsWidget } from '@/components/admin/ReviewsAnalyticsWidget';
+import ReportWidget from '@/components/dashboard/ReportWidget';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  
+  // Fetch pinned reports
+  const { data: pinnedReports } = useQuery({
+    queryKey: ['pinned-reports'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('reports')
+        .select('id, name')
+        .eq('is_pinned', true)
+        .order('pin_order')
+        .limit(5);
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
   
   return (
     <div className="container mx-auto px-4 py-8">
@@ -86,6 +105,22 @@ const Dashboard = () => {
             <ReviewsAnalyticsWidget />
           </div>
         </div>
+
+        {/* Pinned Reports Section */}
+        {pinnedReports && pinnedReports.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold mb-4">Pinned Reports</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pinnedReports.map((report) => (
+                <ReportWidget
+                  key={report.id}
+                  reportId={report.id}
+                  size="medium"
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
   );
 };

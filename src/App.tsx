@@ -71,6 +71,7 @@ import SEO from "./pages/dashboard/SEO";
 import Reports from "./pages/dashboard/Reports";
 import ReportBuilder from "./pages/dashboard/ReportBuilder";
 import ReportDetail from "./pages/dashboard/ReportDetail";
+import EditReport from "./pages/dashboard/EditReport";
 import Reviews from "./pages/dashboard/Reviews";
 import ReviewDetail from "./pages/dashboard/ReviewDetail";
 import ReviewNew from "./pages/dashboard/ReviewNew";
@@ -167,6 +168,7 @@ const AppContent = () => {
             <Route path="reports" element={<Reports />} />
             <Route path="reports/new" element={<ReportBuilder />} />
             <Route path="reports/:id" element={<ReportDetail />} />
+            <Route path="reports/:id/edit" element={<EditReport />} />
             <Route path="reviews" element={<Reviews />} />
             <Route path="reviews/new" element={<ReviewNew />} />
             <Route path="reviews/:id" element={<ReviewDetail />} />
