@@ -31,6 +31,8 @@ import { BulkTagsModal } from '@/components/admin/bulk/BulkTagsModal';
 import { useBulkUndo } from '@/hooks/useBulkUndo';
 import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
 import { useUserRole } from '@/hooks/useUserRole';
+import { BulkSelectAllBanner } from '@/components/admin/bulk/BulkSelectAllBanner';
+import { BulkConfirmationModal } from '@/components/admin/bulk/BulkConfirmationModal';
 
 const Accounts = () => {
   const { toast } = useToast();
@@ -54,6 +56,12 @@ const Accounts = () => {
   const [tagsModalOpen, setTagsModalOpen] = useState(false);
   const { role } = useUserRole();
   const { undoState, saveUndoState, performUndo, clearUndo } = useBulkUndo();
+
+  const [confirmBulkAction, setConfirmBulkAction] = useState<{
+    open: boolean;
+    action: string;
+    callback: () => void;
+  } | null>(null);
 
   const fetchAccounts = async () => {
     try {
@@ -308,6 +316,17 @@ const Accounts = () => {
           onClearAll={clearFilters}
         />
 
+        {/* Bulk Select All Banner */}
+        {bulk.isAllSelected && !bulk.isAllMatchingSelected && totalCount > accounts.length && (
+          <BulkSelectAllBanner
+            visibleCount={accounts.length}
+            totalCount={totalCount}
+            isAllMatchingSelected={bulk.isAllMatchingSelected}
+            onSelectAllMatching={() => bulk.selectAllMatching(totalCount)}
+            onClear={bulk.deselectAll}
+          />
+        )}
+
         {loading ? (
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
@@ -513,6 +532,17 @@ const Accounts = () => {
         {undoState && (
           <BulkUndoToast count={undoState.itemIds.length} onUndo={performUndo} />
         )}
+
+        <BulkConfirmationModal
+          open={confirmBulkAction?.open || false}
+          onOpenChange={(open) => !open && setConfirmBulkAction(null)}
+          totalCount={bulk.selectedCount}
+          action={confirmBulkAction?.action || ''}
+          onConfirm={() => {
+            confirmBulkAction?.callback();
+            setConfirmBulkAction(null);
+          }}
+        />
 
         <BulkOperationModal
           open={bulkAction === 'status'}

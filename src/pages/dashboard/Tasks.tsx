@@ -34,6 +34,8 @@ import { BulkOperationsService } from '@/services/bulkOperationsService';
 import { useBulkUndo } from '@/hooks/useBulkUndo';
 import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
 import { useUserRole } from '@/hooks/useUserRole';
+import { BulkSelectAllBanner } from '@/components/admin/bulk/BulkSelectAllBanner';
+import { BulkConfirmationModal } from '@/components/admin/bulk/BulkConfirmationModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -85,6 +87,13 @@ const Tasks = () => {
   const { role } = useUserRole();
   const { undoState, saveUndoState, performUndo } = useBulkUndo();
 
+  const [confirmBulkAction, setConfirmBulkAction] = useState<{
+    open: boolean;
+    action: string;
+    callback: () => void;
+  } | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
+
   // Filter states
   const [search, setSearch] = useState("");
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
@@ -131,7 +140,7 @@ const Tasks = () => {
           *,
           assigned_user:assigned_to(id),
           created_user:created_by(id)
-        `)
+        `, { count: 'exact' })
         .order("created_at", { ascending: false });
 
       // Apply filters
@@ -196,8 +205,10 @@ const Tasks = () => {
         query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
       }
 
-      const { data: tasksData, error: tasksError } = await query;
+      const { data: tasksData, error: tasksError, count } = await query;
       if (tasksError) throw tasksError;
+
+      setTotalCount(count || 0);
 
       // Enrich tasks with related entity names and assigned user names
       const enrichedTasks = await Promise.all(
@@ -376,66 +387,87 @@ const Tasks = () => {
     }
   };
 
+  const getCurrentFilters = () => {
+    const currentFilters: Record<string, any> = {};
+    if (statusFilters.length > 0) currentFilters.status = statusFilters;
+    if (priorityFilters.length > 0) currentFilters.priority = priorityFilters;
+    if (assignedFilter !== 'all') currentFilters.assigned_to = assignedFilter;
+    if (relatedFilters.length > 0) currentFilters.related_to_type = relatedFilters;
+    return Object.keys(currentFilters).length > 0 ? currentFilters : undefined;
+  };
+
   const handleBulkOperationConfirm = async (formData: Record<string, any>) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const performAction = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    // Store previous values for undo
-    const previousValues = bulkSelection.selectedItems.map(t => ({
-      id: t.id,
-      ...(bulkOperationModal.type === 'status' && { status: t.status }),
-      ...(bulkOperationModal.type === 'assign' && { assigned_to: t.assigned_to }),
-      ...(bulkOperationModal.type === 'priority' && { priority: t.priority }),
-      ...(bulkOperationModal.type === 'due_date' && { due_date: t.due_date }),
-    }));
+      // Store previous values for undo
+      const previousValues = bulkSelection.selectedItems.map(t => ({
+        id: t.id,
+        ...(bulkOperationModal.type === 'status' && { status: t.status }),
+        ...(bulkOperationModal.type === 'assign' && { assigned_to: t.assigned_to }),
+        ...(bulkOperationModal.type === 'priority' && { priority: t.priority }),
+        ...(bulkOperationModal.type === 'due_date' && { due_date: t.due_date }),
+      }));
 
-    setBulkProgress({
-      open: true,
-      operation: `Updating ${bulkSelection.selectedCount} tasks`,
-      total: bulkSelection.selectedCount,
-      completed: 0,
-      failed: 0,
-      errors: [],
-      isComplete: false,
-    });
-
-    let changes: Record<string, any> = {};
-    if (bulkOperationModal.type === 'status') changes = { status: formData.status };
-    if (bulkOperationModal.type === 'assign') changes = { assigned_to: formData.assigned_to };
-    if (bulkOperationModal.type === 'priority') changes = { priority: formData.priority };
-    if (bulkOperationModal.type === 'due_date') changes = { due_date: formData.due_date };
-
-    const result = await BulkOperationsService.performBulkOperation({
-      type: bulkOperationModal.type === 'assign' ? 'assign' : 
-            bulkOperationModal.type === 'status' ? 'status_change' :
-            bulkOperationModal.type === 'priority' ? 'priority_change' : 'date_change',
-      mode: bulkSelection.selectionMode,
-      itemIds: Array.from(bulkSelection.selectedIds),
-      filters: undefined,
-      module: 'tasks',
-      changes,
-      userId: user.id,
-    });
-
-    // Save undo state
-    if (result.success > 0) {
-      saveUndoState({
-        operation: bulkOperationModal.type as any,
-        module: 'tasks',
-        itemIds: Array.from(bulkSelection.selectedIds),
-        previousValues,
-        timestamp: new Date(),
+      setBulkProgress({
+        open: true,
+        operation: `Updating ${bulkSelection.selectedCount} tasks`,
+        total: bulkSelection.selectedCount,
+        completed: 0,
+        failed: 0,
+        errors: [],
+        isComplete: false,
       });
-    }
 
-    setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
-    bulkSelection.deselectAll();
-    loadData();
-    
-    toast({
-      title: 'Success',
-      description: `${result.success} tasks updated successfully${result.failed > 0 ? `, ${result.failed} failed` : ''}`,
-    });
+      let changes: Record<string, any> = {};
+      if (bulkOperationModal.type === 'status') changes = { status: formData.status };
+      if (bulkOperationModal.type === 'assign') changes = { assigned_to: formData.assigned_to };
+      if (bulkOperationModal.type === 'priority') changes = { priority: formData.priority };
+      if (bulkOperationModal.type === 'due_date') changes = { due_date: formData.due_date };
+
+      const result = await BulkOperationsService.performBulkOperation({
+        type: bulkOperationModal.type === 'assign' ? 'assign' : 
+              bulkOperationModal.type === 'status' ? 'status_change' :
+              bulkOperationModal.type === 'priority' ? 'priority_change' : 'date_change',
+        mode: bulkSelection.selectionMode,
+        itemIds: Array.from(bulkSelection.selectedIds),
+        filters: bulkSelection.isAllMatchingSelected ? getCurrentFilters() : undefined,
+        module: 'tasks',
+        changes,
+        userId: user.id,
+      });
+
+      // Save undo state
+      if (result.success > 0) {
+        saveUndoState({
+          operation: bulkOperationModal.type as any,
+          module: 'tasks',
+          itemIds: Array.from(bulkSelection.selectedIds),
+          previousValues,
+          timestamp: new Date(),
+        });
+      }
+
+      setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
+      bulkSelection.deselectAll();
+      loadData();
+      
+      toast({
+        title: 'Success',
+        description: `${result.success} tasks updated successfully${result.failed > 0 ? `, ${result.failed} failed` : ''}`,
+      });
+    };
+
+    if (bulkSelection.isAllMatchingSelected) {
+      setConfirmBulkAction({
+        open: true,
+        action: `update ${bulkOperationModal.type} for`,
+        callback: performAction
+      });
+    } else {
+      await performAction();
+    }
   };
 
   // Keyboard shortcuts
@@ -505,7 +537,7 @@ const Tasks = () => {
 
   const handleBulkExport = async () => {
     try {
-      await BulkOperationsService.bulkExport('tasks', bulkSelection.selectionMode, Array.from(bulkSelection.selectedIds), undefined);
+      await BulkOperationsService.bulkExport('tasks', bulkSelection.selectionMode, Array.from(bulkSelection.selectedIds), bulkSelection.isAllMatchingSelected ? getCurrentFilters() : undefined);
       toast({
         title: 'Success',
         description: `${bulkSelection.selectedCount} tasks exported`,
@@ -613,6 +645,17 @@ const Tasks = () => {
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Tasks</h1>
                 <Badge variant="secondary">{tasks.length}</Badge>
               </div>
+
+            {/* Bulk Select All Banner */}
+            {bulkSelection.isAllSelected && !bulkSelection.isAllMatchingSelected && totalCount > tasks.length && (
+              <BulkSelectAllBanner
+                visibleCount={tasks.length}
+                totalCount={totalCount}
+                isAllMatchingSelected={bulkSelection.isAllMatchingSelected}
+                onSelectAllMatching={() => bulkSelection.selectAllMatching(totalCount)}
+                onClear={bulkSelection.deselectAll}
+              />
+            )}
               <div className="flex gap-2">
                 <Button
                   variant="outline"
@@ -936,6 +979,17 @@ const Tasks = () => {
       {undoState && (
         <BulkUndoToast count={undoState.itemIds.length} onUndo={performUndo} />
       )}
+
+      <BulkConfirmationModal
+        open={confirmBulkAction?.open || false}
+        onOpenChange={(open) => !open && setConfirmBulkAction(null)}
+        totalCount={bulkSelection.selectedCount}
+        action={confirmBulkAction?.action || ''}
+        onConfirm={() => {
+          confirmBulkAction?.callback();
+          setConfirmBulkAction(null);
+        }}
+      />
     </>
   );
 };

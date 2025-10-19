@@ -30,6 +30,8 @@ import { BulkEmailModal } from '@/components/admin/bulk/BulkEmailModal';
 import { useBulkUndo } from '@/hooks/useBulkUndo';
 import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
 import { useUserRole } from '@/hooks/useUserRole';
+import { BulkSelectAllBanner } from '@/components/admin/bulk/BulkSelectAllBanner';
+import { BulkConfirmationModal } from '@/components/admin/bulk/BulkConfirmationModal';
 import { Tags, Mail as MailIconBulk } from 'lucide-react';
 
 const Contacts = () => {
@@ -51,6 +53,12 @@ const Contacts = () => {
   
   const { role: userRole } = useUserRole();
   const { undoState, saveUndoState, performUndo, clearUndo } = useBulkUndo();
+
+  const [confirmBulkAction, setConfirmBulkAction] = useState<{
+    open: boolean;
+    action: string;
+    callback: () => void;
+  } | null>(null);
 
   useEffect(() => {
     fetchContacts();

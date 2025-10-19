@@ -29,6 +29,8 @@ import { BulkOperationsService } from '@/services/bulkOperationsService';
 import { useBulkUndo } from '@/hooks/useBulkUndo';
 import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
 import { useUserRole } from '@/hooks/useUserRole';
+import { BulkSelectAllBanner } from '@/components/admin/bulk/BulkSelectAllBanner';
+import { BulkConfirmationModal } from '@/components/admin/bulk/BulkConfirmationModal';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,6 +56,12 @@ const Projects = () => {
   
   const { role: userRole } = useUserRole();
   const { undoState, saveUndoState, performUndo } = useBulkUndo();
+
+  const [confirmBulkAction, setConfirmBulkAction] = useState<{
+    open: boolean;
+    action: string;
+    callback: () => void;
+  } | null>(null);
 
   useEffect(() => {
     fetchProjects();

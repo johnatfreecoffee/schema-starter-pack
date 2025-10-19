@@ -68,6 +68,8 @@ import { BulkConvertLeadsModal } from '@/components/admin/bulk/BulkConvertLeadsM
 import { useBulkUndo } from '@/hooks/useBulkUndo';
 import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
 import { useUserRole } from '@/hooks/useUserRole';
+import { BulkSelectAllBanner } from '@/components/admin/bulk/BulkSelectAllBanner';
+import { BulkConfirmationModal } from '@/components/admin/bulk/BulkConfirmationModal';
 
 const Leads = () => {
   const { toast } = useToast();
@@ -106,6 +108,12 @@ const Leads = () => {
   
   const { role: userRole } = useUserRole();
   const { undoState, saveUndoState, performUndo, clearUndo } = useBulkUndo();
+  
+  const [confirmBulkAction, setConfirmBulkAction] = useState<{
+    open: boolean;
+    action: string;
+    callback: () => void;
+  } | null>(null);
 
   // Load leads when filters change
   useEffect(() => {
@@ -171,6 +179,13 @@ const Leads = () => {
         if (filters.search) {
           query = query.or(`first_name.ilike.%${filters.search}%,last_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`);
         }
+
+        // Get total count
+        const { count } = await supabase
+          .from('leads')
+          .select('*', { count: 'exact', head: true });
+        
+        setTotalCount(count || 0);
 
         const { data, error } = await query.order('created_at', { ascending: false });
         if (error) throw error;
@@ -310,33 +325,45 @@ const Leads = () => {
     }
   };
 
+  const getCurrentFilters = () => {
+    const currentFilters: Record<string, any> = {};
+    if (filters.status) currentFilters.status = filters.status;
+    if (filters.source) currentFilters.source = filters.source;
+    if (filters.serviceId) currentFilters.service_id = filters.serviceId;
+    if (filters.assignedTo) currentFilters.assigned_to = filters.assignedTo;
+    if (filters.createdFrom) currentFilters.created_from = filters.createdFrom;
+    if (filters.createdTo) currentFilters.created_to = filters.createdTo;
+    return Object.keys(currentFilters).length > 0 ? currentFilters : undefined;
+  };
+
   const handleBulkStatusChange = async (data: Record<string, any>) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const performAction = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    // Save previous values for undo
-    const previousValues = leads
-      .filter(l => bulkSelection.selectedIds.has(l.id))
-      .map(l => ({ id: l.id, status: l.status }));
+      // Save previous values for undo
+      const previousValues = leads
+        .filter(l => bulkSelection.selectedIds.has(l.id))
+        .map(l => ({ id: l.id, status: l.status }));
 
-    setBulkProgress({
-      open: true,
-      operation: 'Updating status',
-      total: bulkSelection.selectedCount,
-      completed: 0,
-      failed: 0,
-      errors: [],
-      isComplete: false,
-    });
+      setBulkProgress({
+        open: true,
+        operation: 'Updating status',
+        total: bulkSelection.selectedCount,
+        completed: 0,
+        failed: 0,
+        errors: [],
+        isComplete: false,
+      });
 
-    const result = await BulkOperationsService.bulkStatusChange(
-      'leads',
-      bulkSelection.selectionMode,
-      data.status,
-      user.id,
-      Array.from(bulkSelection.selectedIds),
-      undefined
-    );
+      const result = await BulkOperationsService.bulkStatusChange(
+        'leads',
+        bulkSelection.selectionMode,
+        data.status,
+        user.id,
+        Array.from(bulkSelection.selectedIds),
+        bulkSelection.isAllMatchingSelected ? getCurrentFilters() : undefined
+      );
 
     setBulkProgress(prev => ({
       ...prev,
@@ -358,34 +385,46 @@ const Leads = () => {
     bulkSelection.deselectAll();
     loadLeads();
 
-    toast({
-      title: 'Success',
-      description: `Updated ${result.success} lead${result.success !== 1 ? 's' : ''}`,
-    });
+      toast({
+        title: 'Success',
+        description: `Updated ${result.success} lead${result.success !== 1 ? 's' : ''}`,
+      });
+    };
+
+    if (bulkSelection.isAllMatchingSelected) {
+      setConfirmBulkAction({
+        open: true,
+        action: `change status to "${data.status}" for`,
+        callback: performAction
+      });
+    } else {
+      await performAction();
+    }
   };
 
   const handleBulkAssign = async (data: Record<string, any>) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const performAction = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    setBulkProgress({
-      open: true,
-      operation: 'Assigning leads',
-      total: bulkSelection.selectedCount,
-      completed: 0,
-      failed: 0,
-      errors: [],
-      isComplete: false,
-    });
+      setBulkProgress({
+        open: true,
+        operation: 'Assigning leads',
+        total: bulkSelection.selectedCount,
+        completed: 0,
+        failed: 0,
+        errors: [],
+        isComplete: false,
+      });
 
-    const result = await BulkOperationsService.bulkAssign(
-      'leads',
-      bulkSelection.selectionMode,
-      data.assignedTo,
-      user.id,
-      Array.from(bulkSelection.selectedIds),
-      undefined
-    );
+      const result = await BulkOperationsService.bulkAssign(
+        'leads',
+        bulkSelection.selectionMode,
+        data.assignedTo,
+        user.id,
+        Array.from(bulkSelection.selectedIds),
+        bulkSelection.isAllMatchingSelected ? getCurrentFilters() : undefined
+      );
 
     setBulkProgress(prev => ({
       ...prev,
@@ -398,10 +437,21 @@ const Leads = () => {
     bulkSelection.deselectAll();
     loadLeads();
 
-    toast({
-      title: 'Success',
-      description: `Assigned ${result.success} lead${result.success !== 1 ? 's' : ''}`,
-    });
+      toast({
+        title: 'Success',
+        description: `Assigned ${result.success} lead${result.success !== 1 ? 's' : ''}`,
+      });
+    };
+
+    if (bulkSelection.isAllMatchingSelected) {
+      setConfirmBulkAction({
+        open: true,
+        action: 'assign to user for',
+        callback: performAction
+      });
+    } else {
+      await performAction();
+    }
   };
 
   const handleSelectAllFiltered = async () => {
@@ -420,26 +470,27 @@ const Leads = () => {
   };
 
   const handleBulkDelete = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const performDelete = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    setBulkProgress({
-      open: true,
-      operation: 'Deleting leads',
-      total: bulkSelection.selectedCount,
-      completed: 0,
-      failed: 0,
-      errors: [],
-      isComplete: false,
-    });
+      setBulkProgress({
+        open: true,
+        operation: 'Deleting leads',
+        total: bulkSelection.selectedCount,
+        completed: 0,
+        failed: 0,
+        errors: [],
+        isComplete: false,
+      });
 
-    const result = await BulkOperationsService.bulkDelete(
-      'leads',
-      bulkSelection.selectionMode,
-      Array.from(bulkSelection.selectedIds),
-      undefined,
-      user.id
-    );
+      const result = await BulkOperationsService.bulkDelete(
+        'leads',
+        bulkSelection.selectionMode,
+        Array.from(bulkSelection.selectedIds),
+        bulkSelection.isAllMatchingSelected ? getCurrentFilters() : undefined,
+        user.id
+      );
 
     setBulkProgress(prev => ({
       ...prev,
@@ -452,10 +503,25 @@ const Leads = () => {
     bulkSelection.deselectAll();
     loadLeads();
 
-    toast({
-      title: 'Success',
-      description: `Deleted ${result.success} lead${result.success !== 1 ? 's' : ''}`,
-    });
+      bulkSelection.deselectAll();
+      loadLeads();
+
+      toast({
+        title: 'Success',
+        description: `Deleted ${result.success} lead${result.success !== 1 ? 's' : ''}`,
+      });
+      setBulkDeleteOpen(false);
+    };
+
+    if (bulkSelection.isAllMatchingSelected) {
+      setConfirmBulkAction({
+        open: true,
+        action: 'permanently delete',
+        callback: performDelete
+      });
+    } else {
+      await performDelete();
+    }
   };
 
   const handleBulkExport = async () => {
@@ -464,7 +530,7 @@ const Leads = () => {
         'leads',
         bulkSelection.selectionMode,
         Array.from(bulkSelection.selectedIds),
-        undefined
+        bulkSelection.isAllMatchingSelected ? getCurrentFilters() : undefined
       );
       toast({
         title: 'Success',
@@ -484,7 +550,7 @@ const Leads = () => {
     if (!user) return;
 
     try {
-      await BulkOperationsService.bulkTagsUpdate('leads', bulkSelection.selectionMode, tags, mode, user.id, Array.from(bulkSelection.selectedIds), undefined);
+      await BulkOperationsService.bulkTagsUpdate('leads', bulkSelection.selectionMode, tags, mode, user.id, Array.from(bulkSelection.selectedIds), bulkSelection.isAllMatchingSelected ? getCurrentFilters() : undefined);
       toast({ title: 'Success', description: `Tags updated for ${bulkSelection.selectedCount} leads` });
       bulkSelection.deselectAll();
       loadLeads();
@@ -631,6 +697,17 @@ const Leads = () => {
         onRemove={(key) => updateFilter(key, null)}
         onClearAll={clearFilters}
       />
+
+      {/* Bulk Select All Banner */}
+      {bulkSelection.isAllSelected && !bulkSelection.isAllMatchingSelected && totalCount > leads.length && (
+        <BulkSelectAllBanner
+          visibleCount={leads.length}
+          totalCount={totalCount}
+          isAllMatchingSelected={bulkSelection.isAllMatchingSelected}
+          onSelectAllMatching={() => bulkSelection.selectAllMatching(totalCount)}
+          onClear={bulkSelection.deselectAll}
+        />
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-4 w-full">
@@ -1068,6 +1145,18 @@ const Leads = () => {
         }}
       />
     )}
+
+    {/* Bulk Confirmation Modal */}
+    <BulkConfirmationModal
+      open={confirmBulkAction?.open || false}
+      onOpenChange={(open) => !open && setConfirmBulkAction(null)}
+      totalCount={bulkSelection.selectedCount}
+      action={confirmBulkAction?.action || ''}
+      onConfirm={() => {
+        confirmBulkAction?.callback();
+        setConfirmBulkAction(null);
+      }}
+    />
   </div>
 );
 };

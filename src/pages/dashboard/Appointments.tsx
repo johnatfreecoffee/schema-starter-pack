@@ -22,6 +22,8 @@ import { BulkOperationsService } from '@/services/bulkOperationsService';
 import { useBulkUndo } from '@/hooks/useBulkUndo';
 import { BulkUndoToast } from '@/components/admin/bulk/BulkUndoToast';
 import { useUserRole } from '@/hooks/useUserRole';
+import { BulkSelectAllBanner } from '@/components/admin/bulk/BulkSelectAllBanner';
+import { BulkConfirmationModal } from '@/components/admin/bulk/BulkConfirmationModal';
 
 interface Appointment {
   id: string;
@@ -64,6 +66,13 @@ const Appointments = () => {
   
   const { role } = useUserRole();
   const { undoState, saveUndoState, performUndo } = useBulkUndo();
+
+  const [confirmBulkAction, setConfirmBulkAction] = useState<{
+    open: boolean;
+    action: string;
+    callback: () => void;
+  } | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
 
   const fetchAppointments = async () => {
     setLoading(true);
