@@ -140,6 +140,10 @@ const DocumentTemplates = () => {
                       <Label htmlFor="right">Right</Label>
                     </div>
                   </RadioGroup>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Note: Logo images must be publicly accessible for PDF generation. 
+                    Upload your logo in Company Settings and ensure it's visible at the provided URL.
+                  </p>
                 </div>
               </CardContent>
             </Card>

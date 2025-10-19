@@ -90,7 +90,53 @@ export class PDFGenerator {
     return data;
   }
 
-  private addHeader(company: CompanySettings, documentType: string, documentNumber: string) {
+  /**
+   * Load an image from URL and convert to base64 data URL
+   * Handles CORS and image loading errors gracefully
+   */
+  private async loadImage(url: string): Promise<{ data: string; width: number; height: number } | null> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          
+          if (!ctx) {
+            console.warn('Failed to get canvas context for logo');
+            resolve(null);
+            return;
+          }
+          
+          ctx.drawImage(img, 0, 0);
+          const dataUrl = canvas.toDataURL('image/png');
+          
+          resolve({
+            data: dataUrl,
+            width: img.width,
+            height: img.height
+          });
+        } catch (error) {
+          console.warn('Failed to convert logo to base64:', error);
+          resolve(null);
+        }
+      };
+      
+      img.onerror = (error) => {
+        console.warn('Failed to load logo image:', error);
+        resolve(null);
+      };
+      
+      // Handle Supabase storage URLs and ensure they're accessible
+      img.src = url;
+    });
+  }
+
+  private async addHeader(company: CompanySettings, documentType: string, documentNumber: string) {
     const headerColor = company.document_header_color || '#3b82f6';
     
     // Convert hex to RGB
@@ -101,25 +147,78 @@ export class PDFGenerator {
     this.doc.setFillColor(r, g, b);
     this.doc.rect(0, 0, this.pageWidth, 40, 'F');
 
-    // Logo positioning (if enabled and logo exists)
+    let logoWidth = 0;
+    let hasLogo = false;
+
+    // Logo rendering (if enabled and logo exists)
     if (company.show_logo_in_documents && company.logo_url) {
-      // Note: Actual logo rendering requires additional image loading
-      // For now, we just position text accordingly
+      try {
+        const logoImage = await this.loadImage(company.logo_url);
+        
+        if (logoImage) {
+          // Calculate logo dimensions maintaining aspect ratio
+          const maxLogoHeight = 15;
+          const maxLogoWidth = 50;
+          
+          let renderHeight = maxLogoHeight;
+          let renderWidth = (logoImage.width / logoImage.height) * maxLogoHeight;
+          
+          // If width exceeds max, scale down by width instead
+          if (renderWidth > maxLogoWidth) {
+            renderWidth = maxLogoWidth;
+            renderHeight = (logoImage.height / logoImage.width) * maxLogoWidth;
+          }
+          
+          // Calculate logo X position based on alignment setting
+          let logoX = 10; // default left
+          const logoY = 12.5; // vertically centered in 40px header
+          
+          if (company.document_logo_position === 'center') {
+            logoX = (this.pageWidth - renderWidth) / 2;
+          } else if (company.document_logo_position === 'right') {
+            logoX = this.pageWidth - renderWidth - 10;
+          }
+          
+          // Render the logo
+          this.doc.addImage(
+            logoImage.data,
+            'PNG',
+            logoX,
+            logoY,
+            renderWidth,
+            renderHeight
+          );
+          
+          logoWidth = renderWidth;
+          hasLogo = true;
+        }
+      } catch (error) {
+        console.warn('Failed to render logo in PDF header:', error);
+        // Continue without logo - not a critical error
+      }
     }
 
-    // Company name
+    // Company name and info - position to avoid overlapping logo
+    const textStartX = hasLogo && company.document_logo_position === 'left' 
+      ? logoWidth + 20 
+      : this.margin;
+    
     this.doc.setTextColor(255, 255, 255);
     this.doc.setFontSize(20);
     this.doc.setFont('helvetica', 'bold');
-    this.doc.text(company.business_name, this.margin, 20);
+    
+    // Only show company name if logo is not centered (would overlap)
+    if (!hasLogo || company.document_logo_position !== 'center') {
+      this.doc.text(company.business_name, textStartX, 20);
 
-    if (company.show_tagline_on_documents && company.business_slogan) {
-      this.doc.setFontSize(10);
-      this.doc.setFont('helvetica', 'normal');
-      this.doc.text(company.business_slogan, this.margin, 28);
+      if (company.show_tagline_on_documents && company.business_slogan) {
+        this.doc.setFontSize(10);
+        this.doc.setFont('helvetica', 'normal');
+        this.doc.text(company.business_slogan, textStartX, 28);
+      }
     }
 
-    // Document type and number
+    // Document type and number (always on the right)
     this.doc.setFontSize(16);
     this.doc.setFont('helvetica', 'bold');
     this.doc.text(`${documentType} #${documentNumber}`, this.pageWidth - this.margin, 25, { align: 'right' });
@@ -318,7 +417,7 @@ export class PDFGenerator {
 
     const quoteData = quote as unknown as QuoteData;
 
-    this.addHeader(company, 'QUOTE', quoteData.quote_number);
+    await this.addHeader(company, 'QUOTE', quoteData.quote_number);
     this.addCompanyInfo(company);
     
     const contact = quoteData.accounts.contacts?.[0];
@@ -378,7 +477,7 @@ export class PDFGenerator {
 
     const invoiceData = invoice as unknown as InvoiceData;
 
-    this.addHeader(company, 'INVOICE', invoiceData.invoice_number);
+    await this.addHeader(company, 'INVOICE', invoiceData.invoice_number);
     this.addCompanyInfo(company);
     
     const contact = invoiceData.accounts.contacts?.[0];
@@ -481,7 +580,7 @@ export class PDFGenerator {
       .eq('project_id', projectId)
       .order('phase_order');
 
-    this.addHeader(company, 'PROJECT REPORT', project.project_name);
+    await this.addHeader(company, 'PROJECT REPORT', project.project_name);
     this.addCompanyInfo(company);
 
     // Project info
