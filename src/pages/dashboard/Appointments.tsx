@@ -48,7 +48,7 @@ const Appointments = () => {
   const [statusFilter, setStatusFilter] = useState('all');
 
   // Bulk operations state
-  const bulkSelection = useBulkSelection(appointments);
+  const bulk = useBulkSelection(appointments);
   const [bulkOperationModal, setBulkOperationModal] = useState<{
     open: boolean;
     type: 'type' | 'reschedule' | null;
@@ -203,7 +203,7 @@ const Appointments = () => {
     if (!user) return;
 
     // Store previous values for undo
-    const previousValues = bulkSelection.selectedItems.map(a => ({
+    const previousValues = bulk.selectedItems.map(a => ({
       id: a.id,
       ...(bulkOperationModal.type === 'type' && { appointment_type: a.appointment_type }),
       ...(bulkOperationModal.type === 'reschedule' && { start_time: a.start_time, end_time: a.end_time }),
@@ -211,8 +211,8 @@ const Appointments = () => {
 
     setBulkProgress({
       open: true,
-      operation: `Updating ${bulkSelection.selectedCount} appointments`,
-      total: bulkSelection.selectedCount,
+      operation: `Updating ${bulk.selectedCount} appointments`,
+      total: bulk.selectedCount,
       completed: 0,
       failed: 0,
       errors: [],
@@ -225,7 +225,7 @@ const Appointments = () => {
     } else if (bulkOperationModal.type === 'reschedule') {
       // Offset appointments by X days - will need to fetch and update each individually
       const offsetDays = parseInt(formData.offset_days || '0');
-      for (const appointment of bulkSelection.selectedItems) {
+      for (const appointment of bulk.selectedItems) {
         const startTime = new Date(appointment.start_time);
         const endTime = new Date(appointment.end_time);
         startTime.setDate(startTime.getDate() + offsetDays);
@@ -244,8 +244,8 @@ const Appointments = () => {
     if (bulkOperationModal.type === 'type') {
       const result = await BulkOperationsService.performBulkOperation({
         type: 'status_change',
-        mode: bulkSelection.selectionMode,
-        itemIds: Array.from(bulkSelection.selectedIds),
+        mode: bulk.selectionMode,
+        itemIds: Array.from(bulk.selectedIds),
         filters: undefined,
         module: 'calendar_events',
         changes,
@@ -256,7 +256,7 @@ const Appointments = () => {
         saveUndoState({
           operation: 'edit',
           module: 'calendar_events',
-          itemIds: Array.from(bulkSelection.selectedIds),
+          itemIds: Array.from(bulk.selectedIds),
           previousValues,
           timestamp: new Date(),
         });
@@ -267,17 +267,17 @@ const Appointments = () => {
       saveUndoState({
         operation: 'edit',
         module: 'calendar_events',
-        itemIds: Array.from(bulkSelection.selectedIds),
+        itemIds: Array.from(bulk.selectedIds),
         previousValues,
         timestamp: new Date(),
       });
-      setBulkProgress(prev => ({ ...prev, completed: bulkSelection.selectedCount, isComplete: true }));
+      setBulkProgress(prev => ({ ...prev, completed: bulk.selectedCount, isComplete: true }));
     }
 
-    bulkSelection.deselectAll();
+    bulk.deselectAll();
     fetchAppointments();
     
-    toast.success(`${bulkSelection.selectedCount} appointments updated`);
+    toast.success(`${bulk.selectedCount} appointments updated`);
   };
 
   // Keyboard shortcuts
@@ -285,16 +285,16 @@ const Appointments = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'a' && !e.shiftKey) {
         e.preventDefault();
-        bulkSelection.selectAll();
+        bulk.selectAll();
       }
-      if (e.key === 'Escape' && bulkSelection.selectedCount > 0) {
-        bulkSelection.deselectAll();
+      if (e.key === 'Escape' && bulk.selectedCount > 0) {
+        bulk.deselectAll();
       }
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [bulkSelection.selectedCount]);
+  }, [bulk.selectedCount]);
 
   // Permission controls
   const canBulkEdit = role === 'Super Admin' || role === 'Admin';
@@ -307,26 +307,26 @@ const Appointments = () => {
 
       setBulkProgress({
         open: true,
-        operation: `Deleting ${bulkSelection.selectedCount} appointments`,
-        total: bulkSelection.selectedCount,
+        operation: `Deleting ${bulk.selectedCount} appointments`,
+        total: bulk.selectedCount,
         completed: 0,
         failed: 0,
         errors: [],
         isComplete: false,
       });
 
-      const filters = bulkSelection.isAllMatchingSelected ? getCurrentFilters() : undefined;
-      const result = await BulkOperationsService.bulkDelete('calendar_events', bulkSelection.selectionMode, Array.from(bulkSelection.selectedIds), filters, user.id);
+      const filters = bulk.isAllMatchingSelected ? getCurrentFilters() : undefined;
+      const result = await BulkOperationsService.bulkDelete('calendar_events', bulk.selectionMode, Array.from(bulk.selectedIds), filters, user.id);
 
       setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
-      bulkSelection.deselectAll();
+      bulk.deselectAll();
       fetchAppointments();
 
       toast.success(`${result.success} appointments deleted`);
       setBulkDeleteOpen(false);
     };
 
-    if (bulkSelection.isAllMatchingSelected) {
+    if (bulk.isAllMatchingSelected) {
       setConfirmBulkAction({
         open: true,
         action: 'permanently delete',
@@ -340,15 +340,15 @@ const Appointments = () => {
   const handleBulkExport = async () => {
     const performExport = async () => {
       try {
-        const filters = bulkSelection.isAllMatchingSelected ? getCurrentFilters() : undefined;
-        await BulkOperationsService.bulkExport('calendar_events', bulkSelection.selectionMode, Array.from(bulkSelection.selectedIds), filters);
-        toast.success(`${bulkSelection.selectedCount} appointments exported`);
+        const filters = bulk.isAllMatchingSelected ? getCurrentFilters() : undefined;
+        await BulkOperationsService.bulkExport('calendar_events', bulk.selectionMode, Array.from(bulk.selectedIds), filters);
+        toast.success(`${bulk.selectedCount} appointments exported`);
       } catch (error) {
         toast.error('Failed to export appointments');
       }
     };
 
-    if (bulkSelection.isAllMatchingSelected) {
+    if (bulk.isAllMatchingSelected) {
       setConfirmBulkAction({
         open: true,
         action: 'export',
@@ -368,7 +368,7 @@ const Appointments = () => {
   };
 
   const getBulkModalDescription = () => {
-    return `Update ${bulkSelection.selectedCount} selected appointments`;
+    return `Update ${bulk.selectedCount} selected appointments`;
   };
 
   const getBulkModalFields = () => {
@@ -419,13 +419,13 @@ const Appointments = () => {
             </div>
           </CardHeader>
           <CardContent>
-            {bulkSelection.isAllSelected && !bulkSelection.isAllMatchingSelected && totalCount > appointments.length && (
+            {bulk.isAllSelected && !bulk.isAllMatchingSelected && totalCount > appointments.length && (
               <BulkSelectAllBanner
                 visibleCount={appointments.length}
                 totalCount={totalCount}
-                isAllMatchingSelected={bulkSelection.isAllMatchingSelected}
-                onSelectAllMatching={() => bulkSelection.selectAllMatching(totalCount)}
-                onClear={bulkSelection.deselectAll}
+                isAllMatchingSelected={bulk.isAllMatchingSelected}
+                onSelectAllMatching={() => bulk.selectAllMatching(totalCount)}
+                onClear={bulk.deselectAll}
               />
             )}
             
@@ -445,12 +445,12 @@ const Appointments = () => {
                   <TableRow>
                     <TableHead className="w-12">
                       <Checkbox
-                        checked={bulkSelection.isAllSelected}
+                        checked={bulk.isAllSelected}
                         onCheckedChange={(checked) => {
                           if (checked) {
-                            bulkSelection.selectAll();
+                            bulk.selectAll();
                           } else {
-                            bulkSelection.deselectAll();
+                            bulk.deselectAll();
                           }
                         }}
                       />
@@ -472,8 +472,8 @@ const Appointments = () => {
                     >
                       <TableCell onClick={(e) => e.stopPropagation()}>
                         <Checkbox
-                          checked={bulkSelection.isSelected(appointment.id)}
-                          onCheckedChange={() => bulkSelection.toggleItem(appointment.id)}
+                          checked={bulk.isSelected(appointment.id)}
+                          onCheckedChange={() => bulk.toggleItem(appointment.id)}
                         />
                       </TableCell>
                       <TableCell className="font-medium">
@@ -532,10 +532,10 @@ const Appointments = () => {
 
         {/* Bulk Operations UI */}
         <BulkActionsBar
-          selectedCount={bulkSelection.selectedCount}
+          selectedCount={bulk.selectedCount}
           actions={bulkActions}
           onAction={handleBulkAction}
-          onClear={bulkSelection.deselectAll}
+          onClear={bulk.deselectAll}
         />
 
         <BulkOperationModal
@@ -543,7 +543,7 @@ const Appointments = () => {
           onOpenChange={(open) => setBulkOperationModal({ open, type: null })}
           title={getBulkModalTitle()}
           description={getBulkModalDescription()}
-          selectedCount={bulkSelection.selectedCount}
+          selectedCount={bulk.selectedCount}
           onConfirm={handleBulkOperationConfirm}
           fields={getBulkModalFields()}
         />
@@ -551,10 +551,10 @@ const Appointments = () => {
         <BulkDeleteConfirmation
           open={bulkDeleteOpen}
           onOpenChange={setBulkDeleteOpen}
-          itemCount={bulkSelection.selectedCount}
+          itemCount={bulk.selectedCount}
           itemType="appointments"
           onConfirm={handleBulkDelete}
-          requireTyping={bulkSelection.selectedCount > 10}
+          requireTyping={bulk.selectedCount > 10}
         />
 
         <BulkProgressModal
@@ -571,7 +571,7 @@ const Appointments = () => {
         <BulkConfirmationModal
           open={confirmBulkAction?.open || false}
           onOpenChange={(open) => !open && setConfirmBulkAction(null)}
-          totalCount={bulkSelection.selectedCount}
+          totalCount={bulk.selectedCount}
           action={confirmBulkAction?.action || ''}
           onConfirm={() => {
             confirmBulkAction?.callback();
