@@ -29,6 +29,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileActionButton } from '@/components/ui/mobile-action-button';
 import { ResponsiveList, MobileCard, MobileCardField } from '@/components/ui/responsive-table';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useBulkPDFExport } from '@/hooks/useBulkPDFExport';
 
 const Money = () => {
   const navigate = useNavigate();
@@ -75,6 +76,8 @@ const Money = () => {
 
   const { role } = useUserRole();
   const { undoState, saveUndoState, performUndo } = useBulkUndo();
+  const { isExporting: isExportingQuotes, progress: quotesExportProgress, exportQuotesToZip } = useBulkPDFExport();
+  const { isExporting: isExportingInvoices, progress: invoicesExportProgress, exportInvoicesToZip } = useBulkPDFExport();
 
   useEffect(() => {
     fetchData();
@@ -190,7 +193,7 @@ const Money = () => {
     { id: 'status', label: 'Change Status' },
     { id: 'send', label: 'Send to Customers', icon: <Send className="h-4 w-4" /> },
     { id: 'convert', label: 'Convert to Invoices', icon: <FileSpreadsheet className="h-4 w-4" /> },
-    { id: 'export', label: 'Export Selected', icon: <FileDown className="h-4 w-4" /> },
+    { id: 'export', label: 'Export PDFs as ZIP', icon: <FileDown className="h-4 w-4" /> },
     { id: 'delete', label: 'Delete Selected', variant: 'destructive' as const },
   ];
 
@@ -320,19 +323,17 @@ const Money = () => {
   };
 
   const handleQuotesBulkExport = async () => {
-    try {
-      await BulkOperationsService.bulkExport('quotes', Array.from(quotesSelection.selectedIds));
+    if (quotesSelection.selectedCount > 50) {
       toast({
-        title: 'Success',
-        description: `${quotesSelection.selectedCount} quotes exported`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to export quotes',
+        title: 'Too Many Quotes',
+        description: `Please select 50 or fewer quotes. You have ${quotesSelection.selectedCount} selected.`,
         variant: 'destructive',
       });
+      return;
     }
+
+    await exportQuotesToZip(Array.from(quotesSelection.selectedIds));
+    quotesSelection.deselectAll();
   };
 
   // Invoices bulk actions
@@ -340,7 +341,7 @@ const Money = () => {
     { id: 'status', label: 'Change Status' },
     { id: 'mark_paid', label: 'Mark as Paid', icon: <DollarSign className="h-4 w-4" /> },
     { id: 'send_reminder', label: 'Send Payment Reminders', icon: <Send className="h-4 w-4" /> },
-    { id: 'export', label: 'Export Selected', icon: <FileDown className="h-4 w-4" /> },
+    { id: 'export', label: 'Export PDFs as ZIP', icon: <FileDown className="h-4 w-4" /> },
     { id: 'delete', label: 'Delete Selected', variant: 'destructive' as const },
   ];
 
@@ -462,19 +463,17 @@ const Money = () => {
   };
 
   const handleInvoicesBulkExport = async () => {
-    try {
-      await BulkOperationsService.bulkExport('invoices', Array.from(invoicesSelection.selectedIds));
+    if (invoicesSelection.selectedCount > 50) {
       toast({
-        title: 'Success',
-        description: `${invoicesSelection.selectedCount} invoices exported`,
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to export invoices',
+        title: 'Too Many Invoices',
+        description: `Please select 50 or fewer invoices. You have ${invoicesSelection.selectedCount} selected.`,
         variant: 'destructive',
       });
+      return;
     }
+
+    await exportInvoicesToZip(Array.from(invoicesSelection.selectedIds));
+    invoicesSelection.deselectAll();
   };
 
   // Keyboard shortcuts for quotes
@@ -1046,6 +1045,33 @@ const Money = () => {
         errors={bulkProgress.errors}
         isComplete={bulkProgress.isComplete}
       />
+
+      {/* PDF Export Progress Modals */}
+      {isExportingQuotes && (
+        <BulkProgressModal
+          open={true}
+          onOpenChange={() => {}}
+          operation={`Generating Quote PDFs (${quotesExportProgress.current}/${quotesExportProgress.total})`}
+          total={quotesExportProgress.total}
+          completed={quotesExportProgress.current}
+          failed={0}
+          errors={[]}
+          isComplete={false}
+        />
+      )}
+
+      {isExportingInvoices && (
+        <BulkProgressModal
+          open={true}
+          onOpenChange={() => {}}
+          operation={`Generating Invoice PDFs (${invoicesExportProgress.current}/${invoicesExportProgress.total})`}
+          total={invoicesExportProgress.total}
+          completed={invoicesExportProgress.current}
+          failed={0}
+          errors={[]}
+          isComplete={false}
+        />
+      )}
 
       {undoState && (
         <BulkUndoToast count={undoState.itemIds.length} onUndo={performUndo} />
