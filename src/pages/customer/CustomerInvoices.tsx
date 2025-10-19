@@ -12,6 +12,8 @@ import PaymentDetailModal from '@/components/customer/PaymentDetailModal';
 import InvoiceStatusBadge from '@/components/admin/money/InvoiceStatusBadge';
 import QuoteStatusBadge from '@/components/admin/money/QuoteStatusBadge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useGeneratePDF } from '@/hooks/useGeneratePDF';
+import { Download } from 'lucide-react';
 
 type PaymentDocument = {
   id: string;
@@ -34,6 +36,34 @@ const CustomerInvoices = () => {
   const [sortBy, setSortBy] = useState<'date-desc' | 'date-asc' | 'amount-desc' | 'amount-asc'>('date-desc');
   const [selectedDocument, setSelectedDocument] = useState<PaymentDocument | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const { generateQuotePDF, generateInvoicePDF, isGenerating } = useGeneratePDF();
+
+  const handleDownloadPDF = async (doc: PaymentDocument) => {
+    try {
+      // Fetch line items
+      const table = doc.type === 'quote' ? 'quote_items' : 'invoice_items';
+      const idField = doc.type === 'quote' ? 'quote_id' : 'invoice_id';
+      
+      const { data: items } = await supabase
+        .from(table as any)
+        .select('description, quantity, unit_price, amount')
+        .eq(idField, doc.id);
+
+      if (!items || items.length === 0) {
+        toast.error('No items found for this document');
+        return;
+      }
+
+      if (doc.type === 'quote') {
+        await generateQuotePDF(doc.id, items, true);
+      } else {
+        await generateInvoicePDF(doc.id, items, true);
+      }
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      toast.error('Failed to download PDF');
+    }
+  };
 
   useEffect(() => {
     fetchPaymentDocuments();
@@ -358,6 +388,19 @@ const CustomerInvoices = () => {
                       {doc.type === 'invoice' && doc.status !== 'paid' && (
                         <p className="text-xs text-muted-foreground">Balance Due</p>
                       )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownloadPDF(doc);
+                        }}
+                        disabled={isGenerating}
+                        className="mt-2"
+                      >
+                        <Download className="h-4 w-4 mr-1" />
+                        {isGenerating ? 'Loading...' : 'PDF'}
+                      </Button>
                     </div>
                   </div>
                 ))}

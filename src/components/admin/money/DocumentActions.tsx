@@ -73,7 +73,7 @@ const DocumentActions = ({
           disabled={isGenerating}
         >
           <Eye className="h-4 w-4 mr-2" />
-          Preview PDF
+          {isGenerating ? 'Generating...' : 'Preview PDF'}
         </Button>
         
         <Button
@@ -83,7 +83,7 @@ const DocumentActions = ({
           disabled={isGenerating}
         >
           <Download className="h-4 w-4 mr-2" />
-          Download PDF
+          {isGenerating ? 'Generating...' : 'Download PDF'}
         </Button>
         
         <Button
@@ -93,7 +93,7 @@ const DocumentActions = ({
           disabled={isGenerating}
         >
           <Mail className="h-4 w-4 mr-2" />
-          Email PDF
+          {isGenerating ? 'Preparing...' : 'Email PDF'}
         </Button>
       </div>
 

@@ -9,10 +9,13 @@ interface CompanySettings {
   logo_url?: string;
   business_slogan?: string;
   document_header_color?: string;
+  document_theme_color?: string;
   document_footer_text?: string;
   document_terms?: string;
   document_payment_instructions?: string;
   show_tagline_on_documents?: boolean;
+  show_logo_in_documents?: boolean;
+  document_logo_position?: string;
 }
 
 interface LineItem {
@@ -98,6 +101,12 @@ export class PDFGenerator {
     this.doc.setFillColor(r, g, b);
     this.doc.rect(0, 0, this.pageWidth, 40, 'F');
 
+    // Logo positioning (if enabled and logo exists)
+    if (company.show_logo_in_documents && company.logo_url) {
+      // Note: Actual logo rendering requires additional image loading
+      // For now, we just position text accordingly
+    }
+
     // Company name
     this.doc.setTextColor(255, 255, 255);
     this.doc.setFontSize(20);
@@ -124,9 +133,9 @@ export class PDFGenerator {
     this.doc.setFont('helvetica', 'normal');
     
     const lines = [
-      company.address,
-      company.phone,
-      company.email
+      company.address || '[Address Not Provided]',
+      company.phone || '[Phone Not Provided]',
+      company.email || '[Email Not Provided]'
     ];
 
     lines.forEach((line, index) => {
@@ -143,13 +152,13 @@ export class PDFGenerator {
     
     this.currentY += 7;
     this.doc.setFont('helvetica', 'normal');
-    this.doc.text(accountName, this.margin, this.currentY);
+    this.doc.text(accountName || '[Not Provided]', this.margin, this.currentY);
     
     if (contact) {
       this.currentY += 5;
-      this.doc.text(`${contact.first_name} ${contact.last_name}`, this.margin, this.currentY);
+      this.doc.text(`${contact.first_name || ''} ${contact.last_name || ''}`.trim() || '[Not Provided]', this.margin, this.currentY);
       this.currentY += 5;
-      this.doc.text(contact.email, this.margin, this.currentY);
+      this.doc.text(contact.email || '[Not Provided]', this.margin, this.currentY);
       if (contact.phone) {
         this.currentY += 5;
         this.doc.text(contact.phone, this.margin, this.currentY);
@@ -159,17 +168,24 @@ export class PDFGenerator {
     this.currentY += 15;
   }
 
-  private addLineItemsTable(items: LineItem[]) {
-    // Table header
-    this.doc.setFillColor(240, 240, 240);
+  private addLineItemsTable(items: LineItem[], company?: CompanySettings) {
+    // Table header with theme color
+    const themeColor = company?.document_theme_color || '#3b82f6';
+    const r = parseInt(themeColor.slice(1, 3), 16);
+    const g = parseInt(themeColor.slice(3, 5), 16);
+    const b = parseInt(themeColor.slice(5, 7), 16);
+    
+    this.doc.setFillColor(r, g, b);
     this.doc.rect(this.margin, this.currentY, this.pageWidth - (2 * this.margin), 10, 'F');
     
     this.doc.setFontSize(10);
     this.doc.setFont('helvetica', 'bold');
+    this.doc.setTextColor(255, 255, 255);
     this.doc.text('Description', this.margin + 2, this.currentY + 7);
     this.doc.text('Qty', this.pageWidth - 80, this.currentY + 7);
     this.doc.text('Rate', this.pageWidth - 60, this.currentY + 7);
     this.doc.text('Amount', this.pageWidth - this.margin - 2, this.currentY + 7, { align: 'right' });
+    this.doc.setTextColor(0, 0, 0);
 
     this.currentY += 12;
 
@@ -183,7 +199,19 @@ export class PDFGenerator {
         this.currentY = 20;
       }
 
-      this.doc.text(item.description, this.margin + 2, this.currentY);
+      // Escape special characters in description
+      const description = item.description.replace(/[<>&"']/g, (char) => {
+        const escapeMap: Record<string, string> = {
+          '<': '&lt;',
+          '>': '&gt;',
+          '&': '&amp;',
+          '"': '&quot;',
+          "'": '&#39;'
+        };
+        return escapeMap[char] || char;
+      });
+
+      this.doc.text(description, this.margin + 2, this.currentY);
       this.doc.text(item.quantity.toString(), this.pageWidth - 80, this.currentY);
       this.doc.text(`$${(item.unit_price / 100).toFixed(2)}`, this.pageWidth - 60, this.currentY);
       this.doc.text(`$${(item.amount / 100).toFixed(2)}`, this.pageWidth - this.margin - 2, this.currentY, { align: 'right' });
@@ -262,6 +290,11 @@ export class PDFGenerator {
   }
 
   async generateQuotePDF(quoteId: string, lineItems: LineItem[]): Promise<Blob> {
+    // Validate line items
+    if (!lineItems || lineItems.length === 0) {
+      throw new Error('Cannot generate PDF: No items in quote');
+    }
+
     const company = await this.loadCompanySettings();
     
     const { data: quote, error } = await supabase
@@ -300,7 +333,7 @@ export class PDFGenerator {
     }
     this.currentY += 10;
 
-    this.addLineItemsTable(lineItems);
+    this.addLineItemsTable(lineItems, company);
     
     const subtotal = lineItems.reduce((sum, item) => sum + item.amount, 0);
     this.addTotals(
@@ -317,6 +350,11 @@ export class PDFGenerator {
   }
 
   async generateInvoicePDF(invoiceId: string, lineItems: LineItem[]): Promise<Blob> {
+    // Validate line items
+    if (!lineItems || lineItems.length === 0) {
+      throw new Error('Cannot generate PDF: No items in invoice');
+    }
+
     const company = await this.loadCompanySettings();
     
     const { data: invoice, error } = await supabase
@@ -368,7 +406,7 @@ export class PDFGenerator {
       this.currentY += 10;
     }
 
-    this.addLineItemsTable(lineItems);
+    this.addLineItemsTable(lineItems, company);
     
     const subtotal = lineItems.reduce((sum, item) => sum + item.amount, 0);
     this.addTotals(
@@ -398,6 +436,135 @@ export class PDFGenerator {
     this.addNotes(invoiceData.notes, invoiceData.terms || company.document_terms);
     this.addFooter(company);
 
+    return this.doc.output('blob');
+  }
+
+  async generateProjectReportPDF(projectId: string): Promise<Blob> {
+    const company = await this.loadCompanySettings();
+    
+    // Fetch project data
+    const { data: project, error: projectError } = await supabase
+      .from('projects')
+      .select(`
+        *,
+        accounts (
+          account_name,
+          contacts (first_name, last_name, email, phone)
+        )
+      `)
+      .eq('id', projectId)
+      .single();
+
+    if (projectError) throw projectError;
+
+    // Fetch tasks
+    const { data: tasks } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('related_to_type', 'project')
+      .eq('related_to_id', projectId)
+      .order('created_at', { ascending: false });
+
+    // Fetch notes
+    const { data: notes } = await supabase
+      .from('notes')
+      .select('*, user_profiles(full_name)')
+      .eq('related_to_type', 'project')
+      .eq('related_to_id', projectId)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    // Fetch phases
+    const { data: phases } = await supabase
+      .from('project_phases')
+      .select('*')
+      .eq('project_id', projectId)
+      .order('phase_order');
+
+    this.addHeader(company, 'PROJECT REPORT', project.project_name);
+    this.addCompanyInfo(company);
+
+    // Project info
+    this.doc.setFontSize(12);
+    this.doc.setFont('helvetica', 'bold');
+    this.doc.text('Project Information', this.margin, this.currentY);
+    this.currentY += 7;
+
+    this.doc.setFontSize(9);
+    this.doc.setFont('helvetica', 'normal');
+    this.doc.text(`Status: ${project.status}`, this.margin, this.currentY);
+    this.currentY += 5;
+    this.doc.text(`Start Date: ${project.start_date || 'Not set'}`, this.margin, this.currentY);
+    this.currentY += 5;
+    this.doc.text(`Est. Completion: ${project.estimated_completion || 'Not set'}`, this.margin, this.currentY);
+    this.currentY += 10;
+
+    // Customer info
+    const contact = project.accounts?.contacts?.[0];
+    this.addCustomerInfo(project.accounts?.account_name, contact);
+
+    // Tasks
+    if (tasks && tasks.length > 0) {
+      this.doc.setFontSize(12);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text('Tasks', this.margin, this.currentY);
+      this.currentY += 7;
+
+      this.doc.setFontSize(9);
+      this.doc.setFont('helvetica', 'normal');
+      tasks.forEach((task) => {
+        if (this.currentY > this.pageHeight - 40) {
+          this.doc.addPage();
+          this.currentY = 20;
+        }
+        const checkbox = task.status === 'completed' ? '☑' : '☐';
+        this.doc.text(`${checkbox} ${task.title} (${task.status})`, this.margin + 2, this.currentY);
+        this.currentY += 5;
+      });
+      this.currentY += 5;
+    }
+
+    // Phases
+    if (phases && phases.length > 0) {
+      this.doc.setFontSize(12);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text('Project Phases', this.margin, this.currentY);
+      this.currentY += 7;
+
+      this.doc.setFontSize(9);
+      this.doc.setFont('helvetica', 'normal');
+      phases.forEach((phase) => {
+        if (this.currentY > this.pageHeight - 40) {
+          this.doc.addPage();
+          this.currentY = 20;
+        }
+        this.doc.text(`${phase.phase_name} - ${phase.status}`, this.margin + 2, this.currentY);
+        this.currentY += 5;
+      });
+      this.currentY += 5;
+    }
+
+    // Notes
+    if (notes && notes.length > 0) {
+      this.doc.setFontSize(12);
+      this.doc.setFont('helvetica', 'bold');
+      this.doc.text('Recent Notes', this.margin, this.currentY);
+      this.currentY += 7;
+
+      this.doc.setFontSize(9);
+      this.doc.setFont('helvetica', 'normal');
+      notes.forEach((note: any) => {
+        if (this.currentY > this.pageHeight - 40) {
+          this.doc.addPage();
+          this.currentY = 20;
+        }
+        const noteText = this.doc.splitTextToSize(note.content, this.pageWidth - (2 * this.margin) - 10);
+        this.doc.text(noteText, this.margin + 2, this.currentY);
+        this.currentY += noteText.length * 5 + 3;
+      });
+    }
+
+    this.addFooter(company);
     return this.doc.output('blob');
   }
 }

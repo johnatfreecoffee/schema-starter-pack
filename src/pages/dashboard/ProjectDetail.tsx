@@ -21,6 +21,8 @@ import ActivityFeed from '@/components/admin/ActivityFeed';
 import { EntityActivityTab } from '@/components/admin/EntityActivityTab';
 import { SendEmailModal } from '@/components/admin/email/SendEmailModal';
 import EmailHistory from '@/components/admin/email/EmailHistory';
+import { useGeneratePDF } from '@/hooks/useGeneratePDF';
+import { FileDown } from 'lucide-react';
 
 const ProjectDetail = () => {
   const { id } = useParams();
@@ -39,6 +41,7 @@ const ProjectDetail = () => {
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [requestingReview, setRequestingReview] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const { generateProjectReportPDF, isGenerating } = useGeneratePDF();
 
   useEffect(() => {
     if (id) {
@@ -325,6 +328,14 @@ const ProjectDetail = () => {
             </div>
           </div>
           <div className="flex gap-2">
+            <Button 
+              onClick={() => generateProjectReportPDF(project.id, true)} 
+              variant="outline"
+              disabled={isGenerating}
+            >
+              <FileDown className="mr-2 h-4 w-4" />
+              {isGenerating ? 'Generating...' : 'Generate Report'}
+            </Button>
             {(project.status === 'completed' || project.status === 'on_hold') && (
               <Button 
                 onClick={handleRequestReview} 

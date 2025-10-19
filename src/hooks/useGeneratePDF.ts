@@ -3,12 +3,20 @@ import { PDFGenerator, uploadDocumentToStorage } from '@/lib/pdfGenerator';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { format } from 'date-fns';
 
 interface LineItem {
   description: string;
   quantity: number;
   unit_price: number;
   amount: number;
+}
+
+function sanitizeFilename(text: string, maxLength: number = 30): string {
+  return text
+    .replace(/[^a-zA-Z0-9\s-]/g, '')
+    .replace(/\s+/g, '_')
+    .substring(0, maxLength);
 }
 
 export function useGeneratePDF() {
@@ -20,6 +28,16 @@ export function useGeneratePDF() {
     lineItems: LineItem[],
     download: boolean = false
   ): Promise<Blob | null> => {
+    // Validation
+    if (!lineItems || lineItems.length === 0) {
+      toast({
+        title: 'Cannot Generate PDF',
+        description: 'No items in quote',
+        variant: 'destructive',
+      });
+      return null;
+    }
+
     try {
       setIsGenerating(true);
       const generator = new PDFGenerator();
@@ -28,14 +46,18 @@ export function useGeneratePDF() {
       if (download) {
         const { data: quote } = await supabase
           .from('quotes')
-          .select('quote_number')
+          .select('quote_number, accounts(account_name)')
           .eq('id', quoteId)
           .single();
+
+        const customerName = sanitizeFilename(quote?.accounts?.account_name || 'Customer');
+        const dateStr = format(new Date(), 'yyyy-MM-dd');
+        const filename = `Quote_${quote?.quote_number}_${customerName}_${dateStr}.pdf`;
 
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `quote-${quote?.quote_number}.pdf`;
+        a.download = filename;
         a.click();
         URL.revokeObjectURL(url);
 
@@ -62,7 +84,7 @@ export function useGeneratePDF() {
       console.error('Error generating quote PDF:', error);
       toast({
         title: 'Error',
-        description: 'Failed to generate quote PDF',
+        description: error.message || 'Failed to generate quote PDF',
         variant: 'destructive',
       });
       return null;
@@ -76,6 +98,16 @@ export function useGeneratePDF() {
     lineItems: LineItem[],
     download: boolean = false
   ): Promise<Blob | null> => {
+    // Validation
+    if (!lineItems || lineItems.length === 0) {
+      toast({
+        title: 'Cannot Generate PDF',
+        description: 'No items in invoice',
+        variant: 'destructive',
+      });
+      return null;
+    }
+
     try {
       setIsGenerating(true);
       const generator = new PDFGenerator();
@@ -84,14 +116,18 @@ export function useGeneratePDF() {
       if (download) {
         const { data: invoice } = await supabase
           .from('invoices')
-          .select('invoice_number')
+          .select('invoice_number, accounts(account_name)')
           .eq('id', invoiceId)
           .single();
+
+        const customerName = sanitizeFilename(invoice?.accounts?.account_name || 'Customer');
+        const dateStr = format(new Date(), 'yyyy-MM-dd');
+        const filename = `Invoice_${invoice?.invoice_number}_${customerName}_${dateStr}.pdf`;
 
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `invoice-${invoice?.invoice_number}.pdf`;
+        a.download = filename;
         a.click();
         URL.revokeObjectURL(url);
 
@@ -118,7 +154,66 @@ export function useGeneratePDF() {
       console.error('Error generating invoice PDF:', error);
       toast({
         title: 'Error',
-        description: 'Failed to generate invoice PDF',
+        description: error.message || 'Failed to generate invoice PDF',
+        variant: 'destructive',
+      });
+      return null;
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const generateProjectReportPDF = async (
+    projectId: string,
+    download: boolean = false
+  ): Promise<Blob | null> => {
+    try {
+      setIsGenerating(true);
+      const generator = new PDFGenerator();
+      const blob = await generator.generateProjectReportPDF(projectId);
+
+      if (download) {
+        const { data: project } = await supabase
+          .from('projects')
+          .select('project_name')
+          .eq('id', projectId)
+          .single();
+
+        const projectName = sanitizeFilename(project?.project_name || 'Project');
+        const dateStr = format(new Date(), 'yyyy-MM-dd');
+        const filename = `Project_Report_${projectName}_${dateStr}.pdf`;
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        toast({
+          title: 'Success',
+          description: 'Project report downloaded successfully',
+        });
+
+        // Log activity
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await CRUDLogger.logUpdate({
+            userId: user.id,
+            entityType: 'project',
+            entityId: projectId,
+            entityName: project?.project_name || '',
+            changes: { action: { old: '', new: 'Report generated' } },
+          });
+        }
+      }
+
+      return blob;
+    } catch (error: any) {
+      console.error('Error generating project report:', error);
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to generate project report',
         variant: 'destructive',
       });
       return null;
@@ -185,6 +280,7 @@ export function useGeneratePDF() {
     isGenerating,
     generateQuotePDF,
     generateInvoicePDF,
+    generateProjectReportPDF,
     uploadAndSaveQuotePDF,
     uploadAndSaveInvoicePDF,
   };

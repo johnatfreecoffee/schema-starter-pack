@@ -597,6 +597,7 @@ export type Database = {
           document_logo_position: string | null
           document_payment_instructions: string | null
           document_terms: string | null
+          document_theme_color: string | null
           email: string
           email_from_address: string | null
           email_from_name: string | null
@@ -613,6 +614,7 @@ export type Database = {
           phone: string
           service_radius: number | null
           service_radius_unit: string | null
+          show_logo_in_documents: boolean | null
           show_tagline_on_documents: boolean | null
           twitter_url: string | null
           updated_at: string
@@ -637,6 +639,7 @@ export type Database = {
           document_logo_position?: string | null
           document_payment_instructions?: string | null
           document_terms?: string | null
+          document_theme_color?: string | null
           email: string
           email_from_address?: string | null
           email_from_name?: string | null
@@ -653,6 +656,7 @@ export type Database = {
           phone: string
           service_radius?: number | null
           service_radius_unit?: string | null
+          show_logo_in_documents?: boolean | null
           show_tagline_on_documents?: boolean | null
           twitter_url?: string | null
           updated_at?: string
@@ -677,6 +681,7 @@ export type Database = {
           document_logo_position?: string | null
           document_payment_instructions?: string | null
           document_terms?: string | null
+          document_theme_color?: string | null
           email?: string
           email_from_address?: string | null
           email_from_name?: string | null
@@ -693,6 +698,7 @@ export type Database = {
           phone?: string
           service_radius?: number | null
           service_radius_unit?: string | null
+          show_logo_in_documents?: boolean | null
           show_tagline_on_documents?: boolean | null
           twitter_url?: string | null
           updated_at?: string
