@@ -207,7 +207,7 @@ const Projects = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    await BulkOperationsService.bulkDelete('projects', Array.from(bulk.selectedIds), user.id);
+    await BulkOperationsService.bulkDelete('projects', bulk.selectionMode, Array.from(bulk.selectedIds), undefined, user.id);
     toast({ title: 'Success', description: `Deleted ${bulk.selectedCount} projects` });
     bulk.deselectAll();
     fetchProjects();
@@ -222,7 +222,7 @@ const Projects = () => {
       .filter(p => bulk.selectedIds.has(p.id))
       .map(p => ({ id: p.id, status: p.status }));
 
-    await BulkOperationsService.bulkStatusChange('projects', Array.from(bulk.selectedIds), formData.status, user.id);
+    await BulkOperationsService.bulkStatusChange('projects', bulk.selectionMode, formData.status, user.id, Array.from(bulk.selectedIds), undefined);
     
     saveUndoState({
       operation: 'status',

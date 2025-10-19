@@ -331,9 +331,11 @@ const Leads = () => {
 
     const result = await BulkOperationsService.bulkStatusChange(
       'leads',
-      Array.from(bulkSelection.selectedIds),
+      bulkSelection.selectionMode,
       data.status,
-      user.id
+      user.id,
+      Array.from(bulkSelection.selectedIds),
+      undefined
     );
 
     setBulkProgress(prev => ({
@@ -378,9 +380,11 @@ const Leads = () => {
 
     const result = await BulkOperationsService.bulkAssign(
       'leads',
-      Array.from(bulkSelection.selectedIds),
+      bulkSelection.selectionMode,
       data.assignedTo,
-      user.id
+      user.id,
+      Array.from(bulkSelection.selectedIds),
+      undefined
     );
 
     setBulkProgress(prev => ({
@@ -431,7 +435,9 @@ const Leads = () => {
 
     const result = await BulkOperationsService.bulkDelete(
       'leads',
+      bulkSelection.selectionMode,
       Array.from(bulkSelection.selectedIds),
+      undefined,
       user.id
     );
 
@@ -456,7 +462,9 @@ const Leads = () => {
     try {
       await BulkOperationsService.bulkExport(
         'leads',
-        Array.from(bulkSelection.selectedIds)
+        bulkSelection.selectionMode,
+        Array.from(bulkSelection.selectedIds),
+        undefined
       );
       toast({
         title: 'Success',
@@ -476,7 +484,7 @@ const Leads = () => {
     if (!user) return;
 
     try {
-      await BulkOperationsService.bulkTagsUpdate('leads', Array.from(bulkSelection.selectedIds), tags, mode, user.id);
+      await BulkOperationsService.bulkTagsUpdate('leads', bulkSelection.selectionMode, tags, mode, user.id, Array.from(bulkSelection.selectedIds), undefined);
       toast({ title: 'Success', description: `Tags updated for ${bulkSelection.selectedCount} leads` });
       bulkSelection.deselectAll();
       loadLeads();

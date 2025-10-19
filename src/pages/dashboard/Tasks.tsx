@@ -409,7 +409,9 @@ const Tasks = () => {
       type: bulkOperationModal.type === 'assign' ? 'assign' : 
             bulkOperationModal.type === 'status' ? 'status_change' :
             bulkOperationModal.type === 'priority' ? 'priority_change' : 'date_change',
+      mode: bulkSelection.selectionMode,
       itemIds: Array.from(bulkSelection.selectedIds),
+      filters: undefined,
       module: 'tasks',
       changes,
       userId: user.id,
@@ -458,7 +460,9 @@ const Tasks = () => {
 
     const result = await BulkOperationsService.performBulkOperation({
       type: 'status_change',
+      mode: bulkSelection.selectionMode,
       itemIds: Array.from(bulkSelection.selectedIds),
+      filters: undefined,
       module: 'tasks',
       changes: { status: 'completed', completed_at: new Date().toISOString() },
       userId: user.id,
@@ -487,7 +491,7 @@ const Tasks = () => {
       isComplete: false,
     });
 
-    const result = await BulkOperationsService.bulkDelete('tasks', Array.from(bulkSelection.selectedIds), user.id);
+    const result = await BulkOperationsService.bulkDelete('tasks', bulkSelection.selectionMode, Array.from(bulkSelection.selectedIds), undefined, user.id);
 
     setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
     bulkSelection.deselectAll();
@@ -501,7 +505,7 @@ const Tasks = () => {
 
   const handleBulkExport = async () => {
     try {
-      await BulkOperationsService.bulkExport('tasks', Array.from(bulkSelection.selectedIds));
+      await BulkOperationsService.bulkExport('tasks', bulkSelection.selectionMode, Array.from(bulkSelection.selectedIds), undefined);
       toast({
         title: 'Success',
         description: `${bulkSelection.selectedCount} tasks exported`,

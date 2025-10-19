@@ -198,7 +198,7 @@ const Contacts = () => {
     if (actionId === 'delete') {
       setBulkDeleteOpen(true);
     } else if (actionId === 'export') {
-      await BulkOperationsService.bulkExport('contacts', Array.from(bulk.selectedIds));
+      await BulkOperationsService.bulkExport('contacts', bulk.selectionMode, Array.from(bulk.selectedIds), undefined);
       toast({ title: 'Success', description: `Exported ${bulk.selectedCount} contacts` });
     } else if (actionId === 'tags') {
       setBulkTagsOpen(true);
@@ -211,7 +211,7 @@ const Contacts = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    await BulkOperationsService.bulkDelete('contacts', Array.from(bulk.selectedIds), user.id);
+    await BulkOperationsService.bulkDelete('contacts', bulk.selectionMode, Array.from(bulk.selectedIds), undefined, user.id);
     toast({ title: 'Success', description: `Deleted ${bulk.selectedCount} contacts` });
     bulk.deselectAll();
     fetchContacts();
@@ -222,7 +222,7 @@ const Contacts = () => {
     if (!user) return;
 
     try {
-      await BulkOperationsService.bulkTagsUpdate('contacts', Array.from(bulk.selectedIds), tags, mode, user.id);
+      await BulkOperationsService.bulkTagsUpdate('contacts', bulk.selectionMode, tags, mode, user.id, Array.from(bulk.selectedIds), undefined);
       toast({ title: 'Success', description: `Tags updated for ${bulk.selectedCount} contacts` });
       bulk.deselectAll();
       fetchContacts();

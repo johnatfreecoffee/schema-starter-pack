@@ -10,9 +10,13 @@ export type BulkOperationType =
   | 'priority_change'
   | 'date_change';
 
+export type BulkSelectionMode = 'selected_ids' | 'all_matching';
+
 interface BulkOperationParams {
   type: BulkOperationType;
-  itemIds: string[];
+  mode: BulkSelectionMode;
+  itemIds?: string[];
+  filters?: Record<string, any>;
   module: string;
   changes: Record<string, any>;
   userId: string;
@@ -30,45 +34,90 @@ export class BulkOperationsService {
   static async performBulkOperation(
     params: BulkOperationParams
   ): Promise<BulkOperationResult> {
-    const { type, itemIds, module, changes, userId } = params;
+    const { type, mode, itemIds, filters, module, changes, userId } = params;
     const result: BulkOperationResult = {
       success: 0,
       failed: 0,
       errors: [],
     };
 
-    // Process in batches
-    for (let i = 0; i < itemIds.length; i += this.BATCH_SIZE) {
-      const batch = itemIds.slice(i, i + this.BATCH_SIZE);
-      
+    if (mode === 'all_matching' && filters) {
+      // Apply operation to all items matching filters
       try {
-        const { error } = await supabase
-          .from(module as any)
-          .update(changes as any)
-          .in('id', batch);
+        let query = supabase.from(module as any).update(changes as any);
+        
+        // Apply filters
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== null && value !== undefined && value !== '') {
+            if (Array.isArray(value)) {
+              query = query.in(key, value);
+            } else {
+              query = query.eq(key, value);
+            }
+          }
+        });
+
+        const { data, error } = await query.select('id');
 
         if (error) throw error;
 
-        result.success += batch.length;
+        const affectedIds = data?.map((item: any) => item.id) || [];
+        result.success = affectedIds.length;
 
-        // Log activity for each item
-        await Promise.all(
-          batch.map(itemId =>
-            ActivityLogger.log({
-              userId,
-              entityType: module as any,
-              entityId: itemId,
-              action: 'updated',
-              changes: { bulk_operation: { old: null, new: type } },
-              metadata: { bulk: true, batch_size: batch.length, changes },
-            })
-          )
-        );
+        // Log activity for affected items (in batches to avoid overwhelming the system)
+        for (let i = 0; i < affectedIds.length; i += this.BATCH_SIZE) {
+          const batch = affectedIds.slice(i, i + this.BATCH_SIZE);
+          await Promise.all(
+            batch.map((itemId: string) =>
+              ActivityLogger.log({
+                userId,
+                entityType: module as any,
+                entityId: itemId,
+                action: 'updated',
+                changes: { bulk_operation: { old: null, new: type } },
+                metadata: { bulk: true, mode: 'all_matching', changes },
+              })
+            )
+          );
+        }
       } catch (error: any) {
-        result.failed += batch.length;
-        batch.forEach(id => {
-          result.errors.push({ id, error: error.message });
-        });
+        result.failed = 1;
+        result.errors.push({ id: 'bulk_all', error: error.message });
+      }
+    } else if (mode === 'selected_ids' && itemIds) {
+      // Process in batches
+      for (let i = 0; i < itemIds.length; i += this.BATCH_SIZE) {
+        const batch = itemIds.slice(i, i + this.BATCH_SIZE);
+        
+        try {
+          const { error } = await supabase
+            .from(module as any)
+            .update(changes as any)
+            .in('id', batch);
+
+          if (error) throw error;
+
+          result.success += batch.length;
+
+          // Log activity for each item
+          await Promise.all(
+            batch.map(itemId =>
+              ActivityLogger.log({
+                userId,
+                entityType: module as any,
+                entityId: itemId,
+                action: 'updated',
+                changes: { bulk_operation: { old: null, new: type } },
+                metadata: { bulk: true, batch_size: batch.length, changes },
+              })
+            )
+          );
+        } catch (error: any) {
+          result.failed += batch.length;
+          batch.forEach(id => {
+            result.errors.push({ id, error: error.message });
+          });
+        }
       }
     }
 
@@ -77,8 +126,10 @@ export class BulkOperationsService {
 
   static async bulkDelete(
     module: string,
-    itemIds: string[],
-    userId: string
+    mode: BulkSelectionMode,
+    itemIds?: string[],
+    filters?: Record<string, any>,
+    userId?: string
   ): Promise<BulkOperationResult> {
     const result: BulkOperationResult = {
       success: 0,
@@ -86,36 +137,84 @@ export class BulkOperationsService {
       errors: [],
     };
 
-    for (let i = 0; i < itemIds.length; i += this.BATCH_SIZE) {
-      const batch = itemIds.slice(i, i + this.BATCH_SIZE);
-      
+    if (mode === 'all_matching' && filters) {
+      // Delete all items matching filters
       try {
-        const { error } = await supabase
-          .from(module as any)
-          .delete()
-          .in('id', batch);
+        let query = supabase.from(module as any).delete();
+        
+        // Apply filters
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== null && value !== undefined && value !== '') {
+            if (Array.isArray(value)) {
+              query = query.in(key, value);
+            } else {
+              query = query.eq(key, value);
+            }
+          }
+        });
+
+        const { data, error } = await query.select('id');
 
         if (error) throw error;
 
-        result.success += batch.length;
+        const deletedIds = data?.map((item: any) => item.id) || [];
+        result.success = deletedIds.length;
 
         // Log deletions
-        await Promise.all(
-          batch.map(itemId =>
-            ActivityLogger.log({
-              userId,
-              entityType: module as any,
-              entityId: itemId,
-              action: 'deleted',
-              metadata: { bulk: true },
-            })
-          )
-        );
+        if (userId) {
+          for (let i = 0; i < deletedIds.length; i += this.BATCH_SIZE) {
+            const batch = deletedIds.slice(i, i + this.BATCH_SIZE);
+            await Promise.all(
+              batch.map((itemId: string) =>
+                ActivityLogger.log({
+                  userId,
+                  entityType: module as any,
+                  entityId: itemId,
+                  action: 'deleted',
+                  metadata: { bulk: true, mode: 'all_matching' },
+                })
+              )
+            );
+          }
+        }
       } catch (error: any) {
-        result.failed += batch.length;
-        batch.forEach(id => {
-          result.errors.push({ id, error: error.message });
-        });
+        result.failed = 1;
+        result.errors.push({ id: 'bulk_all', error: error.message });
+      }
+    } else if (mode === 'selected_ids' && itemIds) {
+      for (let i = 0; i < itemIds.length; i += this.BATCH_SIZE) {
+        const batch = itemIds.slice(i, i + this.BATCH_SIZE);
+        
+        try {
+          const { error } = await supabase
+            .from(module as any)
+            .delete()
+            .in('id', batch);
+
+          if (error) throw error;
+
+          result.success += batch.length;
+
+          // Log deletions
+          if (userId) {
+            await Promise.all(
+              batch.map(itemId =>
+                ActivityLogger.log({
+                  userId,
+                  entityType: module as any,
+                  entityId: itemId,
+                  action: 'deleted',
+                  metadata: { bulk: true },
+                })
+              )
+            );
+          }
+        } catch (error: any) {
+          result.failed += batch.length;
+          batch.forEach(id => {
+            result.errors.push({ id, error: error.message });
+          });
+        }
       }
     }
 
@@ -124,13 +223,17 @@ export class BulkOperationsService {
 
   static async bulkAssign(
     module: string,
-    itemIds: string[],
+    mode: BulkSelectionMode,
     assignedTo: string,
-    userId: string
+    userId: string,
+    itemIds?: string[],
+    filters?: Record<string, any>
   ): Promise<BulkOperationResult> {
     return this.performBulkOperation({
       type: 'assign',
+      mode,
       itemIds,
+      filters,
       module,
       changes: { assigned_to: assignedTo },
       userId,
@@ -139,13 +242,17 @@ export class BulkOperationsService {
 
   static async bulkStatusChange(
     module: string,
-    itemIds: string[],
+    mode: BulkSelectionMode,
     status: string,
-    userId: string
+    userId: string,
+    itemIds?: string[],
+    filters?: Record<string, any>
   ): Promise<BulkOperationResult> {
     return this.performBulkOperation({
       type: 'status_change',
+      mode,
       itemIds,
+      filters,
       module,
       changes: { status },
       userId,
@@ -154,14 +261,29 @@ export class BulkOperationsService {
 
   static async bulkExport(
     module: string,
-    itemIds: string[],
+    mode: BulkSelectionMode,
+    itemIds?: string[],
+    filters?: Record<string, any>,
     format: 'csv' | 'excel' = 'csv'
   ): Promise<void> {
-    // Fetch all selected items
-    const { data, error } = await supabase
-      .from(module as any)
-      .select('*')
-      .in('id', itemIds);
+    let query = supabase.from(module as any).select('*');
+
+    if (mode === 'all_matching' && filters) {
+      // Apply filters
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '') {
+          if (Array.isArray(value)) {
+            query = query.in(key, value);
+          } else {
+            query = query.eq(key, value);
+          }
+        }
+      });
+    } else if (mode === 'selected_ids' && itemIds) {
+      query = query.in('id', itemIds);
+    }
+
+    const { data, error } = await query;
 
     if (error) throw error;
     if (!data || data.length === 0) throw new Error('No data to export');
@@ -192,10 +314,12 @@ export class BulkOperationsService {
 
   static async bulkTagsUpdate(
     module: string,
-    itemIds: string[],
+    selectionMode: BulkSelectionMode,
     tags: string[],
-    mode: 'add' | 'replace',
-    userId: string
+    tagMode: 'add' | 'replace',
+    userId: string,
+    itemIds?: string[],
+    filters?: Record<string, any>
   ): Promise<BulkOperationResult> {
     const result: BulkOperationResult = {
       success: 0,
@@ -203,14 +327,33 @@ export class BulkOperationsService {
       errors: [],
     };
 
-    for (let i = 0; i < itemIds.length; i += this.BATCH_SIZE) {
-      const batch = itemIds.slice(i, i + this.BATCH_SIZE);
+    // Get items to update
+    let targetIds: string[] = [];
+    if (selectionMode === 'all_matching' && filters) {
+      let query = supabase.from(module as any).select('id, tags');
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '') {
+          if (Array.isArray(value)) {
+            query = query.in(key, value);
+          } else {
+            query = query.eq(key, value);
+          }
+        }
+      });
+      const { data } = await query;
+      targetIds = data?.map((item: any) => item.id) || [];
+    } else if (selectionMode === 'selected_ids' && itemIds) {
+      targetIds = itemIds;
+    }
+
+    for (let i = 0; i < targetIds.length; i += this.BATCH_SIZE) {
+      const batch = targetIds.slice(i, i + this.BATCH_SIZE);
       
       try {
         for (const itemId of batch) {
           let newTags = tags;
           
-          if (mode === 'add') {
+          if (tagMode === 'add') {
             // Fetch current item
             const { data: currentItem, error: fetchError } = await supabase
               .from(module as any)
@@ -243,7 +386,7 @@ export class BulkOperationsService {
               entityId: itemId,
               action: 'updated',
               changes: { tags: { old: null, new: tags } },
-              metadata: { bulk: true, tag_mode: mode },
+              metadata: { bulk: true, tag_mode: tagMode, selection_mode: selectionMode },
             })
           )
         );

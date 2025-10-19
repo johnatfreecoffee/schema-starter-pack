@@ -173,7 +173,7 @@ const Accounts = () => {
     } else if (actionId === 'tags') {
       setTagsModalOpen(true);
     } else if (actionId === 'export') {
-      await BulkOperationsService.bulkExport('accounts', Array.from(bulk.selectedIds));
+      await BulkOperationsService.bulkExport('accounts', bulk.selectionMode, Array.from(bulk.selectedIds), undefined);
       toast({ title: 'Success', description: `${bulk.selectedCount} accounts exported` });
     } else {
       setBulkAction(actionId);
@@ -184,7 +184,7 @@ const Accounts = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    await BulkOperationsService.bulkDelete('accounts', Array.from(bulk.selectedIds), user.id);
+    await BulkOperationsService.bulkDelete('accounts', bulk.selectionMode, Array.from(bulk.selectedIds), undefined, user.id);
     toast({ title: 'Success', description: `Deleted ${bulk.selectedCount} accounts` });
     bulk.deselectAll();
     fetchAccounts();
@@ -197,7 +197,7 @@ const Accounts = () => {
     // Store previous values for undo
     const previousValues = bulk.selectedItems.map(a => ({ id: a.id, status: a.status }));
 
-    await BulkOperationsService.bulkStatusChange('accounts', Array.from(bulk.selectedIds), formData.status, user.id);
+    await BulkOperationsService.bulkStatusChange('accounts', bulk.selectionMode, formData.status, user.id, Array.from(bulk.selectedIds), undefined);
     
     // Save undo state
     saveUndoState({
@@ -503,7 +503,7 @@ const Accounts = () => {
           onConfirm={async (tags, mode) => {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
-            await BulkOperationsService.bulkTagsUpdate('accounts', Array.from(bulk.selectedIds), tags, mode, user.id);
+            await BulkOperationsService.bulkTagsUpdate('accounts', bulk.selectionMode, tags, mode, user.id, Array.from(bulk.selectedIds), undefined);
             toast({ title: 'Success', description: `Tags updated for ${bulk.selectedCount} accounts` });
             bulk.deselectAll();
             fetchAccounts();

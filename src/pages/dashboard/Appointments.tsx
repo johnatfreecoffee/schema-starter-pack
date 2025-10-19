@@ -228,7 +228,9 @@ const Appointments = () => {
     if (bulkOperationModal.type === 'type') {
       const result = await BulkOperationsService.performBulkOperation({
         type: 'status_change',
+        mode: bulkSelection.selectionMode,
         itemIds: Array.from(bulkSelection.selectedIds),
+        filters: undefined,
         module: 'calendar_events',
         changes,
         userId: user.id,
@@ -296,7 +298,7 @@ const Appointments = () => {
       isComplete: false,
     });
 
-    const result = await BulkOperationsService.bulkDelete('calendar_events', Array.from(bulkSelection.selectedIds), user.id);
+    const result = await BulkOperationsService.bulkDelete('calendar_events', bulkSelection.selectionMode, Array.from(bulkSelection.selectedIds), undefined, user.id);
 
     setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
     bulkSelection.deselectAll();
@@ -307,7 +309,7 @@ const Appointments = () => {
 
   const handleBulkExport = async () => {
     try {
-      await BulkOperationsService.bulkExport('calendar_events', Array.from(bulkSelection.selectedIds));
+      await BulkOperationsService.bulkExport('calendar_events', bulkSelection.selectionMode, Array.from(bulkSelection.selectedIds), undefined);
       toast.success(`${bulkSelection.selectedCount} appointments exported`);
     } catch (error) {
       toast.error('Failed to export appointments');

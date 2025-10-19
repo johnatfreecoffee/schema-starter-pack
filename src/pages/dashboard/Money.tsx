@@ -235,9 +235,11 @@ const Money = () => {
     if (quotesBulkModal.type === 'status') {
       const result = await BulkOperationsService.bulkStatusChange(
         'quotes',
-        Array.from(quotesSelection.selectedIds),
+        quotesSelection.selectionMode,
         formData.status,
-        user.id
+        user.id,
+        Array.from(quotesSelection.selectedIds),
+        undefined
       );
       
       if (result.success > 0) {
@@ -308,7 +310,9 @@ const Money = () => {
 
     const result = await BulkOperationsService.bulkDelete(
       'quotes',
+      quotesSelection.selectionMode,
       Array.from(quotesSelection.selectedIds),
+      undefined,
       user.id
     );
 
@@ -385,9 +389,11 @@ const Money = () => {
     if (invoicesBulkModal.type === 'status') {
       const result = await BulkOperationsService.bulkStatusChange(
         'invoices',
-        Array.from(invoicesSelection.selectedIds),
+        invoicesSelection.selectionMode,
         formData.status,
-        user.id
+        user.id,
+        Array.from(invoicesSelection.selectedIds),
+        undefined
       );
       
       if (result.success > 0) {
@@ -404,7 +410,9 @@ const Money = () => {
     } else if (invoicesBulkModal.type === 'mark_paid') {
       const result = await BulkOperationsService.performBulkOperation({
         type: 'status_change',
+        mode: invoicesSelection.selectionMode,
         itemIds: Array.from(invoicesSelection.selectedIds),
+        filters: undefined,
         module: 'invoices',
         changes: { 
           status: 'paid', 
@@ -448,7 +456,9 @@ const Money = () => {
 
     const result = await BulkOperationsService.bulkDelete(
       'invoices',
+      invoicesSelection.selectionMode,
       Array.from(invoicesSelection.selectedIds),
+      undefined,
       user.id
     );
 
