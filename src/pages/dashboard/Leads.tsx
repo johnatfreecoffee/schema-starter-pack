@@ -640,429 +640,428 @@ const Leads = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-w-0">
-          {/* Filters Sidebar */}
-          <div className="lg:col-span-1">
-            <Card className="p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold">Filters</h3>
-                <Sheet>
-                  <SheetTrigger asChild className="lg:hidden">
-                    <Button variant="outline" size="sm">
-                      <Filter className="h-4 w-4" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="left">
-                    <SheetHeader>
-                      <SheetTitle>Filters</SheetTitle>
-                    </SheetHeader>
-                    <div className="mt-4">
-                      <LeadFilters
-                        onFiltersChange={setFilters}
-                        statusCounts={statusCounts}
-                        services={services}
-                        users={users}
-                      />
-                    </div>
-                  </SheetContent>
-                </Sheet>
-              </div>
-              <div className="hidden lg:block">
-                <LeadFilters
-                  onFiltersChange={setFilters}
-                  statusCounts={statusCounts}
-                  services={services}
-                  users={users}
-                />
-              </div>
-            </Card>
-          </div>
+        {/* Filters Sidebar */}
+        <div className="lg:col-span-1">
+          <Card className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold">Filters</h3>
+              <Sheet>
+                <SheetTrigger asChild className="lg:hidden">
+                  <Button variant="outline" size="sm">
+                    <Filter className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left">
+                  <SheetHeader>
+                    <SheetTitle>Filters</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-4">
+                    <LeadFilters
+                      onFiltersChange={setFilters}
+                      statusCounts={statusCounts}
+                      services={services}
+                      users={users}
+                    />
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+            <div className="hidden lg:block">
+              <LeadFilters
+                onFiltersChange={setFilters}
+                statusCounts={statusCounts}
+                services={services}
+                users={users}
+              />
+            </div>
+          </Card>
+        </div>
 
-          {/* Leads Table */}
-          <div className="lg:col-span-3 min-w-0">
-            {(!hasLoadedOnce.current && loading) ? (
-              <div className="space-y-4">
-                {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-32 w-full" />
-                ))}
-              </div>
-            ) : (
-              <ResponsiveList
-                items={leads}
-                emptyMessage="No leads found"
-                renderCard={(lead, index) => (
-                  <MobileCard key={lead.id} onClick={() => navigate(`/dashboard/leads/${lead.id}`)}>
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1 min-w-0">
-                          <div onClick={(e) => e.stopPropagation()}>
-                            <Checkbox
-                              checked={bulkSelection.isSelected(lead.id)}
-                              onCheckedChange={() => bulkSelection.toggleItem(lead.id)}
-                            />
-                          </div>
-                          <h3 className="font-bold text-lg truncate max-w-full">
-                            {lead.first_name} {lead.last_name}
-                          </h3>
+        {/* Leads Table */}
+        <div className="lg:col-span-3 min-w-0">
+          {(!hasLoadedOnce.current && loading) ? (
+            <div className="space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <Skeleton key={i} className="h-32 w-full" />
+              ))}
+            </div>
+          ) : (
+            <ResponsiveList
+              items={leads}
+              emptyMessage="No leads found"
+              renderCard={(lead, index) => (
+                <MobileCard key={lead.id} onClick={() => navigate(`/dashboard/leads/${lead.id}`)}>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 min-w-0">
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={bulkSelection.isSelected(lead.id)}
+                            onCheckedChange={() => bulkSelection.toggleItem(lead.id)}
+                          />
                         </div>
-                        <div className="flex items-center gap-2">
-                          <LeadStatusBadge status={lead.status} />
-                          {lead.is_emergency && (
-                            <Badge variant="destructive" className="text-xs">Emergency</Badge>
-                          )}
-                        </div>
+                        <h3 className="font-bold text-lg truncate max-w-full">
+                          {lead.first_name} {lead.last_name}
+                        </h3>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <LeadStatusBadge status={lead.status} />
+                        {lead.is_emergency && (
+                          <Badge variant="destructive" className="text-xs">Emergency</Badge>
+                        )}
                       </div>
                     </div>
-                    
-                    <MobileCardField 
-                      label="Service" 
-                      value={
-                        <div className="space-y-1">
-                          <div>{lead.service?.name || lead.service_needed || 'N/A'}</div>
-                          {lead.lead_source && lead.lead_source !== 'web_form' && (
-                            <Badge variant="outline" className="text-xs">
-                              {lead.lead_source === 'service_page' ? 'Service Page' : lead.lead_source}
-                            </Badge>
-                          )}
-                        </div>
-                      } 
-                    />
-                    <MobileCardField 
-                      label="Email" 
-                      value={
-                        <a href={`mailto:${lead.email}`} className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
-                          {lead.email}
-                        </a>
-                      } 
-                    />
-                    <MobileCardField 
-                      label="Phone" 
-                      value={
-                        <a href={`tel:${lead.phone}`} className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
-                          {formatPhone(lead.phone)}
-                        </a>
-                      } 
-                    />
-                    <MobileCardField 
-                      label="Location" 
-                      value={`${lead.city}, ${lead.state}`} 
-                    />
-                    <MobileCardField 
-                      label="Created" 
-                      value={formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })} 
-                    />
-                    
-                    <div className="flex gap-2 mt-3 pt-3 border-t">
+                  </div>
+                  
+                  <MobileCardField 
+                    label="Service" 
+                    value={
+                      <div className="space-y-1">
+                        <div>{lead.service?.name || lead.service_needed || 'N/A'}</div>
+                        {lead.lead_source && lead.lead_source !== 'web_form' && (
+                          <Badge variant="outline" className="text-xs">
+                            {lead.lead_source === 'service_page' ? 'Service Page' : lead.lead_source}
+                          </Badge>
+                        )}
+                      </div>
+                    } 
+                  />
+                  <MobileCardField 
+                    label="Email" 
+                    value={
+                      <a href={`mailto:${lead.email}`} className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
+                        {lead.email}
+                      </a>
+                    } 
+                  />
+                  <MobileCardField 
+                    label="Phone" 
+                    value={
+                      <a href={`tel:${lead.phone}`} className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
+                        {formatPhone(lead.phone)}
+                      </a>
+                    } 
+                  />
+                  <MobileCardField 
+                    label="Location" 
+                    value={`${lead.city}, ${lead.state}`} 
+                  />
+                  <MobileCardField 
+                    label="Created" 
+                    value={formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })} 
+                  />
+                  
+                  <div className="flex gap-2 mt-3 pt-3 border-t">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingLead(lead);
+                      }}
+                      className="flex-1"
+                    >
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
+                    {lead.status !== 'converted' && (
                       <Button 
                         size="sm" 
                         variant="outline" 
                         onClick={(e) => {
                           e.stopPropagation();
-                          setEditingLead(lead);
+                          setConvertingLead(lead);
                         }}
                         className="flex-1"
                       >
-                        <Edit className="h-4 w-4 mr-1" />
-                        Edit
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Convert
                       </Button>
-                      {lead.status !== 'converted' && (
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setConvertingLead(lead);
-                          }}
-                          className="flex-1"
-                        >
-                          <CheckCircle className="h-4 w-4 mr-1" />
-                          Convert
-                        </Button>
-                      )}
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(lead.id);
-                        }}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </MobileCard>
-                )}
-                renderTable={() => (
-                  <Card>
-                    <div className="p-4">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="w-12">
+                    )}
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(lead.id);
+                      }}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </MobileCard>
+              )}
+              renderTable={() => (
+                <Card>
+                  <div className="p-4">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-12">
+                            <Checkbox
+                              checked={bulkSelection.isAllSelected}
+                              onCheckedChange={() => bulkSelection.toggleAll(leads)}
+                            />
+                          </TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Service</TableHead>
+                          <TableHead>Contact</TableHead>
+                          <TableHead>Location</TableHead>
+                          <TableHead>Created</TableHead>
+                          <TableHead></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {leads.map((lead) => (
+                          <TableRow key={lead.id} className="group">
+                            <TableCell>
                               <Checkbox
-                                checked={bulkSelection.isAllSelected}
-                                onCheckedChange={() => bulkSelection.toggleAll(leads)}
+                                checked={bulkSelection.isSelected(lead.id)}
+                                onCheckedChange={() => bulkSelection.toggleItem(lead.id)}
                               />
-                            </TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Service</TableHead>
-                            <TableHead>Contact</TableHead>
-                            <TableHead>Location</TableHead>
-                            <TableHead>Created</TableHead>
-                            <TableHead></TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {leads.map((lead) => (
-                            <TableRow key={lead.id} className="group">
-                              <TableCell>
-                                <Checkbox
-                                  checked={bulkSelection.isSelected(lead.id)}
-                                  onCheckedChange={() => bulkSelection.toggleItem(lead.id)}
-                                />
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex items-center gap-2">
-                                  <LeadStatusBadge status={lead.status} />
-                                  {lead.is_emergency && (
-                                    <AlertCircle className="h-4 w-4 text-red-500" />
-                                  )}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <LeadStatusBadge status={lead.status} />
+                                {lead.is_emergency && (
+                                  <AlertCircle className="h-4 w-4 text-red-500" />
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <button
+                                onClick={() => navigate(`/dashboard/leads/${lead.id}`)}
+                                className="font-medium hover:underline text-left"
+                              >
+                                {lead.first_name} {lead.last_name}
+                              </button>
+                            </TableCell>
+                            <TableCell>
+                              <div className="space-y-1">
+                                <div className="font-medium">
+                                  {lead.service?.name || lead.service_needed}
                                 </div>
-                              </TableCell>
-                              <TableCell>
-                                <button
-                                  onClick={() => navigate(`/dashboard/leads/${lead.id}`)}
-                                  className="font-medium hover:underline text-left"
+                                {lead.lead_source && lead.lead_source !== 'web_form' && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {lead.lead_source === 'service_page' ? 'Service Page' : lead.lead_source}
+                                  </Badge>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="space-y-1">
+                                <a
+                                  href={`mailto:${lead.email}`}
+                                  className="text-sm hover:underline flex items-center gap-1"
                                 >
-                                  {lead.first_name} {lead.last_name}
-                                </button>
-                              </TableCell>
-                              <TableCell>
-                                <div className="space-y-1">
-                                  <div className="font-medium">
-                                    {lead.service?.name || lead.service_needed}
-                                  </div>
-                                  {lead.lead_source && lead.lead_source !== 'web_form' && (
-                                    <Badge variant="outline" className="text-xs">
-                                      {lead.lead_source === 'service_page' ? 'Service Page' : lead.lead_source}
-                                    </Badge>
+                                  <Mail className="h-3 w-3" />
+                                  {lead.email}
+                                </a>
+                                <a
+                                  href={`tel:${lead.phone}`}
+                                  className="text-sm hover:underline flex items-center gap-1"
+                                >
+                                  <Phone className="h-3 w-3" />
+                                  {formatPhone(lead.phone)}
+                                </a>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              {lead.city}, {lead.state}
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}
+                            </TableCell>
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm">
+                                    <MoreVertical className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => navigate(`/dashboard/leads/${lead.id}`)}>
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    View Details
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => setEditingLead(lead)}>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Edit
+                                  </DropdownMenuItem>
+                                  {lead.status !== 'converted' && (
+                                    <DropdownMenuItem onClick={() => setConvertingLead(lead)}>
+                                      <CheckCircle className="mr-2 h-4 w-4" />
+                                      Convert to Account
+                                    </DropdownMenuItem>
                                   )}
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <div className="space-y-1">
-                                  <a
-                                    href={`mailto:${lead.email}`}
-                                    className="text-sm hover:underline flex items-center gap-1"
+                                  <DropdownMenuItem
+                                    onClick={() => handleDelete(lead.id)}
+                                    className="text-red-600"
                                   >
-                                    <Mail className="h-3 w-3" />
-                                    {lead.email}
-                                  </a>
-                                  <a
-                                    href={`tel:${lead.phone}`}
-                                    className="text-sm hover:underline flex items-center gap-1"
-                                  >
-                                    <Phone className="h-3 w-3" />
-                                    {formatPhone(lead.phone)}
-                                  </a>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                {lead.city}, {lead.state}
-                              </TableCell>
-                              <TableCell className="text-sm text-muted-foreground">
-                                {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}
-                              </TableCell>
-                              <TableCell>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="sm">
-                                      <MoreVertical className="h-4 w-4" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => navigate(`/dashboard/leads/${lead.id}`)}>
-                                      <Eye className="mr-2 h-4 w-4" />
-                                      View Details
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setEditingLead(lead)}>
-                                      <Edit className="mr-2 h-4 w-4" />
-                                      Edit
-                                    </DropdownMenuItem>
-                                    {lead.status !== 'converted' && (
-                                      <DropdownMenuItem onClick={() => setConvertingLead(lead)}>
-                                        <CheckCircle className="mr-2 h-4 w-4" />
-                                        Convert to Account
-                                      </DropdownMenuItem>
-                                    )}
-                                    <DropdownMenuItem
-                                      onClick={() => handleDelete(lead.id)}
-                                      className="text-red-600"
-                                    >
-                                      <Trash2 className="mr-2 h-4 w-4" />
-                                      Delete
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </Card>
-                )}
-              />
-            )}
-          </div>
-        </div>
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </Card>
+              )}
+            />
+          )}
       </div>
+    </div>
 
-      {/* Create/Edit Form */}
-      {(showCreateForm || editingLead) && (
-        <LeadForm
-          isOpen={true}
-          onClose={() => {
-            setShowCreateForm(false);
-            setEditingLead(null);
-          }}
-          onSuccess={() => {
+    {/* Create/Edit Form */}
+    {(showCreateForm || editingLead) && (
+      <LeadForm
+        isOpen={true}
+        onClose={() => {
+          setShowCreateForm(false);
+          setEditingLead(null);
+        }}
+        onSuccess={() => {
             loadLeads();
             setShowCreateForm(false);
             setEditingLead(null);
           }}
           lead={editingLead}
           users={users}
-        />
-      )}
-
-      {/* Convert Modal */}
-      {convertingLead && (
-        <LeadConvert
-          isOpen={true}
-          onClose={() => setConvertingLead(null)}
-          lead={convertingLead}
-        />
-      )}
-
-      {/* Advanced Filter Panel */}
-      <FilterPanel
-        open={filterPanelOpen}
-        onClose={() => setFilterPanelOpen(false)}
-        title="Filter Leads"
-        onClearAll={clearFilters}
-      >
-        <LeadAdvancedFilters
-          values={filters}
-          onChange={updateFilter}
-          users={users}
-        />
-      </FilterPanel>
-
-      {/* Bulk Actions Bar */}
-      <BulkActionsBar
-        selectedCount={bulkSelection.selectedCount}
-        actions={bulkActions}
-        onAction={handleBulkAction}
-        onClear={bulkSelection.deselectAll}
       />
+    )}
 
-      {/* Bulk Status Change Modal */}
-      <BulkOperationModal
-        open={bulkOperationModal.open && bulkOperationModal.type === 'status'}
-        onOpenChange={(open) => !open && setBulkOperationModal({ open: false, type: null })}
-        title="Change Status"
-        description="Update the status for selected leads"
-        selectedCount={bulkSelection.selectedCount}
-        onConfirm={handleBulkStatusChange}
-        fields={[
-          {
-            name: 'status',
-            label: 'New Status',
-            type: 'select',
-            required: true,
-            options: [
-              { value: 'new', label: 'New' },
-              { value: 'contacted', label: 'Contacted' },
-              { value: 'qualified', label: 'Qualified' },
-              { value: 'converted', label: 'Converted' },
-              { value: 'lost', label: 'Lost' },
-            ],
-          },
-        ]}
+    {/* Convert Modal */}
+    {convertingLead && (
+      <LeadConvert
+        isOpen={true}
+        onClose={() => setConvertingLead(null)}
+        lead={convertingLead}
       />
+    )}
 
-      {/* Bulk Assign Modal */}
-      <BulkOperationModal
-        open={bulkOperationModal.open && bulkOperationModal.type === 'assign'}
-        onOpenChange={(open) => !open && setBulkOperationModal({ open: false, type: null })}
-        title="Assign Leads"
-        description="Assign selected leads to a user"
-        selectedCount={bulkSelection.selectedCount}
-        onConfirm={handleBulkAssign}
-        fields={[
-          {
-            name: 'assignedTo',
-            label: 'Assign To',
-            type: 'select',
-            required: true,
-            options: users.map(u => ({ value: u.id, label: u.name })),
-          },
-        ]}
+    {/* Advanced Filter Panel */}
+    <FilterPanel
+      open={filterPanelOpen}
+      onClose={() => setFilterPanelOpen(false)}
+      title="Filter Leads"
+      onClearAll={clearFilters}
+    >
+      <LeadAdvancedFilters
+        values={filters}
+        onChange={updateFilter}
+        users={users}
       />
+    </FilterPanel>
 
-      {/* Bulk Delete Confirmation */}
-      <BulkDeleteConfirmation
-        open={bulkDeleteOpen}
-        onOpenChange={setBulkDeleteOpen}
-        itemCount={bulkSelection.selectedCount}
-        itemType="leads"
-        itemNames={bulkSelection.selectedItems.map(l => `${l.first_name} ${l.last_name}`)}
-        onConfirm={handleBulkDelete}
+    {/* Bulk Actions Bar */}
+    <BulkActionsBar
+      selectedCount={bulkSelection.selectedCount}
+      actions={bulkActions}
+      onAction={handleBulkAction}
+      onClear={bulkSelection.deselectAll}
+    />
+
+    {/* Bulk Status Change Modal */}
+    <BulkOperationModal
+      open={bulkOperationModal.open && bulkOperationModal.type === 'status'}
+      onOpenChange={(open) => !open && setBulkOperationModal({ open: false, type: null })}
+      title="Change Status"
+      description="Update the status for selected leads"
+      selectedCount={bulkSelection.selectedCount}
+      onConfirm={handleBulkStatusChange}
+      fields={[
+        {
+          name: 'status',
+          label: 'New Status',
+          type: 'select',
+          required: true,
+          options: [
+            { value: 'new', label: 'New' },
+            { value: 'contacted', label: 'Contacted' },
+            { value: 'qualified', label: 'Qualified' },
+            { value: 'converted', label: 'Converted' },
+            { value: 'lost', label: 'Lost' },
+          ],
+        },
+      ]}
+    />
+
+    {/* Bulk Assign Modal */}
+    <BulkOperationModal
+      open={bulkOperationModal.open && bulkOperationModal.type === 'assign'}
+      onOpenChange={(open) => !open && setBulkOperationModal({ open: false, type: null })}
+      title="Assign Leads"
+      description="Assign selected leads to a user"
+      selectedCount={bulkSelection.selectedCount}
+      onConfirm={handleBulkAssign}
+      fields={[
+        {
+          name: 'assignedTo',
+          label: 'Assign To',
+          type: 'select',
+          required: true,
+          options: users.map(u => ({ value: u.id, label: u.name })),
+        },
+      ]}
+    />
+
+    {/* Bulk Delete Confirmation */}
+    <BulkDeleteConfirmation
+      open={bulkDeleteOpen}
+      onOpenChange={setBulkDeleteOpen}
+      itemCount={bulkSelection.selectedCount}
+      itemType="leads"
+      itemNames={bulkSelection.selectedItems.map(l => `${l.first_name} ${l.last_name}`)}
+      onConfirm={handleBulkDelete}
+    />
+
+    {/* Bulk Progress Modal */}
+    <BulkProgressModal
+      open={bulkProgress.open}
+      onOpenChange={(open) => setBulkProgress(prev => ({ ...prev, open }))}
+      operation={bulkProgress.operation}
+      total={bulkProgress.total}
+      completed={bulkProgress.completed}
+      failed={bulkProgress.failed}
+      errors={bulkProgress.errors}
+      isComplete={bulkProgress.isComplete}
+    />
+
+    {/* Bulk Tags Modal */}
+    <BulkTagsModal
+      open={bulkTagsOpen}
+      onOpenChange={setBulkTagsOpen}
+      selectedCount={bulkSelection.selectedCount}
+      module="leads"
+      onConfirm={handleBulkTags}
+    />
+
+    {/* Bulk Convert Modal */}
+    <BulkConvertLeadsModal
+      open={bulkConvertOpen}
+      onOpenChange={setBulkConvertOpen}
+      selectedCount={bulkSelection.selectedCount}
+      onConfirm={handleBulkConvert}
+    />
+
+    {/* Undo Toast */}
+    {undoState && (
+      <BulkUndoToast
+        count={undoState.itemIds.length}
+        onUndo={async () => {
+          await performUndo();
+          loadLeads();
+        }}
       />
-
-      {/* Bulk Progress Modal */}
-      <BulkProgressModal
-        open={bulkProgress.open}
-        onOpenChange={(open) => setBulkProgress(prev => ({ ...prev, open }))}
-        operation={bulkProgress.operation}
-        total={bulkProgress.total}
-        completed={bulkProgress.completed}
-        failed={bulkProgress.failed}
-        errors={bulkProgress.errors}
-        isComplete={bulkProgress.isComplete}
-      />
-
-      {/* Bulk Tags Modal */}
-      <BulkTagsModal
-        open={bulkTagsOpen}
-        onOpenChange={setBulkTagsOpen}
-        selectedCount={bulkSelection.selectedCount}
-        module="leads"
-        onConfirm={handleBulkTags}
-      />
-
-      {/* Bulk Convert Modal */}
-      <BulkConvertLeadsModal
-        open={bulkConvertOpen}
-        onOpenChange={setBulkConvertOpen}
-        selectedCount={bulkSelection.selectedCount}
-        onConfirm={handleBulkConvert}
-      />
-
-      {/* Undo Toast */}
-      {undoState && (
-        <BulkUndoToast
-          count={undoState.itemIds.length}
-          onUndo={async () => {
-            await performUndo();
-            loadLeads();
-          }}
-        />
-      )}
-    </div>
-  );
+    )}
+  </div>
+);
 };
 
 export default Leads;
