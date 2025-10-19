@@ -2227,16 +2227,58 @@ export type Database = {
         }
         Relationships: []
       }
-      seo_settings: {
+      seo_redirects: {
         Row: {
           created_at: string | null
+          from_path: string
+          hit_count: number | null
+          id: string
+          is_active: boolean | null
+          redirect_type: number | null
+          to_path: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          from_path: string
+          hit_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          redirect_type?: number | null
+          to_path: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          from_path?: string
+          hit_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          redirect_type?: number | null
+          to_path?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      seo_settings: {
+        Row: {
+          business_address: string | null
+          business_city: string | null
+          business_email: string | null
+          business_hours: Json | null
+          business_name: string | null
+          business_phone: string | null
+          business_state: string | null
+          business_zip: string | null
+          created_at: string | null
           default_meta_description: string | null
-          default_title_suffix: string | null
+          default_meta_keywords: string | null
+          default_meta_title: string | null
+          default_og_image: string | null
           facebook_pixel_id: string | null
           google_analytics_id: string | null
           google_tag_manager_id: string | null
           id: string
-          og_default_image: string | null
           robots_txt: string | null
           schema_org_defaults: Json | null
           sitemap_settings: Json | null
@@ -2244,14 +2286,23 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          business_address?: string | null
+          business_city?: string | null
+          business_email?: string | null
+          business_hours?: Json | null
+          business_name?: string | null
+          business_phone?: string | null
+          business_state?: string | null
+          business_zip?: string | null
           created_at?: string | null
           default_meta_description?: string | null
-          default_title_suffix?: string | null
+          default_meta_keywords?: string | null
+          default_meta_title?: string | null
+          default_og_image?: string | null
           facebook_pixel_id?: string | null
           google_analytics_id?: string | null
           google_tag_manager_id?: string | null
           id?: string
-          og_default_image?: string | null
           robots_txt?: string | null
           schema_org_defaults?: Json | null
           sitemap_settings?: Json | null
@@ -2259,14 +2310,23 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          business_address?: string | null
+          business_city?: string | null
+          business_email?: string | null
+          business_hours?: Json | null
+          business_name?: string | null
+          business_phone?: string | null
+          business_state?: string | null
+          business_zip?: string | null
           created_at?: string | null
           default_meta_description?: string | null
-          default_title_suffix?: string | null
+          default_meta_keywords?: string | null
+          default_meta_title?: string | null
+          default_og_image?: string | null
           facebook_pixel_id?: string | null
           google_analytics_id?: string | null
           google_tag_manager_id?: string | null
           id?: string
-          og_default_image?: string | null
           robots_txt?: string | null
           schema_org_defaults?: Json | null
           sitemap_settings?: Json | null
@@ -2277,39 +2337,39 @@ export type Database = {
       }
       seo_templates: {
         Row: {
-          applies_to: string
           created_at: string | null
           id: string
-          meta_description_template: string | null
-          meta_title_template: string | null
-          og_description_template: string | null
-          og_title_template: string | null
+          is_active: boolean | null
+          meta_description_pattern: string | null
+          meta_title_pattern: string | null
+          og_description_pattern: string | null
+          og_title_pattern: string | null
           schema_template: string | null
-          template_name: string
+          template_type: string
           updated_at: string | null
         }
         Insert: {
-          applies_to: string
           created_at?: string | null
           id?: string
-          meta_description_template?: string | null
-          meta_title_template?: string | null
-          og_description_template?: string | null
-          og_title_template?: string | null
+          is_active?: boolean | null
+          meta_description_pattern?: string | null
+          meta_title_pattern?: string | null
+          og_description_pattern?: string | null
+          og_title_pattern?: string | null
           schema_template?: string | null
-          template_name: string
+          template_type: string
           updated_at?: string | null
         }
         Update: {
-          applies_to?: string
           created_at?: string | null
           id?: string
-          meta_description_template?: string | null
-          meta_title_template?: string | null
-          og_description_template?: string | null
-          og_title_template?: string | null
+          is_active?: boolean | null
+          meta_description_pattern?: string | null
+          meta_title_pattern?: string | null
+          og_description_pattern?: string | null
+          og_title_pattern?: string | null
           schema_template?: string | null
-          template_name?: string
+          template_type?: string
           updated_at?: string | null
         }
         Relationships: []
