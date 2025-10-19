@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { useLeadFormModal } from '@/hooks/useLeadFormModal';
 import { MessageSquare } from 'lucide-react';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { SEOHead } from '@/components/seo/SEOHead';
+import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 
 const GeneratedPage = () => {
   const { citySlug, serviceSlug } = useParams<{ citySlug: string; serviceSlug: string }>();
@@ -117,18 +119,36 @@ const GeneratedPage = () => {
     .eq('id', page.id)
     .then(() => {});
 
+  const canonicalUrl = `${window.location.origin}${pageData.url_path}`;
+
   return (
     <>
       {/* SEO Meta Tags */}
-      <head>
-        <title>{pageData.page_title}</title>
-        <meta name="description" content={pageData.meta_description} />
-        <meta property="og:title" content={pageData.page_title} />
-        <meta property="og:description" content={pageData.meta_description} />
-        <meta property="og:url" content={`https://yoursite.com${pageData.url_path}`} />
-        <meta name="twitter:title" content={pageData.page_title} />
-        <meta name="twitter:description" content={pageData.meta_description} />
-      </head>
+      <SEOHead
+        title={pageData.page_title}
+        description={pageData.meta_description}
+        canonical={canonicalUrl}
+        ogTitle={pageData.page_title}
+        ogDescription={pageData.meta_description}
+        ogUrl={canonicalUrl}
+        ogImage={company.logo_url}
+        twitterTitle={pageData.page_title}
+        twitterDescription={pageData.meta_description}
+        twitterImage={company.logo_url}
+      />
+
+      {/* LocalBusiness Schema */}
+      <LocalBusinessSchema
+        businessName={pageData.company_name}
+        description={pageData.company_description}
+        address={pageData.company_address}
+        phone={pageData.company_phone}
+        email={pageData.company_email}
+        url={window.location.origin}
+        logo={pageData.logo_url}
+        serviceArea={[pageData.city_name]}
+        services={[pageData.service_name]}
+      />
 
       {/* Breadcrumbs */}
       <nav aria-label="Breadcrumb" className="bg-muted/30 border-b">

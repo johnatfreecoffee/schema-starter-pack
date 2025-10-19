@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { SEOHead } from '@/components/seo/SEOHead';
 
 const StaticPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -69,13 +70,23 @@ const StaticPage = () => {
     '<img loading="lazy"'
   );
 
+  const canonicalUrl = `${window.location.origin}/${page.slug}`;
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <article 
-        className="prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
+    <>
+      <SEOHead
+        title={page.title}
+        description={page.meta_description || companySettings?.description || ''}
+        canonical={canonicalUrl}
+        ogImage={companySettings?.logo_url}
       />
-    </div>
+      <div className="container mx-auto px-4 py-8">
+        <article 
+          className="prose prose-lg max-w-none"
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
+        />
+      </div>
+    </>
   );
 };
 

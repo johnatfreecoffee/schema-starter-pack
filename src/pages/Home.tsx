@@ -4,6 +4,8 @@ import Index from './Index';
 import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { useEffect } from 'react';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { SEOHead } from '@/components/seo/SEOHead';
+import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 
 const Home = () => {
   const startTime = performance.now();
@@ -76,12 +78,29 @@ const Home = () => {
     );
 
     return (
-      <div className="container mx-auto px-4 py-8">
-        <article 
-          className="prose prose-lg max-w-none"
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
+      <>
+        <SEOHead
+          title={homepage.title || `${companySettings?.business_name || 'Home'}`}
+          description={homepage.meta_description || companySettings?.description || ''}
+          canonical={window.location.origin}
+          ogImage={companySettings?.logo_url}
         />
-      </div>
+        <LocalBusinessSchema
+          businessName={companySettings?.business_name || ''}
+          description={companySettings?.description}
+          address={companySettings?.address}
+          phone={companySettings?.phone}
+          email={companySettings?.email}
+          url={window.location.origin}
+          logo={companySettings?.logo_url}
+        />
+        <div className="container mx-auto px-4 py-8">
+          <article 
+            className="prose prose-lg max-w-none"
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
+          />
+        </div>
+      </>
     );
   }
 

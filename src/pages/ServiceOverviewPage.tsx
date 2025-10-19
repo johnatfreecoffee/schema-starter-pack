@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useLeadFormModal } from '@/hooks/useLeadFormModal';
 import { MessageSquare } from 'lucide-react';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { SEOHead } from '@/components/seo/SEOHead';
+import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 
 const ServiceOverviewPage = () => {
   const { serviceSlug } = useParams<{ serviceSlug: string }>();
@@ -117,15 +119,27 @@ const ServiceOverviewPage = () => {
     );
   }
 
+  const canonicalUrl = `${window.location.origin}/services/${service.slug}`;
+
   return (
     <>
       {/* SEO Meta Tags */}
-      <head>
-        <title>{service.name} Services | {company.business_name}</title>
-        <meta name="description" content={service.full_description || `Professional ${service.name} services from ${company.business_name}`} />
-        <meta property="og:title" content={`${service.name} Services | ${company.business_name}`} />
-        <meta property="og:description" content={service.full_description || ''} />
-      </head>
+      <SEOHead
+        title={`${service.name} Services | ${company.business_name}`}
+        description={service.full_description || `Professional ${service.name} services from ${company.business_name}`}
+        canonical={canonicalUrl}
+        ogImage={company.logo_url}
+      />
+      <LocalBusinessSchema
+        businessName={company.business_name}
+        description={company.description}
+        address={company.address}
+        phone={company.phone}
+        email={company.email}
+        url={window.location.origin}
+        logo={company.logo_url}
+        services={[service.name]}
+      />
 
       {/* Breadcrumbs */}
       <nav aria-label="Breadcrumb" className="bg-muted/30 border-b">
