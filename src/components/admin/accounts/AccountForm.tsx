@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { CRUDLogger } from '@/lib/crudLogger';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { workflowService } from '@/services/workflowService';
 
 interface AccountFormProps {
   open: boolean;
@@ -80,6 +81,22 @@ export const AccountForm = ({ open, onOpenChange, account, onSuccess }: AccountF
           changes
         });
 
+        // Trigger workflow for record update
+        try {
+          await workflowService.triggerWorkflows({
+            workflow_id: '',
+            trigger_record_id: account.id,
+            trigger_module: 'accounts',
+            trigger_data: {
+              ...updates,
+              entity_type: 'account',
+              previous_data: account,
+            },
+          });
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
+
         toast({
           title: 'Success',
           description: 'Account updated successfully'
@@ -140,6 +157,21 @@ export const AccountForm = ({ open, onOpenChange, account, onSuccess }: AccountF
           entityId: accountData.id,
           entityName: formData.account_name
         });
+
+        // Trigger workflow for new record
+        try {
+          await workflowService.triggerWorkflows({
+            workflow_id: '',
+            trigger_record_id: accountData.id,
+            trigger_module: 'accounts',
+            trigger_data: {
+              ...accountData,
+              entity_type: 'account',
+            },
+          });
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
 
         toast({
           title: 'Success',

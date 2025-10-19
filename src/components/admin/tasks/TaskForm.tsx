@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CRUDLogger } from "@/lib/crudLogger";
+import { workflowService } from "@/services/workflowService";
 
 interface TaskFormProps {
   open: boolean;
@@ -151,6 +152,22 @@ export default function TaskForm({ open, onClose, onSuccess, task, relatedTo, us
           changes
         });
 
+        // Trigger workflow for record update
+        try {
+          await workflowService.triggerWorkflows({
+            workflow_id: '',
+            trigger_record_id: task.id,
+            trigger_module: 'tasks',
+            trigger_data: {
+              ...taskData,
+              entity_type: 'task',
+              previous_data: task,
+            },
+          });
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
+
         toast({
           title: "Success",
           description: "Task updated successfully"
@@ -171,6 +188,21 @@ export default function TaskForm({ open, onClose, onSuccess, task, relatedTo, us
           entityId: newTask.id,
           entityName: title
         });
+
+        // Trigger workflow for new record
+        try {
+          await workflowService.triggerWorkflows({
+            workflow_id: '',
+            trigger_record_id: newTask.id,
+            trigger_module: 'tasks',
+            trigger_data: {
+              ...newTask,
+              entity_type: 'task',
+            },
+          });
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
 
         toast({
           title: "Success",

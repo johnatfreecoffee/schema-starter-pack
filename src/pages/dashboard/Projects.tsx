@@ -38,6 +38,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { workflowService } from '@/services/workflowService';
 
 const Projects = () => {
   const navigate = useNavigate();
@@ -193,6 +194,21 @@ const Projects = () => {
         entityId: id,
         entityName: projectName
       });
+
+      // Trigger workflow for record deletion
+      try {
+        await workflowService.triggerWorkflows({
+          workflow_id: '',
+          trigger_record_id: id,
+          trigger_module: 'projects',
+          trigger_data: {
+            ...project,
+            entity_type: 'project',
+          },
+        });
+      } catch (workflowError) {
+        console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+      }
 
       toast({ title: 'Project deleted successfully' });
       fetchProjects();

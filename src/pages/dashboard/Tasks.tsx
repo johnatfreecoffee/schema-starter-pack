@@ -52,6 +52,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { workflowService } from '@/services/workflowService';
 
 const Tasks = () => {
   const navigate = useNavigate();
@@ -309,6 +310,9 @@ const Tasks = () => {
     if (!deleteTaskId) return;
 
     try {
+      // Get task data before deletion for workflow trigger
+      const task = tasks.find(t => t.id === deleteTaskId);
+
       const { error } = await supabase
         .from("tasks")
         .delete()
@@ -321,6 +325,23 @@ const Tasks = () => {
         entity_type: "task",
         entity_id: deleteTaskId
       });
+
+      // Trigger workflow for record deletion
+      if (task) {
+        try {
+          await workflowService.triggerWorkflows({
+            workflow_id: '',
+            trigger_record_id: deleteTaskId,
+            trigger_module: 'tasks',
+            trigger_data: {
+              ...task,
+              entity_type: 'task',
+            },
+          });
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
+      }
 
       toast({
         title: "Success",

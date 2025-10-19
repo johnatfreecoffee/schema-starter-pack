@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { workflowService } from '@/services/workflowService';
 
 interface ContactFormProps {
   open: boolean;
@@ -74,6 +75,22 @@ export const ContactForm = ({ open, onOpenChange, accountId, contact, onSuccess 
           entityName: `${formData.first_name} ${formData.last_name}`,
           changes
         });
+
+        // Trigger workflow for record update
+        try {
+          await workflowService.triggerWorkflows({
+            workflow_id: '',
+            trigger_record_id: contact.id,
+            trigger_module: 'contacts',
+            trigger_data: {
+              ...formData,
+              entity_type: 'contact',
+              previous_data: contact,
+            },
+          });
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
       } else {
         // Create new contact
         const { data: newContact, error } = await supabase
@@ -94,6 +111,21 @@ export const ContactForm = ({ open, onOpenChange, accountId, contact, onSuccess 
           entityId: newContact.id,
           entityName: `${formData.first_name} ${formData.last_name}`
         });
+
+        // Trigger workflow for new record
+        try {
+          await workflowService.triggerWorkflows({
+            workflow_id: '',
+            trigger_record_id: newContact.id,
+            trigger_module: 'contacts',
+            trigger_data: {
+              ...newContact,
+              entity_type: 'contact',
+            },
+          });
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
       }
 
       toast({

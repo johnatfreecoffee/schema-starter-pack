@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import LineItemsEditor, { LineItem } from './LineItemsEditor';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { workflowService } from '@/services/workflowService';
 
 type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'declined' | 'expired' | 'converted';
 
@@ -231,6 +232,23 @@ const QuoteForm = ({ open, onOpenChange, quote, onSuccess }: QuoteFormProps) => 
           entityName: quoteNumber,
           changes: { total_amount: { old: quote.total_amount, new: totalAmount } }
         });
+
+        // Trigger workflow for record update
+        try {
+          await workflowService.triggerWorkflows({
+            workflow_id: '',
+            trigger_record_id: quoteId!,
+            trigger_module: 'quotes',
+            trigger_data: {
+              ...quoteData,
+              id: quoteId,
+              entity_type: 'quote',
+              previous_data: quote,
+            },
+          });
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
       } else {
         await CRUDLogger.logCreate({
           userId: user.id,
@@ -238,6 +256,22 @@ const QuoteForm = ({ open, onOpenChange, quote, onSuccess }: QuoteFormProps) => 
           entityId: quoteId!,
           entityName: quoteNumber
         });
+
+        // Trigger workflow for new record
+        try {
+          await workflowService.triggerWorkflows({
+            workflow_id: '',
+            trigger_record_id: quoteId!,
+            trigger_module: 'quotes',
+            trigger_data: {
+              ...quoteData,
+              id: quoteId,
+              entity_type: 'quote',
+            },
+          });
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
       }
 
       toast({

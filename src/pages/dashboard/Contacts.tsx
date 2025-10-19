@@ -16,6 +16,7 @@ import { MobileActionButton } from '@/components/ui/mobile-action-button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { workflowService } from '@/services/workflowService';
 import { ExportButton } from '@/components/admin/ExportButton';
 import { FilterPanel } from '@/components/filters/FilterPanel';
 import { FilterChips } from '@/components/filters/FilterChips';
@@ -143,6 +144,21 @@ const Contacts = () => {
         .eq('id', contact.id);
 
       if (error) throw error;
+
+      // Trigger workflow for record deletion
+      try {
+        await workflowService.triggerWorkflows({
+          workflow_id: '',
+          trigger_record_id: contact.id,
+          trigger_module: 'contacts',
+          trigger_data: {
+            ...contact,
+            entity_type: 'contact',
+          },
+        });
+      } catch (workflowError) {
+        console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+      }
 
       toast({
         title: 'Success',

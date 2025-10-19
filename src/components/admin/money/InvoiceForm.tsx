@@ -12,6 +12,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import LineItemsEditor, { LineItem } from './LineItemsEditor';
 import { format, addDays } from 'date-fns';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { workflowService } from '@/services/workflowService';
 
 type InvoiceStatus = 'pending' | 'paid' | 'partial' | 'overdue' | 'cancelled';
 
@@ -244,6 +245,23 @@ const InvoiceForm = ({ open, onOpenChange, invoice, onSuccess }: InvoiceFormProp
           entityName: invoiceNumber,
           changes: { total_amount: { old: invoice.total_amount, new: totalAmount } }
         });
+
+        // Trigger workflow for record update
+        try {
+          await workflowService.triggerWorkflows({
+            workflow_id: '',
+            trigger_record_id: invoiceId!,
+            trigger_module: 'invoices',
+            trigger_data: {
+              ...invoiceData,
+              id: invoiceId,
+              entity_type: 'invoice',
+              previous_data: invoice,
+            },
+          });
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
       } else {
         await CRUDLogger.logCreate({
           userId: user.id,
@@ -251,6 +269,22 @@ const InvoiceForm = ({ open, onOpenChange, invoice, onSuccess }: InvoiceFormProp
           entityId: invoiceId!,
           entityName: invoiceNumber
         });
+
+        // Trigger workflow for new record
+        try {
+          await workflowService.triggerWorkflows({
+            workflow_id: '',
+            trigger_record_id: invoiceId!,
+            trigger_module: 'invoices',
+            trigger_data: {
+              ...invoiceData,
+              id: invoiceId,
+              entity_type: 'invoice',
+            },
+          });
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
       }
 
       toast({

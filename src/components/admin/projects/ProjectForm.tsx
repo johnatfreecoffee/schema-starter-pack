@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { workflowService } from '@/services/workflowService';
 
 interface ProjectFormProps {
   isOpen: boolean;
@@ -109,6 +110,22 @@ const ProjectForm = ({ isOpen, onClose, onSuccess, project, accountId }: Project
           changes
         });
 
+        // Trigger workflow for record update
+        try {
+          await workflowService.triggerWorkflows({
+            workflow_id: '',
+            trigger_record_id: project.id,
+            trigger_module: 'projects',
+            trigger_data: {
+              ...projectData,
+              entity_type: 'project',
+              previous_data: project,
+            },
+          });
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
+
         toast({ title: 'Project updated successfully' });
       } else {
         const { data: newProject, error } = await supabase
@@ -125,6 +142,21 @@ const ProjectForm = ({ isOpen, onClose, onSuccess, project, accountId }: Project
           entityId: newProject.id,
           entityName: formData.project_name
         });
+
+        // Trigger workflow for new record
+        try {
+          await workflowService.triggerWorkflows({
+            workflow_id: '',
+            trigger_record_id: newProject.id,
+            trigger_module: 'projects',
+            trigger_data: {
+              ...newProject,
+              entity_type: 'project',
+            },
+          });
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
 
         toast({ title: 'Project created successfully' });
       }
