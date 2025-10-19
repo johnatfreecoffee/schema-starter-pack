@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -544,38 +543,37 @@ const Leads = () => {
   ).length;
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto px-4 py-8 max-w-full overflow-x-hidden">
-        {/* Saved Views */}
-        <SavedViewsBar
-          module="leads"
-          currentFilters={filters}
-          onViewSelect={(viewFilters) => setFilters(viewFilters)}
-        />
+    <div className="container mx-auto px-4 py-8 max-w-full overflow-x-hidden">
+      {/* Saved Views */}
+      <SavedViewsBar
+        module="leads"
+        currentFilters={filters}
+        onViewSelect={(viewFilters) => setFilters(viewFilters)}
+      />
 
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6 w-full">
-          <div>
-            <h1 className="text-4xl font-bold">Leads</h1>
-            <p className="text-muted-foreground mt-1">
-              Manage incoming leads and convert them to accounts
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
-            <Button
-              variant="outline"
-              onClick={() => setFilterPanelOpen(true)}
-              className="w-full sm:w-auto min-h-[44px]"
-            >
-              <Filter className="mr-2 h-4 w-4" />
-              Filters
-              {activeFilterCount > 0 && (
-                <Badge variant="secondary" className="ml-2">
-                  {activeFilterCount}
-                </Badge>
-              )}
-            </Button>
-            <ExportButton
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6 w-full">
+        <div>
+          <h1 className="text-4xl font-bold">Leads</h1>
+          <p className="text-muted-foreground mt-1">
+            Manage incoming leads and convert them to accounts
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+          <Button
+            variant="outline"
+            onClick={() => setFilterPanelOpen(true)}
+            className="w-full sm:w-auto min-h-[44px]"
+          >
+            <Filter className="mr-2 h-4 w-4" />
+            Filters
+            {activeFilterCount > 0 && (
+              <Badge variant="secondary" className="ml-2">
+                {activeFilterCount}
+              </Badge>
+            )}
+          </Button>
+          <ExportButton
               data={leads}
               moduleName="leads"
               columns={[
@@ -594,54 +592,54 @@ const Leads = () => {
                 Create New Lead
               </Button>
             )}
-          </div>
         </div>
+      </div>
 
-        {/* Mobile Action Button */}
-        <MobileActionButton
-          onClick={() => setShowCreateForm(true)}
-          icon={<Plus className="h-5 w-5" />}
-          label="Create New Lead"
-        />
+      {/* Mobile Action Button */}
+      <MobileActionButton
+        onClick={() => setShowCreateForm(true)}
+        icon={<Plus className="h-5 w-5" />}
+        label="Create New Lead"
+      />
 
-        {/* Select All Filtered Prompt */}
-        {bulkSelection.selectedCount > 0 && bulkSelection.selectedCount < totalCount && (
-          <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-            <span className="text-sm text-blue-900">
-              {bulkSelection.selectedCount} selected
-            </span>
-            <button
-              onClick={handleSelectAllFiltered}
-              className="text-sm text-blue-600 hover:text-blue-800 underline font-medium min-h-[44px] px-2"
-            >
-              Select all {totalCount} items matching filter
-            </button>
-          </div>
-        )}
+      {/* Select All Filtered Prompt */}
+      {bulkSelection.selectedCount > 0 && bulkSelection.selectedCount < totalCount && (
+        <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <span className="text-sm text-blue-900">
+            {bulkSelection.selectedCount} selected
+          </span>
+          <button
+            onClick={handleSelectAllFiltered}
+            className="text-sm text-blue-600 hover:text-blue-800 underline font-medium min-h-[44px] px-2"
+          >
+            Select all {totalCount} items matching filter
+          </button>
+        </div>
+      )}
 
-        {/* Filter Chips */}
-        <FilterChips
-          filters={filters}
-          onRemove={(key) => updateFilter(key, null)}
-          onClearAll={clearFilters}
-        />
+      {/* Filter Chips */}
+      <FilterChips
+        filters={filters}
+        onRemove={(key) => updateFilter(key, null)}
+        onClearAll={clearFilters}
+      />
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-4 w-full">
-          {Object.entries(statusCounts).map(([status, count]) => (
-            <Card key={status} className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground capitalize">{status}</p>
-                  <p className="text-2xl font-bold">{count}</p>
-                </div>
-                <LeadStatusBadge status={status} />
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 mb-4 w-full">
+        {Object.entries(statusCounts).map(([status, count]) => (
+          <Card key={status} className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground capitalize">{status}</p>
+                <p className="text-2xl font-bold">{count}</p>
               </div>
-            </Card>
-          ))}
-        </div>
+              <LeadStatusBadge status={status} />
+            </div>
+          </Card>
+        ))}
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-w-0">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-w-0">
           {/* Filters Sidebar */}
           <div className="lg:col-span-1">
             <Card className="p-4">
@@ -1063,7 +1061,7 @@ const Leads = () => {
           }}
         />
       )}
-    </AdminLayout>
+    </div>
   );
 };
 
