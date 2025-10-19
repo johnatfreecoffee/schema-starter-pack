@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminLayout from "@/components/layout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -582,7 +581,7 @@ const Tasks = () => {
   };
 
   return (
-    <AdminLayout>
+    <>
       <div className="flex h-full">
         <TaskFilters
           search={search}
@@ -933,7 +932,7 @@ const Tasks = () => {
       {undoState && (
         <BulkUndoToast count={undoState.itemIds.length} onUndo={performUndo} />
       )}
-    </AdminLayout>
+    </>
   );
 };
 

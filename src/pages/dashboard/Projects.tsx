@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -241,8 +240,7 @@ const Projects = () => {
   const canBulkDelete = userRole === 'Super Admin' || userRole === 'Admin';
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
+    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
         <SavedViewsBar module="projects" currentFilters={filters} onViewSelect={setFilters} />
         
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
@@ -506,7 +504,6 @@ const Projects = () => {
           />
         )}
       </div>
-    </AdminLayout>
   );
 };
 

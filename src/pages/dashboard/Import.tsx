@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -208,8 +207,7 @@ const Import = () => {
   };
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
+    <div className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-4xl font-bold">Import Data</h1>
@@ -464,7 +462,6 @@ const Import = () => {
           </Card>
         )}
       </div>
-    </AdminLayout>
   );
 };
 

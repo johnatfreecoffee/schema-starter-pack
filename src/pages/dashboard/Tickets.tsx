@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Ticket, AlertCircle, Clock, CheckCircle } from 'lucide-react';
@@ -72,8 +71,7 @@ export default function Tickets() {
   });
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto px-4 py-6 sm:p-6 max-w-full overflow-x-hidden space-y-6">
+    <div className="container mx-auto px-4 py-6 sm:p-6 max-w-full overflow-x-hidden space-y-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div className="min-w-0">
             <h1 className="text-2xl sm:text-3xl font-bold truncate">Support Tickets</h1>
@@ -211,6 +209,5 @@ export default function Tickets() {
           </div>
         </Card>
       </div>
-    </AdminLayout>
   );
 }

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -175,28 +174,24 @@ const Team = () => {
   // Access control check
   if (roleLoading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center min-h-screen">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      </AdminLayout>
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
     );
   }
 
   if (role !== 'Super Admin' && role !== 'Admin') {
     return (
-      <AdminLayout>
-        <div className="flex flex-col items-center justify-center min-h-screen">
-          <Lock className="h-16 w-16 text-muted-foreground mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
-          <p className="text-muted-foreground">
-            Only administrators can manage team members.
-          </p>
-          <Button onClick={() => window.history.back()} className="mt-4">
-            Go Back
-          </Button>
-        </div>
-      </AdminLayout>
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <Lock className="h-16 w-16 text-muted-foreground mb-4" />
+        <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+        <p className="text-muted-foreground">
+          Only administrators can manage team members.
+        </p>
+        <Button onClick={() => window.history.back()} className="mt-4">
+          Go Back
+        </Button>
+      </div>
     );
   }
 
@@ -316,7 +311,7 @@ const Team = () => {
   }, [searchQuery, roleFilter, statusFilter]);
 
   return (
-    <AdminLayout>
+    <>
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -612,7 +607,7 @@ const Team = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </AdminLayout>
+    </>
   );
 };
 

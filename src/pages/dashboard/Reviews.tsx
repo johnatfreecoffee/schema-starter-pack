@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -231,8 +230,7 @@ export default function Reviews() {
   }
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden space-y-6">
+    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden space-y-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div className="min-w-0">
             <h1 className="text-2xl sm:text-3xl font-bold truncate">Reviews & Testimonials</h1>
@@ -471,6 +469,5 @@ export default function Reviews() {
           </div>
         )}
       </div>
-    </AdminLayout>
   );
 }

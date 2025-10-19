@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -514,7 +513,7 @@ const Money = () => {
   const isMobile = useIsMobile();
 
   return (
-    <AdminLayout>
+    <>
       <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold truncate">Money Management</h1>
@@ -1076,7 +1075,7 @@ const Money = () => {
       {undoState && (
         <BulkUndoToast count={undoState.itemIds.length} onUndo={performUndo} />
       )}
-    </AdminLayout>
+    </>
   );
 };
 
