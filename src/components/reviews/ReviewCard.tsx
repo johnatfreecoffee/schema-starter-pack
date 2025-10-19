@@ -15,6 +15,7 @@ interface ReviewCardProps {
     service_id?: string;
     response_text?: string;
     response_at?: string;
+    photo_url?: string;
   };
   serviceName?: string;
   showResponse?: boolean;
@@ -46,6 +47,14 @@ export function ReviewCard({ review, serviceName, showResponse = true }: ReviewC
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        {review.photo_url && (
+          <img
+            src={review.photo_url}
+            alt="Customer review photo"
+            className="w-full max-w-md h-48 object-cover rounded-lg"
+          />
+        )}
+        
         <p className="text-muted-foreground leading-relaxed">
           {review.review_text}
         </p>

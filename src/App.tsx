@@ -172,6 +172,7 @@ const AppContent = () => {
             <Route path="reviews" element={<Reviews />} />
             <Route path="reviews/new" element={<ReviewNew />} />
             <Route path="reviews/:id" element={<ReviewDetail />} />
+            <Route path="analytics/reviews" element={<ReviewAnalytics />} />
             <Route path="tickets" element={<Tickets />} />
             <Route path="tickets/new" element={<TicketNew />} />
             <Route path="tickets/:id" element={<TicketDetail />} />

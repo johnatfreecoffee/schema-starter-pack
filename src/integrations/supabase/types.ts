@@ -2015,7 +2015,10 @@ export type Database = {
           display_on_website: boolean | null
           external_url: string | null
           featured: boolean | null
+          flag_reason: string | null
           id: string
+          is_flagged: boolean | null
+          photo_url: string | null
           project_id: string | null
           rating: number
           response_at: string | null
@@ -2039,7 +2042,10 @@ export type Database = {
           display_on_website?: boolean | null
           external_url?: string | null
           featured?: boolean | null
+          flag_reason?: string | null
           id?: string
+          is_flagged?: boolean | null
+          photo_url?: string | null
           project_id?: string | null
           rating: number
           response_at?: string | null
@@ -2063,7 +2069,10 @@ export type Database = {
           display_on_website?: boolean | null
           external_url?: string | null
           featured?: boolean | null
+          flag_reason?: string | null
           id?: string
+          is_flagged?: boolean | null
+          photo_url?: string | null
           project_id?: string | null
           rating?: number
           response_at?: string | null
@@ -2527,6 +2536,14 @@ export type Database = {
           header_logo_size: number
           id: string
           primary_color: string
+          reviews_allow_photos: boolean | null
+          reviews_default_sort: string | null
+          reviews_enabled: boolean | null
+          reviews_min_rating: number | null
+          reviews_per_page: number | null
+          reviews_require_approval: boolean | null
+          reviews_show_last_name: boolean | null
+          reviews_spam_filter_enabled: boolean | null
           secondary_color: string
           show_social_links: boolean
           social_border_style: string
@@ -2548,6 +2565,14 @@ export type Database = {
           header_logo_size?: number
           id?: string
           primary_color?: string
+          reviews_allow_photos?: boolean | null
+          reviews_default_sort?: string | null
+          reviews_enabled?: boolean | null
+          reviews_min_rating?: number | null
+          reviews_per_page?: number | null
+          reviews_require_approval?: boolean | null
+          reviews_show_last_name?: boolean | null
+          reviews_spam_filter_enabled?: boolean | null
           secondary_color?: string
           show_social_links?: boolean
           social_border_style?: string
@@ -2569,6 +2594,14 @@ export type Database = {
           header_logo_size?: number
           id?: string
           primary_color?: string
+          reviews_allow_photos?: boolean | null
+          reviews_default_sort?: string | null
+          reviews_enabled?: boolean | null
+          reviews_min_rating?: number | null
+          reviews_per_page?: number | null
+          reviews_require_approval?: boolean | null
+          reviews_show_last_name?: boolean | null
+          reviews_spam_filter_enabled?: boolean | null
           secondary_color?: string
           show_social_links?: boolean
           social_border_style?: string

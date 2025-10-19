@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import HeaderSettings from '@/components/admin/settings/site-settings/HeaderSettings';
 import FooterSettings from '@/components/admin/settings/site-settings/FooterSettings';
 import BrandTheme from '@/components/admin/settings/site-settings/BrandTheme';
+import ReviewSettings from '@/components/admin/settings/site-settings/ReviewSettings';
 
 const SiteSettings = () => {
   const [activeTab, setActiveTab] = useState('header');
@@ -17,10 +18,11 @@ const SiteSettings = () => {
         
         <Card className="p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsList className="grid w-full grid-cols-4 mb-6">
               <TabsTrigger value="header">Header Settings</TabsTrigger>
               <TabsTrigger value="footer">Footer Settings</TabsTrigger>
               <TabsTrigger value="theme">Brand Theme</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews</TabsTrigger>
             </TabsList>
 
             <TabsContent value="header">
@@ -33,6 +35,10 @@ const SiteSettings = () => {
 
             <TabsContent value="theme">
               <BrandTheme />
+            </TabsContent>
+
+            <TabsContent value="reviews">
+              <ReviewSettings />
             </TabsContent>
           </Tabs>
         </Card>

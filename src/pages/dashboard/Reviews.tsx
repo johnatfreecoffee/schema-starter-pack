@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Download, AlertTriangle } from 'lucide-react';
 import { StarRating } from '@/components/reviews/StarRating';
 import { ReviewStatusBadge } from '@/components/reviews/ReviewStatusBadge';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileActionButton } from '@/components/ui/mobile-action-button';
+import { exportReviewsToCSV } from '@/lib/reviewExport';
 import {
   Table,
   TableBody,
@@ -237,10 +238,23 @@ export default function Reviews() {
             <p className="text-muted-foreground">Manage customer reviews and testimonials</p>
           </div>
           {!isMobile && (
-            <Button onClick={() => navigate('/dashboard/reviews/new')}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Review
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={async () => {
+                const result = await exportReviewsToCSV();
+                if (result.success) {
+                  toast({ title: `Exported ${result.count} reviews` });
+                } else {
+                  toast({ title: 'Export failed', variant: 'destructive' });
+                }
+              }}>
+                <Download className="w-4 h-4 mr-2" />
+                Export CSV
+              </Button>
+              <Button onClick={() => navigate('/dashboard/reviews/new')}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Review
+              </Button>
+            </div>
           )}
         </div>
 
@@ -271,6 +285,7 @@ export default function Reviews() {
               <SelectItem value="approved">Approved</SelectItem>
               <SelectItem value="rejected">Rejected</SelectItem>
               <SelectItem value="archived">Archived</SelectItem>
+              <SelectItem value="flagged">Flagged</SelectItem>
             </SelectContent>
           </Select>
           <Select value={ratingFilter} onValueChange={setRatingFilter}>
@@ -398,14 +413,19 @@ export default function Reviews() {
                     </TableCell>
                     <TableCell
                       className="cursor-pointer"
-                      onClick={() => navigate(`/dashboard/reviews/${review.id}`)}
+                     onClick={() => navigate(`/dashboard/reviews/${review.id}`)}
                     >
-                      <div>
-                        <div className="font-medium">{review.customer_name}</div>
-                        {review.customer_location && (
-                          <div className="text-sm text-muted-foreground">
-                            {review.customer_location}
-                          </div>
+                      <div className="flex items-center gap-2">
+                        <div>
+                          <div className="font-medium">{review.customer_name}</div>
+                          {review.customer_location && (
+                            <div className="text-sm text-muted-foreground">
+                              {review.customer_location}
+                            </div>
+                          )}
+                        </div>
+                        {review.is_flagged && (
+                          <AlertTriangle className="w-4 h-4 text-yellow-500" />
                         )}
                       </div>
                     </TableCell>
