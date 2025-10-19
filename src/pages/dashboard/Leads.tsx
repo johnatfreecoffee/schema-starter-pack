@@ -55,6 +55,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { workflowService } from '@/services/workflowService';
 import { ExportButton } from '@/components/admin/ExportButton';
 import { useBulkSelection } from '@/hooks/useBulkSelection';
 import { BulkActionsBar, BulkAction } from '@/components/admin/bulk/BulkActionsBar';
@@ -278,6 +279,21 @@ const Leads = () => {
       const { error } = await supabase.from('leads').delete().eq('id', id);
 
       if (error) throw error;
+
+      // Trigger workflow for record deletion
+      try {
+        await workflowService.triggerWorkflows({
+          workflow_id: '',
+          trigger_record_id: id,
+          trigger_module: 'leads',
+          trigger_data: {
+            ...leadToDelete,
+            entity_type: 'lead',
+          },
+        });
+      } catch (workflowError) {
+        console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+      }
 
       toast({
         title: 'Success',

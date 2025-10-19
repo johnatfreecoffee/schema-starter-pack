@@ -26,6 +26,7 @@ const SettingsTabs = () => {
     { value: 'seo', label: 'SEO' },
     { value: 'backup-management', label: 'Backup & Data' },
     { value: 'qa-testing', label: 'QA Testing' },
+    { value: 'workflows', label: 'Workflow Automation', path: '/dashboard/automation/workflows' },
   ];
 
   return (
@@ -34,7 +35,7 @@ const SettingsTabs = () => {
         <Tabs value={currentTab} className="w-full">
           <TabsList className="w-full justify-start rounded-none h-auto p-0 bg-transparent flex-wrap">
             {tabs.map((tab) => (
-              <Link key={tab.value} to={`/dashboard/settings/${tab.value}`}>
+              <Link key={tab.value} to={tab.path || `/dashboard/settings/${tab.value}`}>
                 <TabsTrigger
                   value={tab.value}
                   className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap"

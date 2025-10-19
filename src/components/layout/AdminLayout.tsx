@@ -36,7 +36,11 @@ import {
   FileText as FileTextAlt,
   ChevronLeft,
   ChevronRight,
-  User
+  User,
+  Zap,
+  Workflow,
+  LayoutTemplate,
+  TestTube
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
@@ -124,6 +128,15 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
         { path: '/dashboard/settings/service-areas', icon: MapPin, label: 'Service Areas' },
         { path: '/dashboard/settings/templates', icon: FileCode, label: 'Templates' },
         { path: '/dashboard/settings/static-pages', icon: FileTextAlt, label: 'Static Pages' },
+      ]
+    }] : []),
+    ...(isAdmin ? [{
+      title: 'Automation',
+      items: [
+        { path: '/dashboard/automation/workflows', icon: Workflow, label: 'Workflows' },
+        { path: '/dashboard/automation/monitor', icon: Activity, label: 'Execution Log' },
+        { path: '/dashboard/automation/templates', icon: LayoutTemplate, label: 'Templates' },
+        { path: '/dashboard/automation/testing', icon: TestTube, label: 'Testing' },
       ]
     }] : []),
     ...(isAdmin ? [{

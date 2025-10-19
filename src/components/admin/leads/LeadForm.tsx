@@ -14,6 +14,7 @@ import { useFormSettings } from '@/hooks/useFormSettings';
 import { CRUDLogger } from '@/lib/crudLogger';
 import { EmailService } from '@/services/emailService';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { workflowService } from '@/services/workflowService';
 
 interface LeadFormProps {
   isOpen: boolean;
@@ -119,6 +120,26 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
           console.error('⚠️ Logging failed or timed out (non-critical):', logError);
         }
 
+        // Trigger workflow for record update
+        try {
+          await withTimeout(
+            workflowService.triggerWorkflows({
+              workflow_id: '',
+              trigger_record_id: lead.id,
+              trigger_module: 'leads',
+              trigger_data: {
+                ...payload,
+                entity_type: 'lead',
+                previous_data: lead,
+              },
+            }),
+            3000,
+            'Workflow trigger (update)'
+          );
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
+        }
+
         toast({
           title: 'Success',
           description: 'Lead updated successfully'
@@ -156,6 +177,25 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
           console.log('✅ 5b. Create logged successfully');
         } catch (logError) {
           console.error('⚠️ Logging failed or timed out (non-critical):', logError);
+        }
+
+        // Trigger workflow for new record
+        try {
+          await withTimeout(
+            workflowService.triggerWorkflows({
+              workflow_id: '',
+              trigger_record_id: newLead.id,
+              trigger_module: 'leads',
+              trigger_data: {
+                ...newLead,
+                entity_type: 'lead',
+              },
+            }),
+            3000,
+            'Workflow trigger (create)'
+          );
+        } catch (workflowError) {
+          console.error('⚠️ Workflow trigger failed (non-critical):', workflowError);
         }
 
         toast({
