@@ -133,9 +133,9 @@ export function ServiceReviews({ serviceId, serviceName }: ServiceReviewsProps) 
             </div>
 
             <div className="text-center">
-              <Button asChild variant="outline">
-                <Link to={`/reviews?service=${serviceId}`}>
-                  View All {serviceName} Reviews
+              <Button asChild>
+                <Link to={`/portal/submit-review?service_id=${serviceId}`}>
+                  Write a Review
                 </Link>
               </Button>
             </div>

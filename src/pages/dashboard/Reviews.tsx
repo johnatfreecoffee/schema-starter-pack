@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Search, Download, AlertTriangle } from 'lucide-react';
+import { Plus, Search, Download, AlertTriangle, Loader2 } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { StarRating } from '@/components/reviews/StarRating';
 import { ReviewStatusBadge } from '@/components/reviews/ReviewStatusBadge';
 import { useToast } from '@/hooks/use-toast';
@@ -41,6 +42,7 @@ export default function Reviews() {
   const [dateTo, setDateTo] = useState<string>('');
   const [services, setServices] = useState<any[]>([]);
   const [selectedReviews, setSelectedReviews] = useState<string[]>([]);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     loadReviews();
@@ -66,7 +68,9 @@ export default function Reviews() {
       `)
       .order('submitted_at', { ascending: false });
 
-    if (statusFilter !== 'all') {
+    if (statusFilter === 'flagged') {
+      query = query.eq('is_flagged', true);
+    } else if (statusFilter !== 'all') {
       query = query.eq('status', statusFilter as 'approved' | 'pending' | 'rejected' | 'archived');
     }
 
@@ -240,14 +244,23 @@ export default function Reviews() {
           {!isMobile && (
             <div className="flex gap-2">
               <Button variant="outline" onClick={async () => {
+                setExporting(true);
                 const result = await exportReviewsToCSV();
                 if (result.success) {
-                  toast({ title: `Exported ${result.count} reviews` });
+                  toast({ 
+                    title: 'Export successful',
+                    description: `Exported ${result.count} reviews to CSV`
+                  });
                 } else {
                   toast({ title: 'Export failed', variant: 'destructive' });
                 }
-              }}>
-                <Download className="w-4 h-4 mr-2" />
+                setExporting(false);
+              }} disabled={exporting}>
+                {exporting ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4 mr-2" />
+                )}
                 Export CSV
               </Button>
               <Button onClick={() => navigate('/dashboard/reviews/new')}>
@@ -425,7 +438,16 @@ export default function Reviews() {
                           )}
                         </div>
                         {review.is_flagged && (
-                          <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-xs">{review.flag_reason || 'Flagged for review'}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         )}
                       </div>
                     </TableCell>

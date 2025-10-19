@@ -12,7 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
-import { ArrowLeft, Save, CheckCircle, XCircle, Archive } from 'lucide-react';
+import { ArrowLeft, Save, CheckCircle, XCircle, Archive, AlertTriangle, X } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   Select,
   SelectContent,
@@ -125,6 +126,27 @@ export default function ReviewDetail() {
     }
   }
 
+  async function handleClearFlag() {
+    const { error } = await supabase
+      .from('reviews')
+      .update({
+        is_flagged: false,
+        flag_reason: null
+      })
+      .eq('id', id);
+
+    if (error) {
+      toast({
+        title: "Error clearing flag",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      toast({ title: "Flag cleared successfully" });
+      loadReview();
+    }
+  }
+
   async function handlePostResponse() {
     const { data: { user } } = await supabase.auth.getUser();
     
@@ -184,6 +206,25 @@ export default function ReviewDetail() {
             )}
           </div>
         </div>
+
+        {review.is_flagged && (
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>This review has been flagged</AlertTitle>
+            <AlertDescription className="flex items-start justify-between">
+              <span>{review.flag_reason || 'Flagged by spam filter for manual review'}</span>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleClearFlag}
+                className="ml-4"
+              >
+                <X className="w-4 h-4 mr-1" />
+                Clear Flag
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">

@@ -22,6 +22,36 @@ export function renderTemplate(templateHtml: string, data: Record<string, any>):
 }
 
 /**
+ * Renders a template with review variables
+ * @param templateHtml - The HTML template
+ * @param data - Template data
+ * @param options - Options including serviceId
+ * @returns Rendered HTML string
+ */
+export async function renderTemplateWithReviews(
+  templateHtml: string,
+  data: Record<string, any>,
+  options?: { serviceId?: string }
+): Promise<string> {
+  try {
+    // First render handlebars template
+    let renderedHtml = renderTemplate(templateHtml, data);
+    
+    // Then process review template variables
+    const { processReviewTemplateVariables } = await import('./reviewTemplateVariables');
+    renderedHtml = await processReviewTemplateVariables(renderedHtml, {
+      serviceId: options?.serviceId,
+      serviceName: data.service_name
+    });
+    
+    return renderedHtml;
+  } catch (error) {
+    console.error('Template rendering error:', error);
+    throw new Error(`Failed to render template: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
  * Formats a price in cents to dollar string
  * @param cents - Price in cents
  * @returns Formatted price string like "$1,500"

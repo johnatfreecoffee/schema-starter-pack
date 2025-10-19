@@ -18,20 +18,35 @@ export default function Reviews() {
   const { toast } = useToast();
   const [reviews, setReviews] = useState<any[]>([]);
   const [services, setServices] = useState<any[]>([]);
+  const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [serviceFilter, setServiceFilter] = useState<string>('all');
   const [ratingFilter, setRatingFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('featured');
   const [page, setPage] = useState(1);
-  const perPage = 12;
+  const [perPage, setPerPage] = useState(12);
 
   useEffect(() => {
+    loadSettings();
     loadServices();
   }, []);
 
   useEffect(() => {
     loadReviews();
-  }, [serviceFilter, ratingFilter, sortBy, page]);
+  }, [serviceFilter, ratingFilter, sortBy, page, settings]);
+
+  async function loadSettings() {
+    const { data } = await supabase
+      .from('site_settings')
+      .select('*')
+      .single();
+    
+    if (data) {
+      setSettings(data);
+      setPerPage(data.reviews_per_page || 12);
+      setSortBy(data.reviews_default_sort || 'featured');
+    }
+  }
 
   async function loadServices() {
     const { data } = await supabase
@@ -43,6 +58,14 @@ export default function Reviews() {
 
   async function loadReviews() {
     setLoading(true);
+
+    // Check if reviews are enabled
+    if (settings && !settings.reviews_enabled) {
+      setReviews([]);
+      setLoading(false);
+      return;
+    }
+
     let query = supabase
       .from('reviews')
       .select(`
@@ -52,6 +75,11 @@ export default function Reviews() {
       .eq('status', 'approved')
       .eq('display_on_website', true);
 
+    // Apply minimum rating filter from settings
+    if (settings?.reviews_min_rating) {
+      query = query.gte('rating', settings.reviews_min_rating);
+    }
+
     if (serviceFilter !== 'all') {
       query = query.eq('service_id', serviceFilter);
     }
@@ -60,12 +88,13 @@ export default function Reviews() {
       query = query.eq('rating', parseInt(ratingFilter));
     }
 
-    // Apply sorting
-    if (sortBy === 'featured') {
+    // Apply sorting based on settings or user selection
+    const currentSort = sortBy || settings?.reviews_default_sort || 'featured';
+    if (currentSort === 'featured') {
       query = query.order('featured', { ascending: false });
-    } else if (sortBy === 'newest') {
+    } else if (currentSort === 'newest') {
       query = query.order('submitted_at', { ascending: false });
-    } else if (sortBy === 'highest') {
+    } else if (currentSort === 'highest') {
       query = query.order('rating', { ascending: false });
     }
 
@@ -122,81 +151,91 @@ export default function Reviews() {
             )}
           </div>
 
-          <div className="flex flex-wrap gap-4 mb-8">
-            <Select value={serviceFilter} onValueChange={setServiceFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="All Services" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Services</SelectItem>
-                {services.map((service) => (
-                  <SelectItem key={service.id} value={service.id}>
-                    {service.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={ratingFilter} onValueChange={setRatingFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="All Ratings" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Ratings</SelectItem>
-                <SelectItem value="5">5 Stars</SelectItem>
-                <SelectItem value="4">4 Stars</SelectItem>
-                <SelectItem value="3">3 Stars</SelectItem>
-                <SelectItem value="2">2 Stars</SelectItem>
-                <SelectItem value="1">1 Star</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Sort By" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="featured">Featured First</SelectItem>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="highest">Highest Rated</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {loading ? (
-            <div className="text-center py-12">Loading reviews...</div>
-          ) : reviews.length === 0 ? (
+          {settings && !settings.reviews_enabled ? (
             <div className="text-center py-12 text-muted-foreground">
-              No reviews found matching your filters
+              <p className="text-lg">Reviews are currently disabled.</p>
+              <p className="text-sm mt-2">Please check back later.</p>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                {reviews.map((review) => (
-                  <ReviewCard
-                    key={review.id}
-                    review={review}
-                    serviceName={review.services?.name}
-                  />
-                ))}
+              <div className="flex flex-wrap gap-4 mb-8">
+                <Select value={serviceFilter} onValueChange={setServiceFilter}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="All Services" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Services</SelectItem>
+                    {services.map((service) => (
+                      <SelectItem key={service.id} value={service.id}>
+                        {service.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={ratingFilter} onValueChange={setRatingFilter}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="All Ratings" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Ratings</SelectItem>
+                    <SelectItem value="5">5 Stars</SelectItem>
+                    <SelectItem value="4">4 Stars</SelectItem>
+                    <SelectItem value="3">3 Stars</SelectItem>
+                    <SelectItem value="2">2 Stars</SelectItem>
+                    <SelectItem value="1">1 Star</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Sort By" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="featured">Featured First</SelectItem>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="highest">Highest Rated</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
-              <div className="flex justify-center gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setPage(p => p + 1)}
-                  disabled={reviews.length < perPage}
-                >
-                  Next
-                </Button>
-              </div>
+              {loading ? (
+                <div className="text-center py-12">Loading reviews...</div>
+              ) : reviews.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  No reviews found matching your filters
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    {reviews.map((review) => (
+                      <ReviewCard
+                        key={review.id}
+                        review={review}
+                        serviceName={review.services?.name}
+                        settings={settings}
+                      />
+                    ))}
+                  </div>
+
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setPage(p => p + 1)}
+                      disabled={reviews.length < perPage}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>

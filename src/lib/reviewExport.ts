@@ -17,11 +17,10 @@ export async function exportReviewsToCSV() {
       throw new Error('No reviews to export');
     }
 
-    // Prepare CSV headers
     const headers = [
       'Date Submitted',
       'Customer Name',
-      'Email',
+      'Account Name',
       'Rating',
       'Status',
       'Service Name',
@@ -62,8 +61,11 @@ export async function exportReviewsToCSV() {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     
+    const today = new Date().toISOString().split('T')[0];
+    const fileName = `reviews-export-${reviews.length}-reviews-${today}.csv`;
+    
     link.setAttribute('href', url);
-    link.setAttribute('download', `reviews-export-${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', fileName);
     link.style.visibility = 'hidden';
     
     document.body.appendChild(link);

@@ -19,9 +19,23 @@ interface ReviewCardProps {
   };
   serviceName?: string;
   showResponse?: boolean;
+  settings?: any;
 }
 
-export function ReviewCard({ review, serviceName, showResponse = true }: ReviewCardProps) {
+export function ReviewCard({ review, serviceName, showResponse = true, settings }: ReviewCardProps) {
+  // Format customer name based on privacy settings
+  const formatCustomerName = (name: string) => {
+    if (!settings?.reviews_show_last_name) {
+      const parts = name.trim().split(' ');
+      if (parts.length > 1) {
+        const firstName = parts[0];
+        const lastInitial = parts[parts.length - 1].charAt(0);
+        return `${firstName} ${lastInitial}.`;
+      }
+    }
+    return name;
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -30,7 +44,7 @@ export function ReviewCard({ review, serviceName, showResponse = true }: ReviewC
             <StarRating rating={review.rating} size="sm" />
             <h3 className="font-semibold text-lg">{review.review_title}</h3>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>{review.customer_name}</span>
+              <span>{formatCustomerName(review.customer_name)}</span>
               {review.customer_location && (
                 <>
                   <span>•</span>

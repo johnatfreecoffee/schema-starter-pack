@@ -45,6 +45,14 @@ export default function CustomerSubmitReview() {
     loadSettings();
   }, []);
 
+  useEffect(() => {
+    // Pre-select service if provided in URL
+    const serviceIdFromUrl = searchParams.get('service_id');
+    if (serviceIdFromUrl) {
+      setFormData(prev => ({ ...prev, service_id: serviceIdFromUrl }));
+    }
+  }, [searchParams]);
+
   async function loadServices() {
     const { data } = await supabase
       .from('services')
@@ -160,7 +168,18 @@ export default function CustomerSubmitReview() {
           ? "Your review has been submitted and is pending review."
           : "Your review will be published after approval."
       });
-      navigate('/portal/my-reviews');
+
+      // Redirect back to service page if service_id was in URL
+      const serviceIdFromUrl = searchParams.get('service_id');
+      if (serviceIdFromUrl && newReview.service_id) {
+        const service = services.find(s => s.id === serviceIdFromUrl);
+        if (service) {
+          // Navigate to service page (you'll need to fetch the service slug)
+          navigate('/portal/my-reviews');
+        }
+      } else {
+        navigate('/portal/my-reviews');
+      }
     } catch (error: any) {
       toast({
         title: "Error submitting review",
@@ -196,22 +215,35 @@ export default function CustomerSubmitReview() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="service">Service (Optional)</Label>
-                <Select
-                  value={formData.service_id}
-                  onValueChange={(value) => setFormData({ ...formData, service_id: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a service" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">General Review</SelectItem>
-                    {services.map((service) => (
-                      <SelectItem key={service.id} value={service.id}>
-                        {service.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {searchParams.get('service_id') ? (
+                  <>
+                    <Input
+                      value={services.find(s => s.id === formData.service_id)?.name || 'Loading...'}
+                      disabled
+                      className="bg-muted"
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      You're reviewing: {services.find(s => s.id === formData.service_id)?.name}
+                    </p>
+                  </>
+                ) : (
+                  <Select
+                    value={formData.service_id}
+                    onValueChange={(value) => setFormData({ ...formData, service_id: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a service" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">General Review</SelectItem>
+                      {services.map((service) => (
+                        <SelectItem key={service.id} value={service.id}>
+                          {service.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
 
               <div className="space-y-2">
