@@ -60,6 +60,13 @@ const Contacts = () => {
     callback: () => void;
   } | null>(null);
 
+  const getCurrentFilters = () => {
+    const currentFilters: Record<string, any> = {};
+    if (filters.accountId) currentFilters.account_id = filters.accountId;
+    if (filters.type) currentFilters.contact_type = filters.type;
+    return Object.keys(currentFilters).length > 0 ? currentFilters : undefined;
+  };
+
   useEffect(() => {
     fetchContacts();
     fetchAccounts();
@@ -187,27 +194,25 @@ const Contacts = () => {
     (key) => filters[key] !== null && filters[key] !== undefined && filters[key] !== ''
   ).length;
 
-  const handleSelectAllFiltered = async () => {
-    const { data } = await supabase
-      .from('contacts')
-      .select('id')
-      .limit(totalCount);
-    
-    if (data) {
-      data.forEach(item => bulk.toggleItem(item.id));
-      toast({
-        title: 'All items selected',
-        description: `Selected all ${totalCount} contacts matching current filter`
-      });
-    }
-  };
-
   const handleBulkAction = async (actionId: string) => {
     if (actionId === 'delete') {
       setBulkDeleteOpen(true);
     } else if (actionId === 'export') {
-      await BulkOperationsService.bulkExport('contacts', bulk.selectionMode, Array.from(bulk.selectedIds), undefined);
-      toast({ title: 'Success', description: `Exported ${bulk.selectedCount} contacts` });
+      const performExport = async () => {
+        const filters = bulk.isAllMatchingSelected ? getCurrentFilters() : undefined;
+        await BulkOperationsService.bulkExport('contacts', bulk.selectionMode, Array.from(bulk.selectedIds), filters);
+        toast({ title: 'Success', description: `Exported ${bulk.selectedCount} contacts` });
+      };
+
+      if (bulk.isAllMatchingSelected) {
+        setConfirmBulkAction({
+          open: true,
+          action: 'export',
+          callback: performExport
+        });
+      } else {
+        await performExport();
+      }
     } else if (actionId === 'tags') {
       setBulkTagsOpen(true);
     } else if (actionId === 'email') {
@@ -216,26 +221,53 @@ const Contacts = () => {
   };
 
   const handleBulkDelete = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const performDelete = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    await BulkOperationsService.bulkDelete('contacts', bulk.selectionMode, Array.from(bulk.selectedIds), undefined, user.id);
-    toast({ title: 'Success', description: `Deleted ${bulk.selectedCount} contacts` });
-    bulk.deselectAll();
-    fetchContacts();
+      const filters = bulk.isAllMatchingSelected ? getCurrentFilters() : undefined;
+      await BulkOperationsService.bulkDelete('contacts', bulk.selectionMode, Array.from(bulk.selectedIds), filters, user.id);
+      toast({ title: 'Success', description: `Deleted ${bulk.selectedCount} contacts` });
+      bulk.deselectAll();
+      fetchContacts();
+      setBulkDeleteOpen(false);
+    };
+
+    if (bulk.isAllMatchingSelected) {
+      setConfirmBulkAction({
+        open: true,
+        action: 'permanently delete',
+        callback: performDelete
+      });
+    } else {
+      await performDelete();
+    }
   };
 
   const handleBulkTags = async (tags: string[], mode: 'add' | 'replace') => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const performAction = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    try {
-      await BulkOperationsService.bulkTagsUpdate('contacts', bulk.selectionMode, tags, mode, user.id, Array.from(bulk.selectedIds), undefined);
-      toast({ title: 'Success', description: `Tags updated for ${bulk.selectedCount} contacts` });
-      bulk.deselectAll();
-      fetchContacts();
-    } catch (error: any) {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      try {
+        const filters = bulk.isAllMatchingSelected ? getCurrentFilters() : undefined;
+        await BulkOperationsService.bulkTagsUpdate('contacts', bulk.selectionMode, tags, mode, user.id, Array.from(bulk.selectedIds), filters);
+        toast({ title: 'Success', description: `Tags updated for ${bulk.selectedCount} contacts` });
+        bulk.deselectAll();
+        fetchContacts();
+      } catch (error: any) {
+        toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      }
+    };
+
+    if (bulk.isAllMatchingSelected) {
+      setConfirmBulkAction({
+        open: true,
+        action: `update tags for`,
+        callback: performAction
+      });
+    } else {
+      await performAction();
     }
   };
 
@@ -334,19 +366,14 @@ const Contacts = () => {
           label="New Contact"
         />
 
-        {/* Select All Filtered Prompt */}
-        {bulk.selectedCount > 0 && bulk.selectedCount < totalCount && (
-          <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-            <span className="text-sm text-blue-900">
-              {bulk.selectedCount} selected
-            </span>
-            <button
-              onClick={handleSelectAllFiltered}
-              className="text-sm text-blue-600 hover:text-blue-800 underline font-medium min-h-[44px] px-2"
-            >
-              Select all {totalCount} items matching filter
-            </button>
-          </div>
+        {bulk.isAllSelected && !bulk.isAllMatchingSelected && totalCount > filteredContacts.length && (
+          <BulkSelectAllBanner
+            visibleCount={filteredContacts.length}
+            totalCount={totalCount}
+            isAllMatchingSelected={bulk.isAllMatchingSelected}
+            onSelectAllMatching={() => bulk.selectAllMatching(totalCount)}
+            onClear={bulk.deselectAll}
+          />
         )}
 
         {/* Filter Chips */}
@@ -645,6 +672,17 @@ const Contacts = () => {
             last_name: c.last_name,
           }))}
           onConfirm={handleBulkEmail}
+        />
+
+        <BulkConfirmationModal
+          open={confirmBulkAction?.open || false}
+          onOpenChange={(open) => !open && setConfirmBulkAction(null)}
+          totalCount={bulk.selectedCount}
+          action={confirmBulkAction?.action || ''}
+          onConfirm={() => {
+            confirmBulkAction?.callback();
+            setConfirmBulkAction(null);
+          }}
         />
 
         {undoState && (

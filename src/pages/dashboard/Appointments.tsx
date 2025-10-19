@@ -74,6 +74,12 @@ const Appointments = () => {
   } | null>(null);
   const [totalCount, setTotalCount] = useState(0);
 
+  const getCurrentFilters = () => {
+    const currentFilters: Record<string, any> = {};
+    if (statusFilter !== 'all') currentFilters.status = statusFilter;
+    return Object.keys(currentFilters).length > 0 ? currentFilters : undefined;
+  };
+
   const fetchAppointments = async () => {
     setLoading(true);
     try {
@@ -84,17 +90,18 @@ const Appointments = () => {
           accounts (
             account_name
           )
-        `)
+        `, { count: 'exact' })
         .order('start_time', { ascending: false });
 
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter as 'scheduled' | 'completed' | 'canceled' | 'requested');
       }
 
-      const { data, error } = await query;
+      const { data, error, count } = await query;
 
       if (error) throw error;
       setAppointments(data || []);
+      setTotalCount(count || 0);
     } catch (error) {
       console.error('Error fetching appointments:', error);
       toast.error('Failed to load appointments');
@@ -294,34 +301,61 @@ const Appointments = () => {
   const canBulkDelete = role === 'Super Admin' || role === 'Admin';
 
   const handleBulkDelete = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const performDelete = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    setBulkProgress({
-      open: true,
-      operation: `Deleting ${bulkSelection.selectedCount} appointments`,
-      total: bulkSelection.selectedCount,
-      completed: 0,
-      failed: 0,
-      errors: [],
-      isComplete: false,
-    });
+      setBulkProgress({
+        open: true,
+        operation: `Deleting ${bulkSelection.selectedCount} appointments`,
+        total: bulkSelection.selectedCount,
+        completed: 0,
+        failed: 0,
+        errors: [],
+        isComplete: false,
+      });
 
-    const result = await BulkOperationsService.bulkDelete('calendar_events', bulkSelection.selectionMode, Array.from(bulkSelection.selectedIds), undefined, user.id);
+      const filters = bulkSelection.isAllMatchingSelected ? getCurrentFilters() : undefined;
+      const result = await BulkOperationsService.bulkDelete('calendar_events', bulkSelection.selectionMode, Array.from(bulkSelection.selectedIds), filters, user.id);
 
-    setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
-    bulkSelection.deselectAll();
-    fetchAppointments();
+      setBulkProgress(prev => ({ ...prev, ...result, isComplete: true }));
+      bulkSelection.deselectAll();
+      fetchAppointments();
 
-    toast.success(`${result.success} appointments deleted`);
+      toast.success(`${result.success} appointments deleted`);
+      setBulkDeleteOpen(false);
+    };
+
+    if (bulkSelection.isAllMatchingSelected) {
+      setConfirmBulkAction({
+        open: true,
+        action: 'permanently delete',
+        callback: performDelete
+      });
+    } else {
+      await performDelete();
+    }
   };
 
   const handleBulkExport = async () => {
-    try {
-      await BulkOperationsService.bulkExport('calendar_events', bulkSelection.selectionMode, Array.from(bulkSelection.selectedIds), undefined);
-      toast.success(`${bulkSelection.selectedCount} appointments exported`);
-    } catch (error) {
-      toast.error('Failed to export appointments');
+    const performExport = async () => {
+      try {
+        const filters = bulkSelection.isAllMatchingSelected ? getCurrentFilters() : undefined;
+        await BulkOperationsService.bulkExport('calendar_events', bulkSelection.selectionMode, Array.from(bulkSelection.selectedIds), filters);
+        toast.success(`${bulkSelection.selectedCount} appointments exported`);
+      } catch (error) {
+        toast.error('Failed to export appointments');
+      }
+    };
+
+    if (bulkSelection.isAllMatchingSelected) {
+      setConfirmBulkAction({
+        open: true,
+        action: 'export',
+        callback: performExport
+      });
+    } else {
+      await performExport();
     }
   };
 
@@ -385,6 +419,16 @@ const Appointments = () => {
             </div>
           </CardHeader>
           <CardContent>
+            {bulkSelection.isAllSelected && !bulkSelection.isAllMatchingSelected && totalCount > appointments.length && (
+              <BulkSelectAllBanner
+                visibleCount={appointments.length}
+                totalCount={totalCount}
+                isAllMatchingSelected={bulkSelection.isAllMatchingSelected}
+                onSelectAllMatching={() => bulkSelection.selectAllMatching(totalCount)}
+                onClear={bulkSelection.deselectAll}
+              />
+            )}
+            
             {loading ? (
               <div className="space-y-2">
                 <Skeleton className="h-12 w-full" />
@@ -522,6 +566,17 @@ const Appointments = () => {
           failed={bulkProgress.failed}
           errors={bulkProgress.errors}
           isComplete={bulkProgress.isComplete}
+        />
+
+        <BulkConfirmationModal
+          open={confirmBulkAction?.open || false}
+          onOpenChange={(open) => !open && setConfirmBulkAction(null)}
+          totalCount={bulkSelection.selectedCount}
+          action={confirmBulkAction?.action || ''}
+          onConfirm={() => {
+            confirmBulkAction?.callback();
+            setConfirmBulkAction(null);
+          }}
         />
 
         {undoState && (

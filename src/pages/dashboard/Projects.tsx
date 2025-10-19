@@ -62,6 +62,15 @@ const Projects = () => {
     action: string;
     callback: () => void;
   } | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
+
+  const getCurrentFilters = () => {
+    const currentFilters: Record<string, any> = {};
+    if (filters.status) currentFilters.status = filters.status;
+    if (filters.type) currentFilters.type = filters.type;
+    if (filters.assignedTo) currentFilters.assigned_to = filters.assignedTo;
+    return Object.keys(currentFilters).length > 0 ? currentFilters : undefined;
+  };
 
   useEffect(() => {
     fetchProjects();
@@ -112,7 +121,7 @@ const Projects = () => {
         .select(`
           *,
           accounts (account_name)
-        `) as any;
+        `, { count: 'exact' }) as any;
       
       query = query.order('created_at', { ascending: false });
 
@@ -132,9 +141,10 @@ const Projects = () => {
         query = query.gte('budget', filters.budgetMin);
       }
 
-      const { data, error } = await query;
+      const { data, error, count } = await query;
 
       if (error) throw error;
+      setTotalCount(count || 0);
 
       // Fetch tasks separately for each project to calculate progress
       const projectsWithProgress = await Promise.all((data || []).map(async (project) => {
@@ -212,37 +222,64 @@ const Projects = () => {
   };
 
   const handleBulkDelete = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const performDelete = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    await BulkOperationsService.bulkDelete('projects', bulk.selectionMode, Array.from(bulk.selectedIds), undefined, user.id);
-    toast({ title: 'Success', description: `Deleted ${bulk.selectedCount} projects` });
-    bulk.deselectAll();
-    fetchProjects();
+      const filters = bulk.isAllMatchingSelected ? getCurrentFilters() : undefined;
+      await BulkOperationsService.bulkDelete('projects', bulk.selectionMode, Array.from(bulk.selectedIds), filters, user.id);
+      toast({ title: 'Success', description: `Deleted ${bulk.selectedCount} projects` });
+      bulk.deselectAll();
+      fetchProjects();
+      setBulkDeleteOpen(false);
+    };
+
+    if (bulk.isAllMatchingSelected) {
+      setConfirmBulkAction({
+        open: true,
+        action: 'permanently delete',
+        callback: performDelete
+      });
+    } else {
+      await performDelete();
+    }
   };
 
   const handleBulkStatusChange = async (formData: Record<string, any>) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const performAction = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    // Save previous values for undo
-    const previousValues = projects
-      .filter(p => bulk.selectedIds.has(p.id))
-      .map(p => ({ id: p.id, status: p.status }));
+      // Save previous values for undo
+      const previousValues = projects
+        .filter(p => bulk.selectedIds.has(p.id))
+        .map(p => ({ id: p.id, status: p.status }));
 
-    await BulkOperationsService.bulkStatusChange('projects', bulk.selectionMode, formData.status, user.id, Array.from(bulk.selectedIds), undefined);
-    
-    saveUndoState({
-      operation: 'status',
-      module: 'projects',
-      itemIds: Array.from(bulk.selectedIds),
-      previousValues,
-      timestamp: new Date(),
-    });
+      const filters = bulk.isAllMatchingSelected ? getCurrentFilters() : undefined;
+      await BulkOperationsService.bulkStatusChange('projects', bulk.selectionMode, formData.status, user.id, Array.from(bulk.selectedIds), filters);
+      
+      saveUndoState({
+        operation: 'status',
+        module: 'projects',
+        itemIds: Array.from(bulk.selectedIds),
+        previousValues,
+        timestamp: new Date(),
+      });
 
-    toast({ title: 'Success', description: `Updated status for ${bulk.selectedCount} projects` });
-    bulk.deselectAll();
-    fetchProjects();
+      toast({ title: 'Success', description: `Updated status for ${bulk.selectedCount} projects` });
+      bulk.deselectAll();
+      fetchProjects();
+    };
+
+    if (bulk.isAllMatchingSelected) {
+      setConfirmBulkAction({
+        open: true,
+        action: `change status to "${formData.status}" for`,
+        callback: performAction
+      });
+    } else {
+      await performAction();
+    }
   };
 
   const canBulkDelete = userRole === 'Super Admin' || userRole === 'Admin';
@@ -286,6 +323,16 @@ const Projects = () => {
         />
 
         <FilterChips filters={filters} onRemove={(key) => updateFilter(key, null)} onClearAll={clearFilters} />
+
+        {bulk.isAllSelected && !bulk.isAllMatchingSelected && totalCount > projects.length && (
+          <BulkSelectAllBanner
+            visibleCount={projects.length}
+            totalCount={totalCount}
+            isAllMatchingSelected={bulk.isAllMatchingSelected}
+            onSelectAllMatching={() => bulk.selectAllMatching(totalCount)}
+            onClear={bulk.deselectAll}
+          />
+        )}
 
         {loading ? (
           <div className="space-y-4">
@@ -500,6 +547,17 @@ const Projects = () => {
           itemType="projects"
           itemNames={bulk.selectedItems.map(p => p.project_name)}
           onConfirm={handleBulkDelete}
+        />
+
+        <BulkConfirmationModal
+          open={confirmBulkAction?.open || false}
+          onOpenChange={(open) => !open && setConfirmBulkAction(null)}
+          totalCount={bulk.selectedCount}
+          action={confirmBulkAction?.action || ''}
+          onConfirm={() => {
+            confirmBulkAction?.callback();
+            setConfirmBulkAction(null);
+          }}
         />
 
         {undoState && (
