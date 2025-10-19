@@ -36,8 +36,18 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import { InviteUserDialog } from '@/components/admin/team/InviteUserDialog';
 import { UserDetailDialog } from '@/components/admin/team/UserDetailDialog';
+import { PasswordResetDialog } from '@/components/admin/team/PasswordResetDialog';
+import { TeamStatsCards } from '@/components/admin/team/TeamStatsCards';
 import { UserRoleBadge } from '@/components/admin/team/UserRoleBadge';
 import { UserStatusBadge } from '@/components/admin/team/UserStatusBadge';
 import { toast } from '@/hooks/use-toast';
@@ -83,6 +93,9 @@ const Team = () => {
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [bulkActionDialogOpen, setBulkActionDialogOpen] = useState(false);
   const [bulkAction, setBulkAction] = useState<'suspend' | 'reactivate' | 'delete' | null>(null);
+  const [passwordResetDialogOpen, setPasswordResetDialogOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 20;
 
   useEffect(() => {
     if (!roleLoading) {
@@ -281,7 +294,7 @@ const Team = () => {
     }
   };
 
-  // Filter team members
+  // Filter and paginate team members
   const filteredMembers = teamMembers.filter(member => {
     const matchesSearch =
       member.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -291,6 +304,16 @@ const Team = () => {
 
     return matchesSearch && matchesRole && matchesStatus;
   });
+
+  const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedMembers = filteredMembers.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, roleFilter, statusFilter]);
 
   return (
     <AdminLayout>
@@ -307,6 +330,9 @@ const Team = () => {
             Invite User
           </Button>
         </div>
+
+        {/* Team Statistics Dashboard */}
+        <TeamStatsCards />
 
         {/* Filters and Bulk Actions */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -401,12 +427,19 @@ const Team = () => {
 
         {/* Team Members Table */}
         <div className="bg-card border rounded-lg overflow-hidden">
+          {/* Results info */}
+          <div className="px-4 py-3 border-b bg-muted/50">
+            <p className="text-sm text-muted-foreground">
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredMembers.length)} of {filteredMembers.length} users
+            </p>
+          </div>
+
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead className="w-12">
                   <Checkbox
-                    checked={selectedUsers.size === filteredMembers.length && filteredMembers.length > 0}
+                    checked={selectedUsers.size === paginatedMembers.length && paginatedMembers.length > 0}
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
@@ -424,14 +457,14 @@ const Team = () => {
                     <Loader2 className="h-6 w-6 animate-spin mx-auto" />
                   </TableCell>
                 </TableRow>
-              ) : filteredMembers.length === 0 ? (
+              ) : paginatedMembers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     No team members found
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredMembers.map((member) => (
+                paginatedMembers.map((member) => (
                   <TableRow key={member.id} className="cursor-pointer hover:bg-muted/50">
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <Checkbox
@@ -477,6 +510,53 @@ const Team = () => {
               )}
             </TableBody>
           </Table>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="px-4 py-3 border-t">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    />
+                  </PaginationItem>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    // Show first, last, current, and pages around current
+                    if (
+                      page === 1 ||
+                      page === totalPages ||
+                      (page >= currentPage - 1 && page <= currentPage + 1)
+                    ) {
+                      return (
+                        <PaginationItem key={page}>
+                          <PaginationLink
+                            onClick={() => setCurrentPage(page)}
+                            isActive={currentPage === page}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    } else if (page === currentPage - 2 || page === currentPage + 2) {
+                      return <span key={page} className="px-2">...</span>;
+                    }
+                    return null;
+                  })}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </div>
       </div>
 
@@ -493,18 +573,42 @@ const Team = () => {
         onSuccess={loadTeamData}
       />
 
+      <PasswordResetDialog
+        open={passwordResetDialogOpen}
+        onOpenChange={setPasswordResetDialogOpen}
+        userId={selectedUserId}
+        userEmail={teamMembers.find(m => m.id === selectedUserId)?.email || ''}
+        userName={teamMembers.find(m => m.id === selectedUserId)?.full_name || ''}
+      />
+
       <AlertDialog open={bulkActionDialogOpen} onOpenChange={setBulkActionDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Bulk Action</AlertDialogTitle>
+            <AlertDialogTitle>
+              {bulkAction === 'delete' ? 'Delete Users?' : bulkAction === 'suspend' ? 'Suspend Users?' : 'Reactivate Users?'}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to {bulkAction} {selectedUsers.size} user(s)? 
-              {bulkAction === 'delete' && ' This action cannot be undone.'}
+              {bulkAction === 'delete' ? (
+                <div className="space-y-2">
+                  <p>Are you sure you want to delete {selectedUsers.size} user(s)?</p>
+                  <p className="text-destructive font-medium">⚠️ This action cannot be undone.</p>
+                  <p className="text-sm">Users who own records (leads, accounts, tasks) may cause data integrity issues if deleted.</p>
+                </div>
+              ) : bulkAction === 'suspend' ? (
+                <p>Are you sure you want to suspend {selectedUsers.size} user(s)? They will not be able to log in until reactivated.</p>
+              ) : (
+                <p>Are you sure you want to reactivate {selectedUsers.size} user(s)? They will be able to log in again.</p>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleBulkAction}>Confirm</AlertDialogAction>
+            <AlertDialogAction 
+              onClick={handleBulkAction}
+              className={bulkAction === 'delete' ? 'bg-destructive hover:bg-destructive/90' : ''}
+            >
+              {bulkAction === 'delete' ? 'Delete Permanently' : 'Confirm'}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

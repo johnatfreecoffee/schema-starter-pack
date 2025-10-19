@@ -2962,6 +2962,7 @@ export type Database = {
           job_title: string | null
           last_login_at: string | null
           phone: string | null
+          require_password_change: boolean | null
           status: string
           two_factor_backup_codes: string | null
           two_factor_enabled: boolean | null
@@ -2978,6 +2979,7 @@ export type Database = {
           job_title?: string | null
           last_login_at?: string | null
           phone?: string | null
+          require_password_change?: boolean | null
           status?: string
           two_factor_backup_codes?: string | null
           two_factor_enabled?: boolean | null
@@ -2994,6 +2996,7 @@ export type Database = {
           job_title?: string | null
           last_login_at?: string | null
           phone?: string | null
+          require_password_change?: boolean | null
           status?: string
           two_factor_backup_codes?: string | null
           two_factor_enabled?: boolean | null

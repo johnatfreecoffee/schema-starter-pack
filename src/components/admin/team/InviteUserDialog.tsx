@@ -67,6 +67,41 @@ export function InviteUserDialog({ open, onOpenChange, onSuccess }: InviteUserDi
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      // Check for duplicate email in user_profiles
+      const { data: existingProfile } = await supabase
+        .from('user_profiles')
+        .select('id')
+        .eq('email', data.email)
+        .maybeSingle();
+
+      if (existingProfile) {
+        toast({
+          title: 'Error',
+          description: 'A user with this email already exists',
+          variant: 'destructive',
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Check for duplicate email in pending invitations
+      const { data: existingInvite } = await supabase
+        .from('team_invitations')
+        .select('id')
+        .eq('email', data.email)
+        .eq('status', 'pending')
+        .maybeSingle();
+
+      if (existingInvite) {
+        toast({
+          title: 'Error',
+          description: 'A pending invitation already exists for this email',
+          variant: 'destructive',
+        });
+        setLoading(false);
+        return;
+      }
+
       // Call edge function to send invitation
       const inviteData = {
         email: data.email,
@@ -92,7 +127,7 @@ export function InviteUserDialog({ open, onOpenChange, onSuccess }: InviteUserDi
 
       toast({
         title: 'Invitation Sent',
-        description: `An invitation has been sent to ${data.email}`,
+        description: `An invitation email has been sent to ${data.email}. They will receive instructions to set up their account.`,
       });
 
       form.reset();

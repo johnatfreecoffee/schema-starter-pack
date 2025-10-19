@@ -44,36 +44,64 @@ export function PermissionsMatrix({ userId, userRole }: PermissionsMatrixProps) 
   const loadPermissions = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('user_permissions')
-        .select('*')
-        .eq('user_id', userId);
+      // Get the user's role ID
+      const { data: userRoleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role_id')
+        .eq('user_id', userId)
+        .maybeSingle();
 
-      if (error) throw error;
+      if (roleError) throw roleError;
 
       const permissionsMap: Record<string, Permission> = {};
       
-      // Initialize all modules with default permissions
+      // Initialize all modules with no permissions
       MODULES.forEach(module => {
         permissionsMap[module.id] = {
           module: module.id,
-          can_view: userRole === 'Super Admin' || userRole === 'Admin',
-          can_create: userRole === 'Super Admin' || userRole === 'Admin',
-          can_edit: userRole === 'Super Admin' || userRole === 'Admin',
-          can_delete: userRole === 'Super Admin' || userRole === 'Admin',
+          can_view: false,
+          can_create: false,
+          can_edit: false,
+          can_delete: false,
         };
       });
 
-      // Override with existing permissions
-      data?.forEach(perm => {
-        permissionsMap[perm.module] = {
-          module: perm.module,
-          can_view: perm.can_view,
-          can_create: perm.can_create,
-          can_edit: perm.can_edit,
-          can_delete: perm.can_delete,
-        };
-      });
+      if (userRoleData?.role_id) {
+        // Load permissions from role_permissions table
+        const { data: rolePerms, error: permsError } = await supabase
+          .from('role_permissions')
+          .select('permissions(name, action, module)')
+          .eq('role_id', userRoleData.role_id);
+
+        if (permsError) throw permsError;
+
+        // Map role permissions to modules
+        rolePerms?.forEach((item: any) => {
+          const perm = item.permissions;
+          if (perm && perm.module) {
+            const module = perm.module;
+            if (permissionsMap[module]) {
+              if (perm.action === 'view') permissionsMap[module].can_view = true;
+              if (perm.action === 'create') permissionsMap[module].can_create = true;
+              if (perm.action === 'edit') permissionsMap[module].can_edit = true;
+              if (perm.action === 'delete') permissionsMap[module].can_delete = true;
+            }
+          }
+        });
+      }
+
+      // Admins get all permissions by default
+      if (userRole === 'Super Admin' || userRole === 'Admin') {
+        MODULES.forEach(module => {
+          permissionsMap[module.id] = {
+            module: module.id,
+            can_view: true,
+            can_create: true,
+            can_edit: true,
+            can_delete: true,
+          };
+        });
+      }
 
       setPermissions(permissionsMap);
     } catch (error: any) {
@@ -98,63 +126,8 @@ export function PermissionsMatrix({ userId, userRole }: PermissionsMatrixProps) 
     }));
   };
 
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      // Delete existing permissions
-      await supabase
-        .from('user_permissions')
-        .delete()
-        .eq('user_id', userId);
-
-      // Insert new permissions
-      const permissionsToInsert = Object.values(permissions).map(perm => ({
-        user_id: userId,
-        module: perm.module,
-        can_view: perm.can_view,
-        can_create: perm.can_create,
-        can_edit: perm.can_edit,
-        can_delete: perm.can_delete,
-      }));
-
-      const { error } = await supabase
-        .from('user_permissions')
-        .insert(permissionsToInsert);
-
-      if (error) throw error;
-
-      // Log the permissions change
-      await CRUDLogger.logUpdate({
-        userId: user.id,
-        entityType: 'account',
-        entityId: userId,
-        entityName: 'User Permissions',
-        changes: {
-          permissions: {
-            old: 'previous_permissions',
-            new: 'updated_permissions',
-          },
-        },
-      });
-
-      toast({
-        title: 'Success',
-        description: 'Permissions updated successfully',
-      });
-    } catch (error: any) {
-      console.error('Error saving permissions:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to save permissions',
-        variant: 'destructive',
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
+  // Permissions are inherited from role - this is view-only
+  // No save function needed as permissions come from role_permissions table
 
   if (loading) {
     return (
@@ -168,11 +141,13 @@ export function PermissionsMatrix({ userId, userRole }: PermissionsMatrixProps) 
 
   return (
     <div className="space-y-4">
-      {isAdmin && (
-        <div className="bg-muted p-4 rounded-lg text-sm text-muted-foreground">
-          Admin users have all permissions by default and cannot be modified.
-        </div>
-      )}
+      <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg text-sm">
+        <p className="font-medium text-blue-900 mb-1">Role-Based Permissions</p>
+        <p className="text-blue-700">
+          These permissions are inherited from the user's role and cannot be modified at the user level. 
+          To change permissions, modify the role's permissions or assign the user to a different role.
+        </p>
+      </div>
 
       <div className="border rounded-lg overflow-hidden">
         <table className="w-full">
@@ -192,29 +167,25 @@ export function PermissionsMatrix({ userId, userRole }: PermissionsMatrixProps) 
                 <td className="p-4 text-center">
                   <Checkbox
                     checked={permissions[module.id]?.can_view || false}
-                    onCheckedChange={(checked) => handlePermissionChange(module.id, 'can_view', checked as boolean)}
-                    disabled={isAdmin}
+                    disabled
                   />
                 </td>
                 <td className="p-4 text-center">
                   <Checkbox
                     checked={permissions[module.id]?.can_create || false}
-                    onCheckedChange={(checked) => handlePermissionChange(module.id, 'can_create', checked as boolean)}
-                    disabled={isAdmin}
+                    disabled
                   />
                 </td>
                 <td className="p-4 text-center">
                   <Checkbox
                     checked={permissions[module.id]?.can_edit || false}
-                    onCheckedChange={(checked) => handlePermissionChange(module.id, 'can_edit', checked as boolean)}
-                    disabled={isAdmin}
+                    disabled
                   />
                 </td>
                 <td className="p-4 text-center">
                   <Checkbox
                     checked={permissions[module.id]?.can_delete || false}
-                    onCheckedChange={(checked) => handlePermissionChange(module.id, 'can_delete', checked as boolean)}
-                    disabled={isAdmin}
+                    disabled
                   />
                 </td>
               </tr>
@@ -222,15 +193,6 @@ export function PermissionsMatrix({ userId, userRole }: PermissionsMatrixProps) 
           </tbody>
         </table>
       </div>
-
-      {!isAdmin && (
-        <div className="flex justify-end">
-          <Button onClick={handleSave} disabled={saving}>
-            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save Permissions
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

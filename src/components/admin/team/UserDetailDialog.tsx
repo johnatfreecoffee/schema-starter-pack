@@ -19,10 +19,11 @@ import {
 } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from '@/hooks/use-toast';
-import { Upload, Mail, Loader2 } from 'lucide-react';
+import { Upload, Mail, Loader2, Key } from 'lucide-react';
 import { UserRoleBadge } from './UserRoleBadge';
 import { UserStatusBadge } from './UserStatusBadge';
 import { PermissionsMatrix } from './PermissionsMatrix';
+import { PasswordResetDialog } from './PasswordResetDialog';
 import { CRUDLogger } from '@/lib/crudLogger';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -43,6 +44,7 @@ interface UserProfile {
   status: 'active' | 'suspended';
   last_login_at: string | null;
   created_at: string;
+  updated_at: string;
 }
 
 interface UserRole {
@@ -56,6 +58,7 @@ export function UserDetailDialog({ open, onOpenChange, userId, onSuccess }: User
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [role, setRole] = useState<'admin' | 'crm_user' | 'customer'>('crm_user');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [passwordResetOpen, setPasswordResetOpen] = useState(false);
 
   useEffect(() => {
     if (open && userId) {
@@ -409,9 +412,19 @@ export function UserDetailDialog({ open, onOpenChange, userId, onSuccess }: User
                 <div>
                   Created: {formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })}
                 </div>
+                {profile.updated_at && (
+                  <div>
+                    Last updated: {formatDistanceToNow(new Date(profile.updated_at), { addSuffix: true })}
+                  </div>
+                )}
                 {profile.last_login_at && (
                   <div>
                     Last login: {formatDistanceToNow(new Date(profile.last_login_at), { addSuffix: true })}
+                  </div>
+                )}
+                {!profile.last_login_at && (
+                  <div className="text-amber-600">
+                    Never logged in
                   </div>
                 )}
               </div>
@@ -421,6 +434,14 @@ export function UserDetailDialog({ open, onOpenChange, userId, onSuccess }: User
                 <Button type="submit" disabled={saving}>
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Save Changes
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setPasswordResetOpen(true)}
+                >
+                  <Key className="mr-2 h-4 w-4" />
+                  Reset Password
                 </Button>
                 <Button
                   type="button"
@@ -450,6 +471,17 @@ export function UserDetailDialog({ open, onOpenChange, userId, onSuccess }: User
             <PermissionsMatrix userId={userId} userRole={role} />
           </TabsContent>
         </Tabs>
+
+        {/* Password Reset Dialog */}
+        {profile && (
+          <PasswordResetDialog
+            open={passwordResetOpen}
+            onOpenChange={setPasswordResetOpen}
+            userId={userId}
+            userEmail={profile.email}
+            userName={profile.full_name}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
