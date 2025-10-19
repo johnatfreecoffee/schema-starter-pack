@@ -56,6 +56,7 @@ import EmailSettings from "./pages/dashboard/settings/EmailSettings";
 import Notifications from "./pages/dashboard/settings/Notifications";
 import PerformanceSettings from "./pages/dashboard/settings/Performance";
 import BackupManagement from "./pages/dashboard/settings/BackupManagement";
+import DocumentTemplates from "./pages/dashboard/settings/DocumentTemplates";
 import EmailQueue from "./pages/dashboard/EmailQueue";
 import Team from "./pages/dashboard/Team";
 import Import from "./pages/dashboard/Import";
@@ -186,6 +187,7 @@ const AppContent = () => {
             <Route path="settings/form-fields" element={<FormFields />} />
             <Route path="settings/email-templates" element={<EmailTemplates />} />
             <Route path="settings/email-settings" element={<EmailSettings />} />
+            <Route path="settings/document-templates" element={<DocumentTemplates />} />
             <Route path="settings/notifications" element={<Notifications />} />
             <Route path="settings/qa-testing" element={<QATesting />} />
             <Route path="settings/performance" element={<PerformanceSettings />} />

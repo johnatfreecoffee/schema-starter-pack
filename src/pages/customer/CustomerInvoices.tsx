@@ -40,23 +40,29 @@ const CustomerInvoices = () => {
 
   const handleDownloadPDF = async (doc: PaymentDocument) => {
     try {
-      // Fetch line items
-      const table = doc.type === 'quote' ? 'quote_items' : 'invoice_items';
-      const idField = doc.type === 'quote' ? 'quote_id' : 'invoice_id';
-      
-      const { data: items } = await supabase
-        .from(table as any)
-        .select('description, quantity, unit_price, amount')
-        .eq(idField, doc.id);
-
-      if (!items || items.length === 0) {
-        toast.error('No items found for this document');
-        return;
-      }
-
       if (doc.type === 'quote') {
+        const { data: items } = await supabase
+          .from('quote_items')
+          .select('description, quantity, unit_price, amount')
+          .eq('quote_id', doc.id);
+
+        if (!items || items.length === 0) {
+          toast.error('No items found for this quote');
+          return;
+        }
+
         await generateQuotePDF(doc.id, items, true);
       } else {
+        const { data: items } = await supabase
+          .from('invoice_items')
+          .select('description, quantity, unit_price, amount')
+          .eq('invoice_id', doc.id);
+
+        if (!items || items.length === 0) {
+          toast.error('No items found for this invoice');
+          return;
+        }
+
         await generateInvoicePDF(doc.id, items, true);
       }
     } catch (error) {
