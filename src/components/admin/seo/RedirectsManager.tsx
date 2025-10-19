@@ -38,8 +38,8 @@ export const RedirectsManager = () => {
   const { data: redirects } = useQuery({
     queryKey: ['redirects'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('redirects')
+      const { data, error } = await (supabase as any)
+        .from('seo_redirects')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -50,8 +50,8 @@ export const RedirectsManager = () => {
 
   const createMutation = useMutation({
     mutationFn: async (redirect: any) => {
-      const { error } = await supabase
-        .from('redirects')
+      const { error } = await (supabase as any)
+        .from('seo_redirects')
         .insert([redirect]);
 
       if (error) throw error;
@@ -74,8 +74,8 @@ export const RedirectsManager = () => {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
-      const { error } = await supabase
-        .from('redirects')
+      const { error } = await (supabase as any)
+        .from('seo_redirects')
         .update({ is_active })
         .eq('id', id);
 
@@ -92,8 +92,8 @@ export const RedirectsManager = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('redirects')
+      const { error } = await (supabase as any)
+        .from('seo_redirects')
         .delete()
         .eq('id', id);
 
