@@ -35,6 +35,7 @@ export class ImportService {
     options: {
       skipDuplicates: boolean;
       updateExisting: boolean;
+      defaultValues?: Record<string, string>;
     }
   ): Promise<ImportResult> {
     const result: ImportResult = {
@@ -63,6 +64,15 @@ export class ImportService {
               mappedData[dbColumn] = row[csvColumn];
             }
           });
+
+          // Apply default values for unmapped or empty fields
+          if (options.defaultValues) {
+            Object.entries(options.defaultValues).forEach(([field, defaultValue]) => {
+              if (!mappedData[field] && defaultValue) {
+                mappedData[field] = defaultValue;
+              }
+            });
+          }
 
           // Validate required fields
           const requiredFields = ['first_name', 'last_name', 'email', 'phone', 'street_address', 'city', 'state', 'zip', 'service_needed'];

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, FileText, MapPin, CheckCircle, AlertCircle, History } from 'lucide-react';
+import { Upload, FileText, MapPin, CheckCircle, AlertCircle, History, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ImportService } from '@/services/importService';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { supabase } from '@/integrations/supabase/client';
 
 type ImportModule = 'leads' | 'contacts' | 'accounts';
 type ImportStep = 'upload' | 'mapping' | 'preview';
@@ -18,6 +19,24 @@ interface ColumnMapping {
   csvColumn: string;
   dbColumn: string;
 }
+
+interface DefaultValue {
+  field: string;
+  value: string;
+}
+
+interface Service {
+  id: string;
+  name: string;
+}
+
+const STATUS_OPTIONS = [
+  { value: 'new', label: 'New' },
+  { value: 'contacted', label: 'Contacted' },
+  { value: 'qualified', label: 'Qualified' },
+  { value: 'converted', label: 'Converted' },
+  { value: 'lost', label: 'Lost' }
+];
 
 const moduleFields: Record<ImportModule, { field: string; label: string; required: boolean }[]> = {
   leads: [
@@ -63,11 +82,64 @@ const Import = () => {
   const [csvData, setCsvData] = useState<any[]>([]);
   const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
   const [columnMappings, setColumnMappings] = useState<ColumnMapping[]>([]);
+  const [defaultValues, setDefaultValues] = useState<DefaultValue[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [skipDuplicates, setSkipDuplicates] = useState(true);
   const [updateExisting, setUpdateExisting] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importProgress, setImportProgress] = useState(0);
   const [importResult, setImportResult] = useState<any>(null);
+
+  useEffect(() => {
+    if (module === 'leads') {
+      loadServices();
+      // Set default values for leads
+      setDefaultValues([
+        { field: 'status', value: 'new' },
+        { field: 'service_needed', value: '' }
+      ]);
+    }
+  }, [module]);
+
+  const loadServices = async () => {
+    const { data } = await supabase
+      .from('services')
+      .select('id, name')
+      .eq('is_active', true)
+      .order('name');
+    
+    if (data && data.length > 0) {
+      setServices(data);
+      // Set first service as default for service_needed
+      setDefaultValues(prev => 
+        prev.map(dv => dv.field === 'service_needed' ? { ...dv, value: data[0].name } : dv)
+      );
+    }
+  };
+
+  const handleDefaultValueChange = (field: string, value: string) => {
+    setDefaultValues(prev => {
+      const existing = prev.find(dv => dv.field === field);
+      if (existing) {
+        return prev.map(dv => dv.field === field ? { ...dv, value } : dv);
+      }
+      return [...prev, { field, value }];
+    });
+  };
+
+  const getFieldDefaultValue = (field: string): string => {
+    return defaultValues.find(dv => dv.field === field)?.value || '';
+  };
+
+  const isFieldMapped = (field: string): boolean => {
+    const mapping = columnMappings.find(m => m.dbColumn === field);
+    return mapping !== undefined && mapping.csvColumn !== '__skip__' && mapping.csvColumn !== '';
+  };
+
+  const getUnmappedRequiredCount = (field: string): number => {
+    if (isFieldMapped(field)) return 0;
+    return csvData.length;
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -299,31 +371,92 @@ const Import = () => {
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold mb-4">Map CSV Columns to Database Fields</h3>
-                <div className="space-y-3">
-                  {moduleFields[module].map(({ field, label, required }) => (
-                    <div key={field} className="grid grid-cols-2 gap-4 items-center">
-                      <div className="flex items-center gap-2">
-                        <Label className="font-medium">
-                          {label}
-                          {required && <span className="text-red-500 ml-1">*</span>}
-                        </Label>
+                <div className="space-y-4">
+                  {moduleFields[module].map(({ field, label, required }) => {
+                    const hasChoices = field === 'status' || field === 'service_needed';
+                    const isMapped = isFieldMapped(field);
+                    const unmappedCount = getUnmappedRequiredCount(field);
+                    
+                    return (
+                      <div key={field} className="border rounded-lg p-4 space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                          <div className="flex items-center gap-2">
+                            <Label className="font-medium">
+                              {label}
+                              {required && <span className="text-red-500 ml-1">*</span>}
+                            </Label>
+                          </div>
+                          <Select
+                            value={columnMappings.find(m => m.dbColumn === field)?.csvColumn || ''}
+                            onValueChange={(value) => handleMappingChange(field, value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select CSV column" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="__skip__">Skip this field</SelectItem>
+                              {csvHeaders.map(header => (
+                                <SelectItem key={header} value={header}>{header}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Default Value Selector for Choice Fields */}
+                        {hasChoices && module === 'leads' && (
+                          <div className="border-t pt-3 space-y-2">
+                            <Label className="text-sm text-muted-foreground">
+                              Default Value {!isMapped && '(Required - field not mapped)'}
+                            </Label>
+                            {field === 'status' && (
+                              <Select
+                                value={getFieldDefaultValue('status')}
+                                onValueChange={(value) => handleDefaultValueChange('status', value)}
+                              >
+                                <SelectTrigger className="bg-muted">
+                                  <SelectValue placeholder="Select default status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {STATUS_OPTIONS.map(option => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            )}
+                            {field === 'service_needed' && (
+                              <Select
+                                value={getFieldDefaultValue('service_needed')}
+                                onValueChange={(value) => handleDefaultValueChange('service_needed', value)}
+                              >
+                                <SelectTrigger className="bg-muted">
+                                  <SelectValue placeholder="Select default service" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {services.length > 0 ? (
+                                    services.map(service => (
+                                      <SelectItem key={service.id} value={service.name}>
+                                        {service.name}
+                                      </SelectItem>
+                                    ))
+                                  ) : (
+                                    <SelectItem value="General Service">General Service</SelectItem>
+                                  )}
+                                </SelectContent>
+                              </Select>
+                            )}
+                            {!isMapped && unmappedCount > 0 && (
+                              <div className="flex items-center gap-2 text-sm text-amber-600">
+                                <AlertTriangle className="h-4 w-4" />
+                                <span>{unmappedCount} records will use default value</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      <Select
-                        value={columnMappings.find(m => m.dbColumn === field)?.csvColumn || ''}
-                        onValueChange={(value) => handleMappingChange(field, value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select CSV column" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="__skip__">Skip this field</SelectItem>
-                          {csvHeaders.map(header => (
-                            <SelectItem key={header} value={header}>{header}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
