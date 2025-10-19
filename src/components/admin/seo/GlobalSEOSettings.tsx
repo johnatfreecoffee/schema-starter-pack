@@ -16,21 +16,27 @@ export const GlobalSEOSettings = () => {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['seo-settings'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      console.log('Fetching SEO settings...');
+      const { data, error } = await (supabase as any)
         .from('seo_settings')
         .select('*')
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      console.log('SEO settings loaded:', data);
+      if (error && error.code !== 'PGRST116') throw error;
       return data;
     },
   });
 
   const [formData, setFormData] = useState({
-    default_title_suffix: '',
+    default_meta_title: '',
     default_meta_description: '',
-    og_default_image: '',
-    twitter_handle: '',
+    default_meta_keywords: '',
+    default_og_image: '',
+    business_name: '',
+    business_phone: '',
+    business_email: '',
+    business_address: '',
     google_analytics_id: '',
     google_tag_manager_id: '',
     facebook_pixel_id: '',
@@ -39,10 +45,14 @@ export const GlobalSEOSettings = () => {
   useEffect(() => {
     if (settings) {
       setFormData({
-        default_title_suffix: settings.default_title_suffix || '',
+        default_meta_title: settings.default_meta_title || '',
         default_meta_description: settings.default_meta_description || '',
-        og_default_image: settings.og_default_image || '',
-        twitter_handle: settings.twitter_handle || '',
+        default_meta_keywords: settings.default_meta_keywords || '',
+        default_og_image: settings.default_og_image || '',
+        business_name: settings.business_name || '',
+        business_phone: settings.business_phone || '',
+        business_email: settings.business_email || '',
+        business_address: settings.business_address || '',
         google_analytics_id: settings.google_analytics_id || '',
         google_tag_manager_id: settings.google_tag_manager_id || '',
         facebook_pixel_id: settings.facebook_pixel_id || '',
@@ -52,18 +62,47 @@ export const GlobalSEOSettings = () => {
 
   const updateMutation = useMutation({
     mutationFn: async (data: any) => {
-      const { error } = await supabase
-        .from('seo_settings')
-        .update(data)
-        .eq('id', settings?.id);
+      console.log('Saving SEO settings:', data);
+      console.log('Existing settings ID:', settings?.id);
 
-      if (error) throw error;
+      if (settings?.id) {
+        // Update existing settings
+        const { error } = await (supabase as any)
+          .from('seo_settings')
+          .update(data)
+          .eq('id', settings.id);
+
+        if (error) {
+          console.error('Update error:', error);
+          throw error;
+        }
+        console.log('Settings updated successfully');
+      } else {
+        // Insert new settings
+        const { error } = await (supabase as any)
+          .from('seo_settings')
+          .insert([data]);
+
+        if (error) {
+          console.error('Insert error:', error);
+          throw error;
+        }
+        console.log('Settings inserted successfully');
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['seo-settings'] });
       toast({
-        title: 'Settings saved',
-        description: 'Global SEO settings have been updated',
+        title: 'Success',
+        description: 'Global SEO settings have been saved',
+      });
+    },
+    onError: (error: any) => {
+      console.error('Save error:', error);
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to save settings',
+        variant: 'destructive',
       });
     },
   });
@@ -87,17 +126,17 @@ export const GlobalSEOSettings = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="title-suffix">Default Title Suffix</Label>
+            <Label htmlFor="meta-title">Default Meta Title</Label>
             <Input
-              id="title-suffix"
-              value={formData.default_title_suffix || ''}
+              id="meta-title"
+              value={formData.default_meta_title || ''}
               onChange={(e) =>
-                setFormData({ ...formData, default_title_suffix: e.target.value })
+                setFormData({ ...formData, default_meta_title: e.target.value })
               }
-              placeholder="| Your Company Name"
+              placeholder="Your Company Name - Professional Services"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Appears after page titles (e.g., "Home | Your Company Name")
+              Default title used when pages don't have custom titles
             </p>
           </div>
 
@@ -118,12 +157,24 @@ export const GlobalSEOSettings = () => {
           </div>
 
           <div>
+            <Label htmlFor="meta-keywords">Default Meta Keywords</Label>
+            <Input
+              id="meta-keywords"
+              value={formData.default_meta_keywords || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, default_meta_keywords: e.target.value })
+              }
+              placeholder="service, location, industry"
+            />
+          </div>
+
+          <div>
             <Label htmlFor="og-image">Default Open Graph Image URL</Label>
             <Input
               id="og-image"
-              value={formData.og_default_image || ''}
+              value={formData.default_og_image || ''}
               onChange={(e) =>
-                setFormData({ ...formData, og_default_image: e.target.value })
+                setFormData({ ...formData, default_og_image: e.target.value })
               }
               placeholder="https://example.com/og-image.jpg"
             />
@@ -136,19 +187,56 @@ export const GlobalSEOSettings = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Social Media</CardTitle>
-          <CardDescription>Configure social media integration</CardDescription>
+          <CardTitle>Business Information</CardTitle>
+          <CardDescription>Used for schema.org structured data and LocalBusiness markup</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="twitter-handle">Twitter Handle</Label>
+            <Label htmlFor="business-name">Business Name</Label>
             <Input
-              id="twitter-handle"
-              value={formData.twitter_handle || ''}
+              id="business-name"
+              value={formData.business_name || ''}
               onChange={(e) =>
-                setFormData({ ...formData, twitter_handle: e.target.value })
+                setFormData({ ...formData, business_name: e.target.value })
               }
-              placeholder="@yourcompany"
+              placeholder="Your Company Name"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="business-phone">Business Phone</Label>
+            <Input
+              id="business-phone"
+              value={formData.business_phone || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, business_phone: e.target.value })
+              }
+              placeholder="(555) 123-4567"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="business-email">Business Email</Label>
+            <Input
+              id="business-email"
+              value={formData.business_email || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, business_email: e.target.value })
+              }
+              placeholder="contact@yourcompany.com"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="business-address">Business Address</Label>
+            <Textarea
+              id="business-address"
+              value={formData.business_address || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, business_address: e.target.value })
+              }
+              placeholder="123 Main St, City, State 12345"
+              rows={2}
             />
           </div>
         </CardContent>

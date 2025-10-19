@@ -18,21 +18,31 @@ serve(async (req) => {
     );
 
     // Get the base URL from the request
-    const baseUrl = new URL(req.url).origin;
+    const url = new URL(req.url);
+    const baseUrl = `${url.protocol}//${url.host}`;
+    
+    console.log('Generating sitemap for:', baseUrl);
 
     // Fetch all published static pages
-    const { data: staticPages } = await supabase
+    console.log('Fetching static pages...');
+    const { data: staticPages, error: staticError } = await supabase
       .from('static_pages')
       .select('id, slug, updated_at')
       .eq('status', true);
+    
+    console.log('Static pages found:', staticPages?.length, staticError);
 
     // Fetch all active generated pages
-    const { data: generatedPages } = await supabase
+    console.log('Fetching generated pages...');
+    const { data: generatedPages, error: generatedError } = await supabase
       .from('generated_pages')
       .select('id, url_path, updated_at')
       .eq('status', true);
+    
+    console.log('Generated pages found:', generatedPages?.length, generatedError);
 
     // Fetch SEO settings for priorities
+    console.log('Fetching SEO settings...');
     const { data: seoPages } = await supabase
       .from('page_seo')
       .select('page_id, page_type, priority, change_frequency');

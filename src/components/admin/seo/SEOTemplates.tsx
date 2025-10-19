@@ -15,34 +15,46 @@ export const SEOTemplates = () => {
   const queryClient = useQueryClient();
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
 
-  const { data: templates } = useQuery({
+  const { data: templates, isLoading } = useQuery({
     queryKey: ['seo-templates'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      console.log('Fetching SEO templates...');
+      const { data, error } = await (supabase as any)
         .from('seo_templates')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      console.log('Templates loaded:', data);
+      if (error) {
+        console.error('Templates fetch error:', error);
+        throw error;
+      }
       return data;
     },
   });
 
   const saveMutation = useMutation({
     mutationFn: async (template: any) => {
+      console.log('Saving template:', template);
       if (template.id) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('seo_templates')
           .update(template)
           .eq('id', template.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Template update error:', error);
+          throw error;
+        }
       } else {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('seo_templates')
-          .insert([template]);
+          .insert([{ ...template, is_active: true }]);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Template insert error:', error);
+          throw error;
+        }
       }
     },
     onSuccess: () => {
@@ -53,11 +65,19 @@ export const SEOTemplates = () => {
       });
       setSelectedTemplate(null);
     },
+    onError: (error: any) => {
+      console.error('Save error:', error);
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to save template',
+        variant: 'destructive',
+      });
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('seo_templates')
         .delete()
         .eq('id', id);
@@ -86,59 +106,50 @@ export const SEOTemplates = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="template-name">Template Name</Label>
+            <Label htmlFor="template-type">Template Type</Label>
             <Input
-              id="template-name"
-              value={selectedTemplate.template_name || ''}
+              id="template-type"
+              value={selectedTemplate.template_type || ''}
               onChange={(e) =>
                 setSelectedTemplate({
                   ...selectedTemplate,
-                  template_name: e.target.value,
+                  template_type: e.target.value,
                 })
               }
-              placeholder="Service Pages Template"
+              placeholder="service_page, service_area_page, etc."
             />
+            <p className="text-xs text-muted-foreground mt-1">
+              Type identifier for applying this template to specific page types
+            </p>
           </div>
 
           <div>
-            <Label htmlFor="applies-to">Applies To</Label>
+            <Label htmlFor="title-pattern">Meta Title Pattern</Label>
             <Input
-              id="applies-to"
-              value={selectedTemplate.applies_to || ''}
+              id="title-pattern"
+              value={selectedTemplate.meta_title_pattern || ''}
               onChange={(e) =>
                 setSelectedTemplate({
                   ...selectedTemplate,
-                  applies_to: e.target.value,
-                })
-              }
-              placeholder="generated_pages"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="title-template">Meta Title Template</Label>
-            <Input
-              id="title-template"
-              value={selectedTemplate.meta_title_template || ''}
-              onChange={(e) =>
-                setSelectedTemplate({
-                  ...selectedTemplate,
-                  meta_title_template: e.target.value,
+                  meta_title_pattern: e.target.value,
                 })
               }
               placeholder="{{service_name}} in {{city_name}} | {{company_name}}"
             />
+            <p className="text-xs text-muted-foreground mt-1">
+              Use variables: {'{'}{'{'} service_name {'}'}{'}'},  {'{'}{'{'} city_name {'}'}{'}'},  {'{'}{'{'} company_name {'}'}{'}'} 
+            </p>
           </div>
 
           <div>
-            <Label htmlFor="description-template">Meta Description Template</Label>
+            <Label htmlFor="description-pattern">Meta Description Pattern</Label>
             <Textarea
-              id="description-template"
-              value={selectedTemplate.meta_description_template || ''}
+              id="description-pattern"
+              value={selectedTemplate.meta_description_pattern || ''}
               onChange={(e) =>
                 setSelectedTemplate({
                   ...selectedTemplate,
-                  meta_description_template: e.target.value,
+                  meta_description_pattern: e.target.value,
                 })
               }
               placeholder="Professional {{service_name}} services in {{city_name}}. Contact us today for a free quote!"
@@ -147,14 +158,14 @@ export const SEOTemplates = () => {
           </div>
 
           <div>
-            <Label htmlFor="og-title-template">Open Graph Title Template</Label>
+            <Label htmlFor="og-title-pattern">Open Graph Title Pattern</Label>
             <Input
-              id="og-title-template"
-              value={selectedTemplate.og_title_template || ''}
+              id="og-title-pattern"
+              value={selectedTemplate.og_title_pattern || ''}
               onChange={(e) =>
                 setSelectedTemplate({
                   ...selectedTemplate,
-                  og_title_template: e.target.value,
+                  og_title_pattern: e.target.value,
                 })
               }
               placeholder="{{service_name}} Services in {{city_name}}"
@@ -162,16 +173,16 @@ export const SEOTemplates = () => {
           </div>
 
           <div>
-            <Label htmlFor="og-description-template">
-              Open Graph Description Template
+            <Label htmlFor="og-description-pattern">
+              Open Graph Description Pattern
             </Label>
             <Textarea
-              id="og-description-template"
-              value={selectedTemplate.og_description_template || ''}
+              id="og-description-pattern"
+              value={selectedTemplate.og_description_pattern || ''}
               onChange={(e) =>
                 setSelectedTemplate({
                   ...selectedTemplate,
-                  og_description_template: e.target.value,
+                  og_description_pattern: e.target.value,
                 })
               }
               placeholder="Get professional {{service_name}} in {{city_name}} from {{company_name}}"
@@ -205,16 +216,24 @@ export const SEOTemplates = () => {
         </Button>
       </div>
 
-      {templates && templates.length > 0 ? (
+      {isLoading ? (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <p className="text-muted-foreground">Loading templates...</p>
+          </CardContent>
+        </Card>
+      ) : templates && templates.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {templates.map((template: any) => (
             <Card key={template.id}>
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-lg">{template.template_name}</CardTitle>
+                    <CardTitle className="text-lg">
+                      {template.template_type || 'Unnamed Template'}
+                    </CardTitle>
                     <Badge variant="outline" className="mt-2">
-                      {template.applies_to}
+                      {template.is_active ? 'Active' : 'Inactive'}
                     </Badge>
                   </div>
                   <Button
@@ -229,15 +248,15 @@ export const SEOTemplates = () => {
               <CardContent>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <div className="font-medium text-muted-foreground">Title Template:</div>
-                    <div className="text-sm">{template.meta_title_template}</div>
+                    <div className="font-medium text-muted-foreground">Title Pattern:</div>
+                    <div className="text-sm">{template.meta_title_pattern}</div>
                   </div>
                   <div>
                     <div className="font-medium text-muted-foreground">
-                      Description Template:
+                      Description Pattern:
                     </div>
                     <div className="text-sm line-clamp-2">
-                      {template.meta_description_template}
+                      {template.meta_description_pattern}
                     </div>
                   </div>
                 </div>
