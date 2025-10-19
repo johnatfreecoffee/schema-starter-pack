@@ -232,7 +232,11 @@ const Import = () => {
 
     try {
       let result;
-      const options = { skipDuplicates, updateExisting };
+      const options = { 
+        skipDuplicates, 
+        updateExisting,
+        defaultValues: Object.fromEntries(defaultValues.map(dv => [dv.field, dv.value]))
+      };
 
       if (module === 'leads') {
         result = await ImportService.importLeads(csvData, columnMappings, options);
