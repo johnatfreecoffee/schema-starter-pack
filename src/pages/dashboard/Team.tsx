@@ -131,6 +131,11 @@ const Team = () => {
     }
   }, [roleLoading]);
 
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, roleFilter, statusFilter]);
+
   const loadTeamData = async () => {
     setLoading(true);
     try {
@@ -309,11 +314,6 @@ const Team = () => {
       });
     }
   };
-
-  // Reset to page 1 when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, roleFilter, statusFilter]);
 
   return (
     <>
