@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ActivityLogFilters } from '@/components/admin/ActivityLogFilters';
 import { ActivityLogDetail } from '@/components/admin/ActivityLogDetail';
@@ -118,7 +117,7 @@ const Logs = () => {
   };
 
   return (
-    <AdminLayout>
+    <>
       <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
         <div className="mb-6">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 truncate">Activity Logs</h1>
@@ -275,7 +274,7 @@ const Logs = () => {
         open={detailOpen}
         onOpenChange={setDetailOpen}
       />
-    </AdminLayout>
+    </>
   );
 };
 

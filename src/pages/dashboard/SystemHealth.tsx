@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import AdminLayout from "@/components/layout/AdminLayout";
-import { 
+import {
   CheckCircle2, 
   XCircle, 
   AlertTriangle, 
@@ -598,8 +597,7 @@ const SystemHealth = () => {
   };
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-4xl font-bold">System Health</h1>
@@ -825,7 +823,6 @@ const SystemHealth = () => {
           </CardContent>
         </Card>
       </div>
-    </AdminLayout>
   );
 };
 

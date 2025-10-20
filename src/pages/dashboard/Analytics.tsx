@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { MetricCard } from '@/components/analytics/MetricCard';
 import { RevenueChart } from '@/components/analytics/RevenueChart';
 import { LeadFunnelChart } from '@/components/analytics/LeadFunnelChart';
@@ -132,69 +131,60 @@ const Analytics = () => {
   // Admin role check
   if (roleLoading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <p className="text-muted-foreground">Loading...</p>
-          </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-muted-foreground">Loading...</p>
         </div>
-      </AdminLayout>
+      </div>
     );
   }
 
   if (role !== 'Super Admin' && role !== 'Admin') {
     return (
-      <AdminLayout>
-        <div className="flex flex-col items-center justify-center min-h-screen">
-          <Lock className="h-16 w-16 text-muted-foreground mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
-          <p className="text-muted-foreground mb-4">
-            Only administrators can view analytics.
-          </p>
-          <Button onClick={() => window.history.back()}>
-            Go Back
-          </Button>
-        </div>
-      </AdminLayout>
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <Lock className="h-16 w-16 text-muted-foreground mb-4" />
+        <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+        <p className="text-muted-foreground mb-4">
+          Only administrators can view analytics.
+        </p>
+        <Button onClick={() => window.history.back()}>
+          Go Back
+        </Button>
+      </div>
     );
   }
 
   if (loading) {
     return (
-      <AdminLayout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-between mb-6">
-            <Skeleton className="h-10 w-48" />
-            <div className="flex gap-2">
-              <Skeleton className="h-10 w-32" />
-              <Skeleton className="h-10 w-32" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} className="h-32" />
-            ))}
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <Skeleton className="h-10 w-48" />
+          <div className="flex gap-2">
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-32" />
           </div>
         </div>
-      </AdminLayout>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-32" />
+          ))}
+        </div>
+      </div>
     );
   }
 
   if (!metrics) {
     return (
-      <AdminLayout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No analytics data available</p>
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">No analytics data available</p>
         </div>
-      </AdminLayout>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
+    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div className="min-w-0">
@@ -328,7 +318,6 @@ const Analytics = () => {
         {/* Activity Feed */}
         <ActivityFeedWidget activities={metrics.customer.recentActivity} />
       </div>
-    </AdminLayout>
   );
 };
 
