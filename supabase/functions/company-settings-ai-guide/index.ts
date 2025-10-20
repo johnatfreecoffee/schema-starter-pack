@@ -205,6 +205,13 @@ Ready? Let's start with the basics!
     const collectedFields = { ...session.collected_fields };
     const skippedFields = [...session.skipped_fields];
     
+    // Get current company settings to show existing values
+    const { data: currentCompanySettings } = await supabase
+      .from('company_settings')
+      .select('*')
+      .eq('id', session.company_id)
+      .single();
+    
     // Update collected fields
     let newFieldsCount = 0;
     const fieldsToUpdate: Record<string, any> = {};
@@ -216,19 +223,12 @@ Ready? Let's start with the basics!
       }
     }
     
-    // Get current company settings
-    const { data: currentCompanyData } = await supabase
-      .from('company_settings')
-      .select(currentField.name)
-      .eq('id', session.company_id)
-      .single();
-    
     // Check if current field was answered or skipped
     const currentFieldValue = extractFieldValue(message, currentField.type);
     
     if (currentFieldValue === 'KEEP_CURRENT') {
       // Keep existing value, mark as visited
-      const existingValue = (currentCompanyData as any)?.[currentField.name];
+      const existingValue = (currentCompanySettings as any)?.[currentField.name];
       if (existingValue) {
         collectedFields[currentField.name] = existingValue;
       }
@@ -262,13 +262,6 @@ Ready? Let's start with the basics!
     let nextSectionKey = sectionKey;
     let nextFieldIndex = currentFieldIndex + 1;
     let nextField = null;
-    
-    // Get current company settings to show existing values
-    const { data: currentCompanySettings } = await supabase
-      .from('company_settings')
-      .select('*')
-      .eq('id', session.company_id)
-      .single();
     
     // Search for next field in order (don't skip filled fields)
     const sectionOrder = ['basic', 'contact', 'business', 'social'];
