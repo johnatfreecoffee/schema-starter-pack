@@ -170,7 +170,10 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
 
   const renderNavItem = (item: any, collapsed: boolean = false) => {
     const Icon = item.icon;
-    const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+    // For Overview (/dashboard), only match exact path. For others, match exact or sub-routes.
+    const isActive = item.path === '/dashboard' 
+      ? location.pathname === '/dashboard'
+      : location.pathname === item.path || location.pathname.startsWith(item.path + '/');
     
     return (
       <Link
