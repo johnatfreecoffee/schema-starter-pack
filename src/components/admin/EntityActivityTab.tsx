@@ -28,11 +28,11 @@ export function EntityActivityTab({ entityType, entityId }: EntityActivityTabPro
   const { data: logs = [], isLoading } = useQuery({
     queryKey: ['entity-activity', entityType, entityId],
     queryFn: async () => {
+      // Fetch logs where this entity is the main subject OR the parent
       const { data, error } = await supabase
         .from('activity_logs')
         .select('*, user_profiles:user_id(full_name, email)')
-        .eq('entity_type', entityType)
-        .eq('entity_id', entityId)
+        .or(`and(entity_type.eq.${entityType},entity_id.eq.${entityId}),and(parent_entity_type.eq.${entityType},parent_entity_id.eq.${entityId})`)
         .order('created_at', { ascending: false })
         .limit(50);
 

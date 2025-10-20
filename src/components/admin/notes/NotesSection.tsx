@@ -139,17 +139,22 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
 
       if (error) throw error;
 
-      // Log the activity
-      await CRUDLogger.logCreate({
-        userId: user.id,
-        entityType: 'note',
-        entityId: data.id,
-        entityName: `Note on ${entityType}`,
-        metadata: {
-          related_to_type: entityType,
-          related_to_id: entityId,
+      // Log the activity with parent entity context
+      await supabase.from('activity_logs').insert({
+        user_id: user.id,
+        entity_type: 'note',
+        entity_id: data.id,
+        entity_name: `Note on ${entityType}`,
+        parent_entity_type: entityType,
+        parent_entity_id: entityId,
+        action: 'created',
+        new_values: {
           is_pinned: isPinned,
           content_preview: newNote.trim().substring(0, 100)
+        },
+        metadata: {
+          related_to_type: entityType,
+          related_to_id: entityId
         }
       });
 
@@ -191,15 +196,24 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
 
       if (error) throw error;
 
-      // Log the activity
+      // Log the activity with parent entity context
       if (oldNote) {
-        await CRUDLogger.logUpdate({
-          userId: user.id,
-          entityType: 'note',
-          entityId: noteId,
-          entityName: `Note on ${entityType}`,
-          oldValues: { content: oldNote.content },
-          newValues: { content: editContent.trim() },
+        await supabase.from('activity_logs').insert({
+          user_id: user.id,
+          entity_type: 'note',
+          entity_id: noteId,
+          entity_name: `Note on ${entityType}`,
+          parent_entity_type: entityType,
+          parent_entity_id: entityId,
+          action: 'updated',
+          old_values: { content: oldNote.content },
+          new_values: { content: editContent.trim() },
+          changes: {
+            content: {
+              old: oldNote.content,
+              new: editContent.trim()
+            }
+          },
           metadata: {
             related_to_type: entityType,
             related_to_id: entityId
@@ -266,14 +280,17 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
 
       if (error) throw error;
 
-      // Log the activity
+      // Log the activity with parent entity context
       if (noteToDelete) {
-        await CRUDLogger.logDelete({
-          userId: user.id,
-          entityType: 'note',
-          entityId: deleteId,
-          entityName: `Note on ${entityType}`,
-          oldValues: {
+        await supabase.from('activity_logs').insert({
+          user_id: user.id,
+          entity_type: 'note',
+          entity_id: deleteId,
+          entity_name: `Note on ${entityType}`,
+          parent_entity_type: entityType,
+          parent_entity_id: entityId,
+          action: 'deleted',
+          old_values: {
             content: noteToDelete.content,
             is_pinned: noteToDelete.is_pinned
           },
