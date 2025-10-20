@@ -1,7 +1,8 @@
-import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { renderTemplate } from '@/lib/templateEngine';
+import { renderTemplate, renderTemplateWithReviews } from '@/lib/templateEngine';
+import { useEffect, useState } from 'react';
 
 interface TemplatePreviewProps {
   templateHtml: string;
@@ -31,7 +32,15 @@ const sampleData = {
 
 const TemplatePreview = ({ templateHtml, onClose }: TemplatePreviewProps) => {
   const [activeTab, setActiveTab] = useState('rendered');
-  const renderedHtml = renderTemplate(templateHtml, sampleData);
+  const [renderedHtml, setRenderedHtml] = useState('');
+
+  useEffect(() => {
+    const renderAsync = async () => {
+      const html = await renderTemplateWithReviews(templateHtml, sampleData, { serviceId: undefined });
+      setRenderedHtml(html);
+    };
+    renderAsync();
+  }, [templateHtml]);
 
   return (
     <div className="flex flex-col h-full">

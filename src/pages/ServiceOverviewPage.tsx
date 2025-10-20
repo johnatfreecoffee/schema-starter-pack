@@ -2,7 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import NotFound from './NotFound';
-import { renderTemplate, formatPrice, formatPhone } from '@/lib/templateEngine';
+import { renderTemplateWithReviews, formatPrice, formatPhone } from '@/lib/templateEngine';
 import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -69,24 +69,8 @@ const ServiceOverviewPage = () => {
     },
   });
 
-  if (serviceLoading || areasLoading) {
-    return (
-      <div className="container mx-auto px-4 py-12">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-3/4"></div>
-          <div className="h-4 bg-muted rounded w-full"></div>
-          <div className="h-4 bg-muted rounded w-5/6"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (serviceError || !service || !company) {
-    return <NotFound />;
-  }
-
   // Build page data for template rendering (without city-specific data)
-  const pageData = {
+  const pageData = service && company ? {
     service_name: service.name,
     service_slug: service.slug,
     service_description: service.full_description || '',
@@ -106,17 +90,47 @@ const ServiceOverviewPage = () => {
     city_slug: '',
     display_name: '',
     local_description: '',
-  };
+  } : null;
 
-  // Render template if available and sanitize to prevent XSS
-  let renderedContent = '';
-  if (service.template?.template_html) {
-    renderedContent = renderTemplate(service.template.template_html, pageData);
-    renderedContent = sanitizeHtml(renderedContent);
-    renderedContent = renderedContent.replace(
-      /<img(?![^>]*loading=)/gi,
-      '<img loading="lazy"'
+  // Render template with async review variables
+  const { data: renderedContent, isLoading: isRendering } = useQuery({
+    queryKey: ['rendered-service', serviceSlug, pageData],
+    queryFn: async () => {
+      if (!service?.template?.template_html || !pageData) return '';
+      
+      let content = await renderTemplateWithReviews(
+        service.template.template_html,
+        pageData,
+        { serviceId: service.id }
+      );
+      
+      content = sanitizeHtml(content);
+      
+      // Add lazy loading to images
+      content = content.replace(
+        /<img(?![^>]*loading=)/gi,
+        '<img loading="lazy"'
+      );
+      
+      return content;
+    },
+    enabled: !!(service?.template?.template_html && pageData),
+  });
+
+  if (serviceLoading || areasLoading || isRendering) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-muted rounded w-3/4"></div>
+          <div className="h-4 bg-muted rounded w-full"></div>
+          <div className="h-4 bg-muted rounded w-5/6"></div>
+        </div>
+      </div>
     );
+  }
+
+  if (serviceError || !service || !company || !pageData) {
+    return <NotFound />;
   }
 
   const canonicalUrl = `${window.location.origin}/services/${service.slug}`;

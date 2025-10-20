@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import NotFound from './NotFound';
-import { renderTemplate, formatPrice, formatPhone } from '@/lib/templateEngine';
+import { renderTemplateWithReviews, formatPrice, formatPhone } from '@/lib/templateEngine';
 import { ServiceReviews } from '@/components/reviews/ServiceReviews';
 import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { Button } from '@/components/ui/button';
@@ -55,24 +55,8 @@ const GeneratedPage = () => {
     },
   });
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-12">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-3/4"></div>
-          <div className="h-4 bg-muted rounded w-full"></div>
-          <div className="h-4 bg-muted rounded w-5/6"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !page || !company) {
-    return <NotFound />;
-  }
-
   // Build page data for template rendering
-  const pageData = {
+  const pageData = page && company ? {
     service_name: page.service.name,
     service_slug: page.service.slug,
     service_description: page.service.full_description || '',
@@ -94,20 +78,48 @@ const GeneratedPage = () => {
     page_title: page.page_title,
     meta_description: page.meta_description || '',
     url_path: page.url_path,
-  };
+  } : null;
 
-  // Render template with data and sanitize to prevent XSS
-  let renderedContent = renderTemplate(
-    page.service.template.template_html,
-    pageData
-  );
-  renderedContent = sanitizeHtml(renderedContent);
+  // Render template with async review variables
+  const { data: renderedContent, isLoading: isRendering } = useQuery({
+    queryKey: ['rendered-page', urlPath, pageData],
+    queryFn: async () => {
+      if (!page || !pageData) return '';
+      
+      let content = await renderTemplateWithReviews(
+        page.service.template.template_html,
+        pageData,
+        { serviceId: page.service_id }
+      );
+      
+      content = sanitizeHtml(content);
+      
+      // Add lazy loading to images in rendered HTML
+      content = content.replace(
+        /<img(?![^>]*loading=)/gi,
+        '<img loading="lazy"'
+      );
+      
+      return content;
+    },
+    enabled: !!(page && pageData),
+  });
 
-  // Add lazy loading to images in rendered HTML
-  renderedContent = renderedContent.replace(
-    /<img(?![^>]*loading=)/gi,
-    '<img loading="lazy"'
-  );
+  if (isLoading || isRendering) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-muted rounded w-3/4"></div>
+          <div className="h-4 bg-muted rounded w-full"></div>
+          <div className="h-4 bg-muted rounded w-5/6"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !page || !company || !pageData) {
+    return <NotFound />;
+  }
 
   // Track view (fire and forget)
   supabase
