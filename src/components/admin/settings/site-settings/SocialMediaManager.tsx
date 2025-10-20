@@ -178,23 +178,23 @@ export const SocialMediaManager = () => {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="handle">Handle</Label>
-                <Input
-                  id="handle"
-                  value={handle}
-                  onChange={(e) => setHandle(e.target.value)}
-                  placeholder="@username (optional)"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="link">Link *</Label>
+                <Label htmlFor="link">Social media outlet link *</Label>
                 <Input
                   id="link"
                   type="url"
                   value={link}
                   onChange={(e) => setLink(e.target.value)}
                   placeholder="https://..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="handle">Handle (optional)</Label>
+                <Input
+                  id="handle"
+                  value={handle}
+                  onChange={(e) => setHandle(e.target.value)}
+                  placeholder="@username"
                 />
               </div>
             </div>
