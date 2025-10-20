@@ -1,4 +1,3 @@
-import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SystemHealthCheck } from '@/components/qa/SystemHealthCheck';
 import { LinkChecker } from '@/components/qa/LinkChecker';
@@ -12,9 +11,7 @@ import { TemplateValidator } from '@/components/qa/TemplateValidator';
 
 const QATesting = () => {
   return (
-    <>
-      <SettingsTabs />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
           <h1 className="text-4xl font-bold">QA Testing & System Health</h1>
           <p className="text-muted-foreground mt-2">
@@ -72,7 +69,6 @@ const QATesting = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </>
   );
 };
 

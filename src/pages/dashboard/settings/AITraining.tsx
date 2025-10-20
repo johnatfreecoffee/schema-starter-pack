@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -182,19 +181,14 @@ const AITraining = () => {
 
   if (isLoading) {
     return (
-      <>
-        <SettingsTabs />
-        <div className="container mx-auto px-4 py-8">
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </>
+      <div className="container mx-auto px-4 py-8">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
     );
   }
 
   return (
-    <>
-      <SettingsTabs />
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-6">
           <h1 className="text-4xl font-bold mb-2">AI Training</h1>
           {aiTrainingData?.updated_at && (
@@ -392,7 +386,6 @@ const AITraining = () => {
           </CardContent>
         </Card>
       </div>
-    </>
   );
 };
 

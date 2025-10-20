@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -13,9 +12,6 @@ const Permissions = () => {
   return (
     <ProtectedRoute requireAdmin>
       <div className="container mx-auto py-6">
-        <SettingsTabs />
-        
-        <div className="mt-6">
           <div className="mb-6">
             <h1 className="text-3xl font-bold">Permissions & Roles</h1>
             <p className="text-muted-foreground mt-2">
@@ -62,8 +58,7 @@ const Permissions = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-          </Tabs>
-        </div>
+        </Tabs>
       </div>
     </ProtectedRoute>
   );

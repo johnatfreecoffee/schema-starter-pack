@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -79,9 +78,7 @@ const StaticPages = () => {
   };
 
   return (
-    <>
-      <SettingsTabs />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-4xl font-bold">Static Pages</h1>
           <div className="flex gap-2">
@@ -198,10 +195,9 @@ const StaticPages = () => {
               if (error) throw error;
               queryClient.invalidateQueries({ queryKey: ['static-pages'] });
             }}
-          />
-        )}
-      </div>
-    </>
+        />
+      )}
+    </div>
   );
 };
 

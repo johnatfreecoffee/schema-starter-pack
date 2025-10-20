@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { cacheInvalidation } from '@/lib/cacheInvalidation';
-import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -138,9 +137,7 @@ const Templates = () => {
   };
 
   return (
-    <>
-      <SettingsTabs />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Templates</h1>
           <Button onClick={() => { setSelectedTemplate(null); setShowForm(true); }}>
@@ -311,10 +308,9 @@ const Templates = () => {
                 Delete
               </AlertDialogAction>
             </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-    </>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 };
 

@@ -1,4 +1,3 @@
-import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -106,9 +105,7 @@ const ServiceAreas = () => {
   };
 
   return (
-    <>
-      <SettingsTabs />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-4xl font-bold">Service Areas Management</h1>
           <Button onClick={() => { setSelectedArea(null); setIsFormOpen(true); }}>
@@ -318,10 +315,9 @@ const ServiceAreas = () => {
                 Delete
               </AlertDialogAction>
             </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-    </>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 };
 

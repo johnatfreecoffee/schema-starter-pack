@@ -3,7 +3,6 @@ import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { cacheInvalidation } from '@/lib/cacheInvalidation';
-import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -313,9 +312,7 @@ const CompanySettings = () => {
   }, [formData, autoSave]);
 
   return (
-    <>
-      <SettingsTabs />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-6">Company Settings</h1>
         
         <Tabs defaultValue="basic" className="space-y-6">
@@ -797,7 +794,6 @@ const CompanySettings = () => {
           </div>
         )}
       </div>
-    </>
   );
 };
 

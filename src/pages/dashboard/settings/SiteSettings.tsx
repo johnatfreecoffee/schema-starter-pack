@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import HeaderSettings from '@/components/admin/settings/site-settings/HeaderSettings';
@@ -11,9 +10,7 @@ const SiteSettings = () => {
   const [activeTab, setActiveTab] = useState('header');
 
   return (
-    <>
-      <SettingsTabs />
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-6">Site Settings</h1>
         
         <Card className="p-6">
@@ -40,10 +37,9 @@ const SiteSettings = () => {
             <TabsContent value="reviews">
               <ReviewSettings />
             </TabsContent>
-          </Tabs>
-        </Card>
-      </div>
-    </>
+        </Tabs>
+      </Card>
+    </div>
   );
 };
 

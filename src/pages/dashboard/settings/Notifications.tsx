@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import SettingsTabs from '@/components/layout/SettingsTabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -119,9 +118,7 @@ const Notifications = () => {
   };
 
   return (
-    <>
-      <SettingsTabs />
-      <div className="container mx-auto px-4 py-8 space-y-6">
+    <div className="container mx-auto px-4 py-8 space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Notification Settings</h1>
           <p className="text-muted-foreground mt-2">
@@ -181,11 +178,10 @@ const Notifications = () => {
                   </CardContent>
                 )}
               </Card>
-            );
-          })}
-        </div>
+          );
+        })}
       </div>
-    </>
+    </div>
   );
 };
 
