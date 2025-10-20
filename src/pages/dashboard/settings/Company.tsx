@@ -187,18 +187,22 @@ const CompanySettings = () => {
       const { data: existing } = await supabase
         .from('company_settings')
         .select('id')
-        .single();
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-      if (existing) {
+      if (existing?.id) {
         const { error } = await supabase
           .from('company_settings')
           .update(updateData)
           .eq('id', existing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase
+        const { data: inserted, error } = await supabase
           .from('company_settings')
-          .insert(updateData);
+          .insert(updateData)
+          .select('id')
+          .single();
         if (error) throw error;
       }
     },

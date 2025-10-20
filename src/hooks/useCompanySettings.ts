@@ -8,7 +8,9 @@ export const useCompanySettings = () => {
       const { data, error } = await supabase
         .from('company_settings')
         .select('*')
-        .single();
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
       if (error) throw error;
       return data;
