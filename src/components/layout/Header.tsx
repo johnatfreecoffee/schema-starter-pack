@@ -16,6 +16,14 @@ const Header = ({ session }: HeaderProps) => {
   const { data: company } = useCompanySettings();
   const { data: siteSettings } = useSiteSettings();
   
+  const formatPhoneNumber = (phone: string) => {
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 10) {
+      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+    }
+    return phone;
+  };
+  
   const { data: staticPages } = useQuery({
     queryKey: ['static-pages-nav'],
     queryFn: async () => {
@@ -77,7 +85,7 @@ const Header = ({ session }: HeaderProps) => {
             <div className="flex items-center gap-2 md:gap-4">
               {company?.phone && (
                 <span className="hidden lg:inline text-sm font-medium">
-                  {company.phone}
+                  {formatPhoneNumber(company.phone)}
                 </span>
               )}
               
