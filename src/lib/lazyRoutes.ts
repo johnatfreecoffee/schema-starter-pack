@@ -48,6 +48,7 @@ export const WorkflowTesting = lazy(() => import('@/pages/dashboard/WorkflowTest
 
 // Settings
 export const Settings = lazy(() => import('@/pages/dashboard/Settings'));
+export const Permissions = lazy(() => import('@/pages/dashboard/settings/Permissions'));
 export const Company = lazy(() => import('@/pages/dashboard/settings/Company'));
 export const Services = lazy(() => import('@/pages/dashboard/settings/Services'));
 export const ServiceAreas = lazy(() => import('@/pages/dashboard/settings/ServiceAreas'));

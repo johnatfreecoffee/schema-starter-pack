@@ -120,6 +120,7 @@ const AppContent = () => {
             <Route path="settings/qa-testing" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.QATesting /></Suspense>} />
             <Route path="settings/performance" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Performance /></Suspense>} />
             <Route path="settings/backup-management" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.BackupManagement /></Suspense>} />
+            <Route path="settings/permissions" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Permissions /></Suspense>} />
             <Route path="settings/seo" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.SEO /></Suspense>} />
             <Route path="email-queue" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.EmailQueue /></Suspense>} />
             <Route path="regenerate-pages" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.PageRegenerator /></Suspense>} />
