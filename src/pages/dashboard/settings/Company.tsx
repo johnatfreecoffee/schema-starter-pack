@@ -16,6 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SocialMediaManager } from '@/components/admin/settings/site-settings/SocialMediaManager';
 import { AISettingsGuide } from '@/components/admin/settings/site-settings/AISettingsGuide';
+import { BusinessHoursEditor } from '@/components/admin/settings/site-settings/BusinessHoursEditor';
 
 const CompanySettings = () => {
   const { data: company } = useCompanySettings();
@@ -646,16 +647,10 @@ const CompanySettings = () => {
                   <p className="text-sm text-muted-foreground">Add any relevant business licenses or certifications</p>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="business_hours">Business Hours</Label>
-                  <Textarea
-                    id="business_hours"
-                    value={formData.business_hours}
-                    onChange={(e) => handleFieldChange('business_hours', e.target.value)}
-                    rows={4}
-                    placeholder="Monday-Friday: 8:00 AM - 6:00 PM&#10;Saturday: 9:00 AM - 4:00 PM&#10;Sunday: Closed"
-                  />
-                </div>
+                <BusinessHoursEditor
+                  value={formData.business_hours}
+                  onChange={(value) => handleFieldChange('business_hours', value)}
+                />
 
                 <Separator />
 
