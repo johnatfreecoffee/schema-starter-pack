@@ -36,6 +36,8 @@ import {
   FileText as FileTextAlt,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   User,
   Zap,
   Workflow,
@@ -57,7 +59,23 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    'Dashboard': true,
+    'CRM': true,
+    'Money': false,
+    'Support': false,
+    'Settings': false,
+    'Automation': false,
+    'System': false,
+  });
   const { data: company } = useCompanySettings();
+
+  const toggleSection = (sectionTitle: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionTitle]: !prev[sectionTitle]
+    }));
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -212,15 +230,23 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
       </div>
       
       <ScrollArea className="flex-1 py-4">
-        <nav className="space-y-6 px-3">
+        <nav className="space-y-2 px-3">
           {navSections.map((section) => (
             <div key={section.title} className="space-y-1">
               {!desktopSidebarCollapsed && (
-                <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  {section.title}
-                </h3>
+                <button
+                  onClick={() => toggleSection(section.title)}
+                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                >
+                  <span>{section.title}</span>
+                  {expandedSections[section.title] ? (
+                    <ChevronUp className="h-3 w-3" />
+                  ) : (
+                    <ChevronDown className="h-3 w-3" />
+                  )}
+                </button>
               )}
-              {section.items.map((item) => renderNavItem(item, desktopSidebarCollapsed))}
+              {expandedSections[section.title] && section.items.map((item) => renderNavItem(item, desktopSidebarCollapsed))}
             </div>
           ))}
         </nav>
@@ -229,13 +255,21 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
   );
 
   const MobileSidebarContent = () => (
-    <nav className="space-y-6 px-3">
+    <nav className="space-y-2 px-3">
       {navSections.map((section) => (
         <div key={section.title} className="space-y-1">
-          <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-            {section.title}
-          </h3>
-          {section.items.map((item) => renderNavItem(item))}
+          <button
+            onClick={() => toggleSection(section.title)}
+            className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+          >
+            <span>{section.title}</span>
+            {expandedSections[section.title] ? (
+              <ChevronUp className="h-3 w-3" />
+            ) : (
+              <ChevronDown className="h-3 w-3" />
+            )}
+          </button>
+          {expandedSections[section.title] && section.items.map((item) => renderNavItem(item))}
         </div>
       ))}
     </nav>
