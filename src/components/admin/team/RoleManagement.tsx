@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -301,9 +301,11 @@ export function RoleManagement() {
   };
 
   // Update selected permissions when editing role
-  if (editingRole && rolePermissions && selectedPermissions.size === 0) {
-    setSelectedPermissions(new Set(rolePermissions));
-  }
+  useEffect(() => {
+    if (editingRole && rolePermissions) {
+      setSelectedPermissions(new Set(rolePermissions));
+    }
+  }, [editingRole, rolePermissions]);
 
   const togglePermission = (permissionId: string) => {
     const newSelected = new Set(selectedPermissions);
