@@ -96,6 +96,35 @@ const Team = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 20;
 
+  // Filter and paginate team members - memoized to prevent infinite re-renders
+  // MUST be before any early returns (React Rules of Hooks)
+  const filteredMembers = useMemo(() => {
+    return teamMembers.filter(member => {
+      const matchesSearch =
+        member.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        member.email.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesRole = roleFilter === 'all' || member.role === roleFilter;
+      const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
+
+      return matchesSearch && matchesRole && matchesStatus;
+    });
+  }, [teamMembers, searchQuery, roleFilter, statusFilter]);
+
+  const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedMembers = useMemo(() => {
+    return filteredMembers.slice(startIndex, endIndex);
+  }, [filteredMembers, startIndex, endIndex]);
+
+  const handleSelectAll = useCallback((checked: boolean) => {
+    if (checked) {
+      setSelectedUsers(new Set(filteredMembers.map(m => m.id)));
+    } else {
+      setSelectedUsers(new Set());
+    }
+  }, [filteredMembers]);
+
   useEffect(() => {
     if (!roleLoading) {
       loadTeamData();
@@ -200,26 +229,6 @@ const Team = () => {
     setUserDetailOpen(true);
   };
 
-  // Filter and paginate team members - memoized to prevent infinite re-renders
-  const filteredMembers = useMemo(() => {
-    return teamMembers.filter(member => {
-      const matchesSearch =
-        member.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        member.email.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesRole = roleFilter === 'all' || member.role === roleFilter;
-      const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
-
-      return matchesSearch && matchesRole && matchesStatus;
-    });
-  }, [teamMembers, searchQuery, roleFilter, statusFilter]);
-
-  const totalPages = Math.ceil(filteredMembers.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedMembers = useMemo(() => {
-    return filteredMembers.slice(startIndex, endIndex);
-  }, [filteredMembers, startIndex, endIndex]);
-
   const handleSelectUser = (userId: string, checked: boolean) => {
     const newSelected = new Set(selectedUsers);
     if (checked) {
@@ -229,14 +238,6 @@ const Team = () => {
     }
     setSelectedUsers(newSelected);
   };
-
-  const handleSelectAll = useCallback((checked: boolean) => {
-    if (checked) {
-      setSelectedUsers(new Set(filteredMembers.map(m => m.id)));
-    } else {
-      setSelectedUsers(new Set());
-    }
-  }, [filteredMembers]);
 
   const handleBulkAction = async () => {
     if (!bulkAction || selectedUsers.size === 0) return;
