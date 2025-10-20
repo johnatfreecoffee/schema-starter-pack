@@ -782,64 +782,69 @@ const Leads = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-w-0">
+      <div className="flex gap-6 min-w-0">
         {/* Filters Sidebar */}
-        <div className="lg:col-span-1">
-          <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
-            <Card className="p-4">
-              <div className="flex items-center justify-between mb-4">
-                <CollapsibleTrigger asChild>
-                  <Button variant="ghost" size="sm" className="p-0 hover:bg-transparent">
-                    <div className="flex items-center gap-2">
-                      {isFiltersOpen ? (
-                        <>
-                          <ChevronDown className="h-4 w-4" />
-                          <h3 className="font-semibold">Filters</h3>
-                        </>
-                      ) : (
-                        <>
-                          <ChevronRight className="h-4 w-4" />
-                          <Filter className="h-4 w-4" />
-                        </>
-                      )}
-                    </div>
+        <div className={`transition-all duration-300 ${isFiltersOpen ? 'w-80' : 'w-12'}`}>
+          <Card className={`h-full ${isFiltersOpen ? 'p-4' : 'p-2'}`}>
+            {isFiltersOpen ? (
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold">Filters</h3>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setIsFiltersOpen(false)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ChevronRight className="h-4 w-4" />
                   </Button>
-                </CollapsibleTrigger>
-                <Sheet>
-                  <SheetTrigger asChild className="lg:hidden">
-                    <Button variant="outline" size="sm">
-                      <Filter className="h-4 w-4" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="left">
-                    <SheetHeader>
-                      <SheetTitle>Filters</SheetTitle>
-                    </SheetHeader>
-                    <div className="mt-4">
-                      <LeadFilters
-                        onFiltersChange={setFilters}
-                        statusCounts={statusCounts}
-                        services={services}
-                        users={users}
-                      />
-                    </div>
-                  </SheetContent>
-                </Sheet>
-              </div>
-              <CollapsibleContent className="hidden lg:block">
+                </div>
+                <div className="hidden lg:block">
+                  <LeadFilters
+                    onFiltersChange={setFilters}
+                    statusCounts={statusCounts}
+                    services={services}
+                    users={users}
+                  />
+                </div>
+              </>
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsFiltersOpen(true)}
+                className="h-8 w-8 p-0"
+              >
+                <Filter className="h-4 w-4" />
+              </Button>
+            )}
+          </Card>
+          
+          {/* Mobile Sheet */}
+          <Sheet>
+            <SheetTrigger asChild className="lg:hidden fixed bottom-20 right-4 z-50">
+              <Button variant="outline" size="icon" className="h-12 w-12 rounded-full shadow-lg">
+                <Filter className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left">
+              <SheetHeader>
+                <SheetTitle>Filters</SheetTitle>
+              </SheetHeader>
+              <div className="mt-4">
                 <LeadFilters
                   onFiltersChange={setFilters}
                   statusCounts={statusCounts}
                   services={services}
                   users={users}
                 />
-              </CollapsibleContent>
-            </Card>
-          </Collapsible>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
 
         {/* Leads Table */}
-        <div className="lg:col-span-3 min-w-0">
+        <div className="flex-1 min-w-0">
           {(!hasLoadedOnce.current && loading) ? (
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (
