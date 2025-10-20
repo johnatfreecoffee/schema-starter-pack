@@ -31,6 +31,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { LeadStatusBadge } from '@/components/admin/leads/LeadStatusBadge';
 import { LeadFilters } from '@/components/admin/leads/LeadFilters';
 import { LeadForm } from '@/components/admin/leads/LeadForm';
@@ -54,7 +55,9 @@ import {
   CheckCircle, 
   Filter,
   AlertCircle,
-  Download
+  Download,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { CRUDLogger } from '@/lib/crudLogger';
@@ -92,6 +95,7 @@ const Leads = () => {
   const [services, setServices] = useState<string[]>([]);
   const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   
   // Search with debouncing
@@ -781,39 +785,57 @@ const Leads = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-w-0">
         {/* Filters Sidebar */}
         <div className="lg:col-span-1">
-          <Card className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Filters</h3>
-              <Sheet>
-                <SheetTrigger asChild className="lg:hidden">
-                  <Button variant="outline" size="sm">
-                    <Filter className="h-4 w-4" />
+          <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="p-0 hover:bg-transparent">
+                    <div className="flex items-center gap-2">
+                      {isFiltersOpen ? (
+                        <>
+                          <ChevronDown className="h-4 w-4" />
+                          <h3 className="font-semibold">Filters</h3>
+                        </>
+                      ) : (
+                        <>
+                          <ChevronRight className="h-4 w-4" />
+                          <Filter className="h-4 w-4" />
+                        </>
+                      )}
+                    </div>
                   </Button>
-                </SheetTrigger>
-                <SheetContent side="left">
-                  <SheetHeader>
-                    <SheetTitle>Filters</SheetTitle>
-                  </SheetHeader>
-                  <div className="mt-4">
-                    <LeadFilters
-                      onFiltersChange={setFilters}
-                      statusCounts={statusCounts}
-                      services={services}
-                      users={users}
-                    />
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
-            <div className="hidden lg:block">
-              <LeadFilters
-                onFiltersChange={setFilters}
-                statusCounts={statusCounts}
-                services={services}
-                users={users}
-              />
-            </div>
-          </Card>
+                </CollapsibleTrigger>
+                <Sheet>
+                  <SheetTrigger asChild className="lg:hidden">
+                    <Button variant="outline" size="sm">
+                      <Filter className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left">
+                    <SheetHeader>
+                      <SheetTitle>Filters</SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-4">
+                      <LeadFilters
+                        onFiltersChange={setFilters}
+                        statusCounts={statusCounts}
+                        services={services}
+                        users={users}
+                      />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+              <CollapsibleContent className="hidden lg:block">
+                <LeadFilters
+                  onFiltersChange={setFilters}
+                  statusCounts={statusCounts}
+                  services={services}
+                  users={users}
+                />
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
         </div>
 
         {/* Leads Table */}
