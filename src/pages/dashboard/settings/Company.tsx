@@ -63,6 +63,7 @@ const CompanySettings = () => {
   const [logoPreview, setLogoPreview] = useState<string>('');
   const [iconPreview, setIconPreview] = useState<string>('');
   const [uploading, setUploading] = useState(false);
+  const [uploadingType, setUploadingType] = useState<'logo' | 'icon' | null>(null);
 
   useEffect(() => {
     if (company) {
@@ -169,10 +170,12 @@ const CompanySettings = () => {
 
       if (logoFile) {
         setUploading(true);
+        setUploadingType('logo');
         logoUrl = await uploadImage(logoFile, 'logo');
       }
       if (iconFile) {
         setUploading(true);
+        setUploadingType('icon');
         iconUrl = await uploadImage(iconFile, 'icon');
       }
 
@@ -221,10 +224,12 @@ const CompanySettings = () => {
       setLogoFile(null);
       setIconFile(null);
       setUploading(false);
+      setUploadingType(null);
       setIsSaving(false);
     },
     onError: (error) => {
       setUploading(false);
+      setUploadingType(null);
       setIsSaving(false);
       toast({
         title: 'Error',
@@ -648,8 +653,12 @@ const CompanySettings = () => {
                         type="file"
                         accept=".png,.jpg,.jpeg,.svg,.webp"
                         onChange={(e) => handleFileChange(e, 'logo')}
+                        disabled={uploadingType === 'icon'}
                       />
-                      <p className="text-xs text-muted-foreground">Recommended: 300-600px width. Max 5MB.</p>
+                      <p className="text-xs text-muted-foreground">
+                        Recommended: 300-600px width. Max 5MB.
+                        {uploadingType === 'icon' && ' (Wait for icon upload to complete)'}
+                      </p>
                     </div>
                   </div>
 
@@ -665,8 +674,12 @@ const CompanySettings = () => {
                         type="file"
                         accept=".png,.jpg,.jpeg,.svg,.webp"
                         onChange={(e) => handleFileChange(e, 'icon')}
+                        disabled={uploadingType === 'logo'}
                       />
-                      <p className="text-xs text-muted-foreground">Recommended: 512x512px. Max 5MB.</p>
+                      <p className="text-xs text-muted-foreground">
+                        Recommended: 512x512px. Max 5MB.
+                        {uploadingType === 'logo' && ' (Wait for logo upload to complete)'}
+                      </p>
                     </div>
                   </div>
                 </div>
