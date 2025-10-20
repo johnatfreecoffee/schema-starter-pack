@@ -23,6 +23,7 @@ const SettingsTabs = () => {
     { value: 'auto-assignment', label: 'Auto-Assignment' },
     { value: 'notifications', label: 'Notifications' },
     { value: 'permissions', label: 'Permissions & Roles' },
+    { value: 'security', label: 'Security' },
     { value: 'analytics', label: 'Analytics' },
     { value: 'seo', label: 'SEO' },
     { value: 'backup-management', label: 'Backup & Data' },
