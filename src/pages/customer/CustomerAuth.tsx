@@ -38,6 +38,7 @@ const CustomerAuth = () => {
   const [twoFactorData, setTwoFactorData] = useState<{
     userId: string;
     secret: string;
+    salt: string;
     backupCodes: string[];
   } | null>(null);
 
@@ -111,17 +112,18 @@ const CustomerAuth = () => {
       // Check if 2FA is enabled
       const { data: profileData } = await supabase
         .from('user_profiles')
-        .select('two_factor_enabled, two_factor_secret, two_factor_backup_codes')
+        .select('two_factor_enabled, two_factor_secret, two_factor_salt, two_factor_backup_codes')
         .eq('id', data.user.id)
         .maybeSingle();
 
-      if (profileData?.two_factor_enabled && profileData.two_factor_secret) {
+      if (profileData?.two_factor_enabled && profileData.two_factor_secret && profileData.two_factor_salt) {
         // Sign out temporarily and require 2FA
         await supabase.auth.signOut();
         setRequire2FA(true);
         setTwoFactorData({
           userId: data.user.id,
           secret: profileData.two_factor_secret,
+          salt: profileData.two_factor_salt,
           backupCodes: profileData.two_factor_backup_codes 
             ? JSON.parse(profileData.two_factor_backup_codes) 
             : [],
@@ -257,6 +259,7 @@ const CustomerAuth = () => {
       <TwoFactorVerification
         userId={twoFactorData.userId}
         encryptedSecret={twoFactorData.secret}
+        twoFactorSalt={twoFactorData.salt}
         hashedBackupCodes={twoFactorData.backupCodes}
         onSuccess={handle2FASuccess}
         onCancel={handle2FACancel}

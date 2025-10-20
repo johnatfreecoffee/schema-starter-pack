@@ -79,8 +79,12 @@ export const TwoFactorSetup = ({ open, onOpenChange, onSuccess, userEmail }: Two
       const codes = generateBackupCodes();
       const hashedCodes = await hashBackupCodes(codes);
 
-      // Encrypt the TOTP secret before storing
-      const encryptedSecret = await encryptSecret(secret);
+      // Generate a unique salt for this user
+      const { generateSalt } = await import("@/lib/encryption");
+      const userSalt = generateSalt();
+
+      // Encrypt the TOTP secret before storing with the user's salt
+      const encryptedSecret = await encryptSecret(secret, userSalt);
 
       // Save to database
       const { data: { user } } = await supabase.auth.getUser();
@@ -91,6 +95,7 @@ export const TwoFactorSetup = ({ open, onOpenChange, onSuccess, userEmail }: Two
         .update({
           two_factor_enabled: true,
           two_factor_secret: encryptedSecret,
+          two_factor_salt: userSalt,
           two_factor_backup_codes: JSON.stringify(hashedCodes),
           two_factor_enabled_at: new Date().toISOString(),
         })

@@ -1,5 +1,6 @@
 import { PostgrestError } from '@supabase/supabase-js';
 import { toast } from 'sonner';
+import { getUserFriendlyError } from './databaseErrorHandler';
 
 // Track recent errors to prevent spam
 const recentErrors = new Map<string, number>();
@@ -30,9 +31,10 @@ export const handleDatabaseError = (error: PostgrestError | null, context?: stri
     }
   }
 
-  // Show error to user
+  // Show sanitized error to user
   recentErrors.set(errorKey, Date.now());
-  toast.error(context ? `${context}: ${error.message}` : error.message);
+  const friendlyMessage = getUserFriendlyError(error);
+  toast.error(context ? `${context}: ${friendlyMessage}` : friendlyMessage);
 };
 
 // Clean up old errors periodically

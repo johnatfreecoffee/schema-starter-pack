@@ -3239,6 +3239,7 @@ export type Database = {
           two_factor_backup_codes: string | null
           two_factor_enabled: boolean | null
           two_factor_enabled_at: string | null
+          two_factor_salt: string | null
           two_factor_secret: string | null
           updated_at: string
         }
@@ -3256,6 +3257,7 @@ export type Database = {
           two_factor_backup_codes?: string | null
           two_factor_enabled?: boolean | null
           two_factor_enabled_at?: string | null
+          two_factor_salt?: string | null
           two_factor_secret?: string | null
           updated_at?: string
         }
@@ -3273,6 +3275,7 @@ export type Database = {
           two_factor_backup_codes?: string | null
           two_factor_enabled?: boolean | null
           two_factor_enabled_at?: string | null
+          two_factor_salt?: string | null
           two_factor_secret?: string | null
           updated_at?: string
         }

@@ -13,6 +13,7 @@ import { decryptSecret } from "@/lib/encryption";
 interface TwoFactorVerificationProps {
   userId: string;
   encryptedSecret: string;
+  twoFactorSalt: string;
   hashedBackupCodes: string[];
   onSuccess: () => void;
   onCancel: () => void;
@@ -21,6 +22,7 @@ interface TwoFactorVerificationProps {
 export const TwoFactorVerification = ({
   userId,
   encryptedSecret,
+  twoFactorSalt,
   hashedBackupCodes,
   onSuccess,
   onCancel,
@@ -65,8 +67,8 @@ export const TwoFactorVerification = ({
           toast.success(`Backup code accepted. ${remaining} codes remaining.`);
         }
       } else {
-        // Decrypt and verify TOTP code
-        const decryptedSecret = await decryptSecret(encryptedSecret);
+        // Decrypt and verify TOTP code using the user's salt
+        const decryptedSecret = await decryptSecret(encryptedSecret, twoFactorSalt);
         isValid = verifyTOTPCode(decryptedSecret, code);
       }
 
