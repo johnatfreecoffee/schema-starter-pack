@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export function useUrlFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,8 +42,11 @@ export function useUrlFilters() {
     setSearchParams(new URLSearchParams());
   }, [setSearchParams]);
 
+  // Memoize filters to prevent infinite re-renders
+  const filters = useMemo(() => getFilters(), [searchParams]);
+
   return {
-    filters: getFilters(),
+    filters,
     setFilters,
     updateFilter,
     clearFilters,
