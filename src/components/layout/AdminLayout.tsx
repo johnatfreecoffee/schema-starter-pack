@@ -246,8 +246,8 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
         </Button>
       </div>
       
-      <ScrollArea className="flex-1 py-4">
-        <nav className="space-y-2 px-3">
+      <ScrollArea className="flex-1 min-h-0">
+        <nav className="space-y-2 px-3 py-4">
           {navSections.map((section) => (
             <div key={section.title} className="space-y-1">
               {!desktopSidebarCollapsed && (
