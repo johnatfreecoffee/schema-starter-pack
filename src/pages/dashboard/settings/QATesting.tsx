@@ -5,6 +5,10 @@ import { LinkChecker } from '@/components/qa/LinkChecker';
 import { FormTesting } from '@/components/qa/FormTesting';
 import { TestDataGenerator } from '@/components/qa/TestDataGenerator';
 import { PreLaunchChecklist } from '@/components/qa/PreLaunchChecklist';
+import { ErrorLogViewer } from '@/components/qa/ErrorLogViewer';
+import { PerformanceMetrics } from '@/components/qa/PerformanceMetrics';
+import { SEOAudit } from '@/components/qa/SEOAudit';
+import { TemplateValidator } from '@/components/qa/TemplateValidator';
 
 const QATesting = () => {
   return (
@@ -19,12 +23,16 @@ const QATesting = () => {
         </div>
 
         <Tabs defaultValue="health" className="space-y-6">
-          <TabsList className="grid grid-cols-5 w-full">
-            <TabsTrigger value="health">System Health</TabsTrigger>
-            <TabsTrigger value="links">Link Checker</TabsTrigger>
-            <TabsTrigger value="forms">Form Testing</TabsTrigger>
+          <TabsList className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 w-full">
+            <TabsTrigger value="health">Health</TabsTrigger>
+            <TabsTrigger value="links">Links</TabsTrigger>
+            <TabsTrigger value="forms">Forms</TabsTrigger>
             <TabsTrigger value="testdata">Test Data</TabsTrigger>
-            <TabsTrigger value="checklist">Pre-Launch</TabsTrigger>
+            <TabsTrigger value="checklist">Checklist</TabsTrigger>
+            <TabsTrigger value="errors">Errors</TabsTrigger>
+            <TabsTrigger value="performance">Performance</TabsTrigger>
+            <TabsTrigger value="seo">SEO</TabsTrigger>
+            <TabsTrigger value="templates">Templates</TabsTrigger>
           </TabsList>
 
           <TabsContent value="health" className="space-y-4">
@@ -45,6 +53,22 @@ const QATesting = () => {
 
           <TabsContent value="checklist" className="space-y-4">
             <PreLaunchChecklist />
+          </TabsContent>
+
+          <TabsContent value="errors" className="space-y-4">
+            <ErrorLogViewer />
+          </TabsContent>
+
+          <TabsContent value="performance" className="space-y-4">
+            <PerformanceMetrics />
+          </TabsContent>
+
+          <TabsContent value="seo" className="space-y-4">
+            <SEOAudit />
+          </TabsContent>
+
+          <TabsContent value="templates" className="space-y-4">
+            <TemplateValidator />
           </TabsContent>
         </Tabs>
       </div>

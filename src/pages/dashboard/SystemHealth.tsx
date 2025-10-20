@@ -20,6 +20,9 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { CacheManagement } from "@/components/qa/CacheManagement";
+import { SearchIndexRebuild } from "@/components/qa/SearchIndexRebuild";
+import { SystemReportExport } from "@/components/qa/SystemReportExport";
 
 interface TestResult {
   name: string;
@@ -596,12 +599,20 @@ const SystemHealth = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">System Health</h1>
-          <p className="text-muted-foreground mt-1">
-            Integration testing and system diagnostics
-          </p>
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="text-4xl font-bold">System Health</h1>
+            <p className="text-muted-foreground mt-2">
+              Comprehensive testing and monitoring dashboard
+            </p>
+          </div>
+          <SystemReportExport />
+        </div>
+
+        <div className="mb-6 space-y-4">
+          <CacheManagement />
+          <SearchIndexRebuild />
         </div>
 
         {/* Summary Cards */}
