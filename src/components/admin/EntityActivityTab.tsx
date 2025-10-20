@@ -31,18 +31,14 @@ export function EntityActivityTab({ entityType, entityId }: EntityActivityTabPro
       // Fetch logs where this entity is the main subject OR the parent
       const { data, error } = await supabase
         .from('activity_logs')
-        .select('*, user_profiles:user_id(full_name, email)')
+        .select('*')
         .or(`and(entity_type.eq.${entityType},entity_id.eq.${entityId}),and(parent_entity_type.eq.${entityType},parent_entity_id.eq.${entityId})`)
         .order('created_at', { ascending: false })
         .limit(50);
 
       if (error) throw error;
 
-      return data.map((log: any) => ({
-        ...log,
-        user_name: log.user_profiles?.full_name,
-        user_email: log.user_profiles?.email,
-      }));
+      return data;
     }
   });
 
@@ -79,7 +75,7 @@ export function EntityActivityTab({ entityType, entityId }: EntityActivityTabPro
                   {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
                 </TableCell>
                 <TableCell className="text-sm">
-                  {log.user_name || log.user_email || 'System'}
+                  {log.user_id ?? 'System'}
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline" className={actionColors[log.action as keyof typeof actionColors]}>

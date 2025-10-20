@@ -40,8 +40,7 @@ export class ActivityLogger {
     const { data, error } = await supabase
       .from('activity_logs')
       .select('*')
-      .eq('entity_type', entityType)
-      .eq('entity_id', entityId)
+      .or(`and(entity_type.eq.${entityType},entity_id.eq.${entityId}),and(parent_entity_type.eq.${entityType},parent_entity_id.eq.${entityId})`)
       .order('created_at', { ascending: false })
       .limit(limit);
 

@@ -64,7 +64,7 @@ const Logs = () => {
     queryFn: async () => {
       let query = supabase
         .from('activity_logs')
-        .select('*, user_profiles:user_id(full_name, email)', { count: 'exact' })
+        .select('*', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range((page - 1) * parseInt(pageSize), page * parseInt(pageSize) - 1);
 
@@ -97,12 +97,7 @@ const Logs = () => {
       const { data, error, count } = await query;
       if (error) throw error;
 
-      const logs = data.map((log: any) => ({
-        ...log,
-        user_name: log.user_profiles?.full_name,
-        user_email: log.user_profiles?.email,
-      }));
-
+      const logs = data as any[]; 
       return { logs, count: count || 0 };
     },
   });
@@ -178,7 +173,7 @@ const Logs = () => {
                             {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
                           </TableCell>
                           <TableCell className="text-sm">
-                            {log.user_name || log.user_email || 'System'}
+                            {log.user_id || 'System'}
                           </TableCell>
                           <TableCell>
                             <Badge className={actionColors[log.action]}>

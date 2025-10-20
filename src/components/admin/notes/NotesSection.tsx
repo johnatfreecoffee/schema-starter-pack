@@ -140,7 +140,7 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
       if (error) throw error;
 
       // Log the activity with parent entity context
-      await supabase.from('activity_logs').insert({
+      const { error: logError } = await supabase.from('activity_logs').insert({
         user_id: user.id,
         entity_type: 'note',
         entity_id: data.id,
@@ -157,6 +157,9 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
           related_to_id: entityId
         }
       });
+      if (logError) {
+        console.error('Failed to log note creation activity:', logError);
+      }
 
       toast({
         title: 'Success',
@@ -198,7 +201,7 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
 
       // Log the activity with parent entity context
       if (oldNote) {
-        await supabase.from('activity_logs').insert({
+        const { error: logError } = await supabase.from('activity_logs').insert({
           user_id: user.id,
           entity_type: 'note',
           entity_id: noteId,
@@ -219,6 +222,9 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
             related_to_id: entityId
           }
         });
+        if (logError) {
+          console.error('Failed to log note update activity:', logError);
+        }
       }
 
       toast({
@@ -282,7 +288,7 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
 
       // Log the activity with parent entity context
       if (noteToDelete) {
-        await supabase.from('activity_logs').insert({
+        const { error: logError } = await supabase.from('activity_logs').insert({
           user_id: user.id,
           entity_type: 'note',
           entity_id: deleteId,
@@ -300,6 +306,9 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
             content_preview: noteToDelete.content.substring(0, 100)
           }
         });
+        if (logError) {
+          console.error('Failed to log note delete activity:', logError);
+        }
       }
 
       toast({
