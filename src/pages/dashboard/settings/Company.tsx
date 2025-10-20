@@ -135,6 +135,15 @@ const CompanySettings = () => {
       setIconFile(file);
       setIconPreview(URL.createObjectURL(file));
     }
+
+    // Trigger autosave when file is selected
+    setIsSaving(true);
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveTimeoutRef.current = setTimeout(() => {
+      saveMutation.mutate(formData);
+    }, 1000);
   };
 
   const uploadImage = async (file: File, path: string) => {
