@@ -192,6 +192,53 @@ export type Database = {
           },
         ]
       }
+      ai_guide_sessions: {
+        Row: {
+          collected_fields: Json
+          company_id: string | null
+          completed_at: string | null
+          conversation_history: Json
+          created_at: string
+          current_field_index: number
+          current_section: string
+          id: string
+          skipped_fields: Json
+          updated_at: string
+        }
+        Insert: {
+          collected_fields?: Json
+          company_id?: string | null
+          completed_at?: string | null
+          conversation_history?: Json
+          created_at?: string
+          current_field_index?: number
+          current_section?: string
+          id?: string
+          skipped_fields?: Json
+          updated_at?: string
+        }
+        Update: {
+          collected_fields?: Json
+          company_id?: string | null
+          completed_at?: string | null
+          conversation_history?: Json
+          created_at?: string
+          current_field_index?: number
+          current_section?: string
+          id?: string
+          skipped_fields?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_guide_sessions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_settings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_training: {
         Row: {
           brand_voice: string | null

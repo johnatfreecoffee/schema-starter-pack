@@ -1,9 +1,99 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.74.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Field configurations for each section
+const SECTIONS = {
+  basic: {
+    name: 'Basic Information',
+    fields: [
+      { name: 'business_name', question: "What's your company name?", type: 'text', required: true },
+      { name: 'business_slogan', question: "Do you have a company slogan or tagline?", type: 'text', required: false },
+      { name: 'years_experience', question: "How many years has your business been operating?", type: 'number', required: false },
+      { name: 'description', question: "How would you describe what your company does?", type: 'text', required: false },
+      { name: 'website_url', question: "Do you have a company website?", type: 'url', required: false },
+    ]
+  },
+  contact: {
+    name: 'Contact Information',
+    fields: [
+      { name: 'phone', question: "What's your business phone number?", type: 'phone', required: true },
+      { name: 'email', question: "What's your business email address?", type: 'email', required: true },
+      { name: 'address_street', question: "What's your street address?", type: 'text', required: false },
+      { name: 'address_city', question: "What city are you located in?", type: 'text', required: false },
+      { name: 'address_state', question: "What state?", type: 'text', required: false },
+      { name: 'address_zip', question: "What's your ZIP code?", type: 'text', required: false },
+      { name: 'service_radius', question: "How far do you service from your location (in miles)?", type: 'number', required: false },
+    ]
+  },
+  business: {
+    name: 'Business Details',
+    fields: [
+      { name: 'license_numbers', question: "Do you have any license numbers to add?", type: 'text', required: false },
+      { name: 'business_hours', question: "What are your business hours?", type: 'text', required: false },
+    ]
+  },
+  social: {
+    name: 'Social Media',
+    fields: [
+      { name: 'facebook_url', question: "Do you have a Facebook page?", type: 'url', required: false },
+      { name: 'instagram_url', question: "Do you have an Instagram account?", type: 'url', required: false },
+      { name: 'twitter_url', question: "Do you have a Twitter/X account?", type: 'url', required: false },
+      { name: 'linkedin_url', question: "Do you have a LinkedIn page?", type: 'url', required: false },
+    ]
+  }
+};
+
+// Smart extractors for parsing user responses
+function extractFieldValue(text: string, fieldType: string) {
+  const lowerText = text.toLowerCase();
+  
+  // Check for negative responses
+  if (/^(no|none|nope|n\/a|don't have|skip|not applicable|pass)$/i.test(text.trim())) {
+    return 'SKIP';
+  }
+  
+  switch (fieldType) {
+    case 'number':
+      const numMatch = text.match(/(\d+)/);
+      return numMatch ? parseInt(numMatch[1]) : null;
+    
+    case 'email':
+      const emailMatch = text.match(/[\w.-]+@[\w.-]+\.\w+/);
+      return emailMatch ? emailMatch[0] : null;
+    
+    case 'phone':
+      const cleaned = text.replace(/\D/g, '');
+      return cleaned.length >= 10 ? cleaned.slice(-10) : null;
+    
+    case 'url':
+      if (/^(no|none|don't have)/i.test(lowerText)) return 'SKIP';
+      const urlMatch = text.match(/(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+      return urlMatch ? (text.includes('http') ? urlMatch[0] : `https://${urlMatch[1]}`) : null;
+    
+    case 'text':
+    default:
+      return text.trim();
+  }
+}
+
+// Extract all possible fields from a message
+function extractAllFields(text: string, allFields: any[]) {
+  const extracted: Record<string, any> = {};
+  
+  for (const field of allFields) {
+    const value = extractFieldValue(text, field.type);
+    if (value && value !== 'SKIP') {
+      extracted[field.name] = value;
+    }
+  }
+  
+  return extracted;
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -11,124 +101,221 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, currentTab, currentSettings } = await req.json();
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('No authorization header');
+    }
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { message, sessionId, currentSettings, action } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    // Define tools for extracting structured data for each tab
-    const tools = [{
-      type: "function",
-      function: {
-        name: "update_company_settings",
-        description: "Update company settings based on user input",
-        parameters: {
-          type: "object",
-          properties: {
-            business_name: { type: "string", description: "Company business name" },
-            business_slogan: { type: "string", description: "Company slogan or tagline" },
-            description: { type: "string", description: "Company description" },
-            years_experience: { type: "number", description: "Years in business" },
-            website_url: { type: "string", description: "Company website URL" },
-            phone: { type: "string", description: "Phone number (10 digits)" },
-            email: { type: "string", description: "Email address" },
-            address_street: { type: "string", description: "Street address" },
-            address_unit: { type: "string", description: "Unit or suite number" },
-            address_city: { type: "string", description: "City" },
-            address_state: { type: "string", description: "State abbreviation (e.g., LA, TX)" },
-            address_zip: { type: "string", description: "ZIP code" },
-            service_radius: { type: "number", description: "Service radius number" },
-            service_radius_unit: { type: "string", enum: ["miles", "kilometers"] },
-            license_numbers: { type: "string", description: "License numbers (one per line)" },
-            business_hours: { type: "string", description: "Business hours formatted nicely" },
-            facebook_url: { type: "string", description: "Facebook URL" },
-            instagram_url: { type: "string", description: "Instagram URL" },
-            twitter_url: { type: "string", description: "Twitter URL" },
-            linkedin_url: { type: "string", description: "LinkedIn URL" },
-            guidance: { type: "string", description: "Friendly guidance message to show the user" }
-          },
-          required: ["guidance"],
-          additionalProperties: false
+    // Get or create session
+    let session;
+    if (sessionId) {
+      const { data } = await supabase
+        .from('ai_guide_sessions')
+        .select('*')
+        .eq('id', sessionId)
+        .single();
+      session = data;
+    }
+
+    if (!session && action === 'start') {
+      // Create new session
+      const { data: companyData } = await supabase
+        .from('company_settings')
+        .select('id')
+        .single();
+      
+      if (!companyData) {
+        throw new Error('Company settings not found');
+      }
+
+      const { data: newSession } = await supabase
+        .from('ai_guide_sessions')
+        .insert({
+          company_id: companyData.id,
+          current_section: 'basic',
+          current_field_index: 0,
+          collected_fields: currentSettings || {},
+          skipped_fields: [],
+        })
+        .select()
+        .single();
+      
+      session = newSession;
+
+      return new Response(
+        JSON.stringify({
+          sessionId: session.id,
+          guidance: `Hey there! I'm your AI guide, and I'm going to help you set up your company profile completely. I'll walk you through everything step by step.
+
+We'll cover:
+✓ Basic Information (5 fields)
+✓ Contact Information (7 fields)
+✓ Business Details (2 fields)
+✓ Social Media (4 fields)
+
+I'll ask you one question at a time, and I'll save your answers as we go. You can say "no", "skip", or "I don't have that" for any field.
+
+Ready? Let's start with the basics!
+
+**${SECTIONS.basic.fields[0].question}**`
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!session) {
+      throw new Error('Session not found');
+    }
+
+    // Get current section and field
+    const sectionKey = session.current_section;
+    const section = SECTIONS[sectionKey as keyof typeof SECTIONS];
+    const currentFieldIndex = session.current_field_index;
+    const currentField = section.fields[currentFieldIndex];
+    
+    // Get all fields from all sections for extraction
+    const allFields = Object.values(SECTIONS).flatMap(s => s.fields);
+    
+    // Extract any data from the user's message
+    const extractedData = extractAllFields(message, allFields);
+    const collectedFields = { ...session.collected_fields };
+    const skippedFields = [...session.skipped_fields];
+    
+    // Update collected fields
+    let newFieldsCount = 0;
+    for (const [fieldName, value] of Object.entries(extractedData)) {
+      if (!collectedFields[fieldName]) {
+        collectedFields[fieldName] = value;
+        newFieldsCount++;
+      }
+    }
+    
+    // Check if current field was answered or skipped
+    const currentFieldValue = extractFieldValue(message, currentField.type);
+    if (currentFieldValue === 'SKIP' && !skippedFields.includes(currentField.name)) {
+      skippedFields.push(currentField.name);
+    } else if (currentFieldValue && currentFieldValue !== 'SKIP' && !collectedFields[currentField.name]) {
+      collectedFields[currentField.name] = currentFieldValue;
+      newFieldsCount++;
+    }
+
+    // Update company settings with new data
+    const fieldsToUpdate: Record<string, any> = {};
+    for (const [key, value] of Object.entries(collectedFields)) {
+      if (value && value !== 'SKIP') {
+        fieldsToUpdate[key] = value;
+      }
+    }
+
+    if (Object.keys(fieldsToUpdate).length > 0) {
+      await supabase
+        .from('company_settings')
+        .update(fieldsToUpdate)
+        .eq('id', session.company_id);
+    }
+
+    // Find next unanswered field
+    let nextSectionKey = sectionKey;
+    let nextFieldIndex = currentFieldIndex + 1;
+    let nextField = null;
+    
+    // Search for next unanswered field
+    const sectionOrder = ['basic', 'contact', 'business', 'social'];
+    let searchingSectionIndex = sectionOrder.indexOf(sectionKey);
+    
+    while (searchingSectionIndex < sectionOrder.length) {
+      const searchSection = SECTIONS[sectionOrder[searchingSectionIndex] as keyof typeof SECTIONS];
+      
+      for (let i = (searchingSectionIndex === sectionOrder.indexOf(sectionKey) ? nextFieldIndex : 0); i < searchSection.fields.length; i++) {
+        const field = searchSection.fields[i];
+        if (!collectedFields[field.name] && !skippedFields.includes(field.name)) {
+          nextField = field;
+          nextSectionKey = sectionOrder[searchingSectionIndex];
+          nextFieldIndex = i;
+          break;
         }
       }
-    }];
+      
+      if (nextField) break;
+      searchingSectionIndex++;
+    }
 
-    const systemPrompt = `You are a proactive AI assistant helping business owners set up their company profile. Act like a friendly human interviewer going through a checklist.
-
-Current tab: ${currentTab}
-Current settings: ${JSON.stringify(currentSettings || {}, null, 2)}
-
-Your role:
-1. BE PROACTIVE - Don't wait for the user to ask. Tell them what you need next.
-2. Ask for ONE specific thing at a time in a conversational way
-3. Check what's already filled and what's missing
-4. Guide them through EVERY field systematically
-5. Extract data from their responses and ask for the next item
-6. Use clear, directive language: "Great! Now I need...", "Perfect. Next up...", "Alright, give me..."
-
-Tab-specific fields to collect:
-- basic: business_name, business_slogan, description, years_experience, website_url
-- contact: phone, email, address_street, address_unit, address_city, address_state, address_zip, service_radius, service_radius_unit
-- business: license_numbers, business_hours
-- social: facebook_url, instagram_url, twitter_url, linkedin_url
-- documents: (guidance only about uploading logos and documents)
-
-CRITICAL BEHAVIOR:
-- After each response, identify what's STILL MISSING and ask for it specifically
-- Don't ask "what else?" - tell them what you need: "Now I need your company description", "Give me your phone number", etc.
-- Be conversational but directive: act like a helpful human form assistant
-- When a tab is complete, acknowledge it and suggest moving to the next tab
-
-Always include a "guidance" field that asks for the NEXT specific piece of information.`;
-
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: prompt }
+    // Update session
+    await supabase
+      .from('ai_guide_sessions')
+      .update({
+        current_section: nextSectionKey,
+        current_field_index: nextFieldIndex,
+        collected_fields: collectedFields,
+        skipped_fields: skippedFields,
+        conversation_history: [
+          ...session.conversation_history,
+          { question: currentField.question, answer: message, timestamp: new Date() }
         ],
-        tools,
-        tool_choice: { type: "function", function: { name: "update_company_settings" } }
-      }),
-    });
+        completed_at: nextField ? null : new Date(),
+      })
+      .eq('id', session.id);
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: 'Rate limit exceeded. Please try again in a moment.' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'AI usage limit reached. Please add credits to continue.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
-      throw new Error('AI gateway error');
-    }
-
-    const data = await response.json();
-    const toolCall = data.choices[0]?.message?.tool_calls?.[0];
+    // Build response
+    let guidance = '';
     
-    if (!toolCall) {
-      throw new Error('No tool call returned');
+    // Acknowledge saved data
+    if (newFieldsCount > 0) {
+      guidance += '✓ **Saved!**\n\n';
     }
-
-    const updates = JSON.parse(toolCall.function.arguments);
+    
+    if (nextField) {
+      // Calculate progress
+      const totalFields = Object.values(SECTIONS).reduce((sum, s) => sum + s.fields.length, 0);
+      const completedFields = Object.keys(collectedFields).length + skippedFields.length;
+      const currentSectionFields = section.fields;
+      const currentSectionCompleted = currentSectionFields.filter(f => 
+        collectedFields[f.name] || skippedFields.includes(f.name)
+      ).length;
+      
+      // Check if we're starting a new section
+      if (nextSectionKey !== sectionKey) {
+        const nextSectionInfo = SECTIONS[nextSectionKey as keyof typeof SECTIONS];
+        guidance += `\n**${section.name} Complete!** (${currentSectionCompleted}/${currentSectionFields.length} fields)\n\n`;
+        guidance += `Now let's move to **${nextSectionInfo.name}**.\n\n`;
+      }
+      
+      guidance += `**Progress:** ${completedFields}/${totalFields} fields complete\n\n`;
+      guidance += `**${nextField.question}**`;
+      
+      if (!nextField.required) {
+        guidance += '\n\n(You can say "no" or "skip" if you don\'t have this)';
+      }
+    } else {
+      // All done!
+      const totalFields = Object.values(SECTIONS).reduce((sum, s) => sum + s.fields.length, 0);
+      guidance = `🎉 **All Done!**\n\nYour company profile is complete! Here's what we set up:\n\n`;
+      
+      for (const [sKey, sValue] of Object.entries(SECTIONS)) {
+        const sFields = sValue.fields;
+        const completed = sFields.filter(f => collectedFields[f.name]).length;
+        guidance += `**${sValue.name}**: ${completed}/${sFields.length} fields\n`;
+      }
+      
+      guidance += `\n**Total**: ${Object.keys(collectedFields).length}/${totalFields} fields completed\n\n`;
+      guidance += `Your company settings have been saved. You can close this guide or update any information by using the form directly.`;
+    }
 
     return new Response(
-      JSON.stringify(updates),
+      JSON.stringify({ guidance, sessionId: session.id }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

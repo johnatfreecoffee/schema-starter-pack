@@ -4,15 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Bot, Send, Sparkles, Loader2 } from 'lucide-react';
+import { Bot, Send, Loader2, CheckCircle2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface AISettingsGuideProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  currentTab: string;
   currentSettings: any;
-  onApplyUpdates: (updates: any) => void;
+  onSettingsUpdate: () => void;
 }
 
 interface Message {
@@ -23,27 +22,14 @@ interface Message {
 export const AISettingsGuide = ({
   open,
   onOpenChange,
-  currentTab,
   currentSettings,
-  onApplyUpdates,
+  onSettingsUpdate,
 }: AISettingsGuideProps) => {
-  const getInitialMessage = () => {
-    const tabName = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
-    return `Hey there! I'm your AI guide, and I'm going to help you set up your company profile. I'll walk you through everything step by step.
-
-Let's start with the ${tabName} section. Just answer my questions naturally - you can give me short answers or tell me in your own words.
-
-Ready? Let's go! First things first - what's your company name?`;
-  };
-
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content: getInitialMessage()
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [isComplete, setIsComplete] = useState(false);
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -55,8 +41,44 @@ Ready? Let's go! First things first - what's your company name?`;
     scrollToBottom();
   }, [messages]);
 
+  // Initialize session when dialog opens
+  useEffect(() => {
+    if (open && messages.length === 0) {
+      initializeSession();
+    }
+  }, [open]);
+
+  const initializeSession = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('company-settings-ai-guide', {
+        body: {
+          action: 'start',
+          currentSettings,
+        }
+      });
+
+      if (error) throw error;
+
+      setSessionId(data.sessionId);
+      setMessages([{
+        role: 'assistant',
+        content: data.guidance
+      }]);
+    } catch (error) {
+      console.error('Failed to initialize session:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to start AI guide. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || !sessionId) return;
 
     const userMessage = input.trim();
     setInput('');
@@ -66,8 +88,8 @@ Ready? Let's go! First things first - what's your company name?`;
     try {
       const { data, error } = await supabase.functions.invoke('company-settings-ai-guide', {
         body: {
-          prompt: userMessage,
-          currentTab,
+          message: userMessage,
+          sessionId,
           currentSettings,
         }
       });
@@ -80,30 +102,26 @@ Ready? Let's go! First things first - what's your company name?`;
           description: data.error,
           variant: 'destructive',
         });
-        setMessages(prev => [...prev, {
-          role: 'assistant',
-          content: `Sorry, I encountered an error: ${data.error}`
-        }]);
         return;
       }
 
-      // Extract guidance and updates
-      const { guidance, ...updates } = data;
-      
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: guidance
+        content: data.guidance
       }]);
 
-      // Apply updates if any fields were provided
-      const fieldsToUpdate = Object.keys(updates).filter(key => updates[key] !== undefined && updates[key] !== null && updates[key] !== '');
-      
-      if (fieldsToUpdate.length > 0) {
-        onApplyUpdates(updates);
+      // Check if guide is complete
+      if (data.guidance.includes('🎉 **All Done!**')) {
+        setIsComplete(true);
+        // Trigger settings refresh
+        onSettingsUpdate();
         toast({
-          title: 'Settings Updated',
-          description: `Updated ${fieldsToUpdate.length} field${fieldsToUpdate.length > 1 ? 's' : ''} based on your input.`,
+          title: 'Profile Complete!',
+          description: 'Your company settings have been saved.',
         });
+      } else {
+        // Trigger settings refresh for incremental saves
+        onSettingsUpdate();
       }
 
     } catch (error) {
@@ -129,43 +147,42 @@ Ready? Let's go! First things first - what's your company name?`;
     }
   };
 
-  const getTabExamples = () => {
-    const examples: Record<string, string[]> = {
-      'basic': [
-        "We're a roofing company with 22 years of experience",
-        "Our slogan is 'Your Trusted Roofing Experts'",
-        "Write a description about storm restoration services"
-      ],
-      'contact': [
-        "Our office is at 123 Main St, New Orleans, LA 70112",
-        "Phone number is 504-555-1234, email is info@company.com",
-        "We service within 50 miles"
-      ],
-      'business': [
-        "We're open Monday-Friday 8am-6pm, Saturday 9am-4pm",
-        "Our license number is LA-12345",
-        "Generate typical contractor business hours"
-      ],
-      'social': [
-        "Our Facebook is facebook.com/ourcompany",
-        "We're on Instagram @ourcompany",
-        "Add all our social media: facebook.com/company, instagram.com/company"
-      ]
-    };
-
-    return examples[currentTab] || [];
+  const handleClose = () => {
+    if (isComplete || messages.length === 0) {
+      // Safe to close
+      onOpenChange(false);
+      // Reset state
+      setTimeout(() => {
+        setMessages([]);
+        setSessionId(null);
+        setIsComplete(false);
+      }, 300);
+    } else {
+      // Warn about incomplete session
+      if (confirm('Your progress is saved, but the guide is not complete. Close anyway?')) {
+        onOpenChange(false);
+        setTimeout(() => {
+          setMessages([]);
+          setSessionId(null);
+          setIsComplete(false);
+        }, 300);
+      }
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl h-[600px] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Bot className="h-5 w-5 text-primary" />
-            AI Settings Guide - {currentTab.charAt(0).toUpperCase() + currentTab.slice(1)}
+            AI Company Setup Guide
+            {isComplete && (
+              <CheckCircle2 className="h-5 w-5 text-green-500 ml-auto" />
+            )}
           </DialogTitle>
           <DialogDescription>
-            Tell me about your business and I'll help fill out the form
+            I'll guide you through setting up your complete company profile
           </DialogDescription>
         </DialogHeader>
 
@@ -182,13 +199,21 @@ Ready? Let's go! First things first - what's your company name?`;
                   </div>
                 )}
                 <div
-                  className={`rounded-lg px-4 py-2 max-w-[80%] ${
+                  className={`rounded-lg px-4 py-3 max-w-[80%] ${
                     message.role === 'user'
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  <div 
+                    className="text-sm whitespace-pre-wrap prose prose-sm max-w-none dark:prose-invert"
+                    dangerouslySetInnerHTML={{ 
+                      __html: message.content
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/_(.*?)_/g, '<em>$1</em>')
+                        .replace(/\n/g, '<br/>')
+                    }}
+                  />
                 </div>
               </div>
             ))}
@@ -199,55 +224,48 @@ Ready? Let's go! First things first - what's your company name?`;
                   <Loader2 className="h-4 w-4 text-primary animate-spin" />
                 </div>
                 <div className="rounded-lg px-4 py-2 bg-muted">
-                  <p className="text-sm text-muted-foreground">Thinking...</p>
+                  <p className="text-sm text-muted-foreground">Processing...</p>
                 </div>
               </div>
             )}
           </div>
         </ScrollArea>
 
-        {getTabExamples().length > 0 && messages.length <= 2 && (
-          <div className="space-y-2 py-2 border-t">
-            <p className="text-xs text-muted-foreground">Try saying:</p>
-            <div className="flex flex-wrap gap-2">
-              {getTabExamples().map((example, idx) => (
-                <Button
-                  key={idx}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setInput(example)}
-                  className="text-xs"
-                >
-                  <Sparkles className="h-3 w-3 mr-1" />
-                  {example}
-                </Button>
-              ))}
-            </div>
+        {!isComplete && (
+          <div className="flex gap-2 pt-2 border-t">
+            <Textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type your answer here..."
+              className="min-h-[80px] resize-none"
+              disabled={isLoading || !sessionId}
+            />
+            <Button
+              onClick={handleSend}
+              disabled={!input.trim() || isLoading || !sessionId}
+              size="icon"
+              className="h-[80px] w-[80px]"
+            >
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <Send className="h-5 w-5" />
+              )}
+            </Button>
           </div>
         )}
 
-        <div className="flex gap-2 pt-2 border-t">
-          <Textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Tell me about your business or ask what you need to provide..."
-            className="min-h-[80px] resize-none"
-            disabled={isLoading}
-          />
-          <Button
-            onClick={handleSend}
-            disabled={!input.trim() || isLoading}
-            size="icon"
-            className="h-[80px] w-[80px]"
-          >
-            {isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <Send className="h-5 w-5" />
-            )}
-          </Button>
-        </div>
+        {isComplete && (
+          <div className="pt-2 border-t">
+            <Button 
+              onClick={() => handleClose()} 
+              className="w-full"
+            >
+              Close Guide
+            </Button>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

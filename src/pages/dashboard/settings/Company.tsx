@@ -333,11 +333,10 @@ const CompanySettings = () => {
     autoSave(newFormData);
   }, [formData, autoSave]);
 
-  const handleAIUpdates = useCallback((updates: any) => {
-    const newFormData = { ...formData, ...updates };
-    setFormData(newFormData);
-    autoSave(newFormData);
-  }, [formData, autoSave]);
+  const handleSettingsUpdate = async () => {
+    // Refresh settings from database after AI updates
+    queryClient.invalidateQueries({ queryKey: ['company-settings'] });
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -843,9 +842,8 @@ const CompanySettings = () => {
         <AISettingsGuide
           open={showAIGuide}
           onOpenChange={setShowAIGuide}
-          currentTab={currentTab}
           currentSettings={formData}
-          onApplyUpdates={handleAIUpdates}
+          onSettingsUpdate={handleSettingsUpdate}
         />
       </div>
   );
