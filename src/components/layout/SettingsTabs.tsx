@@ -22,6 +22,7 @@ const SettingsTabs = () => {
     { value: 'ticket-templates', label: 'Ticket Templates' },
     { value: 'auto-assignment', label: 'Auto-Assignment' },
     { value: 'notifications', label: 'Notifications' },
+    { value: 'permissions', label: 'Permissions & Roles' },
     { value: 'analytics', label: 'Analytics' },
     { value: 'seo', label: 'SEO' },
     { value: 'backup-management', label: 'Backup & Data' },
