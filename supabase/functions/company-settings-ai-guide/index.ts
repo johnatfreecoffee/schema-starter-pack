@@ -52,8 +52,13 @@ const SECTIONS = {
 function extractFieldValue(text: string, fieldType: string) {
   const lowerText = text.toLowerCase();
   
-  // Check for negative responses
-  if (/^(no|none|nope|n\/a|don't have|skip|not applicable|pass)$/i.test(text.trim())) {
+  // Check for "keep current" responses
+  if (/^(keep current|use current|keep|current|same|keep it|use it)$/i.test(text.trim())) {
+    return 'KEEP_CURRENT';
+  }
+  
+  // Check for negative responses (to clear the field)
+  if (/^(no|none|nope|n\/a|don't have|skip|not applicable|pass|clear|remove)$/i.test(text.trim())) {
     return 'SKIP';
   }
   
@@ -202,6 +207,8 @@ Ready? Let's start with the basics!
     
     // Update collected fields
     let newFieldsCount = 0;
+    const fieldsToUpdate: Record<string, any> = {};
+    
     for (const [fieldName, value] of Object.entries(extractedData)) {
       if (!collectedFields[fieldName]) {
         collectedFields[fieldName] = value;
@@ -209,17 +216,35 @@ Ready? Let's start with the basics!
       }
     }
     
+    // Get current company settings
+    const { data: currentCompanyData } = await supabase
+      .from('company_settings')
+      .select(currentField.name)
+      .eq('id', session.company_id)
+      .single();
+    
     // Check if current field was answered or skipped
     const currentFieldValue = extractFieldValue(message, currentField.type);
-    if (currentFieldValue === 'SKIP' && !skippedFields.includes(currentField.name)) {
-      skippedFields.push(currentField.name);
-    } else if (currentFieldValue && currentFieldValue !== 'SKIP' && !collectedFields[currentField.name]) {
+    
+    if (currentFieldValue === 'KEEP_CURRENT') {
+      // Keep existing value, mark as visited
+      const existingValue = (currentCompanyData as any)?.[currentField.name];
+      if (existingValue) {
+        collectedFields[currentField.name] = existingValue;
+      }
+    } else if (currentFieldValue === 'SKIP') {
+      // Clear the field
+      if (!skippedFields.includes(currentField.name)) {
+        skippedFields.push(currentField.name);
+      }
+      fieldsToUpdate[currentField.name] = null; // Explicitly clear in DB
+    } else if (currentFieldValue && currentFieldValue !== 'SKIP' && currentFieldValue !== 'KEEP_CURRENT') {
+      // New value provided
       collectedFields[currentField.name] = currentFieldValue;
       newFieldsCount++;
     }
 
     // Update company settings with new data
-    const fieldsToUpdate: Record<string, any> = {};
     for (const [key, value] of Object.entries(collectedFields)) {
       if (value && value !== 'SKIP') {
         fieldsToUpdate[key] = value;
@@ -233,12 +258,19 @@ Ready? Let's start with the basics!
         .eq('id', session.company_id);
     }
 
-    // Find next unanswered field
+    // Find next field (always go through ALL fields, even if filled)
     let nextSectionKey = sectionKey;
     let nextFieldIndex = currentFieldIndex + 1;
     let nextField = null;
     
-    // Search for next unanswered field
+    // Get current company settings to show existing values
+    const { data: currentCompanySettings } = await supabase
+      .from('company_settings')
+      .select('*')
+      .eq('id', session.company_id)
+      .single();
+    
+    // Search for next field in order (don't skip filled fields)
     const sectionOrder = ['basic', 'contact', 'business', 'social'];
     let searchingSectionIndex = sectionOrder.indexOf(sectionKey);
     
@@ -247,12 +279,11 @@ Ready? Let's start with the basics!
       
       for (let i = (searchingSectionIndex === sectionOrder.indexOf(sectionKey) ? nextFieldIndex : 0); i < searchSection.fields.length; i++) {
         const field = searchSection.fields[i];
-        if (!collectedFields[field.name] && !skippedFields.includes(field.name)) {
-          nextField = field;
-          nextSectionKey = sectionOrder[searchingSectionIndex];
-          nextFieldIndex = i;
-          break;
-        }
+        // Don't check if field is answered - always go through all fields
+        nextField = field;
+        nextSectionKey = sectionOrder[searchingSectionIndex];
+        nextFieldIndex = i;
+        break;
       }
       
       if (nextField) break;
@@ -286,24 +317,26 @@ Ready? Let's start with the basics!
     if (nextField) {
       // Calculate progress
       const totalFields = Object.values(SECTIONS).reduce((sum, s) => sum + s.fields.length, 0);
-      const completedFields = Object.keys(collectedFields).length + skippedFields.length;
+      const visitedFields = session.conversation_history?.length || 0;
       const currentSectionFields = section.fields;
-      const currentSectionCompleted = currentSectionFields.filter(f => 
-        collectedFields[f.name] || skippedFields.includes(f.name)
-      ).length;
       
       // Check if we're starting a new section
       if (nextSectionKey !== sectionKey) {
         const nextSectionInfo = SECTIONS[nextSectionKey as keyof typeof SECTIONS];
-        guidance += `\n**${section.name} Complete!** (${currentSectionCompleted}/${currentSectionFields.length} fields)\n\n`;
+        guidance += `**${section.name} Complete!**\n\n`;
         guidance += `Now let's move to **${nextSectionInfo.name}**.\n\n`;
       }
       
-      guidance += `**Progress:** ${completedFields}/${totalFields} fields complete\n\n`;
+      guidance += `**Progress:** ${visitedFields + 1}/${totalFields} fields\n\n`;
       guidance += `**${nextField.question}**`;
       
-      if (!nextField.required) {
-        guidance += '\n\n(You can say "no" or "skip" if you don\'t have this)';
+      // Show current value if exists
+      const currentValue = currentCompanySettings?.[nextField.name];
+      if (currentValue) {
+        guidance += `\n\n**Current value:** ${currentValue}`;
+        guidance += `\n\n(Type new information to update, say "keep current" to use existing value, or "skip" to clear this field)`;
+      } else {
+        guidance += `\n\n(You can say "skip" or "no" if you don't have this)`;
       }
     } else {
       // All done!

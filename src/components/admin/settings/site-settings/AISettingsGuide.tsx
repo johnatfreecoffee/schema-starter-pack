@@ -232,27 +232,60 @@ export const AISettingsGuide = ({
         </ScrollArea>
 
         {!isComplete && (
-          <div className="flex gap-2 pt-2 border-t">
-            <Textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type your answer here..."
-              className="min-h-[80px] resize-none"
-              disabled={isLoading || !sessionId}
-            />
-            <Button
-              onClick={handleSend}
-              disabled={!input.trim() || isLoading || !sessionId}
-              size="icon"
-              className="h-[80px] w-[80px]"
-            >
-              {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Send className="h-5 w-5" />
-              )}
-            </Button>
+          <div className="space-y-2 pt-2 border-t">
+            {/* Quick action buttons */}
+            {messages.length > 0 && messages[messages.length - 1]?.role === 'assistant' && 
+             messages[messages.length - 1]?.content.includes('**Current value:**') && (
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => {
+                    setInput('keep current');
+                    setTimeout(() => handleSend(), 100);
+                  }}
+                  disabled={isLoading || !sessionId}
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                >
+                  Keep Current
+                </Button>
+                <Button
+                  onClick={() => {
+                    setInput('skip');
+                    setTimeout(() => handleSend(), 100);
+                  }}
+                  disabled={isLoading || !sessionId}
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                >
+                  Clear Field
+                </Button>
+              </div>
+            )}
+            
+            <div className="flex gap-2">
+              <Textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type your answer here..."
+                className="min-h-[80px] resize-none"
+                disabled={isLoading || !sessionId}
+              />
+              <Button
+                onClick={handleSend}
+                disabled={!input.trim() || isLoading || !sessionId}
+                size="icon"
+                className="h-[80px] w-[80px]"
+              >
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Send className="h-5 w-5" />
+                )}
+              </Button>
+            </div>
           </div>
         )}
 
