@@ -38,21 +38,15 @@ export const useUserRole = () => {
           return;
         }
 
-        // Use existing RPC function
+        // Use the new RPC function (no recursion risk)
         const { data, error } = await supabase
-          .from('user_roles')
-          .select(`
-            roles!inner(name)
-          `)
-          .eq('user_id', user.id)
-          .limit(1)
-          .maybeSingle();
+          .rpc('rpc_get_current_user_role' as any);
         
         if (error) {
           console.error('Role fetch error:', error);
           setRole('customer');
         } else {
-          const userRole = data?.roles?.name || 'customer';
+          const userRole = (data as string) || 'customer';
           setRole(userRole as UserRole);
           
           // Update cache
