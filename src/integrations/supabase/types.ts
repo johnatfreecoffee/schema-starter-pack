@@ -3529,11 +3529,27 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_role_cache: {
+        Row: {
+          is_system_role: boolean | null
+          role_id: string | null
+          role_name: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
-      current_user_has_role: {
-        Args: { _role: string }
+      auth_has_role: {
+        Args: { _role_names: string[] }
         Returns: boolean
       }
       generate_ticket_number: {
@@ -3559,34 +3575,17 @@ export type Database = {
           permission_name: string
         }[]
       }
-      get_user_role: {
-        Args: { _user_id: string }
-        Returns: Database["public"]["Enums"]["user_role"]
-      }
-      has_permission: {
-        Args: { _action: string; _module: string; _user_id: string }
-        Returns: boolean
-      }
-      has_role: {
-        Args:
-          | {
-              _role: Database["public"]["Enums"]["user_role"]
-              _user_id: string
-            }
-          | { _role: string; _user_id: string }
-        Returns: boolean
-      }
       is_user_locked_out: {
         Args: { user_email: string }
         Returns: boolean
       }
-      user_has_any_role: {
-        Args: { _role_names: string[]; _user_id: string }
-        Returns: boolean
+      refresh_role_cache: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
-      user_has_role_name: {
-        Args: { _role_name: string; _user_id: string }
-        Returns: boolean
+      rpc_get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
     }
     Enums: {
