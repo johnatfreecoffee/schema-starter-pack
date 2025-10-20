@@ -77,10 +77,10 @@ export const AISettingsGuide = ({
     }
   };
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading || !sessionId) return;
+  const handleSend = async (messageOverride?: string) => {
+    const userMessage = messageOverride || input.trim();
+    if (!userMessage || isLoading || !sessionId) return;
 
-    const userMessage = input.trim();
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
@@ -239,10 +239,7 @@ export const AISettingsGuide = ({
              messages[messages.length - 1]?.content.includes('**Current value:**') && (
               <div className="flex gap-2">
                 <Button
-                  onClick={() => {
-                    setInput('keep current');
-                    setTimeout(() => handleSend(), 100);
-                  }}
+                  onClick={() => handleSend('keep current')}
                   disabled={isLoading || !sessionId}
                   variant="outline"
                   size="sm"
@@ -251,10 +248,7 @@ export const AISettingsGuide = ({
                   Keep Current
                 </Button>
                 <Button
-                  onClick={() => {
-                    setInput('skip');
-                    setTimeout(() => handleSend(), 100);
-                  }}
+                  onClick={() => handleSend('skip')}
                   disabled={isLoading || !sessionId}
                   variant="outline"
                   size="sm"
@@ -275,7 +269,7 @@ export const AISettingsGuide = ({
                 disabled={isLoading || !sessionId}
               />
               <Button
-                onClick={handleSend}
+                onClick={() => handleSend()}
                 disabled={!input.trim() || isLoading || !sessionId}
                 size="icon"
                 className="h-[80px] w-[80px]"

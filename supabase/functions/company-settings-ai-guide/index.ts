@@ -327,9 +327,9 @@ Ready? Let's start with the basics!
       const currentValue = currentCompanySettings?.[nextField.name];
       if (currentValue) {
         guidance += `\n\n**Current value:** ${currentValue}`;
-        guidance += `\n\n(Type new information to update, say "keep current" to use existing value, or "skip" to clear this field)`;
+        guidance += `\n\n_Click "Keep Current" to use this value, "Clear Field" to remove it, or type a new value below._`;
       } else {
-        guidance += `\n\n(You can say "skip" or "no" if you don't have this)`;
+        guidance += `\n\n_You can type a new value or click "Clear Field" to skip._`;
       }
     } else {
       // All done!
