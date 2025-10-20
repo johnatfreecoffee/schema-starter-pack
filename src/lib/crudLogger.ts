@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 interface LogParams {
   userId: string;
   companyId?: string;
-  entityType: 'lead' | 'account' | 'contact' | 'task' | 'appointment' | 'project' | 'quote' | 'invoice' | 'service' | 'service_area' | 'page' | 'template' | 'team_member';
+  entityType: 'lead' | 'account' | 'contact' | 'task' | 'appointment' | 'project' | 'quote' | 'invoice' | 'service' | 'service_area' | 'page' | 'template' | 'team_member' | 'note';
   entityId: string;
   entityName: string;
   action: 'created' | 'updated' | 'deleted' | 'status_changed' | 'converted';

@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Pin, PinOff, Edit2, Trash2, Save, X } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import type { Database } from '@/integrations/supabase/types';
+import { CRUDLogger } from '@/lib/crudLogger';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -128,15 +129,29 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase.from('notes').insert({
+      const { data, error } = await supabase.from('notes').insert({
         related_to_type: entityType as RelatedEntityType,
         related_to_id: entityId,
         content: newNote.trim(),
         is_pinned: isPinned,
         created_by: user.id,
-      });
+      }).select().single();
 
       if (error) throw error;
+
+      // Log the activity
+      await CRUDLogger.logCreate({
+        userId: user.id,
+        entityType: 'note',
+        entityId: data.id,
+        entityName: `Note on ${entityType}`,
+        metadata: {
+          related_to_type: entityType,
+          related_to_id: entityId,
+          is_pinned: isPinned,
+          content_preview: newNote.trim().substring(0, 100)
+        }
+      });
 
       toast({
         title: 'Success',
@@ -163,12 +178,34 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
 
   const handleSaveEdit = async (noteId: string) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Get the old note content for logging
+      const oldNote = notes.find(n => n.id === noteId);
+      
       const { error } = await supabase
         .from('notes')
         .update({ content: editContent.trim(), updated_at: new Date().toISOString() })
         .eq('id', noteId);
 
       if (error) throw error;
+
+      // Log the activity
+      if (oldNote) {
+        await CRUDLogger.logUpdate({
+          userId: user.id,
+          entityType: 'note',
+          entityId: noteId,
+          entityName: `Note on ${entityType}`,
+          oldValues: { content: oldNote.content },
+          newValues: { content: editContent.trim() },
+          metadata: {
+            related_to_type: entityType,
+            related_to_id: entityId
+          }
+        });
+      }
 
       toast({
         title: 'Success',
@@ -216,12 +253,37 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
     if (!deleteId) return;
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Get the note before deleting for logging
+      const noteToDelete = notes.find(n => n.id === deleteId);
+
       const { error } = await supabase
         .from('notes')
         .delete()
         .eq('id', deleteId);
 
       if (error) throw error;
+
+      // Log the activity
+      if (noteToDelete) {
+        await CRUDLogger.logDelete({
+          userId: user.id,
+          entityType: 'note',
+          entityId: deleteId,
+          entityName: `Note on ${entityType}`,
+          oldValues: {
+            content: noteToDelete.content,
+            is_pinned: noteToDelete.is_pinned
+          },
+          metadata: {
+            related_to_type: entityType,
+            related_to_id: entityId,
+            content_preview: noteToDelete.content.substring(0, 100)
+          }
+        });
+      }
 
       toast({
         title: 'Success',
