@@ -9,6 +9,8 @@ interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallback?: string;
   threshold?: number;
   aspectRatio?: 'square' | 'video' | 'portrait' | 'auto';
+  blurDataURL?: string;
+  priority?: boolean;
 }
 
 export function LazyImage({
@@ -18,10 +20,12 @@ export function LazyImage({
   fallback = '/placeholder.svg',
   threshold = 0.1,
   aspectRatio = 'auto',
+  blurDataURL,
+  priority = false,
   ...props
 }: LazyImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(false);
+  const [isInView, setIsInView] = useState(priority);
   const [error, setError] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
@@ -63,7 +67,15 @@ export function LazyImage({
 
   return (
     <div className={cn('relative overflow-hidden', aspectRatioClass, className)}>
-      {!isLoaded && (
+      {!isLoaded && blurDataURL && (
+        <img
+          src={blurDataURL}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover blur-xl scale-110"
+          aria-hidden="true"
+        />
+      )}
+      {!isLoaded && !blurDataURL && (
         <Skeleton className="absolute inset-0" />
       )}
       <img
@@ -72,9 +84,10 @@ export function LazyImage({
         alt={alt}
         onLoad={handleLoad}
         onError={handleError}
-        loading="lazy"
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
         className={cn(
-          'transition-opacity duration-300',
+          'transition-opacity duration-500',
           isLoaded ? 'opacity-100' : 'opacity-0',
           aspectRatioClass ? 'w-full h-full object-cover' : '',
           className

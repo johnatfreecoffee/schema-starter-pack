@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cacheService, CacheStats, DEFAULT_TTL, CacheItem } from '@/lib/cacheService';
 import { warmCriticalCaches } from '@/lib/cacheInvalidation';
+import { getAllMetrics, getAverageLoadTime, clearMetrics } from '@/lib/performanceMetrics';
 import { toast } from 'sonner';
 import { 
   Zap, 
@@ -21,7 +22,8 @@ import {
   Activity,
   CheckCircle2,
   XCircle,
-  Percent
+  Percent,
+  BarChart
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -186,7 +188,8 @@ const Performance = () => {
 
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="overview">Cache Overview</TabsTrigger>
+            <TabsTrigger value="page-metrics">Page Metrics</TabsTrigger>
             <TabsTrigger value="cache-items">Cache Items</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
@@ -287,6 +290,157 @@ const Performance = () => {
                     <div className="text-center py-8 text-muted-foreground">
                       No cache data available. Try warming the cache.
                     </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="page-metrics" className="space-y-6">
+            {/* Page Load Metrics */}
+            <div className="grid gap-6 md:grid-cols-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Pages Tracked</CardTitle>
+                  <Activity className="h-4 w-4 text-primary" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {Object.keys(getAllMetrics()).length}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Unique pages monitored
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Fast Pages</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-green-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {Object.keys(getAllMetrics()).filter(p => {
+                      const avg = getAverageLoadTime(p);
+                      return avg !== null && avg < 500;
+                    }).length}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Load time {'<'} 500ms
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Slow Pages</CardTitle>
+                  <Clock className="h-4 w-4 text-yellow-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {Object.keys(getAllMetrics()).filter(p => {
+                      const avg = getAverageLoadTime(p);
+                      return avg !== null && avg >= 2000;
+                    }).length}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Load time {'>'} 2000ms
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Avg Load Time</CardTitle>
+                  <BarChart className="h-4 w-4 text-blue-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {(() => {
+                      const pageNames = Object.keys(getAllMetrics());
+                      if (pageNames.length === 0) return '0';
+                      const avg = Math.round(
+                        pageNames.reduce((sum, p) => {
+                          const pageAvg = getAverageLoadTime(p);
+                          return sum + (pageAvg || 0);
+                        }, 0) / pageNames.length
+                      );
+                      return avg;
+                    })()}ms
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Across all pages
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>Page Performance</CardTitle>
+                    <CardDescription>
+                      Load times for individual pages
+                    </CardDescription>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      clearMetrics();
+                      toast.success('Metrics cleared');
+                      window.location.reload();
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Clear Metrics
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {Object.entries(getAllMetrics()).length === 0 ? (
+                    <div className="text-center py-12 text-muted-foreground">
+                      No metrics yet. Navigate through the app to collect data.
+                    </div>
+                  ) : (
+                    Object.entries(getAllMetrics()).map(([pageName, metrics]) => {
+                      const avgTime = getAverageLoadTime(pageName);
+                      const cacheHitRate = metrics
+                        ? Math.round((metrics.filter(m => m.cached).length / metrics.length) * 100)
+                        : 0;
+                      
+                      const getGrade = (time: number) => {
+                        if (time < 500) return { grade: 'Excellent', color: 'text-green-600' };
+                        if (time < 1000) return { grade: 'Good', color: 'text-blue-600' };
+                        if (time < 2000) return { grade: 'Fair', color: 'text-yellow-600' };
+                        return { grade: 'Needs Work', color: 'text-red-600' };
+                      };
+                      
+                      const { grade, color } = getGrade(avgTime || 0);
+
+                      return (
+                        <div
+                          key={pageName}
+                          className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                        >
+                          <div className="flex-1">
+                            <p className="font-medium">{pageName}</p>
+                            <div className="flex gap-4 mt-1 text-sm text-muted-foreground">
+                              <span>{metrics?.length || 0} loads</span>
+                              <span>•</span>
+                              <span>{cacheHitRate}% cached</span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-2xl font-bold">{avgTime}ms</p>
+                            <p className={`text-sm font-medium ${color}`}>{grade}</p>
+                          </div>
+                        </div>
+                      );
+                    })
                   )}
                 </div>
               </CardContent>
