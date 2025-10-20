@@ -8,12 +8,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Loader2, Sparkles } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SocialMediaManager } from '@/components/admin/settings/site-settings/SocialMediaManager';
+import { AISettingsGuide } from '@/components/admin/settings/site-settings/AISettingsGuide';
 
 const CompanySettings = () => {
   const { data: company } = useCompanySettings();
@@ -64,6 +66,8 @@ const CompanySettings = () => {
   const [iconPreview, setIconPreview] = useState<string>('');
   const [uploading, setUploading] = useState(false);
   const [uploadingType, setUploadingType] = useState<'logo' | 'icon' | null>(null);
+  const [showAIGuide, setShowAIGuide] = useState(false);
+  const [currentTab, setCurrentTab] = useState('basic');
 
   useEffect(() => {
     if (company) {
@@ -329,11 +333,27 @@ const CompanySettings = () => {
     autoSave(newFormData);
   }, [formData, autoSave]);
 
+  const handleAIUpdates = useCallback((updates: any) => {
+    const newFormData = { ...formData, ...updates };
+    setFormData(newFormData);
+    autoSave(newFormData);
+  }, [formData, autoSave]);
+
   return (
     <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-6">Company Settings</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-4xl font-bold">Company Settings</h1>
+          <Button
+            onClick={() => setShowAIGuide(true)}
+            className="gap-2"
+            variant="default"
+          >
+            <Sparkles className="h-4 w-4" />
+            AI Guide
+          </Button>
+        </div>
         
-        <Tabs defaultValue="basic" className="space-y-6">
+        <Tabs defaultValue="basic" value={currentTab} onValueChange={setCurrentTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="basic">Basic Info</TabsTrigger>
             <TabsTrigger value="contact">Contact</TabsTrigger>
@@ -819,6 +839,14 @@ const CompanySettings = () => {
             Saving...
           </div>
         )}
+
+        <AISettingsGuide
+          open={showAIGuide}
+          onOpenChange={setShowAIGuide}
+          currentTab={currentTab}
+          currentSettings={formData}
+          onApplyUpdates={handleAIUpdates}
+        />
       </div>
   );
 };
