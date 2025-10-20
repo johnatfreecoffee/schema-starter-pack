@@ -474,6 +474,8 @@ export type Database = {
           file_size: number | null
           id: string
           record_counts: Json | null
+          restored_at: string | null
+          restored_by: string | null
           status: string
           tables_included: string[]
         }
@@ -486,6 +488,8 @@ export type Database = {
           file_size?: number | null
           id?: string
           record_counts?: Json | null
+          restored_at?: string | null
+          restored_by?: string | null
           status?: string
           tables_included?: string[]
         }
@@ -498,6 +502,8 @@ export type Database = {
           file_size?: number | null
           id?: string
           record_counts?: Json | null
+          restored_at?: string | null
+          restored_by?: string | null
           status?: string
           tables_included?: string[]
         }

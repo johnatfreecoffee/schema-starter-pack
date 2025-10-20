@@ -13,6 +13,7 @@ const RestoreTab = () => {
   const { toast } = useToast();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [backupData, setBackupData] = useState<BackupFile | null>(null);
+  const [backupId, setBackupId] = useState<string | null>(null);
   const [restoreMode, setRestoreMode] = useState<'replace' | 'merge'>('merge');
   const [isRestoring, setIsRestoring] = useState(false);
 
@@ -25,6 +26,9 @@ const RestoreTab = () => {
     try {
       const backup = await restoreService.parseBackupFile(file);
       setBackupData(backup);
+      // Try to extract backup ID from filename (backup_[id]_date.json)
+      const match = file.name.match(/backup_([a-f0-9-]+)_/);
+      if (match) setBackupId(match[1]);
       toast({ title: 'Backup file loaded successfully' });
     } catch (error: any) {
       toast({
@@ -46,7 +50,7 @@ const RestoreTab = () => {
         mode: restoreMode,
       };
 
-      await restoreService.restoreFromBackup(backupData, options);
+      await restoreService.restoreFromBackup(backupData, options, backupId || undefined);
 
       toast({
         title: 'Restore completed successfully',

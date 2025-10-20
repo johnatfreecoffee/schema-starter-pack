@@ -38,7 +38,7 @@ class RestoreService {
     });
   }
 
-  async restoreFromBackup(backup: BackupFile, options: RestoreOptions): Promise<void> {
+  async restoreFromBackup(backup: BackupFile, options: RestoreOptions, backupId?: string): Promise<void> {
     const tablesToRestore = options.tables || Object.keys(backup.tables);
     
     try {
@@ -92,6 +92,19 @@ class RestoreService {
         }
 
         console.log(`Restored ${records.length} records to ${tableName}`);
+      }
+
+      // Track restore in backup metadata if backupId provided
+      if (backupId) {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        await supabase
+          .from('backups')
+          .update({
+            restored_at: new Date().toISOString(),
+            restored_by: user?.id
+          })
+          .eq('id', backupId);
       }
     } catch (error) {
       console.error('Restore failed:', error);

@@ -14,6 +14,8 @@ export interface BackupMetadata {
   record_counts: Record<string, number>;
   created_at: string;
   error_message?: string;
+  restored_at?: string;
+  restored_by?: string;
 }
 
 class BackupService {

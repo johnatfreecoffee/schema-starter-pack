@@ -1,6 +1,8 @@
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Clock, Save, Loader2 } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { format } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -146,6 +148,18 @@ const ScheduleTab = () => {
           Configure automated backups to run on a schedule
         </p>
       </div>
+
+      {/* Active Schedule Status Banner */}
+      {schedule && enabled && (
+        <Alert>
+          <Clock className="h-4 w-4" />
+          <AlertTitle>Active Schedule</AlertTitle>
+          <AlertDescription>
+            Next backup: {getNextRunTime()}
+            {schedule.last_run_at && ` | Last run: ${format(new Date(schedule.last_run_at), 'MMM d, yyyy HH:mm')}`}
+          </AlertDescription>
+        </Alert>
+      )}
 
       {isLoading ? (
         <Card className="p-12">

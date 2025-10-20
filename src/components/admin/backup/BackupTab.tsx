@@ -5,7 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { backupService, BackupOptions } from '@/services/backupService';
-import { Loader2, Download, Trash2, Database, HardDrive, FileText } from 'lucide-react';
+import { Loader2, Trash2, Database, HardDrive, FileText, Clock, CheckCircle2, Plus } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { format } from 'date-fns';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,11 +31,11 @@ const BackupTab = () => {
 
   const createBackupMutation = useMutation({
     mutationFn: (options: BackupOptions) => backupService.createBackup(options),
-    onSuccess: () => {
+    onSuccess: (metadata) => {
       queryClient.invalidateQueries({ queryKey: ['backups'] });
       toast({
         title: 'Backup created successfully',
-        description: 'Your backup file has been downloaded.',
+        description: `Backup created (${backupService.formatFileSize(metadata.file_size)}). ${metadata.tables_included.length} tables included.`,
       });
     },
     onError: (error: Error) => {
@@ -67,6 +69,69 @@ const BackupTab = () => {
 
   return (
     <div className="space-y-6">
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary/10 rounded-lg">
+                <Database className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Total Backups
+                </p>
+                <p className="text-2xl font-bold">
+                  {backups?.length || 0}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-blue-500/10 rounded-lg">
+                <Clock className="h-6 w-6 text-blue-500" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Last Backup
+                </p>
+                <p className="text-2xl font-bold">
+                  {backups?.[0] 
+                    ? format(new Date(backups[0].created_at), 'MMM d, yyyy')
+                    : 'Never'}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-green-500/10 rounded-lg">
+                <FileText className="h-6 w-6 text-green-500" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Storage Used
+                </p>
+                <p className="text-2xl font-bold">
+                  {backups 
+                    ? backupService.formatFileSize(
+                        backups.reduce((sum, b) => sum + (b.file_size || 0), 0)
+                      )
+                    : '0 B'}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Create Backup</CardTitle>
@@ -139,12 +204,25 @@ const BackupTab = () => {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="flex justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <Card key={i}>
+                  <CardContent className="p-4">
+                    <div className="space-y-3">
+                      <Skeleton className="h-4 w-[250px]" />
+                      <Skeleton className="h-4 w-[200px]" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           ) : !backups || backups.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              No backups yet. Create your first backup above.
+            <div className="text-center py-12">
+              <Database className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No backups yet</h3>
+              <p className="text-muted-foreground mb-6">
+                Create your first backup to protect your data and enable disaster recovery
+              </p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -154,7 +232,7 @@ const BackupTab = () => {
                   className="flex items-center justify-between p-4 border rounded-lg"
                 >
                   <div className="flex-1">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap">
                       <Badge variant="outline" className="capitalize">
                         {backup.backup_type}
                       </Badge>
@@ -172,6 +250,12 @@ const BackupTab = () => {
                       >
                         {backup.status}
                       </Badge>
+                      {backup.restored_at && (
+                        <Badge variant="outline" className="ml-2">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                          Restored {format(new Date(backup.restored_at), 'MMM d, yyyy')}
+                        </Badge>
+                      )}
                     </div>
                     <div className="text-sm text-muted-foreground mt-2">
                       {backup.file_size
