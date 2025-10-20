@@ -209,6 +209,7 @@ export const AISettingsGuide = ({
                     className="text-sm whitespace-pre-wrap prose prose-sm max-w-none dark:prose-invert"
                     dangerouslySetInnerHTML={{ 
                       __html: message.content
+                        .replace(/\*\*(.*?\?)\*\*/g, '<h2 class="text-lg font-semibold mt-2 mb-1">$1</h2>')
                         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                         .replace(/_(.*?)_/g, '<em>$1</em>')
                         .replace(/\n/g, '<br/>')
