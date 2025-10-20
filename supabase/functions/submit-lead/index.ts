@@ -1,28 +1,32 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface LeadData {
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  service_needed: string;
-  street_address: string;
-  unit?: string;
-  city: string;
-  state: string;
-  zip: string;
-  project_details?: string;
-  is_emergency: boolean;
-  service_id?: string;
-  originating_url?: string;
-  lead_source?: string;
-}
+// Comprehensive input validation schema
+const LeadSchema = z.object({
+  first_name: z.string().trim().min(1, 'First name is required').max(50, 'First name too long'),
+  last_name: z.string().trim().min(1, 'Last name is required').max(50, 'Last name too long'),
+  email: z.string().trim().email('Invalid email address').max(255, 'Email too long'),
+  phone: z.string().regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/, 'Invalid phone number').max(20),
+  service_needed: z.string().trim().min(1, 'Service is required').max(200, 'Service description too long'),
+  street_address: z.string().trim().min(1, 'Street address is required').max(200, 'Address too long'),
+  unit: z.string().trim().max(20, 'Unit too long').optional(),
+  city: z.string().trim().min(1, 'City is required').max(100, 'City name too long'),
+  state: z.string().trim().length(2, 'State must be 2 characters').regex(/^[A-Z]{2}$/, 'State must be uppercase letters'),
+  zip: z.string().trim().regex(/^\d{5}(-\d{4})?$/, 'Invalid ZIP code format'),
+  project_details: z.string().trim().max(2000, 'Project details too long').optional(),
+  is_emergency: z.boolean(),
+  service_id: z.string().uuid('Invalid service ID').optional(),
+  originating_url: z.string().url('Invalid URL').max(500, 'URL too long').optional(),
+  lead_source: z.string().max(50, 'Lead source too long').optional()
+});
+
+type LeadData = z.infer<typeof LeadSchema>;
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -134,9 +138,31 @@ serve(async (req) => {
         });
     }
 
-    const leadData: LeadData = await req.json();
+    // Parse and validate input data
+    const rawData = await req.json();
     
-    console.log('Received lead submission:', leadData.email);
+    let leadData: LeadData;
+    try {
+      leadData = LeadSchema.parse(rawData);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error('Validation error:', error.errors);
+        return new Response(
+          JSON.stringify({ 
+            error: 'Invalid input data',
+            success: false,
+            details: error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400,
+          }
+        );
+      }
+      throw error;
+    }
+    
+    console.log('Received validated lead submission:', leadData.email);
 
     // 1. Create lead record
     const { data: lead, error: leadError } = await supabaseAdmin
@@ -325,7 +351,7 @@ serve(async (req) => {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return new Response(
       JSON.stringify({ 
-        error: errorMessage,
+        error: 'An error occurred processing your submission',
         success: false 
       }),
       { 

@@ -63,21 +63,13 @@ export function PasswordResetDialog({
           return;
         }
 
-        // Update user's password and set require_password_change flag
-        const { error: updateError } = await supabase.auth.admin.updateUserById(
-          userId,
-          { password: tempPassword }
-        );
+        // Call secure edge function to reset password
+        const { data, error: resetError } = await supabase.functions.invoke('reset-user-password', {
+          body: { userId, tempPassword }
+        });
 
-        if (updateError) throw updateError;
-
-        // Set require_password_change flag
-        const { error: profileError } = await supabase
-          .from('user_profiles')
-          .update({ require_password_change: true })
-          .eq('id', userId);
-
-        if (profileError) throw profileError;
+        if (resetError) throw resetError;
+        if (!data?.success) throw new Error('Password reset failed');
 
         await CRUDLogger.logUpdate({
           userId: user.id,
