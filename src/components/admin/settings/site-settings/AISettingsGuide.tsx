@@ -27,17 +27,19 @@ export const AISettingsGuide = ({
   currentSettings,
   onApplyUpdates,
 }: AISettingsGuideProps) => {
+  const getInitialMessage = () => {
+    const tabName = currentTab.charAt(0).toUpperCase() + currentTab.slice(1);
+    return `Hey there! I'm your AI guide, and I'm going to help you set up your company profile. I'll walk you through everything step by step.
+
+Let's start with the ${tabName} section. Just answer my questions naturally - you can give me short answers or tell me in your own words.
+
+Ready? Let's go! First things first - what's your company name?`;
+  };
+
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: `Hi! I'm your AI guide for setting up company settings. I'm currently helping you with the "${currentTab}" section. 
-
-You can either:
-1. Tell me about your business in your own words, and I'll fill out the fields for you
-2. Give me specific information to enter (e.g., "Our phone number is 555-123-4567")
-3. Ask me what information you need to provide
-
-What would you like to do?`
+      content: getInitialMessage()
     }
   ]);
   const [input, setInput] = useState('');
