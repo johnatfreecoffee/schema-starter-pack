@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import AdminLayout from "@/components/layout/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -171,16 +170,14 @@ const TaskDetail = () => {
 
   if (loading) {
     return (
-      <AdminLayout>
-        <div className="p-8">Loading task details...</div>
-      </AdminLayout>
+      <div className="p-8">Loading task details...</div>
     );
   }
 
   if (!task) return null;
 
   return (
-    <AdminLayout>
+    <>
       <div className="p-8">
         <div className="flex items-center gap-4 mb-6">
           <Button variant="ghost" onClick={() => navigate("/dashboard/tasks")}>
@@ -312,7 +309,7 @@ const TaskDetail = () => {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </AdminLayout>
+    </>
   );
 };
 

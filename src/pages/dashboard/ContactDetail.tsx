@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -67,32 +66,28 @@ const ContactDetail = () => {
 
   if (loading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Loading contact...</p>
-          </div>
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading contact...</p>
         </div>
-      </AdminLayout>
+      </div>
     );
   }
 
   if (!contact) {
     return (
-      <AdminLayout>
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-semibold">Contact not found</h2>
-          <Button className="mt-4" onClick={() => navigate('/dashboard/contacts')}>
-            Back to Contacts
-          </Button>
-        </div>
-      </AdminLayout>
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-semibold">Contact not found</h2>
+        <Button className="mt-4" onClick={() => navigate('/dashboard/contacts')}>
+          Back to Contacts
+        </Button>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
+    <>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -260,7 +255,7 @@ const ContactDetail = () => {
         recipientEmail={contact.email}
         recipientName={`${contact.first_name} ${contact.last_name}`}
       />
-    </AdminLayout>
+    </>
   );
 };
 

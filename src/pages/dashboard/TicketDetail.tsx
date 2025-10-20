@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -119,26 +118,22 @@ export default function TicketDetail() {
 
   if (isLoading) {
     return (
-      <AdminLayout>
-        <div className="container mx-auto p-6">
-          <Skeleton className="h-96 w-full" />
-        </div>
-      </AdminLayout>
+      <div className="container mx-auto p-6">
+        <Skeleton className="h-96 w-full" />
+      </div>
     );
   }
 
   if (!ticket) {
     return (
-      <AdminLayout>
-        <div className="container mx-auto p-6">
-          <p>Ticket not found</p>
-        </div>
-      </AdminLayout>
+      <div className="container mx-auto p-6">
+        <p>Ticket not found</p>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
+    <>
       <div className="container mx-auto p-6">
         <Button
           variant="ghost"
@@ -317,6 +312,6 @@ export default function TicketDetail() {
           </div>
         </div>
       </div>
-    </AdminLayout>
+    </>
   );
 }

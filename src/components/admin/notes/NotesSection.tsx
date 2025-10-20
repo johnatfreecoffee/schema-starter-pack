@@ -72,27 +72,40 @@ const NotesSection = ({ entityType, entityId }: NotesSectionProps) => {
 
   const fetchNotes = async () => {
     try {
-      const { data, error } = await supabase
+      // First get the notes
+      const { data: notesData, error: notesError } = await supabase
         .from('notes')
-        .select(`
-          *,
-          author:created_by (
-            id,
-            raw_user_meta_data
-          )
-        `)
+        .select('*')
         .eq('related_to_type', entityType)
         .eq('related_to_id', entityId)
         .order('is_pinned', { ascending: false })
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (notesError) throw notesError;
 
-      const notesWithNames = data.map((note: any) => ({
+      // Get unique user IDs
+      const userIds = [...new Set(notesData.map(note => note.created_by))];
+      
+      // Fetch user names from user_roles table
+      const { data: usersData } = await supabase
+        .from('user_roles')
+        .select('user_id, users(first_name, last_name)')
+        .in('user_id', userIds);
+
+      // Create a map of user IDs to names
+      const userNameMap = new Map();
+      usersData?.forEach((userData: any) => {
+        if (userData.users) {
+          userNameMap.set(
+            userData.user_id,
+            `${userData.users.first_name || ''} ${userData.users.last_name || ''}`.trim() || 'Unknown User'
+          );
+        }
+      });
+
+      const notesWithNames = notesData.map((note: any) => ({
         ...note,
-        author_name: note.author?.raw_user_meta_data?.first_name && note.author?.raw_user_meta_data?.last_name
-          ? `${note.author.raw_user_meta_data.first_name} ${note.author.raw_user_meta_data.last_name}`
-          : 'Unknown User'
+        author_name: userNameMap.get(note.created_by) || 'Unknown User'
       }));
 
       setNotes(notesWithNames);

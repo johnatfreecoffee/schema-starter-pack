@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -281,21 +280,17 @@ const ProjectDetail = () => {
 
   if (loading) {
     return (
-      <AdminLayout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">Loading project...</div>
-        </div>
-      </AdminLayout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">Loading project...</div>
+      </div>
     );
   }
 
   if (!project) {
     return (
-      <AdminLayout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">Project not found</div>
-        </div>
-      </AdminLayout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">Project not found</div>
+      </div>
     );
   }
 
@@ -303,7 +298,7 @@ const ProjectDetail = () => {
   const progress = calculateProgress();
 
   return (
-    <AdminLayout>
+    <>
       <div className="container mx-auto px-4 py-8">
         <Button variant="ghost" onClick={() => navigate('/dashboard/projects')} className="mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -633,7 +628,7 @@ const ProjectDetail = () => {
           />
         )}
       </div>
-    </AdminLayout>
+    </>
   );
 };
 

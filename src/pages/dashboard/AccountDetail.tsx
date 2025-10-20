@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -175,26 +174,22 @@ const AccountDetail = () => {
 
   if (loading) {
     return (
-      <AdminLayout>
-        <div className="container mx-auto px-4 py-8">
-          <p>Loading account details...</p>
-        </div>
-      </AdminLayout>
+      <div className="container mx-auto px-4 py-8">
+        <p>Loading account details...</p>
+      </div>
     );
   }
 
   if (!account) {
     return (
-      <AdminLayout>
-        <div className="container mx-auto px-4 py-8">
-          <p>Account not found</p>
-        </div>
-      </AdminLayout>
+      <div className="container mx-auto px-4 py-8">
+        <p>Account not found</p>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
+    <>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-6">
@@ -552,7 +547,7 @@ const AccountDetail = () => {
           recipientName={account.account_name}
         />
       )}
-    </AdminLayout>
+    </>
   );
 };
 
