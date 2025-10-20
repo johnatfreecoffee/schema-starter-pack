@@ -7,6 +7,8 @@ import { Plus, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
+import { usePerformanceMonitor } from "@/hooks/usePerformanceMonitor";
+import { useOptimisticMutation } from "@/hooks/useOptimisticMutation";
 import { FilterPanel } from "@/components/filters/FilterPanel";
 import { FilterChips } from "@/components/filters/FilterChips";
 import { SavedViewsBar } from "@/components/filters/SavedViewsBar";
@@ -26,6 +28,9 @@ import { format } from "date-fns";
 import TaskForm from "@/components/admin/tasks/TaskForm";
 
 const TasksAdvanced = () => {
+  // Track performance
+  usePerformanceMonitor('Tasks Page');
+  
   const navigate = useNavigate();
   const { toast } = useToast();
   const { filters, updateFilter, clearFilters } = useUrlFilters();
@@ -128,6 +133,33 @@ const TasksAdvanced = () => {
     } catch (error: any) {
       console.error('Error loading users:', error);
     }
+  };
+
+  // Optimistic update for task status changes
+  const updateTaskStatus = useOptimisticMutation({
+    mutationFn: async ({ id, status }: { id: string; status: any }) => {
+      const { error } = await supabase
+        .from('tasks')
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    queryKey: ['tasks'],
+    updateFn: (oldData: any[], { id, status }: { id: string; status: any }) => {
+      if (!oldData) return oldData;
+      return oldData.map(task => 
+        task.id === id ? { ...task, status } : task
+      );
+    },
+    successMessage: 'Task status updated',
+    errorMessage: 'Failed to update task status',
+  });
+
+  const handleQuickStatusChange = (taskId: string, newStatus: any) => {
+    updateTaskStatus.mutate({ id: taskId, status: newStatus });
+    // Refresh after mutation completes
+    setTimeout(loadTasks, 500);
   };
 
   return (

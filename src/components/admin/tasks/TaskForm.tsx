@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useFormAutoSave } from "@/hooks/useFormAutoSave";
 import { CRUDLogger } from "@/lib/crudLogger";
 import { workflowService } from "@/services/workflowService";
 
@@ -39,6 +40,35 @@ export default function TaskForm({ open, onClose, onSuccess, task, relatedTo, us
   const [relatedToType, setRelatedToType] = useState<string>("none");
   const [relatedToId, setRelatedToId] = useState<string>("");
   const [relatedEntities, setRelatedEntities] = useState<Array<{ id: string; name: string }>>([]);
+
+  // Auto-save for editing existing tasks
+  const formData = {
+    title,
+    description,
+    status,
+    priority,
+    due_date: dueDate?.toISOString(),
+    assigned_to: assignedTo,
+    related_to_type: (relatedToType !== 'none' ? relatedToType : null) as any,
+    related_to_id: relatedToId || null,
+  };
+
+  useFormAutoSave({
+    data: formData,
+    onSave: async (data) => {
+      // Only save if editing existing task
+      if (!task?.id) return;
+      
+      const { error } = await supabase
+        .from('tasks')
+        .update(data)
+        .eq('id', task.id);
+      
+      if (error) throw error;
+    },
+    delay: 1000,
+    storageKey: task?.id ? `task-draft-${task.id}` : undefined,
+  });
 
   useEffect(() => {
     if (task) {

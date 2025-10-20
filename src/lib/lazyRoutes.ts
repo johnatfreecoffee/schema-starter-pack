@@ -80,6 +80,7 @@ export const PageRegenerator = lazy(() => import('@/pages/dashboard/PageRegenera
 export const AutoAssignment = lazy(() => import('@/pages/dashboard/AutoAssignment'));
 
 // Customer portal
+export const CustomerAuth = lazy(() => import('@/pages/customer/CustomerAuth'));
 export const CustomerDashboard = lazy(() => import('@/pages/customer/CustomerDashboard'));
 export const CustomerProjects = lazy(() => import('@/pages/customer/CustomerProjects'));
 export const CustomerProjectDetail = lazy(() => import('@/pages/customer/CustomerProjectDetail'));

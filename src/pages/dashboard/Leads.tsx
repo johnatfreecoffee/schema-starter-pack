@@ -15,6 +15,9 @@ import { ResponsiveList, MobileCard, MobileCardField } from '@/components/ui/res
 import { MobileActionButton } from '@/components/ui/mobile-action-button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useDebounce } from '@/hooks/useDebounce';
+import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
+import { useOptimisticMutation } from '@/hooks/useOptimisticMutation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -73,6 +76,9 @@ import { BulkSelectAllBanner } from '@/components/admin/bulk/BulkSelectAllBanner
 import { BulkConfirmationModal } from '@/components/admin/bulk/BulkConfirmationModal';
 
 const Leads = () => {
+  // Track performance
+  usePerformanceMonitor('Leads Page');
+  
   const { toast } = useToast();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -87,6 +93,11 @@ const Leads = () => {
   const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
+  
+  // Search with debouncing
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm, 300);
+  
   // Bulk operations state
   const bulkSelection = useBulkSelection(leads);
   const hasLoadedOnce = useRef(false);
@@ -231,6 +242,33 @@ const Leads = () => {
     }
 
     setLoading(false);
+  };
+
+  // Optimistic update for lead status changes
+  const updateLeadStatus = useOptimisticMutation({
+    mutationFn: async ({ id, status }: { id: string; status: any }) => {
+      const { error } = await supabase
+        .from('leads')
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    queryKey: ['leads'],
+    updateFn: (oldData: any[], { id, status }: { id: string; status: any }) => {
+      if (!oldData) return oldData;
+      return oldData.map(lead => 
+        lead.id === id ? { ...lead, status } : lead
+      );
+    },
+    successMessage: 'Lead status updated',
+    errorMessage: 'Failed to update lead status',
+  });
+
+  const handleQuickStatusChange = (leadId: string, newStatus: any) => {
+    updateLeadStatus.mutate({ id: leadId, status: newStatus });
+    // Refresh after mutation completes
+    setTimeout(loadLeads, 500);
   };
 
   const loadUsers = async () => {

@@ -11,6 +11,7 @@ import { PhoneInput } from '@/components/lead-form/PhoneInput';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useFormSettings } from '@/hooks/useFormSettings';
+import { useFormAutoSave } from '@/hooks/useFormAutoSave';
 import { CRUDLogger } from '@/lib/crudLogger';
 import { EmailService } from '@/services/emailService';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -50,6 +51,24 @@ export const LeadForm = ({ isOpen, onClose, onSuccess, lead, users }: LeadFormPr
     status: lead?.status || 'new',
     source: lead?.source || 'manual',
     assigned_to: lead?.assigned_to ?? null
+  });
+
+  // Auto-save for editing existing leads
+  useFormAutoSave({
+    data: formData,
+    onSave: async (data) => {
+      // Only save if editing existing lead
+      if (!lead?.id) return;
+      
+      const { error } = await supabase
+        .from('leads')
+        .update(data)
+        .eq('id', lead.id);
+      
+      if (error) throw error;
+    },
+    delay: 1000,
+    storageKey: lead?.id ? `lead-draft-${lead.id}` : undefined,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
