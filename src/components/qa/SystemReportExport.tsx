@@ -14,12 +14,12 @@ import {
 export const SystemReportExport = () => {
   const [generating, setGenerating] = useState(false);
 
-  const handleExport = async (format: 'pdf' | 'csv') => {
+  const handleExport = async (exportFormat: 'pdf' | 'csv') => {
     setGenerating(true);
     try {
       const report = await generateSystemReport();
       
-      if (format === 'pdf') {
+      if (exportFormat === 'pdf') {
         exportReportAsPDF(report);
         toast.success('PDF report generated');
       } else {
@@ -28,7 +28,8 @@ export const SystemReportExport = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        const timestamp = format(new Date(), 'yyyy-MM-dd');
+        const now = new Date();
+        const timestamp = format(now, 'yyyy-MM-dd');
         a.download = `system-report-${timestamp}.csv`;
         a.click();
         URL.revokeObjectURL(url);
