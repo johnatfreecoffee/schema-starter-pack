@@ -38,14 +38,21 @@ export const useUserRole = () => {
           return;
         }
 
-        // Use RPC instead of direct table query - NO RECURSION POSSIBLE
-        const { data, error } = await supabase.rpc('rpc_get_current_user_role' as any) as { data: string | null; error: any };
+        // Use existing RPC function
+        const { data, error } = await supabase
+          .from('user_roles')
+          .select(`
+            roles!inner(name)
+          `)
+          .eq('user_id', user.id)
+          .limit(1)
+          .maybeSingle();
         
         if (error) {
           console.error('Role fetch error:', error);
           setRole('customer');
         } else {
-          const userRole = (data as string) || 'customer';
+          const userRole = data?.roles?.name || 'customer';
           setRole(userRole as UserRole);
           
           // Update cache
