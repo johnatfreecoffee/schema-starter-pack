@@ -131,14 +131,20 @@ serve(async (req) => {
     }
 
     if (!session && action === 'start') {
-      // Create new session
-      const { data: companyData } = await supabase
+      // Create new session - get first accessible company_settings row
+      const { data: companyData, error: companyError } = await supabase
         .from('company_settings')
         .select('id')
-        .single();
+        .limit(1)
+        .maybeSingle();
+      
+      if (companyError) {
+        console.error('Error fetching company settings:', companyError);
+        throw new Error('Failed to access company settings');
+      }
       
       if (!companyData) {
-        throw new Error('Company settings not found');
+        throw new Error('No company settings found. Please ensure your company profile is set up.');
       }
 
       const { data: newSession } = await supabase
