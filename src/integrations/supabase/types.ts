@@ -3580,6 +3580,14 @@ export type Database = {
         Args: { user_email: string }
         Returns: boolean
       }
+      user_has_any_role: {
+        Args: { _role_names: string[]; _user_id: string }
+        Returns: boolean
+      }
+      user_has_role_name: {
+        Args: { _role_name: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       account_status: "active" | "inactive" | "archived"
