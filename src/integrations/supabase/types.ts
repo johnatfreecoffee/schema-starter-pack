@@ -1533,15 +1533,7 @@ export type Database = {
           related_to_type?: Database["public"]["Enums"]["related_entity_type"]
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "notes_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       notification_settings: {
         Row: {
