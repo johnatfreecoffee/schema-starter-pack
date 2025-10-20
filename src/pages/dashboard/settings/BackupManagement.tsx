@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SettingsTabs from '@/components/layout/SettingsTabs';
 import BackupTab from '@/components/admin/backup/BackupTab';
 import RestoreTab from '@/components/admin/backup/RestoreTab';
+import ScheduleTab from '@/components/admin/backup/ScheduleTab';
 import ArchiveTab from '@/components/admin/backup/ArchiveTab';
 import DataHealthTab from '@/components/admin/backup/DataHealthTab';
 import StorageTab from '@/components/admin/backup/StorageTab';
@@ -20,9 +21,10 @@ const BackupManagement = () => {
         </div>
 
         <Tabs defaultValue="backups" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="backups">Backups</TabsTrigger>
             <TabsTrigger value="restore">Restore</TabsTrigger>
+            <TabsTrigger value="schedule">Schedule</TabsTrigger>
             <TabsTrigger value="archive">Archive</TabsTrigger>
             <TabsTrigger value="health">Data Health</TabsTrigger>
             <TabsTrigger value="storage">Storage</TabsTrigger>
@@ -35,6 +37,10 @@ const BackupManagement = () => {
 
           <TabsContent value="restore">
             <RestoreTab />
+          </TabsContent>
+
+          <TabsContent value="schedule">
+            <ScheduleTab />
           </TabsContent>
 
           <TabsContent value="archive">

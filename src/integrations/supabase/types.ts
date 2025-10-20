@@ -419,6 +419,51 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_schedules: {
+        Row: {
+          backup_type: string | null
+          created_at: string | null
+          email_notifications: boolean | null
+          enabled: boolean | null
+          frequency: string
+          id: string
+          last_run_at: string | null
+          next_run_at: string | null
+          notification_email: string | null
+          retention_count: number | null
+          time_of_day: string
+          updated_at: string | null
+        }
+        Insert: {
+          backup_type?: string | null
+          created_at?: string | null
+          email_notifications?: boolean | null
+          enabled?: boolean | null
+          frequency: string
+          id?: string
+          last_run_at?: string | null
+          next_run_at?: string | null
+          notification_email?: string | null
+          retention_count?: number | null
+          time_of_day?: string
+          updated_at?: string | null
+        }
+        Update: {
+          backup_type?: string | null
+          created_at?: string | null
+          email_notifications?: boolean | null
+          enabled?: boolean | null
+          frequency?: string
+          id?: string
+          last_run_at?: string | null
+          next_run_at?: string | null
+          notification_email?: string | null
+          retention_count?: number | null
+          time_of_day?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       backups: {
         Row: {
           backup_type: string
