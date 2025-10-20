@@ -230,7 +230,7 @@ const ContactDetail = () => {
           </TabsContent>
 
           <TabsContent value="notes">
-            <NotesSection entityType="account" entityId={id!} />
+            <NotesSection entityType="contact" entityId={id!} />
           </TabsContent>
 
           <TabsContent value="activity">

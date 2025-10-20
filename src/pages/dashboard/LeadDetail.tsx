@@ -490,7 +490,7 @@ const LeadDetail = () => {
                 <CardTitle>Recent Activity</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">Activity log coming soon</p>
+                <ActivityFeed entityType="lead" entityId={id!} limit={10} />
               </CardContent>
             </Card>
 
