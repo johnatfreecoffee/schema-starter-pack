@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { Calendar, dateFnsLocalizer, View } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay, addMonths, subMonths, startOfMonth, endOfMonth, addDays } from 'date-fns';
 import { enUS } from 'date-fns/locale';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
@@ -200,8 +199,7 @@ const Calendars = () => {
   };
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
+    <div className="container mx-auto px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
         <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between mb-6 gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 flex-wrap min-w-0">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold truncate">Calendar</h1>
@@ -418,34 +416,33 @@ const Calendars = () => {
             </div>
           </div>
         )}
+
+        {isMobile && (
+          <MobileActionButton
+            onClick={() => { setDefaultDate(undefined); setEditingEvent(null); setShowEventModal(true); }}
+            icon={<Plus className="h-6 w-6" />}
+            label="Create Event"
+          />
+        )}
+
+        <EventModal
+          open={showEventModal}
+          onClose={() => setShowEventModal(false)}
+          onSuccess={fetchEvents}
+          event={editingEvent}
+          defaultDate={defaultDate}
+        />
+
+        {selectedEvent && (
+          <EventDetail
+            open={showDetailModal}
+            onClose={() => setShowDetailModal(false)}
+            event={selectedEvent}
+            onEdit={handleEditEvent}
+            onDelete={handleDeleteEvent}
+          />
+        )}
       </div>
-
-      {isMobile && (
-        <MobileActionButton
-          onClick={() => { setDefaultDate(undefined); setEditingEvent(null); setShowEventModal(true); }}
-          icon={<Plus className="h-6 w-6" />}
-          label="Create Event"
-        />
-      )}
-
-      <EventModal
-        open={showEventModal}
-        onClose={() => setShowEventModal(false)}
-        onSuccess={fetchEvents}
-        event={editingEvent}
-        defaultDate={defaultDate}
-      />
-
-      {selectedEvent && (
-        <EventDetail
-          open={showDetailModal}
-          onClose={() => setShowDetailModal(false)}
-          event={selectedEvent}
-          onEdit={handleEditEvent}
-          onDelete={handleDeleteEvent}
-        />
-      )}
-    </AdminLayout>
   );
 };
 

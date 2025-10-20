@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -398,8 +397,7 @@ const Appointments = () => {
   };
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
@@ -583,7 +581,6 @@ const Appointments = () => {
           <BulkUndoToast count={undoState.itemIds.length} onUndo={performUndo} />
         )}
       </div>
-    </AdminLayout>
   );
 };
 

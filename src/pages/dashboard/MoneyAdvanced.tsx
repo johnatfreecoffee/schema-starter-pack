@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -153,8 +152,7 @@ const MoneyAdvanced = () => {
   const currentData = activeTab === 'quotes' ? quotes : invoices;
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-bold">Money Management</h1>
           <div className="flex gap-2">
@@ -317,7 +315,6 @@ const MoneyAdvanced = () => {
           )}
         </FilterPanel>
       </div>
-    </AdminLayout>
   );
 };
 
