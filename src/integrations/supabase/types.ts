@@ -2647,6 +2647,9 @@ export type Database = {
       }
       service_areas: {
         Row: {
+          archived: boolean | null
+          archived_at: string | null
+          archived_by: string | null
           area_name: string | null
           city_name: string
           city_slug: string
@@ -2660,6 +2663,9 @@ export type Database = {
           zip_code: string | null
         }
         Insert: {
+          archived?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           area_name?: string | null
           city_name: string
           city_slug: string
@@ -2673,6 +2679,9 @@ export type Database = {
           zip_code?: string | null
         }
         Update: {
+          archived?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           area_name?: string | null
           city_name?: string
           city_slug?: string
@@ -2689,6 +2698,9 @@ export type Database = {
       }
       services: {
         Row: {
+          archived: boolean | null
+          archived_at: string | null
+          archived_by: string | null
           category: Database["public"]["Enums"]["service_category"]
           created_at: string
           full_description: string | null
@@ -2701,6 +2713,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          archived?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           category: Database["public"]["Enums"]["service_category"]
           created_at?: string
           full_description?: string | null
@@ -2713,6 +2728,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          archived?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
           category?: Database["public"]["Enums"]["service_category"]
           created_at?: string
           full_description?: string | null

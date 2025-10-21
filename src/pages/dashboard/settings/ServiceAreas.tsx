@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { cacheInvalidation } from '@/lib/cacheInvalidation';
 import { useState } from 'react';
-import { Eye, Pencil, Trash2, Plus, LayoutGrid, List, Settings, FileText } from 'lucide-react';
+import { Eye, Pencil, Archive, Plus, LayoutGrid, List, Settings, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import ServiceAreaForm from '@/components/admin/settings/service-areas/ServiceAreaForm';
@@ -20,17 +20,18 @@ const ServiceAreas = () => {
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showArchived, setShowArchived] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPagesOpen, setIsPagesOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [selectedArea, setSelectedArea] = useState<any>(null);
   const queryClient = useQueryClient();
 
   const { data: serviceAreas, isLoading } = useQuery({
-    queryKey: ['service-areas'],
+    queryKey: ['service-areas', showArchived],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('service_areas')
         .select(`
           *,
@@ -39,9 +40,15 @@ const ServiceAreas = () => {
             count,
             is_active
           )
-        `)
-        .order('created_at', { ascending: false });
+        `);
       
+      if (!showArchived) {
+        query = query.eq('archived', false);
+      }
+      
+      query = query.order('created_at', { ascending: false });
+      
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
@@ -72,21 +79,27 @@ const ServiceAreas = () => {
     },
   });
 
-  const deleteMutation = useMutation({
+  const archiveMutation = useMutation({
     mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
       const { error } = await supabase
         .from('service_areas')
-        .delete()
+        .update({ 
+          archived: true, 
+          archived_at: new Date().toISOString(),
+          archived_by: user?.id 
+        })
         .eq('id', id);
       
       if (error) throw error;
       return id;
     },
-    onSuccess: async (deletedId) => {
-      await cacheInvalidation.invalidateServiceArea(deletedId);
+    onSuccess: async (archivedId) => {
+      await cacheInvalidation.invalidateServiceArea(archivedId);
       queryClient.invalidateQueries({ queryKey: ['service-areas'] });
-      toast({ title: 'Service area deleted successfully' });
-      setDeleteDialogOpen(false);
+      toast({ title: 'Service area archived successfully' });
+      setArchiveDialogOpen(false);
     },
   });
 
@@ -143,6 +156,14 @@ const ServiceAreas = () => {
             </SelectContent>
           </Select>
 
+          <Button
+            variant={showArchived ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setShowArchived(!showArchived)}
+          >
+            {showArchived ? 'Hide Archived' : 'Show Archived'}
+          </Button>
+
           <Input
             placeholder="Search areas..."
             value={searchQuery}
@@ -171,8 +192,11 @@ const ServiceAreas = () => {
               </TableHeader>
               <TableBody>
                 {filteredAreas?.map((area) => (
-                  <TableRow key={area.id}>
-                    <TableCell className="font-medium">{area.area_name || '-'}</TableCell>
+                  <TableRow key={area.id} className={area.archived ? 'opacity-50' : ''}>
+                    <TableCell className="font-medium">
+                      {area.area_name || '-'}
+                      {area.archived && <span className="ml-2 text-xs text-muted-foreground">(Archived)</span>}
+                    </TableCell>
                     <TableCell>{area.city_name}</TableCell>
                     <TableCell>{area.state}</TableCell>
                     <TableCell>{area.zip_code || '-'}</TableCell>
@@ -199,28 +223,32 @@ const ServiceAreas = () => {
                         >
                           <FileText className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => { setSelectedArea(area); setIsServicesOpen(true); }}
-                          title="Manage Services"
-                        >
-                          <Settings className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => { setSelectedArea(area); setIsFormOpen(true); }}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => { setSelectedArea(area); setDeleteDialogOpen(true); }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {!area.archived && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => { setSelectedArea(area); setIsServicesOpen(true); }}
+                              title="Manage Services"
+                            >
+                              <Settings className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => { setSelectedArea(area); setIsFormOpen(true); }}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => { setSelectedArea(area); setArchiveDialogOpen(true); }}
+                            >
+                              <Archive className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -231,10 +259,11 @@ const ServiceAreas = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredAreas?.map((area) => (
-              <div key={area.id} className="border rounded-lg p-4 hover:shadow-lg transition-shadow">
+              <div key={area.id} className={`border rounded-lg p-4 hover:shadow-lg transition-shadow ${area.archived ? 'opacity-50' : ''}`}>
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <h3 className="font-semibold text-lg">{area.area_name || area.city_name}</h3>
+                    {area.archived && <span className="text-xs text-muted-foreground">(Archived)</span>}
                     <p className="text-sm text-muted-foreground">{area.display_name}</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       {area.city_name}, {area.state} {area.zip_code}
@@ -253,15 +282,19 @@ const ServiceAreas = () => {
                   <Button variant="ghost" size="sm" onClick={() => { setSelectedArea(area); setIsPagesOpen(true); }} title="View Pages">
                     <FileText className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => { setSelectedArea(area); setIsServicesOpen(true); }} title="Manage Services">
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={() => { setSelectedArea(area); setIsFormOpen(true); }}>
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={() => { setSelectedArea(area); setDeleteDialogOpen(true); }}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {!area.archived && (
+                    <>
+                      <Button variant="ghost" size="sm" onClick={() => { setSelectedArea(area); setIsServicesOpen(true); }} title="Manage Services">
+                        <Settings className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => { setSelectedArea(area); setIsFormOpen(true); }}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => { setSelectedArea(area); setArchiveDialogOpen(true); }}>
+                        <Archive className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
@@ -301,18 +334,18 @@ const ServiceAreas = () => {
           </DialogContent>
         </Dialog>
 
-        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete Service Area</AlertDialogTitle>
+              <AlertDialogTitle>Archive Service Area</AlertDialogTitle>
               <AlertDialogDescription>
-                Delete "{selectedArea?.city_name}"? This will also delete all {selectedArea?.generated_pages?.[0]?.count || 0} generated pages and service configurations.
+                Archive "{selectedArea?.city_name}"? This will hide the service area and its {selectedArea?.generated_pages?.[0]?.count || 0} generated pages. You can restore it later by showing archived areas.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => selectedArea && deleteMutation.mutate(selectedArea.id)}>
-                Delete
+              <AlertDialogAction onClick={() => selectedArea && archiveMutation.mutate(selectedArea.id)}>
+                Archive
               </AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>

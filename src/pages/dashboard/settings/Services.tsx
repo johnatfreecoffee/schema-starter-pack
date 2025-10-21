@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { Eye, Pencil, Trash2, Plus, LayoutGrid, List } from 'lucide-react';
+import { Eye, Pencil, Archive, Plus, LayoutGrid, List } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import ServiceForm from '@/components/admin/settings/services/ServiceForm';
@@ -20,25 +20,32 @@ const ServicesSettings = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [showArchived, setShowArchived] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
   const queryClient = useQueryClient();
 
   const { data: services, isLoading } = useQuery({
-    queryKey: ['services'],
+    queryKey: ['services', showArchived],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('services')
         .select(`
           *,
           templates:template_id (name, template_type),
           generated_pages (count)
-        `)
-        .order('is_active', { ascending: false })
+        `);
+      
+      if (!showArchived) {
+        query = query.eq('archived', false);
+      }
+      
+      query = query.order('is_active', { ascending: false })
         .order('name', { ascending: true });
       
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
@@ -66,21 +73,27 @@ const ServicesSettings = () => {
     },
   });
 
-  const deleteMutation = useMutation({
+  const archiveMutation = useMutation({
     mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
       const { error } = await supabase
         .from('services')
-        .delete()
+        .update({ 
+          archived: true, 
+          archived_at: new Date().toISOString(),
+          archived_by: user?.id 
+        })
         .eq('id', id);
       
       if (error) throw error;
       return id;
     },
-    onSuccess: async (deletedServiceId) => {
-      await cacheInvalidation.invalidateService(deletedServiceId);
+    onSuccess: async (archivedServiceId) => {
+      await cacheInvalidation.invalidateService(archivedServiceId);
       queryClient.invalidateQueries({ queryKey: ['services'] });
-      toast({ title: 'Service deleted successfully' });
-      setDeleteDialogOpen(false);
+      toast({ title: 'Service archived successfully' });
+      setArchiveDialogOpen(false);
     },
   });
 
@@ -159,6 +172,14 @@ const ServicesSettings = () => {
             </SelectContent>
           </Select>
 
+          <Button
+            variant={showArchived ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setShowArchived(!showArchived)}
+          >
+            {showArchived ? 'Hide Archived' : 'Show Archived'}
+          </Button>
+
           <Input
             placeholder="Search services..."
             value={searchQuery}
@@ -185,8 +206,11 @@ const ServicesSettings = () => {
               </TableHeader>
               <TableBody>
                 {filteredServices?.map((service) => (
-                  <TableRow key={service.id} className={!service.is_active ? 'opacity-50' : ''}>
-                    <TableCell className="font-medium">{service.name}</TableCell>
+                  <TableRow key={service.id} className={!service.is_active || service.archived ? 'opacity-50' : ''}>
+                    <TableCell className="font-medium">
+                      {service.name}
+                      {service.archived && <span className="ml-2 text-xs text-muted-foreground">(Archived)</span>}
+                    </TableCell>
                     <TableCell>
                       <Badge className={getCategoryBadge(service.category)}>
                         {service.category}
@@ -217,20 +241,24 @@ const ServicesSettings = () => {
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => { setSelectedService(service); setIsFormOpen(true); }}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => { setSelectedService(service); setDeleteDialogOpen(true); }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {!service.archived && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => { setSelectedService(service); setIsFormOpen(true); }}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => { setSelectedService(service); setArchiveDialogOpen(true); }}
+                            >
+                              <Archive className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -241,9 +269,12 @@ const ServicesSettings = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredServices?.map((service) => (
-              <div key={service.id} className={`border rounded-lg p-4 hover:shadow-lg transition-shadow ${!service.is_active ? 'opacity-50' : ''}`}>
+              <div key={service.id} className={`border rounded-lg p-4 hover:shadow-lg transition-shadow ${!service.is_active || service.archived ? 'opacity-50' : ''}`}>
                 <div className="flex justify-between items-start mb-3">
-                  <h3 className="font-semibold text-lg">{service.name}</h3>
+                  <div>
+                    <h3 className="font-semibold text-lg">{service.name}</h3>
+                    {service.archived && <span className="text-xs text-muted-foreground">(Archived)</span>}
+                  </div>
                   <Badge className={getCategoryBadge(service.category)}>
                     {service.category}
                   </Badge>
@@ -265,12 +296,16 @@ const ServicesSettings = () => {
                   <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsPreviewOpen(true); }}>
                     <Eye className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsFormOpen(true); }}>
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setDeleteDialogOpen(true); }}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {!service.archived && (
+                    <>
+                      <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsFormOpen(true); }}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setArchiveDialogOpen(true); }}>
+                        <Archive className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
@@ -301,18 +336,18 @@ const ServicesSettings = () => {
           </DialogContent>
         </Dialog>
 
-        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete Service</AlertDialogTitle>
+              <AlertDialogTitle>Archive Service</AlertDialogTitle>
               <AlertDialogDescription>
-                Delete "{selectedService?.name}"? This will also delete all {selectedService?.generated_pages?.[0]?.count || 0} generated pages.
+                Archive "{selectedService?.name}"? This will hide the service and its {selectedService?.generated_pages?.[0]?.count || 0} generated pages. You can restore it later by showing archived services.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={() => selectedService && deleteMutation.mutate(selectedService.id)}>
-                Delete
+              <AlertDialogAction onClick={() => selectedService && archiveMutation.mutate(selectedService.id)}>
+                Archive
               </AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
