@@ -96,6 +96,11 @@ const Footer = () => {
               <div className="flex gap-3 mt-4">
                 {(() => {
                   const seen = new Set<string>();
+                  const useStandard = (siteSettings as any)?.use_standard_social_logos ?? true;
+                  const style = (siteSettings as any)?.social_icon_style || 'colored';
+                  const size = (siteSettings as any)?.social_icon_size || 24;
+                  const border = (siteSettings as any)?.social_border_style || 'circle';
+
                   return socialMedia.map((item: any) => {
                     let platform = (item.social_media_outlet_types?.name || '').toLowerCase();
                     const detected = detectPlatform(item.link);
@@ -113,22 +118,28 @@ const Footer = () => {
 
                     const label = item.custom_name || (platform ? platform.charAt(0).toUpperCase() + platform.slice(1) : 'Social');
 
-                    return (
-                      <a 
-                        key={item.id} 
-                        href={item.link} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="hover:opacity-70 transition-opacity"
-                        aria-label={label}
-                      >
-                        <img 
-                          src={resolvedIcon} 
-                          alt={label}
-                          className="h-6 w-6"
-                        />
-                      </a>
-                    );
+                    if (useStandard) {
+                      return (
+                        <a 
+                          key={item.id} 
+                          href={item.link} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="hover:opacity-70 transition-opacity"
+                          aria-label={label}
+                        >
+                          <img 
+                            src={resolvedIcon} 
+                            alt={label}
+                            style={{ width: `${size}px`, height: `${size}px` }}
+                            className="object-contain"
+                          />
+                        </a>
+                      );
+                    }
+
+                    // Styled icons mode - use SVG icons with color/border styling
+                    return null; // Styled mode not fully implemented, fall back to standard
                   });
                 })()}
               </div>

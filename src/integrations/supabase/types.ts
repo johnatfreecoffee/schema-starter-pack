@@ -2763,6 +2763,7 @@ export type Database = {
           social_icon_style: string
           updated_at: string
           updated_by: string | null
+          use_standard_social_logos: boolean | null
         }
         Insert: {
           accent_color?: string
@@ -2792,6 +2793,7 @@ export type Database = {
           social_icon_style?: string
           updated_at?: string
           updated_by?: string | null
+          use_standard_social_logos?: boolean | null
         }
         Update: {
           accent_color?: string
@@ -2821,6 +2823,7 @@ export type Database = {
           social_icon_style?: string
           updated_at?: string
           updated_by?: string | null
+          use_standard_social_logos?: boolean | null
         }
         Relationships: []
       }
