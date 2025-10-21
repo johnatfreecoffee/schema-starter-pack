@@ -233,7 +233,8 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
               <LazyImage 
                 src={company.logo_url} 
                 alt={company.business_name} 
-                className="h-8 w-auto"
+                style={{ height: `${siteSettings?.header_logo_size || 32}px` }}
+                className="w-auto"
               />
             ) : (
               <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
@@ -344,7 +345,8 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
                   <LazyImage 
                     src={company.logo_url} 
                     alt={company.business_name} 
-                    className="h-8 w-auto"
+                    style={{ height: `${siteSettings?.header_logo_size || 32}px` }}
+                    className="w-auto"
                   />
                 ) : (
                   <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">

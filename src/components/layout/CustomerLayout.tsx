@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { LazyImage } from '@/components/ui/lazy-image';
 import { cn } from '@/lib/utils';
 
 interface CustomerLayoutProps {
@@ -32,6 +34,7 @@ const CustomerLayout = ({ children }: CustomerLayoutProps = {}) => {
   const [accountName, setAccountName] = useState<string>('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { data: settings } = useCompanySettings();
+  const { data: siteSettings } = useSiteSettings();
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -160,10 +163,11 @@ const CustomerLayout = ({ children }: CustomerLayoutProps = {}) => {
               
               <Link to="/customer/dashboard" className="flex items-center gap-3">
                 {settings?.logo_url && (
-                  <img 
+                  <LazyImage 
                     src={settings.logo_url} 
                     alt="Logo" 
-                    className="h-8 w-8 object-contain"
+                    style={{ height: `${siteSettings?.header_logo_size || 32}px` }}
+                    className="w-auto"
                   />
                 )}
                 <div>
