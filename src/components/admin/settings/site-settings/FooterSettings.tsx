@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
 import { cacheInvalidation } from '@/lib/cacheInvalidation';
 import ColorPicker from './ColorPicker';
@@ -23,6 +24,8 @@ const FooterSettings = () => {
   const [iconSize, setIconSize] = useState(24);
   const [isSaving, setIsSaving] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
+  const isInitialLoadRef = useRef(true);
+  const userInteractingRef = useRef(false);
 
   const { data: settings } = useQuery({
     queryKey: ['site-settings'],
@@ -51,7 +54,7 @@ const FooterSettings = () => {
   });
 
   useEffect(() => {
-    if (settings) {
+    if (settings && (isInitialLoadRef.current || !userInteractingRef.current)) {
       setLogoSize(settings.footer_logo_size);
       setBgColor(settings.footer_bg_color);
       setTextColor(settings.footer_text_color);
@@ -66,6 +69,8 @@ const FooterSettings = () => {
       document.documentElement.style.setProperty('--footer-bg', settings.footer_bg_color);
       document.documentElement.style.setProperty('--footer-logo-size', `${settings.footer_logo_size}px`);
       document.documentElement.style.setProperty('--footer-text', settings.footer_text_color);
+      
+      isInitialLoadRef.current = false;
     }
   }, [settings]);
 
@@ -106,7 +111,9 @@ const FooterSettings = () => {
       clearTimeout(saveTimeoutRef.current);
     }
     
+    userInteractingRef.current = true;
     setIsSaving(true);
+    
     saveTimeoutRef.current = setTimeout(() => {
       updateMutation.mutate({
         footer_logo_size: logoSize,
@@ -119,6 +126,11 @@ const FooterSettings = () => {
         social_border_style: borderStyle,
         social_icon_size: iconSize,
       });
+      
+      // Reset interaction flag after save completes
+      setTimeout(() => {
+        userInteractingRef.current = false;
+      }, 500);
     }, 1000);
   }, [logoSize, bgColor, textColor, showSocial, useStandardLogos, iconStyle, customColor, borderStyle, iconSize, updateMutation]);
 
@@ -199,95 +211,55 @@ const FooterSettings = () => {
               <>
                 <div>
                   <Label>Icon Style</Label>
-                  <div className="space-y-2 mt-2">
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        value="colored"
-                        checked={iconStyle === 'colored'}
-                        onChange={(e) => setIconStyle(e.target.value)}
+                  <RadioGroup value={iconStyle} onValueChange={setIconStyle} className="space-y-2 mt-2">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="colored" id="colored" />
+                      <Label htmlFor="colored" className="font-normal cursor-pointer">Colored icons (platform brand colors)</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="black" id="black" />
+                      <Label htmlFor="black" className="font-normal cursor-pointer">Black icons</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="white" id="white" />
+                      <Label htmlFor="white" className="font-normal cursor-pointer">White icons</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="custom" id="custom" />
+                      <Label htmlFor="custom" className="font-normal cursor-pointer">Custom color</Label>
+                    </div>
+                  </RadioGroup>
+                  {iconStyle === 'custom' && (
+                    <div className="ml-6 mt-2">
+                      <ColorPicker
+                        value={customColor}
+                        onChange={setCustomColor}
+                        label="Custom Icon Color"
                       />
-                      <span>Colored icons (platform brand colors)</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        value="black"
-                        checked={iconStyle === 'black'}
-                        onChange={(e) => setIconStyle(e.target.value)}
-                      />
-                      <span>Black icons</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        value="white"
-                        checked={iconStyle === 'white'}
-                        onChange={(e) => setIconStyle(e.target.value)}
-                      />
-                      <span>White icons</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        value="custom"
-                        checked={iconStyle === 'custom'}
-                        onChange={(e) => setIconStyle(e.target.value)}
-                      />
-                      <span>Custom color</span>
-                    </label>
-                    {iconStyle === 'custom' && (
-                      <div className="ml-6">
-                        <ColorPicker
-                          value={customColor}
-                          onChange={setCustomColor}
-                          label="Custom Icon Color"
-                        />
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
 
                 <div>
                   <Label>Border Style</Label>
-                  <div className="space-y-2 mt-2">
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        value="none"
-                        checked={borderStyle === 'none'}
-                        onChange={(e) => setBorderStyle(e.target.value)}
-                      />
-                      <span>No border</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        value="circle"
-                        checked={borderStyle === 'circle'}
-                        onChange={(e) => setBorderStyle(e.target.value)}
-                      />
-                      <span>Circle</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        value="rounded"
-                        checked={borderStyle === 'rounded'}
-                        onChange={(e) => setBorderStyle(e.target.value)}
-                      />
-                      <span>Rounded</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        value="square"
-                        checked={borderStyle === 'square'}
-                        onChange={(e) => setBorderStyle(e.target.value)}
-                      />
-                      <span>Square</span>
-                    </label>
-                  </div>
+                  <RadioGroup value={borderStyle} onValueChange={setBorderStyle} className="space-y-2 mt-2">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="none" id="none" />
+                      <Label htmlFor="none" className="font-normal cursor-pointer">No border</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="circle" id="circle" />
+                      <Label htmlFor="circle" className="font-normal cursor-pointer">Circle</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="rounded" id="rounded" />
+                      <Label htmlFor="rounded" className="font-normal cursor-pointer">Rounded</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="square" id="square" />
+                      <Label htmlFor="square" className="font-normal cursor-pointer">Square</Label>
+                    </div>
+                  </RadioGroup>
                 </div>
 
                 <div>
