@@ -359,7 +359,7 @@ const CompanySettings = () => {
             <TabsTrigger value="contact">Contact</TabsTrigger>
             <TabsTrigger value="business">Business Details</TabsTrigger>
             <TabsTrigger value="social">Social Media</TabsTrigger>
-            <TabsTrigger value="documents">Documents</TabsTrigger>
+            <TabsTrigger value="documents">Money Doc Settings</TabsTrigger>
           </TabsList>
 
           {/* Basic Information Tab */}
