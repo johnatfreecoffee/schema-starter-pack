@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -31,6 +32,8 @@ export const SocialMediaManager = () => {
   const [customName, setCustomName] = useState('');
   const [handle, setHandle] = useState('');
   const [link, setLink] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   // Fetch outlet types
@@ -93,11 +96,24 @@ export const SocialMediaManager = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['company-social-media'] });
       toast.success('Social media link removed');
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
     },
     onError: (error) => {
       toast.error(`Failed to remove social media: ${error.message}`);
     },
   });
+
+  const handleDeleteClick = (id: string) => {
+    setItemToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (itemToDelete) {
+      deleteMutation.mutate(itemToDelete);
+    }
+  };
 
   const resetForm = () => {
     setSelectedOutlet('');
@@ -230,7 +246,7 @@ export const SocialMediaManager = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => deleteMutation.mutate(item.id)}
+                  onClick={() => handleDeleteClick(item.id)}
                   disabled={deleteMutation.isPending}
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
@@ -256,6 +272,23 @@ export const SocialMediaManager = () => {
           ))}
         </div>
       )}
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this social media link. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} disabled={deleteMutation.isPending}>
+              {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
