@@ -37,7 +37,6 @@ const ServiceAreas = () => {
           *,
           generated_pages (count),
           service_area_services (
-            count,
             is_active
           )
         `);
