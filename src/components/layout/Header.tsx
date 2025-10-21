@@ -84,9 +84,12 @@ const Header = ({ session }: HeaderProps) => {
 
             <div className="flex items-center gap-2 md:gap-4">
               {company?.phone && (
-                <span className="hidden lg:inline text-sm font-medium">
+                <a 
+                  href={`tel:${company.phone.replace(/\D/g, '')}`}
+                  className="hidden lg:inline text-sm font-medium hover:text-primary transition-colors"
+                >
                   {formatPhoneNumber(company.phone)}
-                </span>
+                </a>
               )}
               
               {session ? (

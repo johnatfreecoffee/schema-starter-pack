@@ -10,6 +10,14 @@ const Footer = () => {
   const { data: siteSettings } = useSiteSettings();
   const footerLogoSize = siteSettings?.footer_logo_size || 32;
 
+  const formatPhoneNumber = (phone: string) => {
+    const cleaned = phone.replace(/\D/g, '');
+    if (cleaned.length === 10) {
+      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+    }
+    return phone;
+  };
+
   // Fetch social media links
   const { data: socialMedia = [] } = useQuery({
     queryKey: ['company-social-media-footer'],
@@ -88,12 +96,28 @@ const Footer = () => {
             {company?.description && <p className="text-sm opacity-80">{company.description}</p>}
             <div className="space-y-2 text-sm">
               {company?.address && <p>{company.address}</p>}
-              {company?.phone && <p>
-                  <span className="font-medium">Phone:</span> {company.phone}
-                </p>}
-              {company?.email && <p>
-                  <span className="font-medium">Email:</span> {company.email}
-                </p>}
+              {company?.phone && (
+                <p>
+                  <span className="font-medium">Phone:</span>{' '}
+                  <a 
+                    href={`tel:${company.phone.replace(/\D/g, '')}`}
+                    className="hover:text-primary transition-colors"
+                  >
+                    {formatPhoneNumber(company.phone)}
+                  </a>
+                </p>
+              )}
+              {company?.email && (
+                <p>
+                  <span className="font-medium">Email:</span>{' '}
+                  <a 
+                    href={`mailto:${company.email}`}
+                    className="hover:text-primary transition-colors"
+                  >
+                    {company.email}
+                  </a>
+                </p>
+              )}
             </div>
             
             {/* Social Media Links */}
