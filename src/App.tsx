@@ -109,6 +109,7 @@ const AppContent = () => {
             <Route path="settings/site-settings" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.SiteSettings /></Suspense>} />
             <Route path="settings/services" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Services /></Suspense>} />
             <Route path="settings/service-areas" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.ServiceAreas /></Suspense>} />
+            <Route path="settings/page-management" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.PageManagement /></Suspense>} />
             <Route path="settings/templates" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Templates /></Suspense>} />
             <Route path="settings/static-pages" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.StaticPages /></Suspense>} />
             <Route path="settings/form-fields" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.FormFields /></Suspense>} />

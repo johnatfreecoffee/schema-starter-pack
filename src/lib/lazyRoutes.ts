@@ -53,6 +53,7 @@ export const Security = lazy(() => import('@/pages/dashboard/settings/Security')
 export const Company = lazy(() => import('@/pages/dashboard/settings/Company'));
 export const Services = lazy(() => import('@/pages/dashboard/settings/Services'));
 export const ServiceAreas = lazy(() => import('@/pages/dashboard/settings/ServiceAreas'));
+export const PageManagement = lazy(() => import('@/pages/dashboard/settings/PageManagement'));
 export const SiteSettings = lazy(() => import('@/pages/dashboard/settings/SiteSettings'));
 export const StaticPages = lazy(() => import('@/pages/dashboard/settings/StaticPages'));
 export const EmailTemplates = lazy(() => import('@/pages/dashboard/settings/EmailTemplates'));

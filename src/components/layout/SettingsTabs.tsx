@@ -11,6 +11,7 @@ const SettingsTabs = () => {
     { value: 'site-settings', label: 'Site Settings' },
     { value: 'services', label: 'Services' },
     { value: 'service-areas', label: 'Service Areas' },
+    { value: 'page-management', label: 'Page Management' },
     { value: 'templates', label: 'Templates' },
     { value: 'static-pages', label: 'Static Pages' },
     { value: 'form-fields', label: 'Form Fields' },
