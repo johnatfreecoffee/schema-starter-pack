@@ -108,23 +108,22 @@ export const BusinessHoursEditor = ({ value, onChange }: BusinessHoursEditorProp
   };
 
   return (
-    <div className="space-y-3">
-      <Label>Business Hours</Label>
+    <div className="space-y-2">
       <div className="border rounded-lg divide-y">
         {DAYS.map(({ key, label }) => {
           const dayHours = hours[key];
           return (
-            <div key={key} className="p-4 flex flex-col sm:flex-row sm:items-center gap-4">
-              <div className="w-32 font-medium">{label}</div>
+            <div key={key} className="p-2 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+              <div className="w-28 font-medium text-sm">{label}</div>
               
-              <div className="flex items-center gap-3 flex-1">
+              <div className="flex items-center gap-2 flex-1">
                 <div className="flex items-center gap-2 flex-1">
                   <Select
                     value={dayHours.open}
                     onValueChange={(val) => updateDay(key, 'open', val)}
                     disabled={dayHours.closed}
                   >
-                    <SelectTrigger className="w-32">
+                    <SelectTrigger className="w-28 h-8 text-sm">
                       <SelectValue placeholder="Open" />
                     </SelectTrigger>
                     <SelectContent className="max-h-60">
@@ -136,14 +135,14 @@ export const BusinessHoursEditor = ({ value, onChange }: BusinessHoursEditorProp
                     </SelectContent>
                   </Select>
                   
-                  <span className="text-muted-foreground">to</span>
+                  <span className="text-muted-foreground text-xs">to</span>
                   
                   <Select
                     value={dayHours.close}
                     onValueChange={(val) => updateDay(key, 'close', val)}
                     disabled={dayHours.closed}
                   >
-                    <SelectTrigger className="w-32">
+                    <SelectTrigger className="w-28 h-8 text-sm">
                       <SelectValue placeholder="Close" />
                     </SelectTrigger>
                     <SelectContent className="max-h-60">
@@ -156,12 +155,12 @@ export const BusinessHoursEditor = ({ value, onChange }: BusinessHoursEditorProp
                   </Select>
                 </div>
                 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <Switch
                     checked={dayHours.closed}
                     onCheckedChange={(checked) => updateDay(key, 'closed', checked)}
                   />
-                  <Label className="text-sm text-muted-foreground cursor-pointer">
+                  <Label className="text-xs text-muted-foreground cursor-pointer">
                     Closed
                   </Label>
                 </div>

@@ -635,25 +635,6 @@ const CompanySettings = () => {
                 <CardDescription>Licenses, hours, and branding assets</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="license_numbers">License Number(s)</Label>
-                  <Textarea
-                    id="license_numbers"
-                    value={formData.license_numbers}
-                    onChange={(e) => handleFieldChange('license_numbers', e.target.value)}
-                    rows={3}
-                    placeholder="Enter business licenses (one per line)"
-                  />
-                  <p className="text-sm text-muted-foreground">Add any relevant business licenses or certifications</p>
-                </div>
-
-                <BusinessHoursEditor
-                  value={formData.business_hours}
-                  onChange={(value) => handleFieldChange('business_hours', value)}
-                />
-
-                <Separator />
-
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label>Main Logo</Label>
@@ -696,6 +677,30 @@ const CompanySettings = () => {
                       </p>
                     </div>
                   </div>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <Label>Business Hours</Label>
+                  <BusinessHoursEditor
+                    value={formData.business_hours}
+                    onChange={(value) => handleFieldChange('business_hours', value)}
+                  />
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <Label htmlFor="license_numbers">License Number(s)</Label>
+                  <Textarea
+                    id="license_numbers"
+                    value={formData.license_numbers}
+                    onChange={(e) => handleFieldChange('license_numbers', e.target.value)}
+                    rows={3}
+                    placeholder="Enter business licenses (one per line)"
+                  />
+                  <p className="text-sm text-muted-foreground">Add any relevant business licenses or certifications</p>
                 </div>
               </CardContent>
             </Card>
