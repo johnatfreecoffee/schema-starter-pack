@@ -61,12 +61,81 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         .select('business_name')
         .single();
 
+      // Create default template for the service
+      const { data: template, error: templateError } = await supabase
+        .from('templates')
+        .insert([{
+          name: `${values.name} Template`,
+          template_type: 'service' as const,
+          template_html: `
+<div class="service-page">
+  <section class="hero">
+    <h1>{{service_name}} in {{city_name}}</h1>
+    <p class="lead">Professional {{service_name}} services in {{city_name}}. {{company_name}} has been serving {{display_name}} with quality and reliability.</p>
+    <div class="cta-buttons">
+      <a href="tel:{{company_phone}}" class="btn btn-primary">Call {{company_phone}}</a>
+      <a href="/contact" class="btn btn-secondary">Get Free Quote</a>
+    </div>
+  </section>
+
+  <section class="service-details">
+    <h2>About Our {{service_name}} Service</h2>
+    <p>{{service_description}}</p>
+  </section>
+
+  <section class="local-info">
+    <h2>{{service_name}} in {{city_name}}</h2>
+    <p>{{local_description}}</p>
+    
+    {{#if local_benefits}}
+    <h3>Why Choose Us in {{city_name}}?</h3>
+    <ul class="benefits">
+      {{#each local_benefits}}
+      <li>{{this}}</li>
+      {{/each}}
+    </ul>
+    {{/if}}
+    
+    {{#if response_time}}
+    <div class="service-stats">
+      <p><strong>Average Response Time:</strong> {{response_time}}</p>
+      {{#if completion_time}}<p><strong>Typical Completion:</strong> {{completion_time}}</p>{{/if}}
+      {{#if customer_count}}<p><strong>Customers Served in {{city_name}}:</strong> {{customer_count}}+</p>{{/if}}
+    </div>
+    {{/if}}
+  </section>
+
+  {{#if service_starting_price}}
+  <section class="pricing">
+    <h2>{{service_name}} Pricing in {{city_name}}</h2>
+    {{#if pricing_notes}}<p>{{pricing_notes}}</p>{{/if}}
+    <p class="starting-price">Starting at {{service_starting_price}}</p>
+  </section>
+  {{/if}}
+
+  <section class="cta-bottom">
+    <h2>Ready to Get Started?</h2>
+    <p>Contact {{company_name}} today for professional {{service_name}} in {{city_name}}.</p>
+    <div class="contact-info">
+      <a href="tel:{{company_phone}}" class="phone-link">📞 {{company_phone}}</a>
+      <a href="mailto:{{company_email}}" class="email-link">✉️ {{company_email}}</a>
+    </div>
+  </section>
+</div>
+          `,
+        }])
+        .select()
+        .single();
+
+      if (templateError) throw templateError;
+
       const serviceData = {
         name: values.name,
         slug: values.slug,
         category: values.category,
         full_description: values.full_description,
         is_active: values.is_active,
+        template_id: template.id,
       };
 
       const { data: newService, error: serviceError } = await supabase
@@ -77,6 +146,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
 
       if (serviceError) throw serviceError;
 
+      // Fetch ALL active service areas
       const { data: serviceAreas, error: areasError } = await supabase
         .from('service_areas')
         .select('*')
@@ -84,29 +154,46 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
 
       if (areasError) throw areasError;
 
-      const generatedPages = serviceAreas.map(area => ({
-        service_id: newService.id,
-        service_area_id: area.id,
-        url_path: `/${area.city_slug}/${values.slug}`,
-        page_title: `${values.name} in ${area.city_name}, LA | ${companySettings?.business_name || 'Our Company'}`,
-        meta_description: values.full_description.substring(0, 160),
-        status: values.is_active,
-      }));
+      if (serviceAreas && serviceAreas.length > 0) {
+        // Create service_area_services junction entries for ALL areas
+        const junctionEntries = serviceAreas.map(area => ({
+          service_id: newService.id,
+          service_area_id: area.id,
+          is_active: true,
+        }));
 
-      const { error: pagesError } = await supabase
-        .from('generated_pages')
-        .insert(generatedPages);
+        const { error: junctionError } = await supabase
+          .from('service_area_services')
+          .insert(junctionEntries);
 
-      if (pagesError) throw pagesError;
+        if (junctionError) throw junctionError;
 
-      return { service: newService, pagesCount: generatedPages.length };
+        // Create generated_pages for ALL areas
+        const generatedPages = serviceAreas.map(area => ({
+          service_id: newService.id,
+          service_area_id: area.id,
+          url_path: `/${area.city_slug}/${values.slug}`,
+          page_title: `${values.name} in ${area.city_name} | ${companySettings?.business_name || 'Our Company'}`,
+          meta_description: values.full_description.substring(0, 160),
+          status: values.is_active,
+        }));
+
+        const { error: pagesError } = await supabase
+          .from('generated_pages')
+          .insert(generatedPages);
+
+        if (pagesError) throw pagesError;
+      }
+
+      return { service: newService, pagesCount: serviceAreas?.length || 0 };
     },
     onSuccess: async (data) => {
       await cacheInvalidation.invalidateService(data.service.id);
       queryClient.invalidateQueries({ queryKey: ['services'] });
+      queryClient.invalidateQueries({ queryKey: ['templates'] });
       toast({
         title: 'Service created!',
-        description: `${data.pagesCount} pages generated.`,
+        description: `Generated ${data.pagesCount} pages for all service areas.`,
       });
       onSuccess();
     },
