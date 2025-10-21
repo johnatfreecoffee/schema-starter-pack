@@ -227,7 +227,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
           borderBottomColor: siteSettings?.header_border_color || 'hsl(0, 0%, 89%)',
         }}
       >
-        <div className="flex items-center gap-2 w-full">
+        <div className="flex items-center justify-between w-full">
           {!desktopSidebarCollapsed ? (
             <>
               <Link to="/" className="flex items-center gap-2">
@@ -251,23 +251,23 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
                 variant="ghost"
                 size="icon"
                 onClick={() => setDesktopSidebarCollapsed(true)}
-                className="flex-shrink-0"
+                className="flex-shrink-0 h-8 w-8"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
             </>
           ) : (
-            <div className="relative w-full flex items-center justify-center">
+            <>
               {company?.icon_url && (
-                <Link to="/" className="flex items-center justify-center">
+                <Link to="/" className="flex items-center justify-center mx-auto">
                   <LazyImage 
                     src={company.icon_url} 
                     alt={company.business_name} 
                     style={{ 
-                      height: `${Math.min(siteSettings?.header_logo_size || 32, 40)}px`,
-                      width: `${Math.min(siteSettings?.header_logo_size || 32, 40)}px`,
-                      maxHeight: '40px',
-                      maxWidth: '40px'
+                      height: `${Math.min(siteSettings?.header_logo_size || 32, 32)}px`,
+                      width: `${Math.min(siteSettings?.header_logo_size || 32, 32)}px`,
+                      maxHeight: '32px',
+                      maxWidth: '32px'
                     }}
                     className="object-contain"
                   />
@@ -277,12 +277,12 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
                 variant="ghost"
                 size="icon"
                 onClick={() => setDesktopSidebarCollapsed(false)}
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0 z-10"
+                className="flex-shrink-0 h-8 w-8 ml-auto"
                 aria-label="Expand sidebar"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
-            </div>
+            </>
           )}
         </div>
       </div>
@@ -374,17 +374,6 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
               </Sheet>
             )}
 
-            {/* Desktop Sidebar Toggle (visible when collapsed) */}
-            {!isMobile && desktopSidebarCollapsed && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setDesktopSidebarCollapsed(false)}
-                className="flex-shrink-0"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            )}
 
             {/* Mobile Logo (shown when sidebar is hidden) */}
             {isMobile && (
