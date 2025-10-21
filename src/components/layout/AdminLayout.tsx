@@ -301,7 +301,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
               <div key={section.title} className="space-y-1">
                 <button
                   onClick={() => toggleSection(section.title)}
-                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-foreground uppercase tracking-wider rounded-lg bg-muted/50 hover:bg-muted transition-colors"
                 >
                   <span>{section.title}</span>
                   {expandedSections[section.title] ? (
@@ -325,7 +325,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
         <div key={section.title} className="space-y-1">
           <button
             onClick={() => toggleSection(section.title)}
-            className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+            className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-foreground uppercase tracking-wider rounded-lg bg-muted/50 hover:bg-muted transition-colors"
           >
             <span>{section.title}</span>
             {expandedSections[section.title] ? (
