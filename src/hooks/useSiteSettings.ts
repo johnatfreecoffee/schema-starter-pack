@@ -2,6 +2,60 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect } from 'react';
 
+// Convert hex color to HSL format for CSS variables
+function hexToHSL(hex: string): string {
+  // Remove # if present
+  hex = hex.replace('#', '');
+  
+  // Convert to RGB
+  const r = parseInt(hex.substring(0, 2), 16) / 255;
+  const g = parseInt(hex.substring(2, 4), 16) / 255;
+  const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0, s = 0, l = (max + min) / 2;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    
+    switch (max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+      case g: h = ((b - r) / d + 2) / 6; break;
+      case b: h = ((r - g) / d + 4) / 6; break;
+    }
+  }
+
+  h = Math.round(h * 360);
+  s = Math.round(s * 100);
+  l = Math.round(l * 100);
+
+  return `${h} ${s}% ${l}%`;
+}
+
+// Parse color to HSL format - handles both hex and hsl() formats
+function parseColorToHSL(color: string): string {
+  if (!color) return '221 83% 53%'; // Default blue
+  
+  // If it's already in HSL format (with or without hsl())
+  if (color.includes('hsl')) {
+    return color.replace('hsl(', '').replace(')', '').trim();
+  }
+  
+  // If it's hex format
+  if (color.startsWith('#')) {
+    return hexToHSL(color);
+  }
+  
+  // If it's already in the correct format (e.g., "221 83% 53%")
+  if (color.match(/^\d+\s+\d+%\s+\d+%$/)) {
+    return color;
+  }
+  
+  return '221 83% 53%'; // Default blue
+}
+
 export function useSiteSettings() {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['site-settings'],
@@ -58,15 +112,15 @@ export function useSiteSettings() {
         root.style.setProperty('--footer-text', settings.footer_text_color);
       }
       
-      // Apply theme colors
+      // Apply theme colors - convert to HSL format
       if (settings.primary_color) {
-        root.style.setProperty('--primary', settings.primary_color.replace('hsl(', '').replace(')', ''));
+        root.style.setProperty('--primary', parseColorToHSL(settings.primary_color));
       }
       if (settings.secondary_color) {
-        root.style.setProperty('--secondary', settings.secondary_color.replace('hsl(', '').replace(')', ''));
+        root.style.setProperty('--secondary', parseColorToHSL(settings.secondary_color));
       }
       if (settings.accent_color) {
-        root.style.setProperty('--accent', settings.accent_color.replace('hsl(', '').replace(')', ''));
+        root.style.setProperty('--accent', parseColorToHSL(settings.accent_color));
       }
       
       // Apply border radius
