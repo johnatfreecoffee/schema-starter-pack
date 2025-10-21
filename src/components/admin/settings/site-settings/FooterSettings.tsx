@@ -15,10 +15,6 @@ const FooterSettings = () => {
   const [bgColor, setBgColor] = useState('#1f2937');
   const [textColor, setTextColor] = useState('#ffffff');
   const [showSocial, setShowSocial] = useState(false);
-  const [iconStyle, setIconStyle] = useState('colored');
-  const [customColor, setCustomColor] = useState('#000000');
-  const [borderStyle, setBorderStyle] = useState('circle');
-  const [iconSize, setIconSize] = useState(32);
   const [isSaving, setIsSaving] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -54,10 +50,6 @@ const FooterSettings = () => {
       setBgColor(settings.footer_bg_color);
       setTextColor(settings.footer_text_color);
       setShowSocial(settings.show_social_links);
-      setIconStyle(settings.social_icon_style);
-      setCustomColor(settings.social_icon_custom_color || '#000000');
-      setBorderStyle(settings.social_border_style);
-      setIconSize(settings.social_icon_size);
       
       // Apply to CSS variables
       document.documentElement.style.setProperty('--footer-bg', settings.footer_bg_color);
@@ -110,19 +102,15 @@ const FooterSettings = () => {
         footer_bg_color: bgColor,
         footer_text_color: textColor,
         show_social_links: showSocial,
-        social_icon_style: iconStyle,
-        social_icon_custom_color: iconStyle === 'custom' ? customColor : null,
-        social_border_style: borderStyle,
-        social_icon_size: iconSize,
       });
     }, 1000);
-  }, [logoSize, bgColor, textColor, showSocial, iconStyle, customColor, borderStyle, iconSize, updateMutation]);
+  }, [logoSize, bgColor, textColor, showSocial, updateMutation]);
 
   useEffect(() => {
     if (settings && settings.id) {
       autoSave();
     }
-  }, [logoSize, bgColor, textColor, showSocial, iconStyle, customColor, borderStyle, iconSize]);
+  }, [logoSize, bgColor, textColor, showSocial]);
 
   return (
     <div className="space-y-6">
@@ -178,107 +166,6 @@ const FooterSettings = () => {
           <h3 className="font-semibold text-lg">Social Media Management</h3>
           
           <SocialMediaManager />
-
-          <div className="space-y-4 pt-4 border-t">
-            <h4 className="font-semibold">Icon Appearance</h4>
-            
-            <div>
-              <Label>Icon Style</Label>
-              <div className="space-y-2 mt-2">
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    value="colored"
-                    checked={iconStyle === 'colored'}
-                    onChange={(e) => setIconStyle(e.target.value)}
-                  />
-                  <span>Colored icons (platform brand colors)</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    value="black"
-                    checked={iconStyle === 'black'}
-                    onChange={(e) => setIconStyle(e.target.value)}
-                  />
-                  <span>Black icons</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    value="custom"
-                    checked={iconStyle === 'custom'}
-                    onChange={(e) => setIconStyle(e.target.value)}
-                  />
-                  <span>Custom color</span>
-                </label>
-                {iconStyle === 'custom' && (
-                  <div className="ml-6">
-                    <ColorPicker
-                      value={customColor}
-                      onChange={setCustomColor}
-                      label="Custom Icon Color"
-                    />
-                  </div>
-                )}
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    value="site_themed"
-                    checked={iconStyle === 'site_themed'}
-                    onChange={(e) => setIconStyle(e.target.value)}
-                  />
-                  <span>Site-themed color (uses primary color)</span>
-                </label>
-              </div>
-            </div>
-
-            <div>
-              <Label>Border Style</Label>
-              <div className="space-y-2 mt-2">
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    value="circle"
-                    checked={borderStyle === 'circle'}
-                    onChange={(e) => setBorderStyle(e.target.value)}
-                  />
-                  <span>Circle</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    value="rounded"
-                    checked={borderStyle === 'rounded'}
-                    onChange={(e) => setBorderStyle(e.target.value)}
-                  />
-                  <span>Rounded</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    value="square"
-                    checked={borderStyle === 'square'}
-                    onChange={(e) => setBorderStyle(e.target.value)}
-                  />
-                  <span>Square</span>
-                </label>
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="icon-size">Icon Size: {iconSize}px</Label>
-              <Slider
-                id="icon-size"
-                min={16}
-                max={48}
-                step={1}
-                value={[iconSize]}
-                onValueChange={([value]) => setIconSize(value)}
-                className="mt-2"
-              />
-            </div>
-          </div>
         </div>
       )}
     </div>

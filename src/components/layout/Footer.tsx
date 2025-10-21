@@ -37,51 +37,6 @@ const Footer = () => {
         return null;
     }
   };
-  const getIconStyle = () => {
-    const baseClasses = 'transition-colors';
-    const size = siteSettings?.social_icon_size || 24;
-    let borderClasses = '';
-    if (siteSettings?.social_border_style === 'circle') {
-      borderClasses = 'rounded-full';
-    } else if (siteSettings?.social_border_style === 'rounded') {
-      borderClasses = 'rounded-lg';
-    } else if (siteSettings?.social_border_style === 'square') {
-      borderClasses = 'rounded-none';
-    }
-    return {
-      baseClasses,
-      borderClasses,
-      size
-    };
-  };
-  const getIconColorClass = (platformName: string) => {
-    const style = siteSettings?.social_icon_style || 'colored';
-    if (style === 'black') {
-      return 'text-black hover:opacity-70';
-    } else if (style === 'custom') {
-      return `hover:opacity-70`;
-    } else if (style === 'site-themed') {
-      return 'text-primary hover:text-primary/80';
-    } else {
-      // colored
-      const colors: Record<string, string> = {
-        facebook: 'text-[#1877F2] hover:opacity-70',
-        instagram: 'text-[#E4405F] hover:opacity-70',
-        twitter: 'text-[#1DA1F2] hover:opacity-70',
-        x: 'text-[#1DA1F2] hover:opacity-70',
-        linkedin: 'text-[#0A66C2] hover:opacity-70'
-      };
-      return colors[platformName.toLowerCase()] || 'text-foreground hover:text-primary';
-    }
-  };
-
-  const getCustomColorStyle = (platformName: string) => {
-    const style = siteSettings?.social_icon_style || 'colored';
-    if (style === 'custom') {
-      return { color: (siteSettings as any)?.social_icon_custom_color || '#000000' };
-    }
-    return {};
-  };
   return <footer className="border-t mt-auto" style={{
     backgroundColor: siteSettings?.footer_bg_color || 'hsl(0, 0%, 96%)',
     color: siteSettings?.footer_text_color || 'hsl(0, 0%, 20%)'
@@ -116,21 +71,16 @@ const Footer = () => {
                   const Icon = getSocialIcon(platformName);
                   if (!Icon) return null;
                   
-                  const { baseClasses, borderClasses, size } = getIconStyle();
-                  const colorClass = getIconColorClass(platformName);
-                  const customStyle = getCustomColorStyle(platformName);
-                  
                   return (
                     <a 
                       key={item.id} 
                       href={item.link} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className={`${baseClasses} ${borderClasses} ${colorClass} p-2 border border-current/20`}
-                      style={customStyle}
+                      className="text-foreground hover:text-primary transition-colors p-2"
                       aria-label={item.custom_name || platformName}
                     >
-                      <Icon size={size} />
+                      <Icon size={24} />
                     </a>
                   );
                 })}
