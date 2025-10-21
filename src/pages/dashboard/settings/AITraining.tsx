@@ -97,18 +97,34 @@ const AITraining = () => {
   const saveMutation = useMutation({
     mutationFn: async (data: AITrainingData) => {
       const { data: session } = await supabase.auth.getSession();
-      const { data: result, error } = await supabase
-        .from('ai_training')
-        .update({
-          ...data,
-          updated_by: session.session?.user.id,
-        })
-        .eq('id', aiTrainingData?.id)
-        .select()
-        .single();
+      
+      // If we have an ID, update. Otherwise, insert.
+      if (aiTrainingData?.id) {
+        const { data: result, error } = await supabase
+          .from('ai_training')
+          .update({
+            ...data,
+            updated_by: session.session?.user.id,
+          })
+          .eq('id', aiTrainingData.id)
+          .select()
+          .single();
 
-      if (error) throw error;
-      return result;
+        if (error) throw error;
+        return result;
+      } else {
+        const { data: result, error } = await supabase
+          .from('ai_training')
+          .insert({
+            ...data,
+            updated_by: session.session?.user.id,
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        return result;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ai-training'] });
