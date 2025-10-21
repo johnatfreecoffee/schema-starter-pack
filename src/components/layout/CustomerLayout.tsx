@@ -166,8 +166,11 @@ const CustomerLayout = ({ children }: CustomerLayoutProps = {}) => {
                   <LazyImage 
                     src={settings.logo_url} 
                     alt="Logo" 
-                    style={{ height: `${siteSettings?.header_logo_size || 32}px` }}
-                    className="w-auto"
+                    style={{ 
+                      height: `${Math.min(siteSettings?.header_logo_size || 32, 48)}px`,
+                      maxHeight: '48px'
+                    }}
+                    className="w-auto object-contain"
                   />
                 )}
                 <div>

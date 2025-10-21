@@ -55,8 +55,11 @@ const Header = ({ session }: HeaderProps) => {
                   <LazyImage 
                     src={company.logo_url} 
                     alt={company.business_name} 
-                    style={{ height: `${logoSize}px` }}
-                    className="w-auto"
+                    style={{ 
+                      height: `${Math.min(logoSize, 56)}px`,
+                      maxHeight: '56px'
+                    }}
+                    className="w-auto object-contain"
                     loading="eager"
                   />
                 ) : (
