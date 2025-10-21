@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { Eye, Pencil, Archive, Plus, LayoutGrid, List, FileEdit } from 'lucide-react';
+import { Eye, Pencil, Archive, Plus, LayoutGrid, List, FileEdit, ArchiveRestore } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import ServiceForm from '@/components/admin/settings/services/ServiceForm';
@@ -114,6 +114,27 @@ const ServicesSettings = () => {
       queryClient.invalidateQueries({ queryKey: ['services'] });
       toast({ title: 'Service archived successfully' });
       setArchiveDialogOpen(false);
+    },
+  });
+
+  const unarchiveMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('services')
+        .update({ 
+          archived: false, 
+          archived_at: null,
+          archived_by: null 
+        })
+        .eq('id', id);
+      
+      if (error) throw error;
+      return id;
+    },
+    onSuccess: async (unarchivedServiceId) => {
+      await cacheInvalidation.invalidateService(unarchivedServiceId);
+      queryClient.invalidateQueries({ queryKey: ['services'] });
+      toast({ title: 'Service restored successfully' });
     },
   });
 
@@ -261,7 +282,7 @@ const ServicesSettings = () => {
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        {!service.archived && (
+                        {!service.archived ? (
                           <>
                             <Button
                               variant="ghost"
@@ -286,6 +307,15 @@ const ServicesSettings = () => {
                               <Archive className="h-4 w-4" />
                             </Button>
                           </>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => unarchiveMutation.mutate(service.id)}
+                            title="Restore service"
+                          >
+                            <ArchiveRestore className="h-4 w-4" />
+                          </Button>
                         )}
                       </div>
                     </TableCell>
@@ -324,7 +354,7 @@ const ServicesSettings = () => {
                   <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsPreviewOpen(true); }}>
                     <Eye className="h-4 w-4" />
                   </Button>
-                  {!service.archived && (
+                  {!service.archived ? (
                     <>
                       <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsTemplateEditorOpen(true); }} title="Edit Page Template">
                         <FileEdit className="h-4 w-4" />
@@ -336,6 +366,10 @@ const ServicesSettings = () => {
                         <Archive className="h-4 w-4" />
                       </Button>
                     </>
+                  ) : (
+                    <Button variant="ghost" size="sm" onClick={() => unarchiveMutation.mutate(service.id)} title="Restore service">
+                      <ArchiveRestore className="h-4 w-4" />
+                    </Button>
                   )}
                 </div>
               </div>
