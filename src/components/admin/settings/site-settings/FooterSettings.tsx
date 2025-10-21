@@ -163,7 +163,7 @@ const FooterSettings = () => {
         <Slider
           id="footer-logo-size"
           min={16}
-          max={48}
+          max={80}
           step={1}
           value={[logoSize]}
           onValueChange={([value]) => setLogoSize(value)}
@@ -267,7 +267,7 @@ const FooterSettings = () => {
                   <Slider
                     id="icon-size"
                     min={16}
-                    max={48}
+                    max={80}
                     step={1}
                     value={[iconSize]}
                     onValueChange={([value]) => setIconSize(value)}
