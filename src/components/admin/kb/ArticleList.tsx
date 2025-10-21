@@ -174,12 +174,15 @@ const ArticleList = ({ onCreateClick, onViewClick, onEditClick }: ArticleListPro
           />
         </div>
         
-        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+        <Select
+          value={categoryFilter || 'all'}
+          onValueChange={(v) => setCategoryFilter(v === 'all' ? '' : v)}
+        >
           <SelectTrigger className="w-full sm:w-[200px]">
             <SelectValue placeholder="Filter by category" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">All Categories</SelectItem>
+          <SelectContent className="z-50">
+            <SelectItem value="all">All Categories</SelectItem>
             {categories?.map((cat) => (
               <SelectItem key={cat.id} value={cat.id}>
                 {cat.name}
@@ -188,12 +191,15 @@ const ArticleList = ({ onCreateClick, onViewClick, onEditClick }: ArticleListPro
           </SelectContent>
         </Select>
 
-        <Select value={tagFilter} onValueChange={setTagFilter}>
+        <Select
+          value={tagFilter || 'all'}
+          onValueChange={(v) => setTagFilter(v === 'all' ? '' : v)}
+        >
           <SelectTrigger className="w-full sm:w-[200px]">
             <SelectValue placeholder="Filter by tag" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">All Tags</SelectItem>
+          <SelectContent className="z-50">
+            <SelectItem value="all">All Tags</SelectItem>
             {allTags.map((tag) => (
               <SelectItem key={tag} value={tag}>
                 {tag}
