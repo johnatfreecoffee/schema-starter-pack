@@ -5,6 +5,7 @@ import { LazyImage } from '@/components/ui/lazy-image';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useMemo } from 'react';
+import { MapPin, Phone, Mail } from 'lucide-react';
 const Footer = () => {
   const { data: company } = useCompanySettings();
   const { data: siteSettings } = useSiteSettings();
@@ -94,29 +95,35 @@ const Footer = () => {
             </div>
             {company?.business_slogan && <p className="text-lg italic opacity-90">{company.business_slogan}</p>}
             {company?.description && <p className="text-sm opacity-80">{company.description}</p>}
-            <div className="space-y-2 text-sm">
-              {company?.address && <p>{company.address}</p>}
+            <div className="space-y-3 text-sm">
+              {company?.address && (
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(company.address)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-2 font-bold text-primary hover:underline transition-all group"
+                >
+                  <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                  <span>{company.address}</span>
+                </a>
+              )}
               {company?.phone && (
-                <p>
-                  <span className="font-medium">Phone:</span>{' '}
-                  <a 
-                    href={`tel:${company.phone.replace(/\D/g, '')}`}
-                    className="hover:text-primary transition-colors"
-                  >
-                    {formatPhoneNumber(company.phone)}
-                  </a>
-                </p>
+                <a 
+                  href={`tel:${company.phone.replace(/\D/g, '')}`}
+                  className="flex items-center gap-2 font-bold text-primary hover:underline transition-all group"
+                >
+                  <Phone className="h-4 w-4 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                  <span>{formatPhoneNumber(company.phone)}</span>
+                </a>
               )}
               {company?.email && (
-                <p>
-                  <span className="font-medium">Email:</span>{' '}
-                  <a 
-                    href={`mailto:${company.email}`}
-                    className="hover:text-primary transition-colors"
-                  >
-                    {company.email}
-                  </a>
-                </p>
+                <a 
+                  href={`mailto:${company.email}`}
+                  className="flex items-center gap-2 font-bold text-primary hover:underline transition-all group"
+                >
+                  <Mail className="h-4 w-4 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                  <span>{company.email}</span>
+                </a>
               )}
             </div>
             
