@@ -16,7 +16,7 @@ const Footer = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('company_social_media')
-        .select('*, social_media_outlet_types(name, icon_url)')
+        .select('*, social_media_outlet_types(name, icon_url, icon_svg)')
         .order('created_at');
       if (error) throw error;
       return data || [];
@@ -29,16 +29,21 @@ const Footer = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('social_media_outlet_types')
-        .select('id, name, icon_url');
+        .select('id, name, icon_url, icon_svg');
       if (error) throw error;
       return data || [];
     },
   });
 
   const iconByName = useMemo(() => {
-    const map: Record<string, string> = {};
+    const map: Record<string, { iconUrl: string; iconSvg?: string }> = {};
     (outletTypes as any[]).forEach((ot) => {
-      if (ot?.name && ot?.icon_url) map[ot.name.toLowerCase()] = ot.icon_url;
+      if (ot?.name) {
+        map[ot.name.toLowerCase()] = {
+          iconUrl: ot.icon_url,
+          iconSvg: ot.icon_svg
+        };
+      }
     });
     return map;
   }, [outletTypes]);
@@ -98,8 +103,34 @@ const Footer = () => {
                   const seen = new Set<string>();
                   const useStandard = (siteSettings as any)?.use_standard_social_logos ?? true;
                   const style = (siteSettings as any)?.social_icon_style || 'colored';
+                  const customColor = (siteSettings as any)?.social_custom_color || '#000000';
                   const size = (siteSettings as any)?.social_icon_size || 24;
                   const border = (siteSettings as any)?.social_border_style || 'circle';
+
+                  const getBorderClass = () => {
+                    if (border === 'none') return '';
+                    if (border === 'circle') return 'rounded-full border border-current/20 p-2';
+                    if (border === 'rounded') return 'rounded-lg border border-current/20 p-2';
+                    if (border === 'square') return 'border border-current/20 p-2';
+                    return '';
+                  };
+
+                  const getIconColorClass = (platform: string) => {
+                    if (style === 'black') return 'text-black';
+                    if (style === 'white') return 'text-white';
+                    if (style === 'custom') return '';
+                    
+                    const colors: Record<string, string> = {
+                      facebook: 'text-[#1877F2]',
+                      instagram: 'text-[#E4405F]',
+                      x: 'text-[#000000]',
+                      twitter: 'text-[#1DA1F2]',
+                      linkedin: 'text-[#0A66C2]',
+                      'facebook messenger': 'text-[#0084FF]',
+                      'google business': 'text-[#4285F4]',
+                    };
+                    return colors[platform.toLowerCase()] || 'text-foreground';
+                  };
 
                   return socialMedia.map((item: any) => {
                     let platform = (item.social_media_outlet_types?.name || '').toLowerCase();
@@ -107,8 +138,11 @@ const Footer = () => {
                     if (!platform || platform === '(other)') platform = detected || platform;
                     if (platform === 'x' && detected && detected !== 'x') platform = detected;
 
-                    const resolvedIcon = item.custom_icon_url || (platform ? iconByName[platform] : undefined) || item.social_media_outlet_types?.icon_url;
-                    if (!resolvedIcon) return null;
+                    const iconData = platform ? iconByName[platform] : undefined;
+                    const resolvedIconUrl = item.custom_icon_url || iconData?.iconUrl || item.social_media_outlet_types?.icon_url;
+                    const resolvedIconSvg = item.social_media_outlet_types?.icon_svg || iconData?.iconSvg;
+                    
+                    if (!resolvedIconUrl && !resolvedIconSvg) return null;
 
                     let hostKey = '';
                     try { hostKey = new URL(item.link).hostname; } catch { hostKey = item.link; }
@@ -118,7 +152,7 @@ const Footer = () => {
 
                     const label = item.custom_name || (platform ? platform.charAt(0).toUpperCase() + platform.slice(1) : 'Social');
 
-                    if (useStandard) {
+                    if (useStandard && resolvedIconUrl) {
                       return (
                         <a 
                           key={item.id} 
@@ -129,7 +163,7 @@ const Footer = () => {
                           aria-label={label}
                         >
                           <img 
-                            src={resolvedIcon} 
+                            src={resolvedIconUrl} 
                             alt={label}
                             style={{ width: `${size}px`, height: `${size}px` }}
                             className="object-contain"
@@ -139,7 +173,35 @@ const Footer = () => {
                     }
 
                     // Styled icons mode - use SVG icons with color/border styling
-                    return null; // Styled mode not fully implemented, fall back to standard
+                    if (!resolvedIconSvg) return null;
+                    
+                    const colorClass = getIconColorClass(platform);
+                    const borderClass = getBorderClass();
+                    const customStyle = style === 'custom' ? { color: customColor } : {};
+
+                    return (
+                      <a 
+                        key={item.id} 
+                        href={item.link} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className={`${colorClass} ${borderClass} hover:opacity-70 transition-opacity inline-block`}
+                        style={customStyle}
+                        aria-label={label}
+                      >
+                        <svg
+                          width={size}
+                          height={size}
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          dangerouslySetInnerHTML={{ __html: resolvedIconSvg }}
+                        />
+                      </a>
+                    );
                   });
                 })()}
               </div>

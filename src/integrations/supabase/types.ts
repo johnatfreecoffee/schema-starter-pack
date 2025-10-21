@@ -2854,18 +2854,21 @@ export type Database = {
       social_media_outlet_types: {
         Row: {
           created_at: string
+          icon_svg: string | null
           icon_url: string
           id: string
           name: string
         }
         Insert: {
           created_at?: string
+          icon_svg?: string | null
           icon_url: string
           id: string
           name: string
         }
         Update: {
           created_at?: string
+          icon_svg?: string | null
           icon_url?: string
           id?: string
           name?: string

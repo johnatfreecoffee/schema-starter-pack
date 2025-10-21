@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 
 interface SocialMediaPreviewProps {
   useStandardLogos: boolean;
@@ -22,28 +21,12 @@ export const SocialMediaPreview = ({
     queryFn: async () => {
       const { data, error } = await supabase
         .from('company_social_media')
-        .select('*, social_media_outlet_types(name, icon_url)')
+        .select('*, social_media_outlet_types(name, icon_url, icon_svg)')
         .order('created_at');
       if (error) throw error;
       return data || [];
     },
   });
-
-  const getSocialIcon = (platformName: string) => {
-    switch (platformName.toLowerCase()) {
-      case 'facebook':
-        return Facebook;
-      case 'instagram':
-        return Instagram;
-      case 'twitter':
-      case 'x':
-        return Twitter;
-      case 'linkedin':
-        return Linkedin;
-      default:
-        return null;
-    }
-  };
 
   const getIconColorClass = (platformName: string) => {
     if (iconStyle === 'black') {
@@ -86,6 +69,7 @@ export const SocialMediaPreview = ({
       {socialMedia.map((item: any) => {
         const platformName = item.social_media_outlet_types?.name || '';
         const iconUrl = item.custom_icon_url || item.social_media_outlet_types?.icon_url;
+        const iconSvg = item.social_media_outlet_types?.icon_svg;
         
         if (useStandardLogos && iconUrl) {
           return (
@@ -100,8 +84,7 @@ export const SocialMediaPreview = ({
           );
         }
 
-        const Icon = getSocialIcon(platformName);
-        if (!Icon) return null;
+        if (!iconSvg) return null;
 
         const colorClass = getIconColorClass(platformName);
         const borderClass = getBorderClass();
@@ -113,7 +96,17 @@ export const SocialMediaPreview = ({
             className={`${colorClass} ${borderClass} hover:opacity-70 transition-opacity`}
             style={customStyle}
           >
-            <Icon size={iconSize} />
+            <svg
+              width={iconSize}
+              height={iconSize}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              dangerouslySetInnerHTML={{ __html: iconSvg }}
+            />
           </div>
         );
       })}
