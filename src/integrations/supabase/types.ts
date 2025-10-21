@@ -800,6 +800,7 @@ export type Database = {
       company_social_media: {
         Row: {
           created_at: string
+          custom_icon_url: string | null
           custom_name: string | null
           handle: string | null
           id: string
@@ -809,6 +810,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          custom_icon_url?: string | null
           custom_name?: string | null
           handle?: string | null
           id?: string
@@ -818,6 +820,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          custom_icon_url?: string | null
           custom_name?: string | null
           handle?: string | null
           id?: string

@@ -56,7 +56,8 @@ const Footer = () => {
             {siteSettings?.show_social_links && socialMedia.length > 0 && (
               <div className="flex gap-3 mt-4">
                 {socialMedia.map((item: any) => {
-                  const iconUrl = item.social_media_outlet_types?.icon_url;
+                  // Prioritize custom_icon_url over outlet type icon
+                  const iconUrl = item.custom_icon_url || item.social_media_outlet_types?.icon_url;
                   const platformName = item.social_media_outlet_types?.name || '';
                   
                   if (!iconUrl) return null;

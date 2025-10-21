@@ -23,6 +23,7 @@ interface SocialMedia {
   custom_name: string | null;
   handle: string | null;
   link: string;
+  custom_icon_url: string | null;
   social_media_outlet_types: OutletType;
 }
 
@@ -33,6 +34,8 @@ export const SocialMediaManager = () => {
   const [customName, setCustomName] = useState('');
   const [handle, setHandle] = useState('');
   const [link, setLink] = useState('');
+  const [customIconFile, setCustomIconFile] = useState<File | null>(null);
+  const [uploadingIcon, setUploadingIcon] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -68,7 +71,7 @@ export const SocialMediaManager = () => {
 
   // Add mutation
   const addMutation = useMutation({
-    mutationFn: async (values: { outlet_type_id: string; custom_name?: string; handle?: string; link: string }) => {
+    mutationFn: async (values: { outlet_type_id: string; custom_name?: string; handle?: string; link: string; custom_icon_url?: string }) => {
       const { error } = await supabase
         .from('company_social_media')
         .insert([values]);
@@ -88,7 +91,7 @@ export const SocialMediaManager = () => {
 
   // Update mutation
   const updateMutation = useMutation({
-    mutationFn: async (values: { id: string; outlet_type_id: string; custom_name?: string; handle?: string; link: string }) => {
+    mutationFn: async (values: { id: string; outlet_type_id: string; custom_name?: string; handle?: string; link: string; custom_icon_url?: string }) => {
       const { id, ...updateData } = values;
       const { error } = await supabase
         .from('company_social_media')
@@ -146,6 +149,7 @@ export const SocialMediaManager = () => {
     setCustomName('');
     setHandle('');
     setLink('');
+    setCustomIconFile(null);
   };
 
   const handleEditClick = (item: SocialMedia) => {
@@ -154,10 +158,40 @@ export const SocialMediaManager = () => {
     setCustomName(item.custom_name || '');
     setHandle(item.handle || '');
     setLink(item.link);
+    setCustomIconFile(null);
     setIsOpen(true);
   };
 
-  const handleSubmit = () => {
+  const uploadCustomIcon = async (): Promise<string | null> => {
+    if (!customIconFile) return null;
+
+    setUploadingIcon(true);
+    try {
+      const fileExt = customIconFile.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `social-icons/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('company-assets')
+        .upload(filePath, customIconFile);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('company-assets')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading icon:', error);
+      toast.error('Failed to upload custom icon');
+      return null;
+    } finally {
+      setUploadingIcon(false);
+    }
+  };
+
+  const handleSubmit = async () => {
     if (!selectedOutlet || !link) {
       toast.error('Please select an outlet and enter a link');
       return;
@@ -168,6 +202,17 @@ export const SocialMediaManager = () => {
       return;
     }
 
+    if (selectedOutlet === 'other' && !customIconFile && !editingItem) {
+      toast.error('Please upload a custom icon for "Other"');
+      return;
+    }
+
+    let customIconUrl: string | null = null;
+    if (customIconFile) {
+      customIconUrl = await uploadCustomIcon();
+      if (!customIconUrl) return; // Upload failed
+    }
+
     if (editingItem) {
       updateMutation.mutate({
         id: editingItem.id,
@@ -175,6 +220,7 @@ export const SocialMediaManager = () => {
         custom_name: selectedOutlet === 'other' ? customName : null,
         handle: handle || null,
         link,
+        custom_icon_url: customIconUrl || undefined,
       });
     } else {
       addMutation.mutate({
@@ -182,6 +228,7 @@ export const SocialMediaManager = () => {
         custom_name: selectedOutlet === 'other' ? customName : null,
         handle: handle || null,
         link,
+        custom_icon_url: customIconUrl || undefined,
       });
     }
   };
@@ -238,6 +285,21 @@ export const SocialMediaManager = () => {
                 </div>
               )}
 
+              {isOtherSelected && (
+                <div className="space-y-2">
+                  <Label htmlFor="customIcon">Custom Icon * (PNG, JPG, or SVG)</Label>
+                  <Input
+                    id="customIcon"
+                    type="file"
+                    accept="image/png,image/jpeg,image/svg+xml"
+                    onChange={(e) => setCustomIconFile(e.target.files?.[0] || null)}
+                  />
+                  {!customIconFile && !editingItem && (
+                    <p className="text-xs text-muted-foreground">Required for custom outlets</p>
+                  )}
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="link">Social media outlet link *</Label>
                 <Input
@@ -263,10 +325,12 @@ export const SocialMediaManager = () => {
               <Button variant="outline" onClick={() => { setIsOpen(false); resetForm(); }}>
                 Cancel
               </Button>
-              <Button onClick={handleSubmit} disabled={addMutation.isPending || updateMutation.isPending}>
-                {editingItem 
-                  ? (updateMutation.isPending ? 'Updating...' : 'Update')
-                  : (addMutation.isPending ? 'Adding...' : 'Add')
+              <Button onClick={handleSubmit} disabled={addMutation.isPending || updateMutation.isPending || uploadingIcon}>
+                {uploadingIcon 
+                  ? 'Uploading...'
+                  : editingItem 
+                    ? (updateMutation.isPending ? 'Updating...' : 'Update')
+                    : (addMutation.isPending ? 'Adding...' : 'Add')
                 }
               </Button>
             </DialogFooter>
