@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Save } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -17,7 +15,8 @@ import { Input } from '@/components/ui/input';
 export default function ReviewSettings() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const [settings, setSettings] = useState({
     reviews_enabled: true,
     reviews_min_rating: 1,
@@ -65,43 +64,51 @@ export default function ReviewSettings() {
     }
   }
 
-  async function handleSave() {
-    setSaving(true);
-    try {
-      const { data: existing } = await supabase
-        .from('site_settings')
-        .select('id')
-        .single();
-
-      if (existing) {
-        const { error } = await supabase
-          .from('site_settings')
-          .update(settings)
-          .eq('id', existing.id);
-
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('site_settings')
-          .insert([settings]);
-
-        if (error) throw error;
-      }
-
-      toast({
-        title: 'Settings saved',
-        description: 'Review settings have been updated successfully'
-      });
-    } catch (error: any) {
-      toast({
-        title: 'Error saving settings',
-        description: error.message,
-        variant: 'destructive'
-      });
-    } finally {
-      setSaving(false);
+  async function handleAutoSave() {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
     }
+    
+    setIsSaving(true);
+    saveTimeoutRef.current = setTimeout(async () => {
+      try {
+        const { data: existing } = await supabase
+          .from('site_settings')
+          .select('id')
+          .single();
+
+        if (existing) {
+          const { error } = await supabase
+            .from('site_settings')
+            .update(settings)
+            .eq('id', existing.id);
+
+          if (error) throw error;
+        } else {
+          const { error } = await supabase
+            .from('site_settings')
+            .insert([settings]);
+
+          if (error) throw error;
+        }
+        
+        setIsSaving(false);
+      } catch (error: any) {
+        toast({
+          title: 'Error saving settings',
+          description: error.message,
+          variant: 'destructive'
+        });
+        setIsSaving(false);
+      }
+    }, 1000);
   }
+
+  useEffect(() => {
+    if (!loading) {
+      handleAutoSave();
+    }
+  }, [settings]);
 
   if (loading) {
     return <div>Loading settings...</div>;
@@ -109,6 +116,13 @@ export default function ReviewSettings() {
 
   return (
     <div className="space-y-6">
+      {isSaving && (
+        <div className="text-sm text-muted-foreground flex items-center gap-2">
+          <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          Saving...
+        </div>
+      )}
+      
       <div>
         <h3 className="text-lg font-semibold mb-4">Review Settings</h3>
         <p className="text-sm text-muted-foreground mb-6">
@@ -258,11 +272,6 @@ export default function ReviewSettings() {
           </p>
         </div>
       </div>
-
-      <Button onClick={handleSave} disabled={saving}>
-        <Save className="w-4 h-4 mr-2" />
-        {saving ? 'Saving...' : 'Save Settings'}
-      </Button>
     </div>
   );
 }

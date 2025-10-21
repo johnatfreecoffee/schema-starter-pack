@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
@@ -20,6 +19,8 @@ const FooterSettings = () => {
   const [customColor, setCustomColor] = useState('#000000');
   const [borderStyle, setBorderStyle] = useState('circle');
   const [iconSize, setIconSize] = useState(32);
+  const [isSaving, setIsSaving] = useState(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
 
   const { data: settings } = useQuery({
     queryKey: ['site-settings'],
@@ -89,28 +90,49 @@ const FooterSettings = () => {
       document.documentElement.style.setProperty('--footer-logo-size', `${data.footer_logo_size}px`);
       document.documentElement.style.setProperty('--footer-text', data.footer_text_color);
       
-      toast.success('Footer settings saved successfully');
+      setIsSaving(false);
     },
     onError: () => {
       toast.error('Failed to save footer settings');
+      setIsSaving(false);
     },
   });
 
-  const handleSave = () => {
-    updateMutation.mutate({
-      footer_logo_size: logoSize,
-      footer_bg_color: bgColor,
-      footer_text_color: textColor,
-      show_social_links: showSocial,
-      social_icon_style: iconStyle,
-      social_icon_custom_color: iconStyle === 'custom' ? customColor : null,
-      social_border_style: borderStyle,
-      social_icon_size: iconSize,
-    });
-  };
+  const autoSave = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    setIsSaving(true);
+    saveTimeoutRef.current = setTimeout(() => {
+      updateMutation.mutate({
+        footer_logo_size: logoSize,
+        footer_bg_color: bgColor,
+        footer_text_color: textColor,
+        show_social_links: showSocial,
+        social_icon_style: iconStyle,
+        social_icon_custom_color: iconStyle === 'custom' ? customColor : null,
+        social_border_style: borderStyle,
+        social_icon_size: iconSize,
+      });
+    }, 1000);
+  }, [logoSize, bgColor, textColor, showSocial, iconStyle, customColor, borderStyle, iconSize, updateMutation]);
+
+  useEffect(() => {
+    if (settings && settings.id) {
+      autoSave();
+    }
+  }, [logoSize, bgColor, textColor, showSocial, iconStyle, customColor, borderStyle, iconSize]);
 
   return (
     <div className="space-y-6">
+      {isSaving && (
+        <div className="text-sm text-muted-foreground flex items-center gap-2">
+          <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          Saving...
+        </div>
+      )}
+      
       <div>
         <Label htmlFor="footer-bg">Footer Background Color</Label>
         <ColorPicker
@@ -259,15 +281,6 @@ const FooterSettings = () => {
           </div>
         </div>
       )}
-
-      <div className="flex justify-end">
-        <Button 
-          onClick={handleSave}
-          disabled={updateMutation.isPending}
-        >
-          {updateMutation.isPending ? 'Saving...' : 'Save Footer Settings'}
-        </Button>
-      </div>
     </div>
   );
 };

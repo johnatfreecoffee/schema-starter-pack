@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
@@ -13,6 +12,8 @@ const HeaderSettings = () => {
   const [logoSize, setLogoSize] = useState(40);
   const [bgColor, setBgColor] = useState('#ffffff');
   const [borderColor, setBorderColor] = useState('#e5e7eb');
+  const [isSaving, setIsSaving] = useState(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
 
   const { data: settings } = useQuery({
     queryKey: ['site-settings'],
@@ -77,23 +78,61 @@ const HeaderSettings = () => {
       document.documentElement.style.setProperty('--header-bg', data.header_bg_color);
       document.documentElement.style.setProperty('--header-border', data.header_border_color);
       
-      toast.success('Header settings saved successfully');
+      setIsSaving(false);
     },
     onError: () => {
       toast.error('Failed to save header settings');
+      setIsSaving(false);
     },
   });
 
-  const handleSave = () => {
-    updateMutation.mutate({
-      header_logo_size: logoSize,
+  const autoSave = useCallback((updates: any) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    setIsSaving(true);
+    saveTimeoutRef.current = setTimeout(() => {
+      updateMutation.mutate(updates);
+    }, 1000);
+  }, [updateMutation]);
+
+  const handleLogoSizeChange = (value: number) => {
+    setLogoSize(value);
+    autoSave({
+      header_logo_size: value,
       header_bg_color: bgColor,
       header_border_color: borderColor,
     });
   };
 
+  const handleBgColorChange = (value: string) => {
+    setBgColor(value);
+    autoSave({
+      header_logo_size: logoSize,
+      header_bg_color: value,
+      header_border_color: borderColor,
+    });
+  };
+
+  const handleBorderColorChange = (value: string) => {
+    setBorderColor(value);
+    autoSave({
+      header_logo_size: logoSize,
+      header_bg_color: bgColor,
+      header_border_color: value,
+    });
+  };
+
   return (
     <div className="space-y-6">
+      {isSaving && (
+        <div className="text-sm text-muted-foreground flex items-center gap-2">
+          <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          Saving...
+        </div>
+      )}
+      
       <div>
         <Label htmlFor="logo-size">Logo Size: {logoSize}px</Label>
         <Slider
@@ -102,7 +141,7 @@ const HeaderSettings = () => {
           max={80}
           step={1}
           value={[logoSize]}
-          onValueChange={([value]) => setLogoSize(value)}
+          onValueChange={([value]) => handleLogoSizeChange(value)}
           className="mt-2"
         />
       </div>
@@ -111,7 +150,7 @@ const HeaderSettings = () => {
         <Label htmlFor="header-bg">Header Background Color</Label>
         <ColorPicker
           value={bgColor}
-          onChange={setBgColor}
+          onChange={handleBgColorChange}
           label="Header Background"
         />
       </div>
@@ -120,18 +159,9 @@ const HeaderSettings = () => {
         <Label htmlFor="header-border">Header Border Color</Label>
         <ColorPicker
           value={borderColor}
-          onChange={setBorderColor}
+          onChange={handleBorderColorChange}
           label="Header Border"
         />
-      </div>
-
-      <div className="flex justify-end">
-        <Button 
-          onClick={handleSave}
-          disabled={updateMutation.isPending}
-        >
-          {updateMutation.isPending ? 'Saving...' : 'Save Header Settings'}
-        </Button>
       </div>
     </div>
   );

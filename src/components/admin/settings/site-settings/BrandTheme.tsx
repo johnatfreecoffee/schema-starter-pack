@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { cacheInvalidation } from '@/lib/cacheInvalidation';
 import ColorPicker from './ColorPicker';
@@ -16,6 +16,8 @@ const BrandTheme = () => {
   const [accentColor, setAccentColor] = useState('#10b981');
   const [buttonRadius, setButtonRadius] = useState(6);
   const [cardRadius, setCardRadius] = useState(8);
+  const [isSaving, setIsSaving] = useState(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
 
   const { data: settings } = useQuery({
     queryKey: ['site-settings'],
@@ -86,25 +88,46 @@ const BrandTheme = () => {
       document.documentElement.style.setProperty('--button-radius', `${data.button_border_radius}px`);
       document.documentElement.style.setProperty('--card-radius', `${data.card_border_radius}px`);
       
-      toast.success('Brand theme saved successfully');
+      setIsSaving(false);
     },
     onError: () => {
       toast.error('Failed to save brand theme');
+      setIsSaving(false);
     },
   });
 
-  const handleSave = () => {
-    updateMutation.mutate({
-      primary_color: primaryColor,
-      secondary_color: secondaryColor,
-      accent_color: accentColor,
-      button_border_radius: buttonRadius,
-      card_border_radius: cardRadius,
-    });
-  };
+  const autoSave = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    setIsSaving(true);
+    saveTimeoutRef.current = setTimeout(() => {
+      updateMutation.mutate({
+        primary_color: primaryColor,
+        secondary_color: secondaryColor,
+        accent_color: accentColor,
+        button_border_radius: buttonRadius,
+        card_border_radius: cardRadius,
+      });
+    }, 1000);
+  }, [primaryColor, secondaryColor, accentColor, buttonRadius, cardRadius, updateMutation]);
+
+  useEffect(() => {
+    if (settings && settings.id) {
+      autoSave();
+    }
+  }, [primaryColor, secondaryColor, accentColor, buttonRadius, cardRadius]);
 
   return (
     <div className="space-y-8">
+      {isSaving && (
+        <div className="text-sm text-muted-foreground flex items-center gap-2">
+          <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          Saving...
+        </div>
+      )}
+      
       <div className="space-y-6">
         <h3 className="text-lg font-semibold">Brand Colors</h3>
         
@@ -177,15 +200,6 @@ const BrandTheme = () => {
             </Card>
           </div>
         </div>
-      </div>
-
-      <div className="flex justify-end">
-        <Button 
-          onClick={handleSave}
-          disabled={updateMutation.isPending}
-        >
-          {updateMutation.isPending ? 'Saving...' : 'Save Brand Theme'}
-        </Button>
       </div>
     </div>
   );
