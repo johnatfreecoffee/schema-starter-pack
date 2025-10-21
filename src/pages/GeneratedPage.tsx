@@ -24,18 +24,44 @@ const GeneratedPage = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('generated_pages')
-        .select(`
-          *,
-          service:services(
-            *,
-            template:templates(*)
-          ),
-          service_area:service_areas(*)
-        `)
+        .select('*')
         .eq('url_path', urlPath)
         .eq('status', true)
-        .single();
+        .maybeSingle();
 
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch related records separately to avoid RLS join issues
+  const { data: service } = useCachedQuery({
+    queryKey: ['service', page?.service_id],
+    cacheKey: page?.service_id ? `services:${page.service_id}` : undefined,
+    cacheTTL: 60 * 60 * 1000, // 1 hour
+    enabled: !!page?.service_id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('services')
+        .select('*, template:templates(*)')
+        .eq('id', page!.service_id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: area } = useCachedQuery({
+    queryKey: ['service-area', page?.service_area_id],
+    cacheKey: page?.service_area_id ? `service-areas:${page.service_area_id}` : undefined,
+    cacheTTL: 60 * 60 * 1000, // 1 hour
+    enabled: !!page?.service_area_id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('service_areas')
+        .select('*')
+        .eq('id', page!.service_area_id)
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -56,16 +82,16 @@ const GeneratedPage = () => {
   });
 
   // Build page data for template rendering
-  const pageData = page && company ? {
-    service_name: page.service.name,
-    service_slug: page.service.slug,
-    service_description: page.service.full_description || '',
-    service_starting_price: formatPrice(page.service.starting_price || 0),
-    service_category: page.service.category,
-    city_name: page.service_area.city_name,
-    city_slug: page.service_area.city_slug,
-    display_name: page.service_area.display_name,
-    local_description: page.service_area.local_description || '',
+  const pageData = page && company && service && area ? {
+    service_name: service.name,
+    service_slug: service.slug,
+    service_description: service.full_description || '',
+    service_starting_price: formatPrice(service.starting_price || 0),
+    service_category: service.category,
+    city_name: area.city_name,
+    city_slug: area.city_slug,
+    display_name: area.display_name,
+    local_description: area.local_description || '',
     company_name: company.business_name,
     company_phone: formatPhone(company.phone),
     company_email: company.email,
