@@ -193,14 +193,13 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
         className={cn(
           "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
           isActive 
-            ? "bg-primary text-primary-foreground" 
-            : "hover:bg-muted",
+            ? "bg-primary text-white" 
+            : "text-[#1a1a1a] hover:bg-muted",
           collapsed && "justify-center"
         )}
-        style={{ color: isActive ? undefined : 'hsl(0, 0%, 20%)' }}
         title={collapsed ? item.label : undefined}
       >
-        <Icon className="h-5 w-5 flex-shrink-0" style={{ color: isActive ? undefined : 'hsl(0, 0%, 20%)' }} />
+        <Icon className={cn("h-5 w-5 flex-shrink-0", isActive ? "text-white" : "text-[#1a1a1a]")} />
         {!collapsed && <span>{item.label}</span>}
       </Link>
     );
