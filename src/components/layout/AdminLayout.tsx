@@ -278,9 +278,15 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
       
       <ScrollArea className="flex-1 min-h-0">
         <nav className="space-y-2 px-3 py-4">
-          {navSections.map((section) => (
-            <div key={section.title} className="space-y-1">
-              {!desktopSidebarCollapsed && (
+          {desktopSidebarCollapsed ? (
+            // When collapsed, show all items as flat list
+            navSections.map((section) => (
+              section.items.map((item) => renderNavItem(item, true))
+            ))
+          ) : (
+            // When expanded, show grouped sections
+            navSections.map((section) => (
+              <div key={section.title} className="space-y-1">
                 <button
                   onClick={() => toggleSection(section.title)}
                   className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider rounded-lg bg-muted/50 hover:bg-muted transition-colors"
@@ -292,10 +298,10 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
                     <ChevronDown className="h-3 w-3" />
                   )}
                 </button>
-              )}
-              {expandedSections[section.title] && section.items.map((item) => renderNavItem(item, desktopSidebarCollapsed))}
-            </div>
-          ))}
+                {expandedSections[section.title] && section.items.map((item) => renderNavItem(item, false))}
+              </div>
+            ))
+          )}
         </nav>
       </ScrollArea>
     </aside>
