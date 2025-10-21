@@ -19,6 +19,10 @@ const Footer = () => {
     return phone;
   };
 
+  const formatAddress = (address: string) => {
+    return address.replace(/\b[Uu]nit\b\s*/g, '');
+  };
+
   // Fetch social media links
   const { data: socialMedia = [] } = useQuery({
     queryKey: ['company-social-media-footer'],
@@ -104,7 +108,7 @@ const Footer = () => {
                   className="flex items-start gap-2 font-bold text-primary hover:underline transition-all group"
                 >
                   <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
-                  <span>{company.address}</span>
+                  <span>{formatAddress(company.address)}</span>
                 </a>
               )}
               {company?.phone && (
