@@ -515,13 +515,14 @@ const CompanySettings = () => {
                     <div className="space-y-2">
                       <Label htmlFor="address_state">State *</Label>
                       <Select
-                        value={formData.address_state}
-                        onValueChange={(value) => handleFieldChange('address_state', value)}
+                        value={formData.address_state || "placeholder"}
+                        onValueChange={(value) => handleFieldChange('address_state', value === "placeholder" ? "" : value)}
                       >
                         <SelectTrigger className={errors.address_state ? 'border-destructive' : ''}>
                           <SelectValue placeholder="Select state" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="placeholder">Select state</SelectItem>
                           <SelectItem value="AL">AL</SelectItem>
                           <SelectItem value="AK">AK</SelectItem>
                           <SelectItem value="AZ">AZ</SelectItem>
