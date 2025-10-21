@@ -74,18 +74,19 @@ const ServiceAreas = () => {
       if (areaError) throw areaError;
 
       if (status) {
-        // When turning ON, only activate pages where the service is also active
+        // When turning ON, only activate pages where the service is NOT archived
         const { data: pages } = await supabase
           .from('generated_pages')
-          .select('id, service_id, services!inner(is_active)')
+          .select('id, service_id, services!inner(archived)')
           .eq('service_area_id', id);
         
         if (pages) {
           for (const page of pages) {
-            const serviceIsActive = (page.services as any).is_active;
+            const serviceIsArchived = (page.services as any).archived;
+            // Only activate if service is not archived
             await supabase
               .from('generated_pages')
-              .update({ status: serviceIsActive })
+              .update({ status: !serviceIsArchived })
               .eq('id', page.id);
           }
         }
