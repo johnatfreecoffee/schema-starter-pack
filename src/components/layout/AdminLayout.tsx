@@ -197,10 +197,10 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
             : "hover:bg-muted",
           collapsed && "justify-center"
         )}
-        style={!isActive ? { color: 'hsl(0, 0%, 20%)' } : undefined}
+        style={{ color: isActive ? undefined : 'hsl(0, 0%, 20%)' }}
         title={collapsed ? item.label : undefined}
       >
-        <Icon className="h-5 w-5 flex-shrink-0" />
+        <Icon className="h-5 w-5 flex-shrink-0" style={{ color: isActive ? undefined : 'hsl(0, 0%, 20%)' }} />
         {!collapsed && <span>{item.label}</span>}
       </Link>
     );
