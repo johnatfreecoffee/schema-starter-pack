@@ -35,15 +35,17 @@ const ServiceAreas = () => {
         .from('service_areas')
         .select(`
           *,
-          generated_pages!inner (
-            count,
-            services!inner (
+          generated_pages (
+            id,
+            services (
+              id,
               archived
             )
           ),
-          service_area_services!inner (
+          service_area_services (
             is_active,
-            services!inner (
+            services (
+              id,
               archived
             )
           )
