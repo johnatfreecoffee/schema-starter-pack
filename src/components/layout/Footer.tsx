@@ -1,7 +1,6 @@
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 import { LazyImage } from '@/components/ui/lazy-image';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,25 +21,15 @@ const Footer = () => {
       return data || [];
     },
   });
-  const getSocialIcon = (platformName: string) => {
-    switch (platformName.toLowerCase()) {
-      case 'facebook':
-        return Facebook;
-      case 'instagram':
-        return Instagram;
-      case 'twitter':
-      case 'x':
-        return Twitter;
-      case 'linkedin':
-        return Linkedin;
-      default:
-        return null;
-    }
-  };
-  return <footer className="border-t mt-auto" style={{
-    backgroundColor: siteSettings?.footer_bg_color || 'hsl(0, 0%, 96%)',
-    color: siteSettings?.footer_text_color || 'hsl(0, 0%, 20%)'
-  }}>
+
+  return (
+    <footer 
+      className="border-t mt-auto" 
+      style={{
+        backgroundColor: siteSettings?.footer_bg_color || 'hsl(0, 0%, 96%)',
+        color: siteSettings?.footer_text_color || 'hsl(0, 0%, 20%)'
+      }}
+    >
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left Section - Company Info */}
@@ -67,9 +56,10 @@ const Footer = () => {
             {siteSettings?.show_social_links && socialMedia.length > 0 && (
               <div className="flex gap-3 mt-4">
                 {socialMedia.map((item: any) => {
+                  const iconUrl = item.social_media_outlet_types?.icon_url;
                   const platformName = item.social_media_outlet_types?.name || '';
-                  const Icon = getSocialIcon(platformName);
-                  if (!Icon) return null;
+                  
+                  if (!iconUrl) return null;
                   
                   return (
                     <a 
@@ -77,10 +67,14 @@ const Footer = () => {
                       href={item.link} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="text-foreground hover:text-primary transition-colors p-2"
+                      className="hover:opacity-70 transition-opacity"
                       aria-label={item.custom_name || platformName}
                     >
-                      <Icon size={24} />
+                      <img 
+                        src={iconUrl} 
+                        alt={platformName}
+                        className="h-6 w-6"
+                      />
                     </a>
                   );
                 })}
@@ -131,6 +125,7 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>;
+    </footer>
+  );
 };
 export default Footer;
