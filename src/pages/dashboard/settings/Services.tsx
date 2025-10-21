@@ -8,11 +8,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { Eye, Pencil, Archive, Plus, LayoutGrid, List } from 'lucide-react';
+import { Eye, Pencil, Archive, Plus, LayoutGrid, List, FileEdit } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import ServiceForm from '@/components/admin/settings/services/ServiceForm';
 import ServicePreview from '@/components/admin/settings/services/ServicePreview';
+import ServiceTemplateEditor from '@/components/admin/settings/services/ServiceTemplateEditor';
 import { cacheInvalidation } from '@/lib/cacheInvalidation';
 
 const ServicesSettings = () => {
@@ -23,6 +24,7 @@ const ServicesSettings = () => {
   const [showArchived, setShowArchived] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isTemplateEditorOpen, setIsTemplateEditorOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
   const queryClient = useQueryClient();
@@ -246,6 +248,14 @@ const ServicesSettings = () => {
                             <Button
                               variant="ghost"
                               size="sm"
+                              onClick={() => { setSelectedService(service); setIsTemplateEditorOpen(true); }}
+                              title="Edit Page Template"
+                            >
+                              <FileEdit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => { setSelectedService(service); setIsFormOpen(true); }}
                             >
                               <Pencil className="h-4 w-4" />
@@ -298,6 +308,9 @@ const ServicesSettings = () => {
                   </Button>
                   {!service.archived && (
                     <>
+                      <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsTemplateEditorOpen(true); }} title="Edit Page Template">
+                        <FileEdit className="h-4 w-4" />
+                      </Button>
                       <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsFormOpen(true); }}>
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -333,6 +346,24 @@ const ServicesSettings = () => {
         <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
           <DialogContent className="max-w-6xl max-h-[90vh]">
             <ServicePreview service={selectedService} />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isTemplateEditorOpen} onOpenChange={setIsTemplateEditorOpen}>
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Page Template for {selectedService?.name}</DialogTitle>
+              <DialogDescription>
+                Customize the HTML template used for all {selectedService?.name} pages. Use variables like {`{{service_name}}`}, {`{{city_name}}`}, and {`{{company_phone}}`} to make content dynamic.
+              </DialogDescription>
+            </DialogHeader>
+            <ServiceTemplateEditor
+              service={selectedService}
+              onClose={() => {
+                setIsTemplateEditorOpen(false);
+                setSelectedService(null);
+              }}
+            />
           </DialogContent>
         </Dialog>
 

@@ -18,10 +18,6 @@ const formSchema = z.object({
   slug: z.string().min(1, 'Slug is required').regex(/^[a-z0-9-]+$/, 'Slug must be lowercase with hyphens'),
   category: z.enum(['Authority Hub', 'Emergency Services', 'Granular Services']),
   full_description: z.string().min(10).max(2000),
-  starting_price: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, {
-    message: 'Must be a valid positive number',
-  }),
-  template_id: z.string().uuid('Please select a template'),
   is_active: z.boolean().default(true),
 });
 
@@ -34,18 +30,6 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
   const queryClient = useQueryClient();
   const [descriptionLength, setDescriptionLength] = useState(0);
 
-  const { data: templates } = useQuery({
-    queryKey: ['templates'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('templates')
-        .select('*')
-        .order('name');
-      if (error) throw error;
-      return data;
-    },
-  });
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,8 +37,6 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
       slug: service?.slug || '',
       category: service?.category || 'Granular Services',
       full_description: service?.full_description || '',
-      starting_price: service?.starting_price ? (service.starting_price / 100).toString() : '',
-      template_id: service?.template_id || '',
       is_active: service?.is_active !== undefined ? service.is_active : true,
     },
   });
@@ -66,8 +48,6 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         slug: service.slug,
         category: service.category,
         full_description: service.full_description,
-        starting_price: (service.starting_price / 100).toString(),
-        template_id: service.template_id,
         is_active: service.is_active !== undefined ? service.is_active : true,
       });
       setDescriptionLength(service.full_description?.length || 0);
@@ -86,8 +66,6 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         slug: values.slug,
         category: values.category,
         full_description: values.full_description,
-        starting_price: Math.round(parseFloat(values.starting_price) * 100),
-        template_id: values.template_id,
         is_active: values.is_active,
       };
 
@@ -148,8 +126,6 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         slug: values.slug,
         category: values.category,
         full_description: values.full_description,
-        starting_price: Math.round(parseFloat(values.starting_price) * 100),
-        template_id: values.template_id,
         is_active: values.is_active,
       };
 
@@ -299,47 +275,6 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
                 />
               </FormControl>
               <FormDescription>{descriptionLength} / 2000 characters</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="starting_price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Starting Price</FormLabel>
-              <FormControl>
-                <Input {...field} type="number" step="0.01" placeholder="1500.00" />
-              </FormControl>
-              <FormDescription>Price in dollars</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="template_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Page Template</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a template" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {templates?.map((template) => (
-                    <SelectItem key={template.id} value={template.id}>
-                      {template.name} ({template.template_type})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormDescription>Select template for this service's pages</FormDescription>
               <FormMessage />
             </FormItem>
           )}
