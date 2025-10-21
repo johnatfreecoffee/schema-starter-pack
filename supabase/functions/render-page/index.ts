@@ -1,14 +1,35 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-// Simple Handlebars-like template rendering
+// Enhanced Handlebars-like template rendering with array support
 function compileTemplate(templateHtml: string) {
   return (data: Record<string, any>) => {
     let result = templateHtml;
+    
+    // Replace each variable
     Object.keys(data).forEach(key => {
-      const regex = new RegExp(`{{${key}}}`, 'g');
-      result = result.replace(regex, String(data[key] || ''));
+      const value = data[key];
+      
+      // Handle arrays (like local_benefits)
+      if (Array.isArray(value)) {
+        // Check for list syntax {{#local_benefits}}...{{/local_benefits}}
+        const listRegex = new RegExp(`{{#${key}}}([\\s\\S]*?){{/${key}}}`, 'g');
+        result = result.replace(listRegex, (_, template) => {
+          return value.map(item => {
+            return template.replace(/{{this}}/g, String(item));
+          }).join('');
+        });
+        
+        // Also replace simple {{local_benefits}} with joined string
+        const simpleRegex = new RegExp(`{{${key}}}`, 'g');
+        result = result.replace(simpleRegex, value.join(', '));
+      } else {
+        // Handle regular variables
+        const regex = new RegExp(`{{${key}}}`, 'g');
+        result = result.replace(regex, String(value || ''));
+      }
     });
+    
     return result;
   };
 }
@@ -144,7 +165,7 @@ serve(async (req) => {
 
     console.log(`Rendering page: ${urlPath}`);
 
-    // Look up the generated page
+    // Look up the generated page with localized content
     const { data: page, error: pageError } = await supabase
       .from('generated_pages')
       .select(`
@@ -168,6 +189,15 @@ serve(async (req) => {
         }
       );
     }
+
+    // Fetch localized content from service_area_services
+    const { data: localizedContent } = await supabase
+      .from('service_area_services')
+      .select('*')
+      .eq('service_id', page.service_id)
+      .eq('service_area_id', page.service_area_id)
+      .single();
+
 
     if (!page.status) {
       return new Response(
@@ -197,17 +227,34 @@ serve(async (req) => {
         throw new Error('Company settings not found');
       }
 
-      // Build page data
-      const pageData: PageData = {
+      // Build comprehensive page data with localized content
+      const pageData: any = {
+        // Service variables
         service_name: page.service.name,
         service_slug: page.service.slug,
         service_description: page.service.full_description || '',
         service_starting_price: formatPrice(page.service.starting_price || 0),
         service_category: page.service.category,
+        
+        // Area variables
         city_name: page.service_area.city_name,
         city_slug: page.service_area.city_slug,
-        display_name: page.service_area.display_name,
-        local_description: page.service_area.local_description || '',
+        display_name: page.service_area.display_name || page.service_area.city_name,
+        area_display_name: page.service_area.display_name || page.service_area.city_name,
+        state: page.service_area.state || 'LA',
+        zip_code: page.service_area.zip_code || '',
+        
+        // Localized content from service_area_services
+        local_description: localizedContent?.local_description || page.service_area.local_description || '',
+        local_benefits: localizedContent?.local_benefits || [],
+        response_time: localizedContent?.response_time || '',
+        completion_time: localizedContent?.completion_time || '',
+        customer_count: localizedContent?.customer_count || 0,
+        pricing_notes: localizedContent?.pricing_notes || '',
+        local_examples: localizedContent?.local_examples || '',
+        special_considerations: localizedContent?.special_considerations || '',
+        
+        // Company variables
         company_name: company.business_name,
         company_phone: formatPhone(company.phone),
         company_email: company.email,
@@ -217,8 +264,10 @@ serve(async (req) => {
         years_experience: company.years_experience || 0,
         logo_url: company.logo_url || '',
         icon_url: company.icon_url || '',
-        page_title: page.page_title,
-        meta_description: page.meta_description || '',
+        
+        // Page meta
+        page_title: localizedContent?.meta_title_override || page.page_title,
+        meta_description: localizedContent?.meta_description_override || page.meta_description || '',
         url_path: page.url_path,
       };
 
