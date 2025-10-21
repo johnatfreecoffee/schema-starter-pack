@@ -26,6 +26,7 @@ const ServicesSettings = () => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isTemplateEditorOpen, setIsTemplateEditorOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+  const [unarchiveDialogOpen, setUnarchiveDialogOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
   const queryClient = useQueryClient();
 
@@ -135,6 +136,7 @@ const ServicesSettings = () => {
       await cacheInvalidation.invalidateService(unarchivedServiceId);
       queryClient.invalidateQueries({ queryKey: ['services'] });
       toast({ title: 'Service restored successfully' });
+      setUnarchiveDialogOpen(false);
     },
   });
 
@@ -311,7 +313,7 @@ const ServicesSettings = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => unarchiveMutation.mutate(service.id)}
+                            onClick={() => { setSelectedService(service); setUnarchiveDialogOpen(true); }}
                             title="Restore service"
                           >
                             <ArchiveRestore className="h-4 w-4" />
@@ -367,7 +369,7 @@ const ServicesSettings = () => {
                       </Button>
                     </>
                   ) : (
-                    <Button variant="ghost" size="sm" onClick={() => unarchiveMutation.mutate(service.id)} title="Restore service">
+                    <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setUnarchiveDialogOpen(true); }} title="Restore service">
                       <ArchiveRestore className="h-4 w-4" />
                     </Button>
                   )}
@@ -433,6 +435,23 @@ const ServicesSettings = () => {
                 Archive
               </AlertDialogAction>
             </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={unarchiveDialogOpen} onOpenChange={setUnarchiveDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Restore Service</AlertDialogTitle>
+            <AlertDialogDescription>
+              Restore "{selectedService?.name}"? This will make the service and its {selectedService?.generated_pages?.[0]?.count || 0} generated pages visible again.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => selectedService && unarchiveMutation.mutate(selectedService.id)}>
+              Restore
+            </AlertDialogAction>
+          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
