@@ -98,7 +98,7 @@ const Footer = () => {
             <div className="space-y-3 text-sm">
               {company?.address && (
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(company.address)}`}
+                  href={`https://www.google.com/maps/search/${encodeURIComponent(company.address)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-start gap-2 font-bold text-primary hover:underline transition-all group"
