@@ -133,7 +133,7 @@ export const SocialMediaManager = () => {
         <h3 className="text-lg font-medium">Social Media Links</h3>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button variant="secondary">
               <Plus className="mr-2 h-4 w-4" />
               Add Social Media
             </Button>
