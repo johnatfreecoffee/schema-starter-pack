@@ -35,9 +35,17 @@ const ServiceAreas = () => {
         .from('service_areas')
         .select(`
           *,
-          generated_pages (count),
-          service_area_services (
-            is_active
+          generated_pages!inner (
+            count,
+            services!inner (
+              archived
+            )
+          ),
+          service_area_services!inner (
+            is_active,
+            services!inner (
+              archived
+            )
           )
         `);
       
@@ -128,9 +136,22 @@ const ServiceAreas = () => {
   });
 
   const getServicesCount = (area: any) => {
-    const total = area.service_area_services?.length || 0;
-    const active = area.service_area_services?.filter((s: any) => s.is_active).length || 0;
+    // Filter out archived services
+    const nonArchivedServices = area.service_area_services?.filter((s: any) => 
+      !s.services?.archived
+    ) || [];
+    
+    const total = nonArchivedServices.length;
+    const active = nonArchivedServices.filter((s: any) => s.is_active).length;
     return `${active}/${total}`;
+  };
+
+  const getPagesCount = (area: any) => {
+    // Count pages only for non-archived services
+    const nonArchivedPages = area.generated_pages?.filter((p: any) => 
+      !p.services?.archived
+    ) || [];
+    return nonArchivedPages[0]?.count || 0;
   };
 
   return (
@@ -218,7 +239,7 @@ const ServiceAreas = () => {
                     <TableCell>{area.zip_code || '-'}</TableCell>
                     <TableCell>{area.display_name}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{area.generated_pages?.[0]?.count || 0} pages</Badge>
+                      <Badge variant="secondary">{getPagesCount(area)} pages</Badge>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline">{getServicesCount(area)} services</Badge>
@@ -291,7 +312,7 @@ const ServiceAreas = () => {
                   />
                 </div>
                 <div className="flex gap-2 mb-3">
-                  <Badge variant="secondary">{area.generated_pages?.[0]?.count || 0} pages</Badge>
+                  <Badge variant="secondary">{getPagesCount(area)} pages</Badge>
                   <Badge variant="outline">{getServicesCount(area)} services</Badge>
                 </div>
                 <div className="flex gap-2">
@@ -355,7 +376,7 @@ const ServiceAreas = () => {
             <AlertDialogHeader>
               <AlertDialogTitle>Archive Service Area</AlertDialogTitle>
               <AlertDialogDescription>
-                Archive "{selectedArea?.city_name}"? This will hide the service area and its {selectedArea?.generated_pages?.[0]?.count || 0} generated pages. You can restore it later by showing archived areas.
+                Archive "{selectedArea?.city_name}"? This will hide the service area and its {getPagesCount(selectedArea)} generated pages. You can restore it later by showing archived areas.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

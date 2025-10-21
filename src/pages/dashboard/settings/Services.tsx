@@ -98,7 +98,8 @@ const ServicesSettings = () => {
     mutationFn: async (id: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       
-      const { error } = await supabase
+      // Archive the service
+      const { error: serviceError } = await supabase
         .from('services')
         .update({ 
           archived: true, 
@@ -107,12 +108,21 @@ const ServicesSettings = () => {
         })
         .eq('id', id);
       
-      if (error) throw error;
+      if (serviceError) throw serviceError;
+
+      // Deactivate all generated pages for this service (removes from sitemap)
+      await supabase
+        .from('generated_pages')
+        .update({ status: false })
+        .eq('service_id', id);
+      
       return id;
     },
     onSuccess: async (archivedServiceId) => {
       await cacheInvalidation.invalidateService(archivedServiceId);
       queryClient.invalidateQueries({ queryKey: ['services'] });
+      queryClient.invalidateQueries({ queryKey: ['generated-pages'] });
+      queryClient.invalidateQueries({ queryKey: ['service-areas'] });
       toast({ title: 'Service archived successfully' });
       setArchiveDialogOpen(false);
     },
@@ -120,7 +130,8 @@ const ServicesSettings = () => {
 
   const unarchiveMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
+      // Restore the service
+      const { error: serviceError } = await supabase
         .from('services')
         .update({ 
           archived: false, 
@@ -129,12 +140,31 @@ const ServicesSettings = () => {
         })
         .eq('id', id);
       
-      if (error) throw error;
+      if (serviceError) throw serviceError;
+
+      // Reactivate pages only where the service area is also active
+      const { data: pages } = await supabase
+        .from('generated_pages')
+        .select('id, service_area_id, service_areas!inner(status)')
+        .eq('service_id', id);
+      
+      if (pages) {
+        for (const page of pages) {
+          const areaIsActive = (page.service_areas as any).status;
+          await supabase
+            .from('generated_pages')
+            .update({ status: areaIsActive })
+            .eq('id', page.id);
+        }
+      }
+      
       return id;
     },
     onSuccess: async (unarchivedServiceId) => {
       await cacheInvalidation.invalidateService(unarchivedServiceId);
       queryClient.invalidateQueries({ queryKey: ['services'] });
+      queryClient.invalidateQueries({ queryKey: ['generated-pages'] });
+      queryClient.invalidateQueries({ queryKey: ['service-areas'] });
       toast({ title: 'Service restored successfully' });
       setUnarchiveDialogOpen(false);
     },

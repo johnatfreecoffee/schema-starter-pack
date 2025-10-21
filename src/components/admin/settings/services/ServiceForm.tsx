@@ -321,9 +321,13 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
             <FormItem>
               <FormLabel>URL Slug</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="storm-damage-restoration" />
+                <Input 
+                  {...field} 
+                  disabled 
+                  className="bg-muted cursor-not-allowed"
+                />
               </FormControl>
-              <FormDescription>Auto-generated from name</FormDescription>
+              <FormDescription>Auto-generated from service name</FormDescription>
               <FormMessage />
             </FormItem>
           )}
