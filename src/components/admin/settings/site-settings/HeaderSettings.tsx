@@ -9,7 +9,7 @@ import ColorPicker from './ColorPicker';
 
 const HeaderSettings = () => {
   const queryClient = useQueryClient();
-  const [logoSize, setLogoSize] = useState(40);
+  const [logoSize, setLogoSize] = useState(60);
   const [bgColor, setBgColor] = useState('#ffffff');
   const [borderColor, setBorderColor] = useState('#e5e7eb');
   const [isSaving, setIsSaving] = useState(false);
