@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { LazyImage } from '@/components/ui/lazy-image';
 import { 
   Menu, 
@@ -69,6 +70,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
     'System': false,
   });
   const { data: company } = useCompanySettings();
+  const { data: siteSettings } = useSiteSettings();
 
   const toggleSection = (sectionTitle: string) => {
     setExpandedSections(prev => ({
@@ -299,7 +301,13 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
       {/* Main Content Area */}
       <div className="flex flex-col flex-1 min-w-0">
         {/* Header */}
-        <header className="border-b bg-background/95 backdrop-blur sticky top-0 z-50">
+        <header 
+          className="border-b backdrop-blur sticky top-0 z-50"
+          style={{
+            backgroundColor: siteSettings?.header_bg_color || 'hsl(0, 0%, 100%)',
+            borderBottomColor: siteSettings?.header_border_color || 'hsl(0, 0%, 89%)',
+          }}
+        >
           <div className="flex h-16 items-center justify-between gap-4 px-4">
             {/* Mobile Menu Button */}
             {isMobile && (
