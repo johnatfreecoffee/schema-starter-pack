@@ -136,6 +136,7 @@ const ServiceAreas = () => {
   });
 
   const getServicesCount = (area: any) => {
+    if (!area) return '0/0';
     // Filter out archived services
     const nonArchivedServices = area.service_area_services?.filter((s: any) => 
       !s.services?.archived
@@ -147,6 +148,7 @@ const ServiceAreas = () => {
   };
 
   const getPagesCount = (area: any) => {
+    if (!area) return 0;
     // Count pages only for non-archived services
     const nonArchivedPages = area.generated_pages?.filter((p: any) => 
       !p.services?.archived
