@@ -293,7 +293,7 @@ export const SocialMediaManager = () => {
                 </CardTitle>
                 <div className="flex gap-1">
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={() => handleEditClick(item)}
                     disabled={updateMutation.isPending}
