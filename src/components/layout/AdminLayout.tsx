@@ -213,11 +213,20 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
   const DesktopSidebar = () => (
     <aside 
       className={cn(
-        "hidden md:flex flex-col border-r bg-background transition-all duration-300 sticky top-0 h-screen",
+        "hidden md:flex flex-col border-r transition-all duration-300 sticky top-0 h-screen",
         desktopSidebarCollapsed ? "w-16" : "w-60"
       )}
+      style={{
+        backgroundColor: siteSettings?.header_bg_color || 'hsl(0, 0%, 100%)',
+        borderRightColor: siteSettings?.header_border_color || 'hsl(0, 0%, 89%)',
+      }}
     >
-      <div className="flex items-center justify-between h-16 px-4 border-b">
+      <div 
+        className="flex items-center justify-between h-16 px-4 border-b"
+        style={{
+          borderBottomColor: siteSettings?.header_border_color || 'hsl(0, 0%, 89%)',
+        }}
+      >
         {!desktopSidebarCollapsed && (
           <Link to="/" className="flex items-center gap-2">
             {company?.logo_url ? (
