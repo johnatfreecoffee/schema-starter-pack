@@ -63,17 +63,34 @@ const ServiceAreas = () => {
       
       if (areaError) throw areaError;
 
-      // Update all generated pages for this area
-      const { error: pagesError } = await supabase
-        .from('generated_pages')
-        .update({ status })
-        .eq('service_area_id', id);
-      
-      if (pagesError) throw pagesError;
+      if (status) {
+        // When turning ON, only activate pages where the service is also active
+        const { data: pages } = await supabase
+          .from('generated_pages')
+          .select('id, service_id, services!inner(is_active)')
+          .eq('service_area_id', id);
+        
+        if (pages) {
+          for (const page of pages) {
+            const serviceIsActive = (page.services as any).is_active;
+            await supabase
+              .from('generated_pages')
+              .update({ status: serviceIsActive })
+              .eq('id', page.id);
+          }
+        }
+      } else {
+        // When turning OFF, deactivate all pages for this area
+        await supabase
+          .from('generated_pages')
+          .update({ status: false })
+          .eq('service_area_id', id);
+      }
     },
     onSuccess: async (_, variables) => {
       await cacheInvalidation.invalidateServiceArea(variables.id);
       queryClient.invalidateQueries({ queryKey: ['service-areas'] });
+      queryClient.invalidateQueries({ queryKey: ['generated-pages'] });
       toast({ title: 'Area status updated' });
     },
   });

@@ -146,11 +146,10 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
 
       if (serviceError) throw serviceError;
 
-      // Fetch ALL active service areas
+      // Fetch ALL service areas (not just active ones)
       const { data: serviceAreas, error: areasError } = await supabase
         .from('service_areas')
-        .select('*')
-        .eq('status', true);
+        .select('*');
 
       if (areasError) throw areasError;
 
@@ -159,7 +158,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         const junctionEntries = serviceAreas.map(area => ({
           service_id: newService.id,
           service_area_id: area.id,
-          is_active: true,
+          is_active: area.status && values.is_active, // Both must be active
         }));
 
         const { error: junctionError } = await supabase
@@ -175,7 +174,8 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
           url_path: `/${area.city_slug}/${values.slug}`,
           page_title: `${values.name} in ${area.city_name} | ${companySettings?.business_name || 'Our Company'}`,
           meta_description: values.full_description.substring(0, 160),
-          status: values.is_active,
+          status: area.status && values.is_active, // Page active only if both are active
+          template_id: template.id,
         }));
 
         const { error: pagesError } = await supabase
@@ -191,10 +191,19 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
       await cacheInvalidation.invalidateService(data.service.id);
       queryClient.invalidateQueries({ queryKey: ['services'] });
       queryClient.invalidateQueries({ queryKey: ['templates'] });
-      toast({
-        title: 'Service created!',
-        description: `Generated ${data.pagesCount} pages for all service areas.`,
-      });
+      queryClient.invalidateQueries({ queryKey: ['generated-pages'] });
+      
+      if (data.pagesCount > 0) {
+        toast({
+          title: 'Service created!',
+          description: `Generated ${data.pagesCount} pages (one for each area).`,
+        });
+      } else {
+        toast({
+          title: 'Service created!',
+          description: 'No areas exist yet - pages will be created when you add areas.',
+        });
+      }
       onSuccess();
     },
     onError: (error: any) => {

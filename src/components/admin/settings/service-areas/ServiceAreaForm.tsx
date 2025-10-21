@@ -195,58 +195,68 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
 
         if (insertError) throw insertError;
 
-        // Get all active services
+        // Get ALL services (not just active ones)
         const { data: services, error: servicesError } = await supabase
           .from('services')
           .select('*');
 
         if (servicesError) throw servicesError;
 
-        // Create service_area_services entries and generated_pages
-        const serviceAreaServicesData = services.map(service => ({
-          service_area_id: newArea.id,
-          service_id: service.id,
-          is_active: true,
-        }));
+        if (services && services.length > 0) {
+          // Create service_area_services entries for EVERY service
+          const serviceAreaServicesData = services.map(service => ({
+            service_area_id: newArea.id,
+            service_id: service.id,
+            is_active: service.is_active && data.status, // Both must be active
+          }));
 
-        const { error: junctionError } = await supabase
-          .from('service_area_services')
-          .insert(serviceAreaServicesData);
+          const { error: junctionError } = await supabase
+            .from('service_area_services')
+            .insert(serviceAreaServicesData);
 
-        if (junctionError) throw junctionError;
+          if (junctionError) throw junctionError;
 
-        // Get company name for page titles
-        const { data: companySettings } = await supabase
-          .from('company_settings')
-          .select('business_name')
-          .single();
+          // Get company name for page titles
+          const { data: companySettings } = await supabase
+            .from('company_settings')
+            .select('business_name')
+            .single();
 
-        const companyName = companySettings?.business_name || 'Company';
+          const companyName = companySettings?.business_name || 'Company';
 
-        // Create generated pages
-        const generatedPagesData = services.map(service => ({
-          service_id: service.id,
-          service_area_id: newArea.id,
-          url_path: `/${data.city_slug}/${service.slug}`,
-          page_title: `${service.name} in ${data.city_name} | ${companyName}`,
-          meta_description: service.full_description?.substring(0, 160) || `Professional ${service.name} services in ${data.display_name}`,
-          status: true,
-        }));
+          // Create generated pages for EVERY service
+          const generatedPagesData = services.map(service => ({
+            service_id: service.id,
+            service_area_id: newArea.id,
+            url_path: `/${data.city_slug}/${service.slug}`,
+            page_title: `${service.name} in ${data.city_name} | ${companyName}`,
+            meta_description: service.full_description?.substring(0, 160) || `Professional ${service.name} services in ${data.display_name}`,
+            status: service.is_active && data.status, // Page active only if both are active
+            template_id: service.template_id,
+          }));
 
-        const { error: pagesError } = await supabase
-          .from('generated_pages')
-          .insert(generatedPagesData);
+          const { error: pagesError } = await supabase
+            .from('generated_pages')
+            .insert(generatedPagesData);
 
-        if (pagesError) throw pagesError;
+          if (pagesError) throw pagesError;
 
-        await cacheInvalidation.invalidateServiceArea(newArea.id);
-        toast({ 
-          title: 'Service area created successfully',
-          description: `${services.length} pages generated for ${data.city_name}`,
-        });
+          await cacheInvalidation.invalidateServiceArea(newArea.id);
+          toast({ 
+            title: 'Area created!',
+            description: `Generated ${services.length} pages (one for each service).`,
+          });
+        } else {
+          await cacheInvalidation.invalidateServiceArea(newArea.id);
+          toast({ 
+            title: 'Area created!',
+            description: 'No services exist yet - pages will be created when you add services.',
+          });
+        }
       }
 
       queryClient.invalidateQueries({ queryKey: ['service-areas'] });
+      queryClient.invalidateQueries({ queryKey: ['generated-pages'] });
       onSuccess();
     } catch (error: any) {
       const isDuplicateError = error.message?.includes('duplicate key') || 
