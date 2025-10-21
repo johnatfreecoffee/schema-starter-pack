@@ -258,7 +258,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
               </Button>
             </>
           ) : (
-            <div className="relative w-full flex items-center justify-center">
+            <div className="w-full flex flex-col items-center justify-center gap-1 py-1">
               {company?.icon_url && (
                 <Link to="/" className="flex items-center justify-center">
                   <LazyImage 
@@ -278,10 +278,10 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
                 variant="ghost"
                 size="icon"
                 onClick={() => setDesktopSidebarCollapsed(false)}
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0 text-foreground bg-background border border-border rounded-md shadow-sm"
+                className="h-4 w-4 p-0 text-foreground"
                 aria-label="Expand sidebar"
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-3 w-3" />
               </Button>
             </div>
           )}
