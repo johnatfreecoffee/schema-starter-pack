@@ -253,7 +253,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
               </Button>
             </>
           ) : (
-            <div className="relative w-full h-full flex items-center justify-center">
+            <div className="w-full h-full flex items-center justify-center">
               {company?.icon_url && (
                 <Link to="/" className="flex items-center justify-center">
                   <LazyImage 
@@ -269,15 +269,6 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
                   />
                 </Link>
               )}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setDesktopSidebarCollapsed(false)}
-                className="absolute -bottom-3 left-1/2 -translate-x-1/2 h-7 w-7 p-0 rounded-full bg-background border border-border text-foreground shadow-sm hover:bg-muted"
-                aria-label="Expand sidebar"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
             </div>
           )}
         </div>
@@ -362,6 +353,19 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
           }}
         >
           <div className="flex h-16 items-center justify-between gap-4 px-4">
+            {/* Desktop Expand Button (when sidebar is collapsed) */}
+            {!isMobile && desktopSidebarCollapsed && (
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setDesktopSidebarCollapsed(false)}
+                className="flex-shrink-0"
+                aria-label="Expand sidebar"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </Button>
+            )}
+
             {/* Mobile Menu Button */}
             {isMobile && (
               <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
