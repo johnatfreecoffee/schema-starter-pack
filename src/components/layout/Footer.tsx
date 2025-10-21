@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { LazyImage } from '@/components/ui/lazy-image';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useMemo } from 'react';
 const Footer = () => {
   const { data: company } = useCompanySettings();
   const { data: siteSettings } = useSiteSettings();
@@ -21,6 +22,44 @@ const Footer = () => {
       return data || [];
     },
   });
+
+  // Fetch outlet types to resolve icons when link suggests a different platform
+  const { data: outletTypes = [] } = useQuery({
+    queryKey: ['social-media-outlet-types-footer'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('social_media_outlet_types')
+        .select('id, name, icon_url');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const iconByName = useMemo(() => {
+    const map: Record<string, string> = {};
+    (outletTypes as any[]).forEach((ot) => {
+      if (ot?.name && ot?.icon_url) map[ot.name.toLowerCase()] = ot.icon_url;
+    });
+    return map;
+  }, [outletTypes]);
+
+  const detectPlatform = (url: string): string | null => {
+    try {
+      const host = new URL(url).host.toLowerCase();
+      if (host.includes('instagram')) return 'instagram';
+      if (host.includes('facebook.com') && !host.includes('m.me')) return 'facebook';
+      if (host.includes('m.me') || host.includes('messenger.com')) return 'facebook messenger';
+      if (host.includes('x.com') || host.includes('twitter.com')) return 'x';
+      if (host.includes('linkedin')) return 'linkedin';
+      if (host.includes('tiktok')) return 'tiktok';
+      if (host.includes('youtube')) return 'youtube';
+      if (host.includes('google') && host.includes('business')) return 'google business';
+      if (host.includes('whatsapp')) return 'whatsapp';
+      return null;
+    } catch {
+      return null;
+    }
+  };
 
   return (
     <footer 
@@ -55,30 +94,43 @@ const Footer = () => {
             {/* Social Media Links */}
             {siteSettings?.show_social_links && socialMedia.length > 0 && (
               <div className="flex gap-3 mt-4">
-                {socialMedia.map((item: any) => {
-                  // Prioritize custom_icon_url over outlet type icon
-                  const iconUrl = item.custom_icon_url || item.social_media_outlet_types?.icon_url;
-                  const platformName = item.social_media_outlet_types?.name || '';
-                  
-                  if (!iconUrl) return null;
-                  
-                  return (
-                    <a 
-                      key={item.id} 
-                      href={item.link} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="hover:opacity-70 transition-opacity"
-                      aria-label={item.custom_name || platformName}
-                    >
-                      <img 
-                        src={iconUrl} 
-                        alt={platformName}
-                        className="h-6 w-6"
-                      />
-                    </a>
-                  );
-                })}
+                {(() => {
+                  const seen = new Set<string>();
+                  return socialMedia.map((item: any) => {
+                    let platform = (item.social_media_outlet_types?.name || '').toLowerCase();
+                    const detected = detectPlatform(item.link);
+                    if (!platform || platform === '(other)') platform = detected || platform;
+                    if (platform === 'x' && detected && detected !== 'x') platform = detected;
+
+                    const resolvedIcon = item.custom_icon_url || (platform ? iconByName[platform] : undefined) || item.social_media_outlet_types?.icon_url;
+                    if (!resolvedIcon) return null;
+
+                    let hostKey = '';
+                    try { hostKey = new URL(item.link).hostname; } catch { hostKey = item.link; }
+                    const dedupeKey = `${platform}|${hostKey}`;
+                    if (seen.has(dedupeKey)) return null;
+                    seen.add(dedupeKey);
+
+                    const label = item.custom_name || (platform ? platform.charAt(0).toUpperCase() + platform.slice(1) : 'Social');
+
+                    return (
+                      <a 
+                        key={item.id} 
+                        href={item.link} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="hover:opacity-70 transition-opacity"
+                        aria-label={label}
+                      >
+                        <img 
+                          src={resolvedIcon} 
+                          alt={label}
+                          className="h-6 w-6"
+                        />
+                      </a>
+                    );
+                  });
+                })()}
               </div>
             )}
           </div>
