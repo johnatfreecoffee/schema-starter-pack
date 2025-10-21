@@ -61,7 +61,6 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    'Dashboard': true,
     'CRM': true,
     'Money': false,
     'Support': false,
@@ -107,13 +106,9 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
 
   const isAdmin = role === 'Super Admin' || role === 'Admin';
 
+  const dashboardItem = { path: '/dashboard', icon: Home, label: 'Dashboard' };
+  
   const navSections = [
-    {
-      title: 'Dashboard',
-      items: [
-        { path: '/dashboard', icon: Home, label: 'Overview' },
-      ]
-    },
     {
       title: 'CRM',
       items: [
@@ -292,27 +287,35 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
         <nav className="space-y-2 px-3 py-4">
           {desktopSidebarCollapsed ? (
             // When collapsed, show all items as flat list
-            navSections.map((section) => (
-              section.items.map((item) => renderNavItem(item, true))
-            ))
+            <>
+              {renderNavItem(dashboardItem, true)}
+              {navSections.map((section) => (
+                section.items.map((item) => renderNavItem(item, true))
+              ))}
+            </>
           ) : (
-            // When expanded, show grouped sections
-            navSections.map((section) => (
-              <div key={section.title} className="space-y-1">
-                <button
-                  onClick={() => toggleSection(section.title)}
-                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-foreground uppercase tracking-wider rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-                >
-                  <span>{section.title}</span>
-                  {expandedSections[section.title] ? (
-                    <ChevronUp className="h-3 w-3" />
-                  ) : (
-                    <ChevronDown className="h-3 w-3" />
-                  )}
-                </button>
-                {expandedSections[section.title] && section.items.map((item) => renderNavItem(item, false))}
+            // When expanded, show dashboard first, then grouped sections
+            <>
+              {renderNavItem(dashboardItem, false)}
+              <div className="pt-2">
+                {navSections.map((section) => (
+                  <div key={section.title} className="space-y-1">
+                    <button
+                      onClick={() => toggleSection(section.title)}
+                      className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-foreground uppercase tracking-wider rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                    >
+                      <span>{section.title}</span>
+                      {expandedSections[section.title] ? (
+                        <ChevronUp className="h-3 w-3" />
+                      ) : (
+                        <ChevronDown className="h-3 w-3" />
+                      )}
+                    </button>
+                    {expandedSections[section.title] && section.items.map((item) => renderNavItem(item, false))}
+                  </div>
+                ))}
               </div>
-            ))
+            </>
           )}
         </nav>
       </ScrollArea>
@@ -321,22 +324,25 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
 
   const MobileSidebarContent = () => (
     <nav className="space-y-2 px-3">
-      {navSections.map((section) => (
-        <div key={section.title} className="space-y-1">
-          <button
-            onClick={() => toggleSection(section.title)}
-            className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-foreground uppercase tracking-wider rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-          >
-            <span>{section.title}</span>
-            {expandedSections[section.title] ? (
-              <ChevronUp className="h-3 w-3" />
-            ) : (
-              <ChevronDown className="h-3 w-3" />
-            )}
-          </button>
-          {expandedSections[section.title] && section.items.map((item) => renderNavItem(item))}
-        </div>
-      ))}
+      {renderNavItem(dashboardItem)}
+      <div className="pt-2">
+        {navSections.map((section) => (
+          <div key={section.title} className="space-y-1">
+            <button
+              onClick={() => toggleSection(section.title)}
+              className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-foreground uppercase tracking-wider rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+            >
+              <span>{section.title}</span>
+              {expandedSections[section.title] ? (
+                <ChevronUp className="h-3 w-3" />
+              ) : (
+                <ChevronDown className="h-3 w-3" />
+              )}
+            </button>
+            {expandedSections[section.title] && section.items.map((item) => renderNavItem(item))}
+          </div>
+        ))}
+      </div>
     </nav>
   );
 
