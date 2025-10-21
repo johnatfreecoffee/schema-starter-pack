@@ -227,7 +227,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
           borderBottomColor: siteSettings?.header_border_color || 'hsl(0, 0%, 89%)',
         }}
       >
-        <div className="w-full relative flex items-center justify-center">
+        <div className="w-full flex items-center justify-between">
           {!desktopSidebarCollapsed ? (
             <>
               <Link to="/" className="flex items-center gap-2">
@@ -258,7 +258,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
               </Button>
             </>
           ) : (
-            <div className="relative w-full flex items-center justify-center">
+            <>
               {company?.icon_url && (
                 <Link to="/" className="flex items-center justify-center">
                   <LazyImage 
@@ -278,12 +278,12 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
                 variant="ghost"
                 size="icon"
                 onClick={() => setDesktopSidebarCollapsed(false)}
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 z-10 text-foreground"
+                className="flex-shrink-0 h-8 w-8"
                 aria-label="Expand sidebar"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
-            </div>
+            </>
           )}
         </div>
       </div>
