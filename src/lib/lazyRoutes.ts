@@ -56,6 +56,7 @@ export const ServiceAreas = lazy(() => import('@/pages/dashboard/settings/Servic
 export const PageManagement = lazy(() => import('@/pages/dashboard/settings/PageManagement'));
 export const SiteSettings = lazy(() => import('@/pages/dashboard/settings/SiteSettings'));
 export const StaticPages = lazy(() => import('@/pages/dashboard/settings/StaticPages'));
+export const Sitemap = lazy(() => import('@/pages/dashboard/settings/Sitemap'));
 export const EmailTemplates = lazy(() => import('@/pages/dashboard/settings/EmailTemplates'));
 export const DocumentTemplates = lazy(() => import('@/pages/dashboard/settings/DocumentTemplates'));
 export const Templates = lazy(() => import('@/pages/dashboard/settings/Templates'));

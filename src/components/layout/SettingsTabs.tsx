@@ -14,6 +14,7 @@ const SettingsTabs = () => {
     { value: 'page-management', label: 'Page Management' },
     { value: 'templates', label: 'Templates' },
     { value: 'static-pages', label: 'Static Pages' },
+    { value: 'sitemap', label: 'Site Map' },
     { value: 'form-fields', label: 'Form Fields' },
     { value: 'email-templates', label: 'Email Templates' },
     { value: 'email-settings', label: 'Email Settings' },
