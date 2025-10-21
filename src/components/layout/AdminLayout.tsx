@@ -357,6 +357,18 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
               </Sheet>
             )}
 
+            {/* Desktop Sidebar Toggle (visible when collapsed) */}
+            {!isMobile && desktopSidebarCollapsed && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setDesktopSidebarCollapsed(false)}
+                className="flex-shrink-0"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            )}
+
             {/* Mobile Logo (shown when sidebar is hidden) */}
             {isMobile && (
               <Link to="/" className="flex items-center gap-2 md:hidden">
