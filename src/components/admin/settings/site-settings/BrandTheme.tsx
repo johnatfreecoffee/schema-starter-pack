@@ -128,75 +128,233 @@ const BrandTheme = () => {
         </div>
       )}
       
-      <div className="space-y-6">
-        <h3 className="text-lg font-semibold">Brand Colors</h3>
-        
-        <div>
-          <Label>Primary Color</Label>
-          <p className="text-sm text-muted-foreground mb-2">Used for buttons, links, focus states</p>
-          <ColorPicker
-            value={primaryColor}
-            onChange={setPrimaryColor}
-            label="Primary Color"
-          />
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column - Settings */}
+        <div className="space-y-8">
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold">Brand Colors</h3>
+            
+            <div>
+              <Label>Primary Color</Label>
+              <p className="text-sm text-muted-foreground mb-2">Used for buttons, links, focus states</p>
+              <ColorPicker
+                value={primaryColor}
+                onChange={setPrimaryColor}
+                label="Primary Color"
+              />
+            </div>
 
-        <div>
-          <Label>Secondary Color</Label>
-          <p className="text-sm text-muted-foreground mb-2">Used for secondary UI elements</p>
-          <ColorPicker
-            value={secondaryColor}
-            onChange={setSecondaryColor}
-            label="Secondary Color"
-          />
-        </div>
+            <div>
+              <Label>Secondary Color</Label>
+              <p className="text-sm text-muted-foreground mb-2">Used for secondary UI elements</p>
+              <ColorPicker
+                value={secondaryColor}
+                onChange={setSecondaryColor}
+                label="Secondary Color"
+              />
+            </div>
 
-        <div>
-          <Label>Accent Color</Label>
-          <p className="text-sm text-muted-foreground mb-2">Used for success states and highlights</p>
-          <ColorPicker
-            value={accentColor}
-            onChange={setAccentColor}
-            label="Accent Color"
-          />
-        </div>
-      </div>
+            <div>
+              <Label>Accent Color</Label>
+              <p className="text-sm text-muted-foreground mb-2">Used for success states and highlights</p>
+              <ColorPicker
+                value={accentColor}
+                onChange={setAccentColor}
+                label="Accent Color"
+              />
+            </div>
+          </div>
 
-      <div className="space-y-6 pt-6 border-t">
-        <h3 className="text-lg font-semibold">Border Radius</h3>
-        
-        <div>
-          <Label htmlFor="button-radius">Button Border Radius: {buttonRadius}px</Label>
-          <Slider
-            id="button-radius"
-            min={0}
-            max={20}
-            step={1}
-            value={[buttonRadius]}
-            onValueChange={([value]) => setButtonRadius(value)}
-            className="mt-2"
-          />
-          <div className="mt-4">
-            <p className="text-sm text-muted-foreground mb-2">Preview:</p>
-            <Button style={{ borderRadius: `${buttonRadius}px` }}>Sample Button</Button>
+          <div className="space-y-6 pt-6 border-t">
+            <h3 className="text-lg font-semibold">Border Radius</h3>
+            
+            <div>
+              <Label htmlFor="button-radius">Button Border Radius: {buttonRadius}px</Label>
+              <Slider
+                id="button-radius"
+                min={0}
+                max={20}
+                step={1}
+                value={[buttonRadius]}
+                onValueChange={([value]) => setButtonRadius(value)}
+                className="mt-2"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="card-radius">Card Border Radius: {cardRadius}px</Label>
+              <Slider
+                id="card-radius"
+                min={0}
+                max={24}
+                step={1}
+                value={[cardRadius]}
+                onValueChange={([value]) => setCardRadius(value)}
+                className="mt-2"
+              />
+            </div>
           </div>
         </div>
 
-        <div>
-          <Label htmlFor="card-radius">Card Border Radius: {cardRadius}px</Label>
-          <Slider
-            id="card-radius"
-            min={0}
-            max={24}
-            step={1}
-            value={[cardRadius]}
-            onValueChange={([value]) => setCardRadius(value)}
-            className="mt-2"
-          />
-          <div className="mt-4">
-            <p className="text-sm text-muted-foreground mb-2">Preview:</p>
-            <Card className="p-4" style={{ borderRadius: `${cardRadius}px` }}>
-              <p className="text-sm">Sample card with custom border radius</p>
+        {/* Right Column - Live Preview */}
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Live Preview</h3>
+            
+            {/* Button Examples */}
+            <Card className="p-6 space-y-6" style={{ borderRadius: `${cardRadius}px` }}>
+              <div>
+                <p className="text-sm font-medium mb-3 text-slate-700">Primary Buttons</p>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    className="px-4 py-2 text-white font-medium transition-opacity hover:opacity-90"
+                    style={{ 
+                      backgroundColor: primaryColor,
+                      borderRadius: `${buttonRadius}px`
+                    }}
+                  >
+                    Primary Button
+                  </button>
+                  <button
+                    className="px-4 py-2 text-white font-medium opacity-50"
+                    style={{ 
+                      backgroundColor: primaryColor,
+                      borderRadius: `${buttonRadius}px`
+                    }}
+                  >
+                    Disabled
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium mb-3 text-slate-700">Secondary Buttons</p>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    className="px-4 py-2 text-white font-medium transition-opacity hover:opacity-90"
+                    style={{ 
+                      backgroundColor: secondaryColor,
+                      borderRadius: `${buttonRadius}px`
+                    }}
+                  >
+                    Secondary Button
+                  </button>
+                  <button
+                    className="px-4 py-2 font-medium border-2 transition-colors hover:bg-opacity-10"
+                    style={{ 
+                      borderColor: secondaryColor,
+                      color: secondaryColor,
+                      borderRadius: `${buttonRadius}px`,
+                      backgroundColor: 'transparent'
+                    }}
+                  >
+                    Outline
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-sm font-medium mb-3 text-slate-700">Accent / Success Buttons</p>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    className="px-4 py-2 text-white font-medium transition-opacity hover:opacity-90"
+                    style={{ 
+                      backgroundColor: accentColor,
+                      borderRadius: `${buttonRadius}px`
+                    }}
+                  >
+                    Success
+                  </button>
+                  <button
+                    className="px-3 py-2 text-sm font-medium transition-opacity hover:opacity-90"
+                    style={{ 
+                      backgroundColor: accentColor,
+                      color: 'white',
+                      borderRadius: `${buttonRadius}px`
+                    }}
+                  >
+                    ✓ Complete
+                  </button>
+                </div>
+              </div>
+            </Card>
+
+            {/* Website Mockup */}
+            <Card className="p-4 bg-slate-50" style={{ borderRadius: `${cardRadius}px` }}>
+              <p className="text-sm font-medium mb-4 text-slate-700">Website Preview</p>
+              <div className="bg-white rounded-lg shadow-sm overflow-hidden" style={{ borderRadius: `${cardRadius}px` }}>
+                {/* Header */}
+                <div className="border-b border-slate-200 p-4 flex items-center justify-between">
+                  <div className="text-sm font-semibold text-slate-700">Your Business</div>
+                  <div className="flex gap-2">
+                    <a 
+                      href="#"
+                      className="text-sm font-medium hover:opacity-80 transition-opacity"
+                      style={{ color: primaryColor }}
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      About
+                    </a>
+                    <a 
+                      href="#"
+                      className="text-sm font-medium hover:opacity-80 transition-opacity"
+                      style={{ color: primaryColor }}
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      Services
+                    </a>
+                  </div>
+                </div>
+
+                {/* Hero Section */}
+                <div className="p-6 text-center">
+                  <h2 className="text-lg font-bold text-slate-900 mb-2">Welcome to Your Site</h2>
+                  <p className="text-sm text-slate-600 mb-4">Experience the power of your brand colors</p>
+                  <button
+                    className="px-6 py-2 text-white font-medium transition-opacity hover:opacity-90 inline-block"
+                    style={{ 
+                      backgroundColor: primaryColor,
+                      borderRadius: `${buttonRadius}px`
+                    }}
+                  >
+                    Get Started
+                  </button>
+                </div>
+
+                {/* Feature Cards */}
+                <div className="p-4 grid grid-cols-2 gap-3">
+                  <div 
+                    className="p-3 border"
+                    style={{ 
+                      borderColor: secondaryColor,
+                      borderRadius: `${cardRadius}px`
+                    }}
+                  >
+                    <div 
+                      className="w-8 h-8 rounded-full mb-2 flex items-center justify-center text-white text-xs font-bold"
+                      style={{ backgroundColor: secondaryColor }}
+                    >
+                      1
+                    </div>
+                    <p className="text-xs font-medium text-slate-700">Feature One</p>
+                  </div>
+                  <div 
+                    className="p-3 bg-opacity-10"
+                    style={{ 
+                      backgroundColor: accentColor,
+                      borderRadius: `${cardRadius}px`
+                    }}
+                  >
+                    <div 
+                      className="w-8 h-8 rounded-full mb-2 flex items-center justify-center text-white text-xs font-bold"
+                      style={{ backgroundColor: accentColor }}
+                    >
+                      ✓
+                    </div>
+                    <p className="text-xs font-medium text-slate-700">Success Story</p>
+                  </div>
+                </div>
+              </div>
             </Card>
           </div>
         </div>
