@@ -43,7 +43,8 @@ import {
   Zap,
   Workflow,
   LayoutTemplate,
-  TestTube
+  TestTube,
+  Map
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
@@ -143,6 +144,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
         { path: '/dashboard/settings/service-areas', icon: MapPin, label: 'Service Areas' },
         { path: '/dashboard/settings/templates', icon: FileCode, label: 'Templates' },
         { path: '/dashboard/settings/static-pages', icon: FileTextAlt, label: 'Static Pages' },
+        { path: '/dashboard/settings/sitemap', icon: Map, label: 'Site Map' },
         { path: '/dashboard/settings/form-fields', icon: FileText, label: 'Form Fields' },
         { path: '/dashboard/settings/email-templates', icon: FileText, label: 'Email Templates' },
         { path: '/dashboard/settings/email-settings', icon: Settings, label: 'Email Settings' },
