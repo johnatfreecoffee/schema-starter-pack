@@ -2608,25 +2608,61 @@ export type Database = {
       }
       service_area_services: {
         Row: {
+          completion_time: string | null
           created_at: string
+          customer_count: number | null
           id: string
           is_active: boolean
+          local_benefits: string[] | null
+          local_description: string | null
+          local_examples: string | null
+          local_keywords: string[] | null
+          meta_description_override: string | null
+          meta_title_override: string | null
+          pricing_notes: string | null
+          response_time: string | null
           service_area_id: string
           service_id: string
+          special_considerations: string | null
+          updated_at: string | null
         }
         Insert: {
+          completion_time?: string | null
           created_at?: string
+          customer_count?: number | null
           id?: string
           is_active?: boolean
+          local_benefits?: string[] | null
+          local_description?: string | null
+          local_examples?: string | null
+          local_keywords?: string[] | null
+          meta_description_override?: string | null
+          meta_title_override?: string | null
+          pricing_notes?: string | null
+          response_time?: string | null
           service_area_id: string
           service_id: string
+          special_considerations?: string | null
+          updated_at?: string | null
         }
         Update: {
+          completion_time?: string | null
           created_at?: string
+          customer_count?: number | null
           id?: string
           is_active?: boolean
+          local_benefits?: string[] | null
+          local_description?: string | null
+          local_examples?: string | null
+          local_keywords?: string[] | null
+          meta_description_override?: string | null
+          meta_title_override?: string | null
+          pricing_notes?: string | null
+          response_time?: string | null
           service_area_id?: string
           service_id?: string
+          special_considerations?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {

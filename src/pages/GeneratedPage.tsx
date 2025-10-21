@@ -14,7 +14,7 @@ import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 
 const GeneratedPage = () => {
   const { citySlug, serviceSlug } = useParams<{ citySlug: string; serviceSlug: string }>();
-  const urlPath = `/services/${serviceSlug}/${citySlug}`;
+  const urlPath = `/${citySlug}/${serviceSlug}`;
   const { openModal } = useLeadFormModal();
 
   const { data: page, isLoading, error } = useCachedQuery({

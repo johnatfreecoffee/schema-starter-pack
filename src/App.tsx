@@ -38,9 +38,9 @@ const AppContent = () => {
           {/* Public Routes */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/services/:serviceSlug" element={<ServiceOverviewPage />} />
-            <Route path="/services/:serviceSlug/:citySlug" element={<GeneratedPage />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/services/:serviceSlug" element={<ServiceOverviewPage />} />
+          <Route path="/:citySlug/:serviceSlug" element={<GeneratedPage />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/reviews" element={<ReviewsPage />} />
