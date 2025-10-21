@@ -175,7 +175,6 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
           page_title: `${values.name} in ${area.city_name} | ${companySettings?.business_name || 'Our Company'}`,
           meta_description: values.full_description.substring(0, 160),
           status: area.status && values.is_active, // Page active only if both are active
-          template_id: template.id,
         }));
 
         const { error: pagesError } = await supabase

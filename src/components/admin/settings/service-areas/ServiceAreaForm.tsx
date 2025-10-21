@@ -232,7 +232,6 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
             page_title: `${service.name} in ${data.city_name} | ${companyName}`,
             meta_description: service.full_description?.substring(0, 160) || `Professional ${service.name} services in ${data.display_name}`,
             status: service.is_active && data.status, // Page active only if both are active
-            template_id: service.template_id,
           }));
 
           const { error: pagesError } = await supabase
