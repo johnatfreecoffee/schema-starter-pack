@@ -3,7 +3,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -20,7 +19,6 @@ const ServicesSettings = () => {
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<string>('all');
   const [showArchived, setShowArchived] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -45,52 +43,11 @@ const ServicesSettings = () => {
         query = query.eq('archived', false);
       }
       
-      query = query.order('is_active', { ascending: false })
-        .order('name', { ascending: true });
+      query = query.order('name', { ascending: true });
       
       const { data, error } = await query;
       if (error) throw error;
       return data;
-    },
-  });
-
-  const toggleActiveMutation = useMutation({
-    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
-      const { error: serviceError } = await supabase
-        .from('services')
-        .update({ is_active })
-        .eq('id', id);
-      
-      if (serviceError) throw serviceError;
-
-      if (is_active) {
-        // When turning ON, only activate pages where the area is also active
-        const { data: pages } = await supabase
-          .from('generated_pages')
-          .select('id, service_area_id, service_areas!inner(status)')
-          .eq('service_id', id);
-        
-        if (pages) {
-          for (const page of pages) {
-            const areaIsActive = (page.service_areas as any).status;
-            await supabase
-              .from('generated_pages')
-              .update({ status: areaIsActive })
-              .eq('id', page.id);
-          }
-        }
-      } else {
-        // When turning OFF, deactivate all pages for this service
-        await supabase
-          .from('generated_pages')
-          .update({ status: false })
-          .eq('service_id', id);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['services'] });
-      queryClient.invalidateQueries({ queryKey: ['generated-pages'] });
-      toast({ title: 'Service status updated' });
     },
   });
 
@@ -189,8 +146,6 @@ const ServicesSettings = () => {
   const filteredServices = services?.filter(service => {
     if (categoryFilter !== 'all' && service.category !== categoryFilter) return false;
     if (searchQuery && !service.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    if (activeFilter === 'active' && !service.is_active) return false;
-    if (activeFilter === 'inactive' && service.is_active) return false;
     return true;
   });
 
@@ -234,17 +189,6 @@ const ServicesSettings = () => {
             </SelectContent>
           </Select>
 
-          <Select value={activeFilter} onValueChange={setActiveFilter}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Services</SelectItem>
-              <SelectItem value="active">Active Only</SelectItem>
-              <SelectItem value="inactive">Inactive Only</SelectItem>
-            </SelectContent>
-          </Select>
-
           <Button
             variant={showArchived ? 'default' : 'outline'}
             size="sm"
@@ -273,13 +217,12 @@ const ServicesSettings = () => {
                   <TableHead>Starting Price</TableHead>
                   <TableHead>Template</TableHead>
                   <TableHead>Pages</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredServices?.map((service) => (
-                  <TableRow key={service.id} className={!service.is_active || service.archived ? 'opacity-50' : ''}>
+                  <TableRow key={service.id} className={service.archived ? 'opacity-50' : ''}>
                     <TableCell className="font-medium">
                       {service.name}
                       {service.archived && <span className="ml-2 text-xs text-muted-foreground">(Archived)</span>}
@@ -295,15 +238,6 @@ const ServicesSettings = () => {
                     <TableCell>{service.templates?.name || 'N/A'}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">{service.generated_pages?.[0]?.count || 0} pages</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Switch
-                          checked={service.is_active}
-                          onCheckedChange={(checked) => toggleActiveMutation.mutate({ id: service.id, is_active: checked })}
-                        />
-                        <span className="text-sm">{service.is_active ? 'Active' : 'Inactive'}</span>
-                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-2">
@@ -359,7 +293,7 @@ const ServicesSettings = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredServices?.map((service) => (
-              <div key={service.id} className={`border rounded-lg p-4 hover:shadow-lg transition-shadow ${!service.is_active || service.archived ? 'opacity-50' : ''}`}>
+              <div key={service.id} className={`border rounded-lg p-4 hover:shadow-lg transition-shadow ${service.archived ? 'opacity-50' : ''}`}>
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <h3 className="font-semibold text-lg">{service.name}</h3>
@@ -372,15 +306,8 @@ const ServicesSettings = () => {
                 <p className="text-green-600 font-semibold mb-2">
                   {service.starting_price ? formatPrice(service.starting_price) : 'N/A'}
                 </p>
-                <div className="flex justify-between items-center mb-3">
+                <div className="mb-3">
                   <Badge variant="secondary">{service.generated_pages?.[0]?.count || 0} pages</Badge>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={service.is_active}
-                      onCheckedChange={(checked) => toggleActiveMutation.mutate({ id: service.id, is_active: checked })}
-                    />
-                    <span className="text-xs">{service.is_active ? 'Active' : 'Inactive'}</span>
-                  </div>
                 </div>
                 <div className="flex gap-2 justify-end">
                   <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsPreviewOpen(true); }}>

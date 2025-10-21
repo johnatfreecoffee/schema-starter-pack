@@ -153,7 +153,7 @@ const ServiceAreas = () => {
     const nonArchivedPages = area.generated_pages?.filter((p: any) => 
       !p.services?.archived
     ) || [];
-    return nonArchivedPages[0]?.count || 0;
+    return nonArchivedPages.length;
   };
 
   return (
