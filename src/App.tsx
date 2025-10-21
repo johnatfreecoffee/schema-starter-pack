@@ -106,7 +106,6 @@ const AppContent = () => {
             <Route path="settings/auto-assignment" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.AutoAssignment /></Suspense>} />
             <Route path="settings/company" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Company /></Suspense>} />
             <Route path="settings/ai-training" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.AITraining /></Suspense>} />
-            <Route path="settings/knowledge-base" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.KnowledgeBase /></Suspense>} />
             <Route path="settings/site-settings" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.SiteSettings /></Suspense>} />
             <Route path="settings/services" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Services /></Suspense>} />
             <Route path="settings/service-areas" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.ServiceAreas /></Suspense>} />

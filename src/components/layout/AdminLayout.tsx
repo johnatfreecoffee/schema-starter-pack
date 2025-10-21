@@ -141,7 +141,6 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
       items: [
         { path: '/dashboard/settings/company', icon: Wrench, label: 'Company' },
         { path: '/dashboard/settings/ai-training', icon: Brain, label: 'AI Training' },
-        { path: '/dashboard/settings/knowledge-base', icon: FileText, label: 'Knowledge Base' },
         { path: '/dashboard/settings/site-settings', icon: Globe, label: 'Site Settings' },
         { path: '/dashboard/settings/services', icon: Package, label: 'Services' },
         { path: '/dashboard/settings/service-areas', icon: MapPin, label: 'Service Areas' },
