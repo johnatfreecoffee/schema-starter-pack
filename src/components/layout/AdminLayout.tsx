@@ -227,54 +227,63 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
           borderBottomColor: siteSettings?.header_border_color || 'hsl(0, 0%, 89%)',
         }}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full">
           {!desktopSidebarCollapsed ? (
-            <Link to="/" className="flex items-center gap-2">
-              {company?.logo_url ? (
-                <LazyImage 
-                  src={company.logo_url} 
-                  alt={company.business_name} 
-                  style={{ 
-                    height: `${Math.min(siteSettings?.header_logo_size || 32, 48)}px`,
-                    maxHeight: '48px'
-                  }}
-                  className="w-auto object-contain"
-                />
-              ) : (
-                <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-                  {company?.business_name || 'CRM'}
-                </span>
-              )}
-            </Link>
-          ) : (
-            company?.icon_url && (
-              <Link to="/" className="flex items-center justify-center">
-                <LazyImage 
-                  src={company.icon_url} 
-                  alt={company.business_name} 
-                  style={{ 
-                    height: `${Math.min(siteSettings?.header_logo_size || 32, 40)}px`,
-                    width: `${Math.min(siteSettings?.header_logo_size || 32, 40)}px`,
-                    maxHeight: '40px',
-                    maxWidth: '40px'
-                  }}
-                  className="object-contain"
-                />
+            <>
+              <Link to="/" className="flex items-center gap-2">
+                {company?.logo_url ? (
+                  <LazyImage 
+                    src={company.logo_url} 
+                    alt={company.business_name} 
+                    style={{ 
+                      height: `${Math.min(siteSettings?.header_logo_size || 32, 48)}px`,
+                      maxHeight: '48px'
+                    }}
+                    className="w-auto object-contain"
+                  />
+                ) : (
+                  <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+                    {company?.business_name || 'CRM'}
+                  </span>
+                )}
               </Link>
-            )
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setDesktopSidebarCollapsed(true)}
+                className="flex-shrink-0"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            </>
+          ) : (
+            <div className="relative w-full flex items-center justify-center">
+              {company?.icon_url && (
+                <Link to="/" className="flex items-center justify-center">
+                  <LazyImage 
+                    src={company.icon_url} 
+                    alt={company.business_name} 
+                    style={{ 
+                      height: `${Math.min(siteSettings?.header_logo_size || 32, 40)}px`,
+                      width: `${Math.min(siteSettings?.header_logo_size || 32, 40)}px`,
+                      maxHeight: '40px',
+                      maxWidth: '40px'
+                    }}
+                    className="object-contain"
+                  />
+                </Link>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setDesktopSidebarCollapsed(false)}
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0 z-10"
+                aria-label="Expand sidebar"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setDesktopSidebarCollapsed(!desktopSidebarCollapsed)}
-            className="flex-shrink-0"
-          >
-            {desktopSidebarCollapsed ? (
-              <ChevronRight className="h-4 w-4" />
-            ) : (
-              <ChevronLeft className="h-4 w-4" />
-            )}
-          </Button>
         </div>
       </div>
       
