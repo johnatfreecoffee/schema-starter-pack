@@ -21,23 +21,27 @@ const HeaderSettings = () => {
       const { data, error } = await supabase
         .from('site_settings')
         .select('*')
-        .limit(1)
-        .maybeSingle();
+        .limit(1);
 
       if (error) throw error;
-      
-      if (!data) {
+
+      const row = Array.isArray(data) ? data[0] : data;
+
+      if (!row) {
+        const userRes = await supabase.auth.getUser();
         const { data: newSettings, error: insertError } = await supabase
           .from('site_settings')
-          .insert({})
+          .insert({
+            updated_by: userRes.data.user?.id ?? null,
+          })
           .select()
           .single();
-        
+
         if (insertError) throw insertError;
         return newSettings;
       }
-      
-      return data;
+
+      return row;
     },
   });
 
