@@ -303,9 +303,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
                   placeholder="e.g., Storm Damage Restoration"
                   onChange={(e) => {
                     field.onChange(e);
-                    if (!service) {
-                      form.setValue('slug', generateSlug(e.target.value));
-                    }
+                    form.setValue('slug', generateSlug(e.target.value));
                   }}
                 />
               </FormControl>
