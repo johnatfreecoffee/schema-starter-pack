@@ -33,6 +33,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { getTemplateForService, serviceNameToFileName, getCategoryFolder } from '@/lib/templateFiles';
+import TemplatePreview from '@/components/admin/settings/templates/TemplatePreview';
 
 interface PageNode {
   id: string;
@@ -467,31 +468,26 @@ const SitemapPage = () => {
 
       {/* Template Preview Dialog */}
       <Dialog open={!!selectedTemplate} onOpenChange={(open) => !open && setSelectedTemplate(null)}>
-        <DialogContent className="max-w-4xl max-h-[80vh]">
-          <DialogHeader>
-            <DialogTitle>{selectedTemplate?.service} - Template Preview</DialogTitle>
-            <DialogDescription>
-              Backend view showing template with variables (not visible to public)
-            </DialogDescription>
-          </DialogHeader>
-          <div className="overflow-auto max-h-[60vh]">
-            {selectedTemplate?.content?.includes('No template file found') ? (
-              <div className="bg-muted rounded-lg p-6 text-center">
-                <p className="text-sm text-muted-foreground mb-2">
-                  {selectedTemplate.content}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Create this file to enable the template preview.
-                </p>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] w-full p-0">
+          {selectedTemplate?.content && !selectedTemplate.content.includes('No template file found') ? (
+            <TemplatePreview 
+              templateHtml={selectedTemplate.content}
+              onClose={() => setSelectedTemplate(null)}
+            />
+          ) : (
+            <div className="p-8">
+              <DialogHeader>
+                <DialogTitle>Template Not Found</DialogTitle>
+                <DialogDescription>
+                  No template file found for {selectedTemplate?.service}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="mt-4 text-center text-muted-foreground">
+                <p className="text-sm">{selectedTemplate?.content}</p>
+                <p className="text-xs mt-2">Create this file to enable the template preview.</p>
               </div>
-            ) : (
-              <div className="bg-muted rounded-lg p-4">
-                <pre className="text-xs font-mono whitespace-pre-wrap break-words">
-                  {selectedTemplate?.content}
-                </pre>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
