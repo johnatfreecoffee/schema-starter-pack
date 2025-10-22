@@ -2746,6 +2746,7 @@ export type Database = {
           id: string
           is_active: boolean
           name: string
+          short_description: string | null
           slug: string
           starting_price: number | null
           template_id: string | null
@@ -2761,6 +2762,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name: string
+          short_description?: string | null
           slug: string
           starting_price?: number | null
           template_id?: string | null
@@ -2776,6 +2778,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          short_description?: string | null
           slug?: string
           starting_price?: number | null
           template_id?: string | null
