@@ -214,81 +214,76 @@ serve(async (req) => {
 
     let finalHtml = page.rendered_html;
 
+    // Fetch company settings for rendering
+    const { data: company } = await supabase
+      .from('company_settings')
+      .select('*')
+      .single();
+
+    if (!company) {
+      throw new Error('Company settings not found');
+    }
+
+    // Build comprehensive page data with localized content
+    const pageData: any = {
+      // Service variables
+      service_name: page.service.name,
+      service_slug: page.service.slug,
+      service_description: page.service.full_description || '',
+      service_starting_price: formatPrice(page.service.starting_price || 0),
+      service_category: page.service.category,
+
+      // Area variables
+      city_name: page.service_area.city_name,
+      city_slug: page.service_area.city_slug,
+      display_name: page.service_area.display_name || page.service_area.city_name,
+      area_display_name: page.service_area.display_name || page.service_area.city_name,
+      state: page.service_area.state || 'LA',
+      zip_code: page.service_area.zip_code || '',
+
+      // Localized content from service_area_services
+      local_description: localizedContent?.local_description || page.service_area.local_description || '',
+      local_benefits: localizedContent?.local_benefits || [],
+      response_time: localizedContent?.response_time || '',
+      completion_time: localizedContent?.completion_time || '',
+      customer_count: localizedContent?.customer_count || 0,
+      pricing_notes: localizedContent?.pricing_notes || '',
+      local_examples: localizedContent?.local_examples || '',
+      special_considerations: localizedContent?.special_considerations || '',
+
+      // Company variables
+      company_name: company.business_name,
+      company_phone: formatPhone(company.phone),
+      company_email: company.email,
+      company_address: company.address,
+      company_description: company.description || '',
+      company_slogan: company.business_slogan || '',
+      years_experience: company.years_experience || 0,
+      logo_url: company.logo_url || '',
+      icon_url: company.icon_url || '',
+
+      // Page meta
+      page_title: localizedContent?.meta_title_override || page.page_title,
+      meta_description: localizedContent?.meta_description_override || page.meta_description || '',
+      url_path: page.url_path,
+    };
+
+    // Compile template content (separate from layout wrapping)
+    const template = compileTemplate(page.service.template.template_html);
+    const contentHtml = template(pageData);
+
+    // Cache the compiled content if needed
     if (needsRegeneration) {
-      console.log('Regenerating page...');
-
-      // Fetch company settings
-      const { data: company } = await supabase
-        .from('company_settings')
-        .select('*')
-        .single();
-
-      if (!company) {
-        throw new Error('Company settings not found');
-      }
-
-      // Build comprehensive page data with localized content
-      const pageData: any = {
-        // Service variables
-        service_name: page.service.name,
-        service_slug: page.service.slug,
-        service_description: page.service.full_description || '',
-        service_starting_price: formatPrice(page.service.starting_price || 0),
-        service_category: page.service.category,
-        
-        // Area variables
-        city_name: page.service_area.city_name,
-        city_slug: page.service_area.city_slug,
-        display_name: page.service_area.display_name || page.service_area.city_name,
-        area_display_name: page.service_area.display_name || page.service_area.city_name,
-        state: page.service_area.state || 'LA',
-        zip_code: page.service_area.zip_code || '',
-        
-        // Localized content from service_area_services
-        local_description: localizedContent?.local_description || page.service_area.local_description || '',
-        local_benefits: localizedContent?.local_benefits || [],
-        response_time: localizedContent?.response_time || '',
-        completion_time: localizedContent?.completion_time || '',
-        customer_count: localizedContent?.customer_count || 0,
-        pricing_notes: localizedContent?.pricing_notes || '',
-        local_examples: localizedContent?.local_examples || '',
-        special_considerations: localizedContent?.special_considerations || '',
-        
-        // Company variables
-        company_name: company.business_name,
-        company_phone: formatPhone(company.phone),
-        company_email: company.email,
-        company_address: company.address,
-        company_description: company.description || '',
-        company_slogan: company.business_slogan || '',
-        years_experience: company.years_experience || 0,
-        logo_url: company.logo_url || '',
-        icon_url: company.icon_url || '',
-        
-        // Page meta
-        page_title: localizedContent?.meta_title_override || page.page_title,
-        meta_description: localizedContent?.meta_description_override || page.meta_description || '',
-        url_path: page.url_path,
-      };
-
-      // Render template
-      const template = compileTemplate(page.service.template.template_html);
-      const contentHtml = template(pageData);
-
-      // Wrap with layout
-      finalHtml = wrapWithLayout(contentHtml, pageData);
-
-      // Cache the result
+      console.log('Regenerating page content...');
       await supabase
         .from('generated_pages')
         .update({
-          rendered_html: finalHtml,
+          rendered_html: contentHtml,
           needs_regeneration: false,
           updated_at: new Date().toISOString(),
         })
         .eq('id', page.id);
-
-      console.log('Page regenerated and cached');
+      console.log('Page content regenerated and cached');
     }
 
     // Track view
@@ -300,6 +295,26 @@ serve(async (req) => {
       })
       .eq('id', page.id);
 
+    // For POST requests: return just content + data for client-side hydration
+    if (req.method === 'POST') {
+      return new Response(
+        JSON.stringify({
+          content: contentHtml,
+          pageData: pageData,
+        }),
+        {
+          status: 200,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+          },
+        }
+      );
+    }
+
+    // For GET requests: wrap in full layout and return complete HTML
+    finalHtml = wrapWithLayout(contentHtml, pageData);
     return new Response(finalHtml, {
       status: 200,
       headers: {
