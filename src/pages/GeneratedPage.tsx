@@ -99,8 +99,12 @@ const GeneratedPage = () => {
       const { data, error } = await supabase
         .from('company_settings')
         .select('*')
-        .single();
-      if (error) throw error;
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) {
+        return null as any;
+      }
       return data;
     },
   });
