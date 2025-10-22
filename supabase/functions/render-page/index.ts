@@ -150,18 +150,42 @@ serve(async (req) => {
 
     const url = new URL(req.url);
     const pathParts = url.pathname.split('/').filter(Boolean);
-    
-    // Expect format: /render-page/city-slug/service-slug
-    if (pathParts.length < 3) {
+
+    // Accept either path params (/render-page/city/service) or POST body { urlPath }
+    let citySlug: string | undefined;
+    let serviceSlug: string | undefined;
+    let urlPath: string | undefined;
+
+    if (pathParts.length >= 3) {
+      // Expect format: /render-page/city-slug/service-slug
+      citySlug = pathParts[1];
+      serviceSlug = pathParts[2];
+      urlPath = `/${citySlug}/${serviceSlug}`;
+    } else if (req.method === 'POST') {
+      // Fallback: read from JSON body
+      let body: any = null;
+      try {
+        body = await req.json();
+      } catch (_) {
+        // ignore
+      }
+      if (typeof body?.urlPath === 'string') {
+        const tempUrlPath = body.urlPath as string;
+        urlPath = tempUrlPath;
+        const parts = tempUrlPath.split('/').filter(Boolean);
+        if (parts.length >= 2) {
+          citySlug = parts[0];
+          serviceSlug = parts[1];
+        }
+      }
+    }
+
+    if (!citySlug || !serviceSlug || !urlPath) {
       return new Response(JSON.stringify({ error: 'Invalid URL format' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-
-    const citySlug = pathParts[1];
-    const serviceSlug = pathParts[2];
-    const urlPath = `/${citySlug}/${serviceSlug}`;
 
     console.log(`Rendering page: ${urlPath}`);
 
@@ -220,9 +244,18 @@ serve(async (req) => {
       .select('*')
       .single();
 
-    if (!company) {
-      throw new Error('Company settings not found');
-    }
+    // Use safe defaults if company settings are missing
+    const companyData = company ?? {
+      business_name: 'Company',
+      phone: '',
+      email: '',
+      address: '',
+      description: '',
+      business_slogan: '',
+      years_experience: 0,
+      logo_url: '',
+      icon_url: '',
+    } as any;
 
     // Build comprehensive page data with localized content
     const pageData: any = {
@@ -252,15 +285,15 @@ serve(async (req) => {
       special_considerations: localizedContent?.special_considerations || '',
 
       // Company variables
-      company_name: company.business_name,
-      company_phone: formatPhone(company.phone),
-      company_email: company.email,
-      company_address: company.address,
-      company_description: company.description || '',
-      company_slogan: company.business_slogan || '',
-      years_experience: company.years_experience || 0,
-      logo_url: company.logo_url || '',
-      icon_url: company.icon_url || '',
+      company_name: companyData.business_name,
+      company_phone: companyData.phone ? formatPhone(companyData.phone) : '',
+      company_email: companyData.email || '',
+      company_address: companyData.address || '',
+      company_description: companyData.description || '',
+      company_slogan: companyData.business_slogan || '',
+      years_experience: companyData.years_experience || 0,
+      logo_url: companyData.logo_url || '',
+      icon_url: companyData.icon_url || '',
 
       // Page meta
       page_title: localizedContent?.meta_title_override || page.page_title,
