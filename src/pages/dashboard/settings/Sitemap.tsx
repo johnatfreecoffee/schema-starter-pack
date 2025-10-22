@@ -227,6 +227,12 @@ const SitemapPage = () => {
             {Array.from(groupedTemplatePages.entries()).map(([category, services]) => {
               const CategoryIcon = categoryIcons[category as keyof typeof categoryIcons] || Layers;
               const totalPages = Array.from(services.values()).reduce((sum, pages) => sum + pages.length, 0);
+              const uniqueAreas = new Set(
+                Array.from(services.values())
+                  .flat()
+                  .map(page => page.area)
+                  .filter(Boolean)
+              ).size;
               const isCategoryOpen = openCategories.has(category);
               
               return (
@@ -255,7 +261,7 @@ const SitemapPage = () => {
                           <div className="text-left">
                             <h3 className="font-semibold">{category}</h3>
                             <p className="text-sm text-muted-foreground">
-                              {services.size} services • {totalPages} pages
+                              {services.size} {services.size === 1 ? 'service' : 'services'} × {uniqueAreas} {uniqueAreas === 1 ? 'area' : 'areas'} = {totalPages} {totalPages === 1 ? 'page' : 'pages'}
                             </p>
                           </div>
                         </div>
