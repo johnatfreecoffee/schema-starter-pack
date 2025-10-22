@@ -32,6 +32,14 @@ Brand Voice: ${context.aiTraining?.brand_voice || 'Professional and trustworthy'
 Target Audience: ${context.aiTraining?.target_audience || 'Homeowners and businesses'}
 Unique Selling Points: ${context.aiTraining?.unique_selling_points || 'Quality service and customer satisfaction'}
 
+${context.serviceInfo ? `SERVICE CONTEXT:
+Service Name: ${context.serviceInfo.name}
+Service Category: ${context.serviceInfo.category}
+Service Description: ${context.serviceInfo.description}
+${context.serviceInfo.starting_price ? `Starting Price: $${(context.serviceInfo.starting_price / 100).toFixed(2)}` : ''}
+
+IMPORTANT: This template is for the "${context.serviceInfo.name}" service. Make sure all content is relevant to this specific service. Use the service name and description to create targeted, compelling copy.
+` : ''}
 CURRENT PAGE:
 Type: ${context.currentPage?.type || 'unknown'}
 URL: ${context.currentPage?.url || 'N/A'}
