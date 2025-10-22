@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import ServiceForm from '@/components/admin/settings/services/ServiceForm';
 import ServicePreview from '@/components/admin/settings/services/ServicePreview';
-import ServiceTemplateEditor from '@/components/admin/settings/services/ServiceTemplateEditor';
+import UnifiedPageEditor from '@/components/admin/ai-editor/UnifiedPageEditor';
 import { cacheInvalidation } from '@/lib/cacheInvalidation';
 
 const ServicesSettings = () => {
@@ -360,23 +360,21 @@ const ServicesSettings = () => {
           </DialogContent>
         </Dialog>
 
-        <Dialog open={isTemplateEditorOpen} onOpenChange={setIsTemplateEditorOpen}>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Edit Page Template for {selectedService?.name}</DialogTitle>
-              <DialogDescription>
-                Customize the HTML template used for all {selectedService?.name} pages. Use variables like {`{{service_name}}`}, {`{{city_name}}`}, and {`{{company_phone}}`} to make content dynamic.
-              </DialogDescription>
-            </DialogHeader>
-            <ServiceTemplateEditor
-              service={selectedService}
-              onClose={() => {
-                setIsTemplateEditorOpen(false);
-                setSelectedService(null);
-              }}
-            />
-          </DialogContent>
-        </Dialog>
+        {selectedService && (
+          <UnifiedPageEditor
+            open={isTemplateEditorOpen}
+            onClose={() => {
+              setIsTemplateEditorOpen(false);
+              setSelectedService(null);
+            }}
+            service={selectedService}
+            pageType="service"
+            pageTitle={selectedService.name}
+            onSave={async (html) => {
+              // Handle save logic if needed
+            }}
+          />
+        )}
 
         <AlertDialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
           <AlertDialogContent>
