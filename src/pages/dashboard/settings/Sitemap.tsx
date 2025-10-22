@@ -32,6 +32,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { getTemplateForService, serviceNameToFileName, getCategoryFolder } from '@/lib/templateFiles';
 
 interface PageNode {
   id: string;
@@ -97,18 +98,18 @@ const SitemapPage = () => {
     },
   });
 
-  // Fetch templates for services
-  const { data: templates } = useQuery({
-    queryKey: ['service-templates-sitemap'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('templates')
-        .select('id, template_html, name');
-      
-      if (error) throw error;
-      return data || [];
-    },
-  });
+  // Function to get template content from static files
+  const getStaticTemplate = (serviceName: string, category?: string) => {
+    const content = getTemplateForService(serviceName, category);
+    if (!content) return null;
+    
+    return {
+      name: serviceName,
+      content: content,
+      fileName: serviceNameToFileName(serviceName) + '.html',
+      folder: getCategoryFolder(category || '')
+    };
+  };
 
   // Transform data into page nodes
   const allPages: PageNode[] = [
@@ -142,10 +143,10 @@ const SitemapPage = () => {
       page.area?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
-  // Group pages by service and category with template info
+  // Group pages by service and category
   const groupedTemplatePages = React.useMemo(() => {
     const pages = filteredPages.filter(p => p.type === 'generated');
-    const grouped = new Map<string, Map<string, { pages: PageNode[], serviceId?: string, templateId?: string }>>();
+    const grouped = new Map<string, Map<string, { pages: PageNode[], category?: string }>>();
     
     pages.forEach(page => {
       const category = page.category || 'Other';
@@ -157,12 +158,9 @@ const SitemapPage = () => {
       
       const categoryMap = grouped.get(category)!;
       if (!categoryMap.has(service)) {
-        // Find the service data from generatedPages
-        const genPage = generatedPages?.find(gp => gp.services?.name === service);
         categoryMap.set(service, { 
           pages: [],
-          serviceId: genPage?.service_id,
-          templateId: genPage?.services?.template_id
+          category: category
         });
       }
       
@@ -170,7 +168,7 @@ const SitemapPage = () => {
     });
     
     return grouped;
-  }, [filteredPages, generatedPages]);
+  }, [filteredPages]);
 
   // Calculate stats
   const stats = {
@@ -299,9 +297,9 @@ const SitemapPage = () => {
                     <CollapsibleContent>
                       <div className="divide-y">
                         {Array.from(services.entries()).map(([service, serviceData]) => {
-                           const isServiceOpen = openServices.has(service);
-                          const template = templates?.find(t => t.id === serviceData.templateId);
-                          const { pages } = serviceData;
+                          const isServiceOpen = openServices.has(service);
+                          const staticTemplate = getStaticTemplate(service, serviceData.category);
+                          const { pages, category } = serviceData;
                           
                           return (
                             <div key={service}>
@@ -343,14 +341,14 @@ const SitemapPage = () => {
                                          variant="ghost"
                                          size="sm"
                                          className="h-auto py-1 px-2"
-                                         onClick={(e) => {
-                                           e.stopPropagation();
-                                           setSelectedTemplate({
-                                             name: template?.name || service,
-                                             content: template?.template_html || 'No template configured for this service yet. Configure a template in the Services settings.',
-                                             service: service
-                                           });
-                                         }}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSelectedTemplate({
+                                            name: staticTemplate?.name || service,
+                                            content: staticTemplate?.content || `No template file found at: src/templates/${getCategoryFolder(category || '')}/${serviceNameToFileName(service)}.html`,
+                                            service: service
+                                          });
+                                        }}
                                        >
                                          <div className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
                                            <Eye className="h-3 w-3" />
@@ -477,11 +475,22 @@ const SitemapPage = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="overflow-auto max-h-[60vh]">
-            <div className="bg-muted rounded-lg p-4">
-              <pre className="text-xs font-mono whitespace-pre-wrap break-words">
-                {selectedTemplate?.content}
-              </pre>
-            </div>
+            {selectedTemplate?.content?.includes('No template file found') ? (
+              <div className="bg-muted rounded-lg p-6 text-center">
+                <p className="text-sm text-muted-foreground mb-2">
+                  {selectedTemplate.content}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Create this file to enable the template preview.
+                </p>
+              </div>
+            ) : (
+              <div className="bg-muted rounded-lg p-4">
+                <pre className="text-xs font-mono whitespace-pre-wrap break-words">
+                  {selectedTemplate?.content}
+                </pre>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
