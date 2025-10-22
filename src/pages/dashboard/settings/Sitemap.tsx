@@ -15,7 +15,8 @@ import {
   ChevronRight,
   Layers,
   Zap,
-  AlertTriangle
+  AlertTriangle,
+  Eye
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
@@ -331,6 +332,12 @@ const SitemapPage = () => {
                                       </div>
                                     </div>
                                     <div className="flex items-center gap-2">
+                                      {template && (
+                                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                          <Eye className="h-3 w-3" />
+                                          <span className="hidden sm:inline">Template</span>
+                                        </div>
+                                      )}
                                       <Badge variant={
                                         pages.every(p => p.status === 'active') ? 'default' : 'secondary'
                                       }>
