@@ -38,7 +38,6 @@ interface PageNode {
 
 const SitemapPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
 
   // Fetch static pages
@@ -110,14 +109,10 @@ const SitemapPage = () => {
 
   // Filter pages
   const filteredPages = allPages.filter(page => {
-    const matchesSearch = page.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    return page.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       page.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
       page.service?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       page.area?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    if (!matchesSearch) return false;
-    if (!selectedCategory) return true;
-    return page.category === selectedCategory;
   });
 
   // Group pages by service and category
@@ -202,32 +197,16 @@ const SitemapPage = () => {
         </Card>
       </div>
 
-      {/* Search and Filters */}
+      {/* Search */}
       <Card className="p-4">
-        <div className="flex flex-col gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search pages by title, URL, service, or area..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          {selectedCategory && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Filtering by:</span>
-              <Badge variant="secondary" className="gap-2">
-                {selectedCategory}
-                <button
-                  onClick={() => setSelectedCategory(null)}
-                  className="ml-1 hover:text-destructive"
-                >
-                  ×
-                </button>
-              </Badge>
-            </div>
-          )}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search pages by title, URL, service, or area..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
         </div>
       </Card>
 
@@ -266,33 +245,19 @@ const SitemapPage = () => {
                   >
                     <CollapsibleTrigger className="w-full">
                       <div className="p-4 bg-muted/50 border-b hover:bg-muted/70 transition-colors">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            {isCategoryOpen ? (
-                              <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                            ) : (
-                              <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                            )}
-                            <CategoryIcon className="h-5 w-5 text-primary" />
-                            <div className="text-left">
-                              <h3 className="font-semibold">{category}</h3>
-                              <p className="text-sm text-muted-foreground">
-                                {services.size} services • {totalPages} pages
-                              </p>
-                            </div>
+                        <div className="flex items-center gap-3">
+                          {isCategoryOpen ? (
+                            <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                          ) : (
+                            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                          )}
+                          <CategoryIcon className="h-5 w-5 text-primary" />
+                          <div className="text-left">
+                            <h3 className="font-semibold">{category}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {services.size} services • {totalPages} pages
+                            </p>
                           </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedCategory(
-                                selectedCategory === category ? null : category
-                              );
-                            }}
-                          >
-                            {selectedCategory === category ? 'Clear Filter' : 'Filter'}
-                          </Button>
                         </div>
                       </div>
                     </CollapsibleTrigger>
