@@ -39,6 +39,8 @@ interface PageNode {
 const SitemapPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
+  const [openServices, setOpenServices] = useState<Set<string>>(new Set());
+  const [openTemplates, setOpenTemplates] = useState<Set<string>>(new Set());
 
   // Fetch static pages
   const { data: staticPages } = useQuery({
@@ -66,10 +68,13 @@ const SitemapPage = () => {
           url_path,
           status,
           meta_description,
+          service_id,
           services (
+            id,
             name,
             archived,
-            category
+            category,
+            template_id
           ),
           service_areas (
             city_name,
@@ -77,6 +82,19 @@ const SitemapPage = () => {
           )
         `)
         .order('url_path');
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch templates for services
+  const { data: templates } = useQuery({
+    queryKey: ['service-templates-sitemap'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('templates')
+        .select('id, template_html, name');
       
       if (error) throw error;
       return data || [];
@@ -115,10 +133,10 @@ const SitemapPage = () => {
       page.area?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
-  // Group pages by service and category
+  // Group pages by service and category with template info
   const groupedTemplatePages = React.useMemo(() => {
     const pages = filteredPages.filter(p => p.type === 'generated');
-    const grouped = new Map<string, Map<string, PageNode[]>>();
+    const grouped = new Map<string, Map<string, { pages: PageNode[], serviceId?: string, templateId?: string }>>();
     
     pages.forEach(page => {
       const category = page.category || 'Other';
@@ -130,14 +148,20 @@ const SitemapPage = () => {
       
       const categoryMap = grouped.get(category)!;
       if (!categoryMap.has(service)) {
-        categoryMap.set(service, []);
+        // Find the service data from generatedPages
+        const genPage = generatedPages?.find(gp => gp.services?.name === service);
+        categoryMap.set(service, { 
+          pages: [],
+          serviceId: genPage?.service_id,
+          templateId: genPage?.services?.template_id
+        });
       }
       
-      categoryMap.get(service)!.push(page);
+      categoryMap.get(service)!.pages.push(page);
     });
     
     return grouped;
-  }, [filteredPages]);
+  }, [filteredPages, generatedPages]);
 
   // Calculate stats
   const stats = {
@@ -221,10 +245,10 @@ const SitemapPage = () => {
           <TabsContent value="templates" className="space-y-4">
             {Array.from(groupedTemplatePages.entries()).map(([category, services]) => {
               const CategoryIcon = categoryIcons[category as keyof typeof categoryIcons] || Layers;
-              const totalPages = Array.from(services.values()).reduce((sum, pages) => sum + pages.length, 0);
+              const totalPages = Array.from(services.values()).reduce((sum, serviceData) => sum + serviceData.pages.length, 0);
               const uniqueAreas = new Set(
                 Array.from(services.values())
-                  .flat()
+                  .flatMap(serviceData => serviceData.pages)
                   .map(page => page.area)
                   .filter(Boolean)
               ).size;
@@ -265,70 +289,145 @@ const SitemapPage = () => {
                     
                     <CollapsibleContent>
                       <div className="divide-y">
-                        {Array.from(services.entries()).map(([service, pages]) => (
-                          <Collapsible key={service}>
-                            <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 transition-colors">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                  <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90" />
-                                  <Globe className="h-4 w-4 text-muted-foreground" />
-                                  <div className="text-left">
-                                    <div className="font-medium">{service}</div>
-                                    <div className="text-sm text-muted-foreground">
-                                      {pages.length} {pages.length === 1 ? 'page' : 'pages'}
-                                      {pages.filter(p => p.status === 'active').length < pages.length && (
-                                        <span className="ml-2">
-                                          • {pages.filter(p => p.status === 'archived').length} archived
-                                        </span>
+                        {Array.from(services.entries()).map(([service, serviceData]) => {
+                          const isServiceOpen = openServices.has(service);
+                          const isTemplateOpen = openTemplates.has(service);
+                          const template = templates?.find(t => t.id === serviceData.templateId);
+                          const { pages } = serviceData;
+                          
+                          return (
+                            <div key={service}>
+                              <Collapsible
+                                open={isServiceOpen}
+                                onOpenChange={(open) => {
+                                  const newOpen = new Set(openServices);
+                                  if (open) {
+                                    newOpen.add(service);
+                                  } else {
+                                    newOpen.delete(service);
+                                  }
+                                  setOpenServices(newOpen);
+                                }}
+                              >
+                                <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 transition-colors">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                      {isServiceOpen ? (
+                                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                                      ) : (
+                                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
                                       )}
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Badge variant={
-                                    pages.every(p => p.status === 'active') ? 'default' : 'secondary'
-                                  }>
-                                    {pages.filter(p => p.status === 'active').length} active
-                                  </Badge>
-                                </div>
-                              </div>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                              <div className="px-4 py-2 bg-muted/20 space-y-1">
-                                {pages.map(page => (
-                                  <div
-                                    key={page.id}
-                                    className="flex items-center justify-between py-2 px-3 rounded hover:bg-background transition-colors group"
-                                  >
-                                    <div className="flex-1 min-w-0">
-                                      <div className="flex items-center gap-2">
-                                        <span className="text-sm font-medium truncate">
-                                          {page.area}
-                                        </span>
-                                        {page.status === 'archived' && (
-                                          <Archive className="h-3 w-3 text-muted-foreground" />
-                                        )}
-                                      </div>
-                                      <div className="text-xs text-muted-foreground font-mono truncate">
-                                        {page.url}
+                                      <Globe className="h-4 w-4 text-muted-foreground" />
+                                      <div className="text-left">
+                                        <div className="font-medium">{service}</div>
+                                        <div className="text-sm text-muted-foreground">
+                                          {pages.length} {pages.length === 1 ? 'page' : 'pages'}
+                                          {pages.filter(p => p.status === 'active').length < pages.length && (
+                                            <span className="ml-2">
+                                              • {pages.filter(p => p.status === 'archived').length} archived
+                                            </span>
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                      asChild
-                                    >
-                                      <a href={page.url} target="_blank" rel="noopener noreferrer">
-                                        <ExternalLink className="h-3 w-3" />
-                                      </a>
-                                    </Button>
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant={
+                                        pages.every(p => p.status === 'active') ? 'default' : 'secondary'
+                                      }>
+                                        {pages.filter(p => p.status === 'active').length} active
+                                      </Badge>
+                                    </div>
                                   </div>
-                                ))}
-                              </div>
-                            </CollapsibleContent>
-                          </Collapsible>
-                        ))}
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                  <div className="bg-muted/20">
+                                    {/* Template Preview Section */}
+                                    {template && (
+                                      <div className="border-b">
+                                        <Collapsible
+                                          open={isTemplateOpen}
+                                          onOpenChange={(open) => {
+                                            const newOpen = new Set(openTemplates);
+                                            if (open) {
+                                              newOpen.add(service);
+                                            } else {
+                                              newOpen.delete(service);
+                                            }
+                                            setOpenTemplates(newOpen);
+                                          }}
+                                        >
+                                          <CollapsibleTrigger className="w-full px-4 py-3 hover:bg-muted/30 transition-colors">
+                                            <div className="flex items-center gap-3">
+                                              {isTemplateOpen ? (
+                                                <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                                              ) : (
+                                                <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                                              )}
+                                              <FileText className="h-3 w-3 text-primary" />
+                                              <span className="text-sm font-medium text-left">Template Preview</span>
+                                              <Badge variant="outline" className="text-xs">
+                                                {template.name || 'Template'}
+                                              </Badge>
+                                            </div>
+                                          </CollapsibleTrigger>
+                                          <CollapsibleContent>
+                                            <div className="px-4 py-3 bg-background/50">
+                                              <div className="text-xs text-muted-foreground mb-2">
+                                                Template with variables (backend view only)
+                                              </div>
+                                              <div className="bg-muted rounded-lg p-4 overflow-x-auto">
+                                                <pre className="text-xs font-mono whitespace-pre-wrap break-words">
+                                                  {template.template_html}
+                                                </pre>
+                                              </div>
+                                            </div>
+                                          </CollapsibleContent>
+                                        </Collapsible>
+                                      </div>
+                                    )}
+                                    
+                                    {/* Pages List */}
+                                    <div className="px-4 py-2 space-y-1">
+                                      <div className="text-xs font-medium text-muted-foreground px-3 py-2">
+                                        Generated Pages
+                                      </div>
+                                      {pages.map(page => (
+                                        <div
+                                          key={page.id}
+                                          className="flex items-center justify-between py-2 px-3 rounded hover:bg-background transition-colors group"
+                                        >
+                                          <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-sm font-medium truncate">
+                                                {page.area}
+                                              </span>
+                                              {page.status === 'archived' && (
+                                                <Archive className="h-3 w-3 text-muted-foreground" />
+                                              )}
+                                            </div>
+                                            <div className="text-xs text-muted-foreground font-mono truncate">
+                                              {page.url}
+                                            </div>
+                                          </div>
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                            asChild
+                                          >
+                                            <a href={page.url} target="_blank" rel="noopener noreferrer">
+                                              <ExternalLink className="h-3 w-3" />
+                                            </a>
+                                          </Button>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </CollapsibleContent>
+                              </Collapsible>
+                            </div>
+                          );
+                        })}
                       </div>
                     </CollapsibleContent>
                   </Collapsible>
