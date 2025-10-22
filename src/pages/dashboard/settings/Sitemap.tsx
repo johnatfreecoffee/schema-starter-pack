@@ -47,8 +47,9 @@ interface PageNode {
 
 const SitemapPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'graph' | 'list'>('graph');
+  const [viewMode, setViewMode] = useState<'graph' | 'list'>('list'); // Default to list view for better UX with many pages
   const [layoutMode, setLayoutMode] = useState<'hierarchical' | 'force' | 'circular'>('hierarchical');
+  const [graphPageLimit, setGraphPageLimit] = useState(50);
 
   // Fetch static pages
   const { data: staticPages } = useQuery({
@@ -134,16 +135,31 @@ const SitemapPage = () => {
     generatedActive: allPages.filter(p => p.type === 'generated' && p.status === 'active').length,
   };
 
+  // Limit pages shown in graph view for performance
+  const graphPages = React.useMemo(() => {
+    return filteredPages.slice(0, graphPageLimit);
+  }, [filteredPages, graphPageLimit]);
+
   // Create nodes for React Flow
-  const createNodes = (): Node[] => {
+  const createNodes = React.useCallback((): Node[] => {
     const nodes: Node[] = [];
     
-    // Root node
+    const staticPages = graphPages.filter(p => p.type === 'static');
+    const generatedPages = graphPages.filter(p => p.type === 'generated');
+    
+    // Calculate grid layout dimensions
+    const columns = 3;
+    const nodeWidth = 250;
+    const nodeHeight = 120;
+    const horizontalSpacing = 300;
+    const verticalSpacing = 150;
+    
+    // Root node (centered)
     nodes.push({
       id: 'root',
       type: 'input',
       data: { label: '🏠 Home' },
-      position: { x: 400, y: 0 },
+      position: { x: horizontalSpacing * (columns / 2), y: 0 },
       style: {
         background: 'hsl(var(--primary))',
         color: 'hsl(var(--primary-foreground))',
@@ -152,163 +168,176 @@ const SitemapPage = () => {
         padding: '16px',
         fontSize: '16px',
         fontWeight: 'bold',
+        minWidth: `${nodeWidth}px`,
       },
     });
 
     // Static pages group
-    nodes.push({
-      id: 'static-group',
-      type: 'default',
-      data: { label: '📄 Static Pages' },
-      position: { x: 100, y: 150 },
-      style: {
-        background: 'hsl(var(--muted))',
-        border: '2px solid hsl(var(--border))',
-        borderRadius: '12px',
-        padding: '12px',
-        fontWeight: 'bold',
-      },
-    });
+    if (staticPages.length > 0) {
+      nodes.push({
+        id: 'static-group',
+        type: 'default',
+        data: { label: `📄 Static Pages (${staticPages.length})` },
+        position: { x: horizontalSpacing, y: verticalSpacing },
+        style: {
+          background: 'hsl(var(--muted))',
+          border: '2px solid hsl(var(--border))',
+          borderRadius: '12px',
+          padding: '12px',
+          fontWeight: 'bold',
+          minWidth: `${nodeWidth}px`,
+        },
+      });
+    }
 
     // Generated pages group
-    nodes.push({
-      id: 'generated-group',
-      type: 'default',
-      data: { label: '🔄 Generated Pages' },
-      position: { x: 700, y: 150 },
-      style: {
-        background: 'hsl(var(--muted))',
-        border: '2px solid hsl(var(--border))',
-        borderRadius: '12px',
-        padding: '12px',
-        fontWeight: 'bold',
-      },
+    if (generatedPages.length > 0) {
+      nodes.push({
+        id: 'generated-group',
+        type: 'default',
+        data: { label: `🔄 Generated Pages (${generatedPages.length})` },
+        position: { x: horizontalSpacing * 2, y: verticalSpacing },
+        style: {
+          background: 'hsl(var(--muted))',
+          border: '2px solid hsl(var(--border))',
+          borderRadius: '12px',
+          padding: '12px',
+          fontWeight: 'bold',
+          minWidth: `${nodeWidth}px`,
+        },
+      });
+    }
+
+    // Add static page nodes in grid layout
+    staticPages.forEach((page, idx) => {
+      const row = Math.floor(idx / columns);
+      const col = idx % columns;
+      nodes.push({
+        id: page.id,
+        data: { 
+          label: (
+            <div className="flex flex-col gap-1">
+              <div className="font-medium text-sm">{page.title}</div>
+              <div className="text-xs opacity-70 truncate">{page.url}</div>
+            </div>
+          )
+        },
+        position: { 
+          x: col * horizontalSpacing + 50, 
+          y: verticalSpacing * 2 + row * verticalSpacing 
+        },
+        style: {
+          background: page.status === 'archived' 
+            ? 'hsl(var(--muted) / 0.5)' 
+            : 'hsl(var(--card))',
+          border: page.status === 'archived'
+            ? '1px dashed hsl(var(--muted-foreground))'
+            : '2px solid hsl(var(--accent))',
+          borderRadius: '8px',
+          padding: '12px',
+          opacity: page.status === 'archived' ? 0.6 : 1,
+          width: `${nodeWidth}px`,
+        },
+      });
     });
 
-    // Add static page nodes
-    filteredPages
-      .filter(p => p.type === 'static')
-      .forEach((page, idx) => {
-        const yOffset = layoutMode === 'hierarchical' ? idx * 80 : Math.random() * 400;
-        nodes.push({
-          id: page.id,
-          data: { 
-            label: (
-              <div className="flex flex-col gap-1">
-                <div className="font-medium">{page.title}</div>
-                <div className="text-xs opacity-70">{page.url}</div>
-              </div>
-            )
-          },
-          position: { x: 50, y: 250 + yOffset },
-          style: {
-            background: page.status === 'archived' 
-              ? 'hsl(var(--muted) / 0.5)' 
-              : 'hsl(var(--card))',
-            border: page.status === 'archived'
-              ? '1px dashed hsl(var(--muted-foreground))'
-              : '2px solid hsl(var(--accent))',
-            borderRadius: '8px',
-            padding: '12px',
-            opacity: page.status === 'archived' ? 0.6 : 1,
-            minWidth: '180px',
-          },
-        });
+    // Add generated page nodes in grid layout
+    generatedPages.forEach((page, idx) => {
+      const row = Math.floor(idx / columns);
+      const col = idx % columns;
+      nodes.push({
+        id: page.id,
+        data: { 
+          label: (
+            <div className="flex flex-col gap-1">
+              <div className="font-medium text-sm truncate">{page.service}</div>
+              <div className="text-xs opacity-70 truncate">{page.area}</div>
+              <div className="text-xs opacity-50 truncate">{page.url}</div>
+            </div>
+          )
+        },
+        position: { 
+          x: col * horizontalSpacing + horizontalSpacing * 3, 
+          y: verticalSpacing * 2 + row * verticalSpacing 
+        },
+        style: {
+          background: page.status === 'archived' 
+            ? 'hsl(var(--muted) / 0.5)' 
+            : 'hsl(var(--card))',
+          border: page.status === 'archived'
+            ? '1px dashed hsl(var(--muted-foreground))'
+            : '2px solid hsl(var(--primary))',
+          borderRadius: '8px',
+          padding: '12px',
+          opacity: page.status === 'archived' ? 0.6 : 1,
+          width: `${nodeWidth}px`,
+        },
       });
-
-    // Add generated page nodes
-    filteredPages
-      .filter(p => p.type === 'generated')
-      .forEach((page, idx) => {
-        const yOffset = layoutMode === 'hierarchical' ? idx * 80 : Math.random() * 400;
-        nodes.push({
-          id: page.id,
-          data: { 
-            label: (
-              <div className="flex flex-col gap-1">
-                <div className="font-medium text-sm">{page.service}</div>
-                <div className="text-xs opacity-70">{page.area}</div>
-                <div className="text-xs opacity-50">{page.url}</div>
-              </div>
-            )
-          },
-          position: { x: 650, y: 250 + yOffset },
-          style: {
-            background: page.status === 'archived' 
-              ? 'hsl(var(--muted) / 0.5)' 
-              : 'hsl(var(--card))',
-            border: page.status === 'archived'
-              ? '1px dashed hsl(var(--muted-foreground))'
-              : '2px solid hsl(var(--primary))',
-            borderRadius: '8px',
-            padding: '12px',
-            opacity: page.status === 'archived' ? 0.6 : 1,
-            minWidth: '200px',
-          },
-        });
-      });
+    });
 
     return nodes;
-  };
+  }, [graphPages]);
 
   // Create edges
-  const createEdges = (): Edge[] => {
+  const createEdges = React.useCallback((): Edge[] => {
     const edges: Edge[] = [];
+    
+    const staticPages = graphPages.filter(p => p.type === 'static');
+    const generatedPages = graphPages.filter(p => p.type === 'generated');
 
     // Connect root to groups
-    edges.push(
-      {
+    if (staticPages.length > 0) {
+      edges.push({
         id: 'root-static',
         source: 'root',
         target: 'static-group',
         animated: true,
         style: { stroke: 'hsl(var(--muted-foreground))' },
-      },
-      {
+      });
+    }
+    
+    if (generatedPages.length > 0) {
+      edges.push({
         id: 'root-generated',
         source: 'root',
         target: 'generated-group',
         animated: true,
         style: { stroke: 'hsl(var(--muted-foreground))' },
-      }
-    );
+      });
+    }
 
     // Connect static pages
-    filteredPages
-      .filter(p => p.type === 'static')
-      .forEach(page => {
-        edges.push({
-          id: `static-group-${page.id}`,
-          source: 'static-group',
-          target: page.id,
-          animated: page.status === 'active',
-          style: { 
-            stroke: page.status === 'archived' 
-              ? 'hsl(var(--muted-foreground) / 0.3)' 
-              : 'hsl(var(--accent))' 
-          },
-        });
+    staticPages.forEach(page => {
+      edges.push({
+        id: `static-group-${page.id}`,
+        source: 'static-group',
+        target: page.id,
+        animated: page.status === 'active',
+        style: { 
+          stroke: page.status === 'archived' 
+            ? 'hsl(var(--muted-foreground) / 0.3)' 
+            : 'hsl(var(--accent))' 
+        },
       });
+    });
 
     // Connect generated pages
-    filteredPages
-      .filter(p => p.type === 'generated')
-      .forEach(page => {
-        edges.push({
-          id: `generated-group-${page.id}`,
-          source: 'generated-group',
-          target: page.id,
-          animated: page.status === 'active',
-          style: { 
-            stroke: page.status === 'archived' 
-              ? 'hsl(var(--muted-foreground) / 0.3)' 
-              : 'hsl(var(--primary))' 
-          },
-        });
+    generatedPages.forEach(page => {
+      edges.push({
+        id: `generated-group-${page.id}`,
+        source: 'generated-group',
+        target: page.id,
+        animated: page.status === 'active',
+        style: { 
+          stroke: page.status === 'archived' 
+            ? 'hsl(var(--muted-foreground) / 0.3)' 
+            : 'hsl(var(--primary))' 
+        },
       });
+    });
 
     return edges;
-  };
+  }, [graphPages]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -317,7 +346,7 @@ const SitemapPage = () => {
   React.useEffect(() => {
     setNodes(createNodes());
     setEdges(createEdges());
-  }, [filteredPages, layoutMode]);
+  }, [createNodes, createEdges, setNodes, setEdges]);
 
   return (
     <div className="space-y-6">
@@ -395,45 +424,71 @@ const SitemapPage = () => {
 
       {/* Main Content */}
       {viewMode === 'graph' ? (
-        <Card className="p-0 overflow-hidden" style={{ height: '600px' }}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            fitView
-            attributionPosition="bottom-left"
-          >
-            <Background />
-            <Controls />
-            <MiniMap 
-              nodeColor={(node) => {
-                if (node.id === 'root') return 'hsl(var(--primary))';
-                if (node.id.includes('group')) return 'hsl(var(--muted))';
-                return 'hsl(var(--card))';
-              }}
-            />
-            <Panel position="top-right" className="bg-card border rounded-lg p-3">
-              <div className="space-y-2">
-                <div className="text-sm font-medium">Layout</div>
+        <div className="space-y-4">
+          {filteredPages.length > graphPageLimit && (
+            <Card className="p-4 bg-muted/50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">
+                    Showing {graphPageLimit} of {filteredPages.length} pages in graph view
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Use search to filter pages or increase the limit. Graph view works best with fewer pages.
+                  </p>
+                </div>
                 <div className="flex gap-2">
                   <Button
-                    variant={layoutMode === 'hierarchical' ? 'default' : 'outline'}
+                    variant="outline"
                     size="sm"
-                    onClick={() => {
-                      setLayoutMode('hierarchical');
-                      setNodes(createNodes());
-                      setEdges(createEdges());
-                    }}
+                    onClick={() => setGraphPageLimit(Math.min(graphPageLimit + 50, filteredPages.length))}
                   >
-                    <Sparkles className="h-3 w-3 mr-1" />
-                    Hierarchy
+                    Show More
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setViewMode('list')}
+                  >
+                    Switch to List View
                   </Button>
                 </div>
               </div>
-            </Panel>
-          </ReactFlow>
-        </Card>
+            </Card>
+          )}
+          <Card className="p-0 overflow-hidden" style={{ height: '700px' }}>
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              fitView
+              attributionPosition="bottom-left"
+              minZoom={0.1}
+              maxZoom={1.5}
+            >
+              <Background />
+              <Controls />
+              <MiniMap 
+                nodeColor={(node) => {
+                  if (node.id === 'root') return 'hsl(var(--primary))';
+                  if (node.id.includes('group')) return 'hsl(var(--muted))';
+                  return 'hsl(var(--card))';
+                }}
+              />
+              <Panel position="top-right" className="bg-card border rounded-lg p-3">
+                <div className="space-y-2">
+                  <div className="text-sm font-medium">Pages in View</div>
+                  <div className="text-2xl font-bold text-primary">
+                    {graphPages.length}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    of {filteredPages.length} total
+                  </div>
+                </div>
+              </Panel>
+            </ReactFlow>
+          </Card>
+        </div>
       ) : (
         <Card className="p-6">
           <Tabs defaultValue="all" className="w-full">
