@@ -141,13 +141,12 @@ const SitemapPage = () => {
 
   // Calculate stats
   const stats = {
-    total: allPages.length,
     active: allPages.filter(p => p.status === 'active').length,
     archived: allPages.filter(p => p.status === 'archived').length,
-    static: allPages.filter(p => p.type === 'static').length,
-    generated: allPages.filter(p => p.type === 'generated').length,
     staticActive: allPages.filter(p => p.type === 'static' && p.status === 'active').length,
+    staticArchived: allPages.filter(p => p.type === 'static' && p.status === 'archived').length,
     generatedActive: allPages.filter(p => p.type === 'generated' && p.status === 'active').length,
+    generatedArchived: allPages.filter(p => p.type === 'generated' && p.status === 'archived').length,
   };
 
   const categoryIcons = {
@@ -166,34 +165,30 @@ const SitemapPage = () => {
       </div>
 
       {/* Stats Dashboard */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-        <Card className="p-4">
-          <div className="text-2xl font-bold text-primary">{stats.total}</div>
-          <div className="text-xs text-muted-foreground">Total Pages</div>
-        </Card>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card className="p-4">
           <div className="text-2xl font-bold text-green-500">{stats.active}</div>
-          <div className="text-xs text-muted-foreground">Active</div>
+          <div className="text-xs text-muted-foreground">Total Pages Active</div>
         </Card>
         <Card className="p-4">
           <div className="text-2xl font-bold text-muted-foreground">{stats.archived}</div>
-          <div className="text-xs text-muted-foreground">Archived</div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-2xl font-bold text-accent">{stats.static}</div>
-          <div className="text-xs text-muted-foreground">Static Pages</div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-2xl font-bold text-primary">{stats.generated}</div>
-          <div className="text-xs text-muted-foreground">Generated</div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-2xl font-bold text-accent">{stats.staticActive}</div>
-          <div className="text-xs text-muted-foreground">Static Active</div>
+          <div className="text-xs text-muted-foreground">Total Pages Archived</div>
         </Card>
         <Card className="p-4">
           <div className="text-2xl font-bold text-primary">{stats.generatedActive}</div>
-          <div className="text-xs text-muted-foreground">Generated Active</div>
+          <div className="text-xs text-muted-foreground">Template Pages Active</div>
+        </Card>
+        <Card className="p-4">
+          <div className="text-2xl font-bold text-muted-foreground">{stats.generatedArchived}</div>
+          <div className="text-xs text-muted-foreground">Template Pages Archived</div>
+        </Card>
+        <Card className="p-4">
+          <div className="text-2xl font-bold text-accent">{stats.staticActive}</div>
+          <div className="text-xs text-muted-foreground">Static Pages Active</div>
+        </Card>
+        <Card className="p-4">
+          <div className="text-2xl font-bold text-muted-foreground">{stats.staticArchived}</div>
+          <div className="text-xs text-muted-foreground">Static Pages Archived</div>
         </Card>
       </div>
 
