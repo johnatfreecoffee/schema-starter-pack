@@ -16,8 +16,9 @@ import {
   Layers,
   Zap,
   AlertTriangle,
-  Eye
+  FileEdit
 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Collapsible,
@@ -33,7 +34,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { getTemplateForService, serviceNameToFileName, getCategoryFolder } from '@/lib/templateFiles';
-import TemplatePreview from '@/components/admin/settings/templates/TemplatePreview';
+import UnifiedPageEditor from '@/components/admin/ai-editor/UnifiedPageEditor';
 
 interface PageNode {
   id: string;
@@ -51,7 +52,8 @@ const SitemapPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
   const [openServices, setOpenServices] = useState<Set<string>>(new Set());
-  const [selectedTemplate, setSelectedTemplate] = useState<{ name: string; content: string; service: string } | null>(null);
+  const [isTemplateEditorOpen, setIsTemplateEditorOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<any>(null);
 
   // Fetch static pages
   const { data: staticPages } = useQuery({
@@ -147,7 +149,7 @@ const SitemapPage = () => {
   // Group pages by service and category
   const groupedTemplatePages = React.useMemo(() => {
     const pages = filteredPages.filter(p => p.type === 'generated');
-    const grouped = new Map<string, Map<string, { pages: PageNode[], category?: string }>>();
+    const grouped = new Map<string, Map<string, { pages: PageNode[], category?: string, serviceData?: any }>>();
     
     pages.forEach(page => {
       const category = page.category || 'Other';
@@ -159,9 +161,12 @@ const SitemapPage = () => {
       
       const categoryMap = grouped.get(category)!;
       if (!categoryMap.has(service)) {
+        // Find the service data from generated pages
+        const generatedPage = generatedPages?.find(gp => gp.services?.name === service);
         categoryMap.set(service, { 
           pages: [],
-          category: category
+          category: category,
+          serviceData: generatedPage?.services
         });
       }
       
@@ -169,7 +174,7 @@ const SitemapPage = () => {
     });
     
     return grouped;
-  }, [filteredPages]);
+  }, [filteredPages, generatedPages]);
 
   // Calculate stats
   const stats = {
@@ -300,7 +305,7 @@ const SitemapPage = () => {
                         {Array.from(services.entries()).map(([service, serviceData]) => {
                           const isServiceOpen = openServices.has(service);
                           const staticTemplate = getStaticTemplate(service, serviceData.category);
-                          const { pages, category } = serviceData;
+                          const { pages, category, serviceData: serviceObject } = serviceData;
                           
                           return (
                             <div key={service}>
@@ -344,15 +349,20 @@ const SitemapPage = () => {
                                          className="h-auto py-1 px-2"
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          setSelectedTemplate({
-                                            name: staticTemplate?.name || service,
-                                            content: staticTemplate?.content || `No template file found at: src/templates/${getCategoryFolder(category || '')}/${serviceNameToFileName(service)}.html`,
-                                            service: service
-                                          });
+                                          if (serviceObject) {
+                                            setSelectedService(serviceObject);
+                                            setIsTemplateEditorOpen(true);
+                                          } else {
+                                            toast({
+                                              title: "Service not found",
+                                              description: "Could not load service data for template editing.",
+                                              variant: "destructive"
+                                            });
+                                          }
                                         }}
                                        >
                                          <div className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                                           <Eye className="h-3 w-3" />
+                                           <FileEdit className="h-3 w-3" />
                                            <span className="hidden sm:inline">Template</span>
                                          </div>
                                        </Button>
@@ -466,30 +476,22 @@ const SitemapPage = () => {
         </Tabs>
       </Card>
 
-      {/* Template Preview Dialog */}
-      <Dialog open={!!selectedTemplate} onOpenChange={(open) => !open && setSelectedTemplate(null)}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] w-full p-0">
-          {selectedTemplate?.content && !selectedTemplate.content.includes('No template file found') ? (
-            <TemplatePreview 
-              templateHtml={selectedTemplate.content}
-              onClose={() => setSelectedTemplate(null)}
-            />
-          ) : (
-            <div className="p-8">
-              <DialogHeader>
-                <DialogTitle>Template Not Found</DialogTitle>
-                <DialogDescription>
-                  No template file found for {selectedTemplate?.service}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="mt-4 text-center text-muted-foreground">
-                <p className="text-sm">{selectedTemplate?.content}</p>
-                <p className="text-xs mt-2">Create this file to enable the template preview.</p>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Template Editor */}
+      {selectedService && (
+        <UnifiedPageEditor
+          open={isTemplateEditorOpen}
+          onClose={() => {
+            setIsTemplateEditorOpen(false);
+            setSelectedService(null);
+          }}
+          service={selectedService}
+          pageType="service"
+          pageTitle={selectedService.name}
+          onSave={async (html) => {
+            // Save handled by UnifiedPageEditor
+          }}
+        />
+      )}
     </div>
   );
 };
