@@ -22,24 +22,144 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
+    // Build comprehensive company profile
+    const companyProfile = `
+═══════════════════════════════════════════════════════════════
+COMPLETE COMPANY PROFILE - USE THIS INFORMATION IN ALL CONTENT
+═══════════════════════════════════════════════════════════════
+
+BUSINESS IDENTITY:
+━━━━━━━━━━━━━━━━━
+Business Name: ${context.companyInfo?.business_name || 'N/A'}
+Slogan: ${context.companyInfo?.business_slogan || 'N/A'}
+Years of Experience: ${context.companyInfo?.years_experience || 'N/A'}
+Industry: Roofing and Restoration
+Website: ${context.companyInfo?.website_url || 'N/A'}
+License Numbers: ${context.companyInfo?.license_numbers || 'N/A'}
+
+CONTACT INFORMATION:
+━━━━━━━━━━━━━━━━━━━
+Phone: ${context.companyInfo?.phone || 'N/A'}
+Email: ${context.companyInfo?.email || 'N/A'}
+Address: ${context.companyInfo?.address || 'N/A'}
+${context.companyInfo?.address_street ? `Street: ${context.companyInfo.address_street}` : ''}
+${context.companyInfo?.address_unit ? `Unit: ${context.companyInfo.address_unit}` : ''}
+${context.companyInfo?.address_city ? `City: ${context.companyInfo.address_city}` : ''}
+${context.companyInfo?.address_state ? `State: ${context.companyInfo.address_state}` : ''}
+${context.companyInfo?.address_zip ? `Zip: ${context.companyInfo.address_zip}` : ''}
+
+BRANDING ASSETS:
+━━━━━━━━━━━━━━━━
+Logo URL: ${context.companyInfo?.logo_url || 'N/A'}
+Icon URL: ${context.companyInfo?.icon_url || 'N/A'}
+
+BUSINESS DESCRIPTION:
+━━━━━━━━━━━━━━━━━━━
+${context.companyInfo?.description || 'N/A'}
+
+BUSINESS HOURS:
+━━━━━━━━━━━━━━━
+${context.companyInfo?.business_hours || 'N/A'}
+
+SERVICE AREA:
+━━━━━━━━━━━━
+Service Radius: ${context.companyInfo?.service_radius || 'N/A'} ${context.companyInfo?.service_radius_unit || 'miles'}
+
+SOCIAL MEDIA:
+━━━━━━━━━━━━
+${context.companyInfo?.facebook_url ? `Facebook: ${context.companyInfo.facebook_url}` : ''}
+${context.companyInfo?.instagram_url ? `Instagram: ${context.companyInfo.instagram_url}` : ''}
+${context.companyInfo?.twitter_url ? `Twitter: ${context.companyInfo.twitter_url}` : ''}
+${context.companyInfo?.linkedin_url ? `LinkedIn: ${context.companyInfo.linkedin_url}` : ''}
+
+AI BRAND TRAINING - YOUR VOICE & POSITIONING:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${context.aiTraining ? `
+Brand Voice & Tone: ${context.aiTraining.brand_voice || 'Professional and trustworthy'}
+${context.aiTraining.brand_voice ? '↳ USE THIS TONE IN ALL COPY: Write with this exact voice and personality' : ''}
+
+Target Audience: ${context.aiTraining.target_audience || 'Homeowners and businesses'}
+${context.aiTraining.target_audience ? '↳ WRITE FOR THESE PEOPLE: Tailor all messaging to speak directly to this audience' : ''}
+
+Unique Selling Points:
+${context.aiTraining.unique_selling_points || 'Quality service and customer satisfaction'}
+${context.aiTraining.unique_selling_points ? '↳ HIGHLIGHT THESE: Weave these USPs into headlines, benefits, and CTAs' : ''}
+
+Mission Statement:
+${context.aiTraining.mission_statement || 'N/A'}
+${context.aiTraining.mission_statement ? '↳ ALIGN WITH THIS: Ensure page messaging supports this mission' : ''}
+
+Customer Promise:
+${context.aiTraining.customer_promise || 'N/A'}
+${context.aiTraining.customer_promise ? '↳ EMPHASIZE THIS: Feature this promise prominently in trust-building sections' : ''}
+
+Competitive Advantages:
+${context.aiTraining.competitive_advantages || 'N/A'}
+${context.aiTraining.competitive_advantages ? '↳ DIFFERENTIATE WITH THESE: Use these to stand out from competitors' : ''}
+
+Competitive Positioning:
+${context.aiTraining.competitive_positioning || 'N/A'}
+${context.aiTraining.competitive_positioning ? '↳ POSITION ACCORDINGLY: Reflect this positioning in pricing, messaging, and design' : ''}
+
+Certifications & Credentials:
+${context.aiTraining.certifications || 'N/A'}
+${context.aiTraining.certifications ? '↳ BUILD TRUST: Display these prominently to establish credibility' : ''}
+
+Service Standards:
+${context.aiTraining.service_standards || 'N/A'}
+${context.aiTraining.service_standards ? '↳ GUARANTEE QUALITY: Reference these standards in service descriptions' : ''}
+
+Emergency Response Capabilities:
+${context.aiTraining.emergency_response || 'N/A'}
+${context.aiTraining.emergency_response ? '↳ FOR URGENT SERVICES: Highlight 24/7 availability and rapid response times' : ''}
+
+Project Timeline Expectations:
+${context.aiTraining.project_timeline || 'N/A'}
+${context.aiTraining.project_timeline ? '↳ SET EXPECTATIONS: Mention typical timelines for service completion' : ''}
+
+Payment Options:
+${context.aiTraining.payment_options || 'N/A'}
+${context.aiTraining.payment_options ? '↳ REMOVE FRICTION: Clearly state flexible payment options' : ''}
+
+Service Area Coverage:
+${context.aiTraining.service_area_coverage || 'N/A'}
+${context.aiTraining.service_area_coverage ? '↳ GEOGRAPHIC RELEVANCE: Emphasize local presence and coverage' : ''}
+` : 'No AI training data available'}
+
+${context.serviceInfo ? `
+═══════════════════════════════════════════════════════════════
+SERVICE-SPECIFIC CONTEXT - FOR THIS PARTICULAR SERVICE
+═══════════════════════════════════════════════════════════════
+
+Service Name: ${context.serviceInfo.name}
+Service Category: ${context.serviceInfo.category}
+Service Slug: ${context.serviceInfo.slug}
+Active Status: ${context.serviceInfo.is_active ? 'Active' : 'Inactive'}
+
+FULL SERVICE DESCRIPTION:
+━━━━━━━━━━━━━━━━━━━━━━
+${context.serviceInfo.description}
+
+${context.serviceInfo.starting_price ? `PRICING:
+━━━━━━━━
+Starting Price: $${(context.serviceInfo.starting_price / 100).toFixed(2)}
+↳ DISPLAY PRICING: Show this starting price prominently with clear "starting at" language
+` : ''}
+
+🎯 CRITICAL: This template is SPECIFICALLY for the "${context.serviceInfo.name}" service.
+   • All headlines, copy, examples, and benefits must be relevant to ${context.serviceInfo.name}
+   • Use the service description above to create targeted, specific content
+   • Don't be generic - every word should reflect THIS specific service
+   • Incorporate service-specific benefits, use cases, and value propositions
+` : ''}
+
+═══════════════════════════════════════════════════════════════`;
+
     // Build AI prompt with full context - Enhanced for beautiful design generation
     const prompt = `You are an elite web designer and developer who creates stunning, modern, conversion-focused web pages. You build pages that are visually breathtaking, highly engaging, and professionally polished.
 
-COMPANY CONTEXT:
-Company Name: ${context.companyInfo?.business_name || 'N/A'}
-Industry: Roofing and Restoration
-Brand Voice: ${context.aiTraining?.brand_voice || 'Professional and trustworthy'}
-Target Audience: ${context.aiTraining?.target_audience || 'Homeowners and businesses'}
-Unique Selling Points: ${context.aiTraining?.unique_selling_points || 'Quality service and customer satisfaction'}
+${companyProfile}
 
-${context.serviceInfo ? `SERVICE CONTEXT:
-Service Name: ${context.serviceInfo.name}
-Service Category: ${context.serviceInfo.category}
-Service Description: ${context.serviceInfo.description}
-${context.serviceInfo.starting_price ? `Starting Price: $${(context.serviceInfo.starting_price / 100).toFixed(2)}` : ''}
-
-IMPORTANT: This template is for the "${context.serviceInfo.name}" service. Make sure all content is relevant to this specific service. Use the service name and description to create targeted, compelling copy.
-` : ''}
 CURRENT PAGE:
 Type: ${context.currentPage?.type || 'unknown'}
 URL: ${context.currentPage?.url || 'N/A'}
@@ -48,6 +168,46 @@ ${context.currentPage?.html || ''}
 
 USER REQUEST:
 ${command}
+
+🎨 YOUR MISSION - CREATE STUNNING, CONVERSION-FOCUSED PAGES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. **USE THE COMPLETE COMPANY PROFILE ABOVE**
+   ↳ Every piece of information provided is there for a reason - USE IT ALL
+   ↳ Reference the business name, incorporate the brand voice, highlight the USPs
+   ↳ Use actual contact info, mention certifications, reflect the mission
+   ↳ Don't ignore any context - the more you use, the more personalized and effective the page
+
+2. **MATCH THE BRAND VOICE EXACTLY**
+   ↳ The brand voice describes HOW to write - tone, style, personality
+   ↳ Professional? Friendly? Urgent? Technical? Match it perfectly
+   ↳ Every sentence should sound like it came from THIS specific company
+
+3. **SPEAK TO THE TARGET AUDIENCE**
+   ↳ Write directly to the audience described above
+   ↳ Use language, benefits, and examples that resonate with THEM
+   ↳ Address their pain points, goals, and concerns
+
+4. **HIGHLIGHT UNIQUE SELLING POINTS & COMPETITIVE ADVANTAGES**
+   ↳ These are the company's differentiators - make them PROMINENT
+   ↳ Weave them into headlines, feature sections, and CTAs
+   ↳ Don't let the page be generic - show what makes THIS company special
+
+5. **INCORPORATE SERVICE-SPECIFIC DETAILS** (when available)
+   ↳ Use the EXACT service name throughout the page
+   ↳ Reference the service description to create relevant content
+   ↳ Mention service-specific benefits, use cases, and outcomes
+   ↳ If pricing is provided, display it clearly with "starting at" language
+
+6. **BUILD TRUST WITH CREDENTIALS**
+   ↳ Display years of experience, certifications, and licenses
+   ↳ Mention service standards and quality guarantees
+   ↳ Show service area coverage and response capabilities
+
+7. **MAKE IT EASY TO TAKE ACTION**
+   ↳ Use the actual company phone number and email in CTAs
+   ↳ Reference payment options to remove friction
+   ↳ Set clear project timeline expectations where relevant
 
 DESIGN SYSTEM & COMPONENT LIBRARY - USE THESE EXTENSIVELY:
 
