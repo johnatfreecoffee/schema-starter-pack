@@ -2741,48 +2741,72 @@ export type Database = {
           archived_at: string | null
           archived_by: string | null
           category: Database["public"]["Enums"]["service_category"]
+          content_focus: string | null
           created_at: string
+          features: Json | null
           full_description: string | null
           id: string
           is_active: boolean
+          is_emergency: boolean | null
           name: string
+          primary_cta_type: string | null
+          seo_keywords: Json | null
           short_description: string | null
           slug: string
           starting_price: number | null
+          target_word_count: number | null
           template_id: string | null
+          template_path: string | null
           updated_at: string
+          urgency_level: string | null
         }
         Insert: {
           archived?: boolean | null
           archived_at?: string | null
           archived_by?: string | null
           category: Database["public"]["Enums"]["service_category"]
+          content_focus?: string | null
           created_at?: string
+          features?: Json | null
           full_description?: string | null
           id?: string
           is_active?: boolean
+          is_emergency?: boolean | null
           name: string
+          primary_cta_type?: string | null
+          seo_keywords?: Json | null
           short_description?: string | null
           slug: string
           starting_price?: number | null
+          target_word_count?: number | null
           template_id?: string | null
+          template_path?: string | null
           updated_at?: string
+          urgency_level?: string | null
         }
         Update: {
           archived?: boolean | null
           archived_at?: string | null
           archived_by?: string | null
           category?: Database["public"]["Enums"]["service_category"]
+          content_focus?: string | null
           created_at?: string
+          features?: Json | null
           full_description?: string | null
           id?: string
           is_active?: boolean
+          is_emergency?: boolean | null
           name?: string
+          primary_cta_type?: string | null
+          seo_keywords?: Json | null
           short_description?: string | null
           slug?: string
           starting_price?: number | null
+          target_word_count?: number | null
           template_id?: string | null
+          template_path?: string | null
           updated_at?: string
+          urgency_level?: string | null
         }
         Relationships: [
           {
