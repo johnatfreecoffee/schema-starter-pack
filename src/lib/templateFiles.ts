@@ -2,7 +2,6 @@
 import asphaltShingleRoofing from '@/templates/granular-service/asphalt-shingle-roofing.html?raw';
 import atticVentilation from '@/templates/granular-service/attic-ventilation.html?raw';
 import chimneyRepair from '@/templates/granular-service/chimney-repair.html?raw';
-import doorInstallation from '@/templates/granular-service/door-installation.html?raw';
 import flatRoofSystems from '@/templates/granular-service/flat-roof-systems.html?raw';
 import greenRoofSystems from '@/templates/granular-service/green-roof-systems.html?raw';
 import gutterInstallation from '@/templates/granular-service/gutter-installation.html?raw';
@@ -18,7 +17,6 @@ import waterproofingServices from '@/templates/granular-service/waterproofing-se
 import windowInstallation from '@/templates/granular-service/window-installation.html?raw';
 import solarRoofing from '@/templates/granular-service/solar-roofing.html?raw';
 import tileRoofing from '@/templates/granular-service/tile-roofing.html?raw';
-import fortifiedRoof from '@/templates/granular-service/fortified-roof.html?raw';
 import roofCoatings from '@/templates/granular-service/roof-coatings.html?raw';
 
 import hailDamageRepair from '@/templates/emergency-service/hail-damage-repair.html?raw';
@@ -38,7 +36,6 @@ const templateMap: Record<string, string> = {
   'asphalt-shingle-roofing': asphaltShingleRoofing,
   'attic-ventilation': atticVentilation,
   'chimney-repair': chimneyRepair,
-  'door-installation': doorInstallation,
   'flat-roof-systems': flatRoofSystems,
   'green-roof-systems': greenRoofSystems,
   'gutter-installation': gutterInstallation,
@@ -54,7 +51,6 @@ const templateMap: Record<string, string> = {
   'window-installation': windowInstallation,
   'solar-roofing': solarRoofing,
   'tile-roofing': tileRoofing,
-  'fortified-roof': fortifiedRoof,
   'roof-coatings': roofCoatings,
   
   // Emergency Services
