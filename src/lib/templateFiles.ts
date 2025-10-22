@@ -23,6 +23,7 @@ import hailDamageRepair from '@/templates/emergency-service/hail-damage-repair.h
 import leakDetectionRepair from '@/templates/emergency-service/leak-detection-repair.html?raw';
 import windDamageRestoration from '@/templates/emergency-service/wind-damage-restoration.html?raw';
 
+import asphaltShingleRoofingAuthority from '@/templates/authority-hub/asphalt-shingle-roofing.html?raw';
 import commercialRoofing from '@/templates/authority-hub/commercial-roofing.html?raw';
 import emergencyRoofRepair from '@/templates/authority-hub/emergency-roof-repair.html?raw';
 import insuranceClaimsAssistance from '@/templates/authority-hub/insurance-claims-assistance.html?raw';
@@ -59,6 +60,7 @@ const templateMap: Record<string, string> = {
   'wind-damage-restoration': windDamageRestoration,
   
   // Authority Hub
+  'asphalt-shingle-roofing-authority': asphaltShingleRoofingAuthority,
   'commercial-roofing': commercialRoofing,
   'emergency-roof-repair': emergencyRoofRepair,
   'insurance-claims-assistance': insuranceClaimsAssistance,
