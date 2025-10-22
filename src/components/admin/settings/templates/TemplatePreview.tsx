@@ -59,12 +59,13 @@ const TemplatePreview = ({ templateHtml, onClose }: TemplatePreviewProps) => {
           </TabsList>
         </div>
 
-        <TabsContent value="rendered" className="flex-1 p-6 overflow-auto mt-0">
-          <div className="border rounded-lg bg-white">
+        <TabsContent value="rendered" className="flex-1 overflow-auto mt-0">
+          <div className="w-full h-full min-h-[600px]">
             <iframe
               srcDoc={renderedHtml}
-              className="w-full h-[600px] border-0"
+              className="w-full h-full min-h-[600px] border-0"
               title="Template Preview"
+              sandbox="allow-same-origin"
             />
           </div>
         </TabsContent>
