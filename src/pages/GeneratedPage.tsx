@@ -110,10 +110,10 @@ const GeneratedPage = () => {
   const { data: renderedContent, isLoading: isRendering } = useQuery({
     queryKey: ['rendered-page', urlPath, pageData],
     queryFn: async () => {
-      if (!page || !pageData) return '';
+      if (!page || !pageData || !service?.template) return '';
       
       let content = await renderTemplateWithReviews(
-        page.service.template.template_html,
+        service.template.template_html,
         pageData,
         { serviceId: page.service_id }
       );
@@ -143,7 +143,7 @@ const GeneratedPage = () => {
     );
   }
 
-  if (error || !page || !company || !pageData) {
+  if (error || !page || !company || !service || !area || !pageData) {
     return <NotFound />;
   }
 
@@ -282,7 +282,7 @@ const GeneratedPage = () => {
       {page.service_id && (
         <ServiceReviews 
           serviceId={page.service_id} 
-          serviceName={page.service.name}
+          serviceName={service.name}
         />
       )}
     </>
