@@ -169,6 +169,90 @@ ${context.currentPage?.html || ''}
 USER REQUEST:
 ${command}
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 CRITICAL SEO & CONVERSION STRATEGY - TRANSACTIONAL FOCUS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**PRIMARY DIRECTIVE**: Every service page MUST target **transactional search intent** - customers ready to purchase/hire immediately, not just researching.
+
+🔑 TRANSACTIONAL KEYWORD REQUIREMENTS:
+
+✓ Include ACTION WORDS: "hire," "buy," "fix," "repair," "install," "book," "schedule," "emergency"
+✓ Specify LOCATION: "[service] in [city]," "[service] near me," "local [service] company"  
+✓ Add URGENCY indicators: "today," "now," "emergency," "24/7," "same-day," "immediate"
+✓ Use PROBLEM-SPECIFIC terms: "[specific problem] repair," "[issue] fix," "[situation] help"
+
+HIGH-VALUE TRANSACTIONAL EXAMPLES:
+• "emergency plumber Chicago" NOT "plumbing services"
+• "hire IT consultant San Francisco" NOT "IT consulting information"  
+• "ac repair company near me today" NOT "how air conditioning works"
+• "same-day appliance repair Dallas" NOT "appliance maintenance tips"
+
+📋 MANDATORY PAGE ELEMENTS:
+
+1. **TRANSACTIONAL H1 HEADER**:
+   Format: "[Action Word] [Specific Service] in [City] - [Company Name]"
+   Example: "Emergency HVAC Repair in Austin - Available 24/7"
+   ↳ NEVER use generic headers like "Plumbing Services" or "About Our IT Services"
+
+2. **CALL-TO-ACTION FOCUS**:
+   • Contact info prominent ABOVE THE FOLD
+   • Action buttons: "Get Quote," "Call Now," "Book Service," "Schedule Today"
+   • Response time commitments for urgent services
+   • Phone number clickable and visible without scrolling
+
+3. **LOCAL TRUST SIGNALS**:
+   • "[City] residents and businesses trust..."
+   • "Serving [City] since [year]..."
+   • Specific neighborhoods and local area references
+   • Local reviews and testimonials
+
+4. **PROBLEM-SOLUTION CONTENT STRUCTURE**:
+   • Open with customer's IMMEDIATE problem or need
+   • Present company as the IMMEDIATE solution
+   • Include availability and response time promises
+   • Address specific pain points that drive urgent action
+
+5. **CONVERSION-FOCUSED COPY**:
+   • Urgency drivers: "Don't let [small problem] become [major issue]"
+   • Time-sensitive language: "Same-day service available"
+   • Trust builders: "Licensed, certified, insured, locally owned"
+   • Social proof: Reviews, testimonials, years in business
+   • Remove friction: "No-obligation quote," "Free estimate"
+
+🎯 WHY THIS TRANSACTIONAL FOCUS MATTERS:
+
+• Broad terms like "IT services" have massive competition from national companies
+• Small to medium businesses WIN by dominating specific transactional searches
+• Transactional keywords = HIGHER CONVERSION RATES (ready-to-buy customers)
+• Competitive advantage: Capture thousands of service + location + urgency combinations
+
+⚠️ WHAT TO AVOID:
+
+✗ NO purely informational pages - No "what is [service]" or "types of [product]"
+✗ NO generic service descriptions without location + action
+✗ NO hiding contact methods below the fold
+✗ NO focusing on company history instead of customer problems
+
+📐 IMPLEMENTATION RULES:
+
+• **Always include location + service + action** in primary keywords
+• **Emphasize availability and response time** - problems need solutions NOW
+• **Include industry-specific urgency triggers** - emergencies, deadlines, seasonal needs
+• **Contact visible without scrolling** on every page
+• **Focus on customer's problem first**, company capabilities second
+
+🏢 INDUSTRY ADAPTATIONS:
+
+• B2B Services: Target "hire," "consultant," "agency," "contractor," "provider"
+• Home Services: Target "repair," "fix," "emergency," "installation," "replacement"  
+• Professional Services: Target "attorney," "accountant," "advisor" + "near me"
+• Technical Services: Target "support," "fix," "troubleshoot," "setup," "migration"
+
+💡 STRATEGY GOAL: Create pages targeting specific customer needs at the exact moment of purchase decision, rather than competing for broad terms with low conversion intent.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 🎨 YOUR MISSION - CREATE STUNNING, CONVERSION-FOCUSED PAGES:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
