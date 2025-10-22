@@ -39,6 +39,7 @@ interface PageNode {
 const SitemapPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
 
   // Fetch static pages
   const { data: staticPages } = useQuery({
@@ -247,98 +248,124 @@ const SitemapPage = () => {
             {Array.from(groupedTemplatePages.entries()).map(([category, services]) => {
               const CategoryIcon = categoryIcons[category as keyof typeof categoryIcons] || Layers;
               const totalPages = Array.from(services.values()).reduce((sum, pages) => sum + pages.length, 0);
+              const isCategoryOpen = openCategories.has(category);
               
               return (
                 <Card key={category} className="overflow-hidden">
-                  <div className="p-4 bg-muted/50 border-b">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <CategoryIcon className="h-5 w-5 text-primary" />
-                        <div>
-                          <h3 className="font-semibold">{category}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {services.size} services • {totalPages} pages
-                          </p>
+                  <Collapsible
+                    open={isCategoryOpen}
+                    onOpenChange={(open) => {
+                      const newOpen = new Set(openCategories);
+                      if (open) {
+                        newOpen.add(category);
+                      } else {
+                        newOpen.delete(category);
+                      }
+                      setOpenCategories(newOpen);
+                    }}
+                  >
+                    <CollapsibleTrigger className="w-full">
+                      <div className="p-4 bg-muted/50 border-b hover:bg-muted/70 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            {isCategoryOpen ? (
+                              <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                            ) : (
+                              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                            )}
+                            <CategoryIcon className="h-5 w-5 text-primary" />
+                            <div className="text-left">
+                              <h3 className="font-semibold">{category}</h3>
+                              <p className="text-sm text-muted-foreground">
+                                {services.size} services • {totalPages} pages
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedCategory(
+                                selectedCategory === category ? null : category
+                              );
+                            }}
+                          >
+                            {selectedCategory === category ? 'Clear Filter' : 'Filter'}
+                          </Button>
                         </div>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedCategory(
-                          selectedCategory === category ? null : category
-                        )}
-                      >
-                        {selectedCategory === category ? 'Clear Filter' : 'Filter'}
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="divide-y">
-                    {Array.from(services.entries()).map(([service, pages]) => (
-                      <Collapsible key={service}>
-                        <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 transition-colors">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90" />
-                              <Globe className="h-4 w-4 text-muted-foreground" />
-                              <div className="text-left">
-                                <div className="font-medium">{service}</div>
-                                <div className="text-sm text-muted-foreground">
-                                  {pages.length} {pages.length === 1 ? 'page' : 'pages'}
-                                  {pages.filter(p => p.status === 'active').length < pages.length && (
-                                    <span className="ml-2">
-                                      • {pages.filter(p => p.status === 'archived').length} archived
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Badge variant={
-                                pages.every(p => p.status === 'active') ? 'default' : 'secondary'
-                              }>
-                                {pages.filter(p => p.status === 'active').length} active
-                              </Badge>
-                            </div>
-                          </div>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <div className="px-4 py-2 bg-muted/20 space-y-1">
-                            {pages.map(page => (
-                              <div
-                                key={page.id}
-                                className="flex items-center justify-between py-2 px-3 rounded hover:bg-background transition-colors group"
-                              >
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium truncate">
-                                      {page.area}
-                                    </span>
-                                    {page.status === 'archived' && (
-                                      <Archive className="h-3 w-3 text-muted-foreground" />
-                                    )}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground font-mono truncate">
-                                    {page.url}
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent>
+                      <div className="divide-y">
+                        {Array.from(services.entries()).map(([service, pages]) => (
+                          <Collapsible key={service}>
+                            <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 transition-colors">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90" />
+                                  <Globe className="h-4 w-4 text-muted-foreground" />
+                                  <div className="text-left">
+                                    <div className="font-medium">{service}</div>
+                                    <div className="text-sm text-muted-foreground">
+                                      {pages.length} {pages.length === 1 ? 'page' : 'pages'}
+                                      {pages.filter(p => p.status === 'active').length < pages.length && (
+                                        <span className="ml-2">
+                                          • {pages.filter(p => p.status === 'archived').length} archived
+                                        </span>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                  asChild
-                                >
-                                  <a href={page.url} target="_blank" rel="noopener noreferrer">
-                                    <ExternalLink className="h-3 w-3" />
-                                  </a>
-                                </Button>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant={
+                                    pages.every(p => p.status === 'active') ? 'default' : 'secondary'
+                                  }>
+                                    {pages.filter(p => p.status === 'active').length} active
+                                  </Badge>
+                                </div>
                               </div>
-                            ))}
-                          </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    ))}
-                  </div>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <div className="px-4 py-2 bg-muted/20 space-y-1">
+                                {pages.map(page => (
+                                  <div
+                                    key={page.id}
+                                    className="flex items-center justify-between py-2 px-3 rounded hover:bg-background transition-colors group"
+                                  >
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-sm font-medium truncate">
+                                          {page.area}
+                                        </span>
+                                        {page.status === 'archived' && (
+                                          <Archive className="h-3 w-3 text-muted-foreground" />
+                                        )}
+                                      </div>
+                                      <div className="text-xs text-muted-foreground font-mono truncate">
+                                        {page.url}
+                                      </div>
+                                    </div>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                      asChild
+                                    >
+                                      <a href={page.url} target="_blank" rel="noopener noreferrer">
+                                        <ExternalLink className="h-3 w-3" />
+                                      </a>
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            </CollapsibleContent>
+                          </Collapsible>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </Card>
               );
             })}
