@@ -2,9 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import NotFound from './NotFound';
-import { renderTemplateWithReviews, formatPrice, formatPhone } from '@/lib/templateEngine';
 import { ServiceReviews } from '@/components/reviews/ServiceReviews';
-import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { Button } from '@/components/ui/button';
 import { useLeadFormModal } from '@/hooks/useLeadFormModal';
 import { MessageSquare } from 'lucide-react';
@@ -17,14 +15,28 @@ const GeneratedPage = () => {
   const urlPath = `/${citySlug}/${serviceSlug}`;
   const { openModal } = useLeadFormModal();
 
-  const { data: page, isLoading, error } = useCachedQuery({
-    queryKey: ['generated-page', urlPath],
-    cacheKey: `pages:generated:${urlPath}`,
-    cacheTTL: 60 * 60 * 1000, // 1 hour
+  // Fetch page data and rendered content from backend function
+  // This bypasses RLS issues by using service role key server-side
+  const { data: pageResponse, isLoading, error } = useQuery({
+    queryKey: ['rendered-page', urlPath],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('render-page', {
+        body: { urlPath }
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    retry: 1,
+  });
+
+  // Fetch page record for service_id (needed for reviews)
+  const { data: page } = useQuery({
+    queryKey: ['generated-page-record', urlPath],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('generated_pages')
-        .select('*')
+        .select('id, service_id')
         .eq('url_path', urlPath)
         .eq('status', true)
         .maybeSingle();
@@ -32,69 +44,12 @@ const GeneratedPage = () => {
       if (error) throw error;
       return data;
     },
+    enabled: !!pageResponse,
   });
 
-  // Fetch related records separately to avoid RLS join issues
-  const { data: service, isLoading: isServiceLoading } = useCachedQuery({
-    queryKey: ['service', page?.service_id],
-    cacheKey: page?.service_id ? `services:${page.service_id}` : 'services:pending',
-    cacheTTL: 60 * 60 * 1000, // 1 hour
-    enabled: !!page?.service_id,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('services')
-        .select('id, name, slug, full_description, starting_price, category, template_id')
-        .eq('id', page!.service_id)
-        .maybeSingle();
-      if (error) {
-        return null as any;
-      }
-      return data;
-    },
-  });
-
-  const templateId = (service as any)?.template_id;
-
-  const { data: template, isLoading: isTemplateLoading } = useCachedQuery({
-    queryKey: ['template', templateId as string],
-    cacheKey: templateId ? `templates:${templateId}` : 'templates:pending',
-    cacheTTL: 60 * 60 * 1000, // 1 hour
-    enabled: !!templateId,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('templates')
-        .select('template_html')
-        .eq('id', templateId as string)
-        .maybeSingle();
-      if (error) {
-        return null as any;
-      }
-      return data;
-    },
-  });
-
-  const { data: area, isLoading: isAreaLoading } = useCachedQuery({
-    queryKey: ['service-area', page?.service_area_id],
-    cacheKey: page?.service_area_id ? `service-areas:${page.service_area_id}` : 'service-areas:pending',
-    cacheTTL: 60 * 60 * 1000, // 1 hour
-    enabled: !!page?.service_area_id,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('service_areas')
-        .select('*')
-        .eq('id', page!.service_area_id)
-        .maybeSingle();
-      if (error) {
-        return null as any;
-      }
-      return data;
-    },
-  });
-
-  const { data: company, isLoading: isCompanyLoading, error: companyError } = useCachedQuery({
+  // Fetch company settings for schema/SEO
+  const { data: company } = useQuery({
     queryKey: ['company-settings'],
-    cacheKey: 'company:settings',
-    cacheTTL: 24 * 60 * 60 * 1000, // 24 hours
     queryFn: async () => {
       const { data, error } = await supabase
         .from('company_settings')
@@ -102,71 +57,12 @@ const GeneratedPage = () => {
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
-      if (error) {
-        return null as any;
-      }
+      if (error) throw error;
       return data;
     },
   });
 
-  // Build page data for template rendering
-  const pageData = page && company && service && area ? {
-    service_name: service.name,
-    service_slug: service.slug,
-    service_description: service.full_description || '',
-    service_starting_price: formatPrice(service.starting_price || 0),
-    service_category: service.category,
-    city_name: area.city_name,
-    city_slug: area.city_slug,
-    display_name: area.display_name,
-    local_description: area.local_description || '',
-    company_name: company.business_name,
-    company_phone: formatPhone(company.phone),
-    company_email: company.email,
-    company_address: company.address,
-    company_description: company.description || '',
-    company_slogan: company.business_slogan || '',
-    years_experience: company.years_experience || 0,
-    logo_url: company.logo_url || '',
-    icon_url: company.icon_url || '',
-    page_title: page.page_title,
-    meta_description: page.meta_description || '',
-    url_path: page.url_path,
-  } : null;
-
-  // Render template with async review variables
-  const { data: renderedContent, isLoading: isRendering } = useQuery({
-    queryKey: ['rendered-page', urlPath, pageData],
-    queryFn: async () => {
-      if (!page || !pageData) return '';
-      
-      let content = '';
-      if (template?.template_html) {
-        content = await renderTemplateWithReviews(
-          template.template_html,
-          pageData,
-          { serviceId: page.service_id }
-        );
-      } else if (page.rendered_html) {
-        content = page.rendered_html;
-      } else {
-        return '';
-      }
-      
-      content = sanitizeHtml(content);
-      
-      // Add lazy loading to images in rendered HTML
-      content = content.replace(
-        /<img(?![^>]*loading=)/gi,
-        '<img loading="lazy"'
-      );
-      
-      return content;
-    },
-    enabled: !!(page && pageData),
-  });
-
-  if (isLoading || isRendering || isServiceLoading || isAreaLoading || isCompanyLoading) {
+  if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="animate-pulse space-y-4">
@@ -178,19 +74,20 @@ const GeneratedPage = () => {
     );
   }
 
-  if (error || companyError || !page || !company || !pageData) {
+  if (error || !pageResponse || !pageResponse.content || !pageResponse.pageData) {
     return <NotFound />;
   }
 
-  // Track view (fire and forget)
-  supabase
-    .from('generated_pages')
-    .update({
-      view_count: (page.view_count || 0) + 1,
-      last_viewed_at: new Date().toISOString(),
-    })
-    .eq('id', page.id)
-    .then(() => {});
+  const { content, pageData } = pageResponse;
+
+  // Sanitize and prepare content
+  let sanitizedContent = sanitizeHtml(content);
+
+  // Add lazy loading to images in rendered HTML
+  sanitizedContent = sanitizedContent.replace(
+    /<img(?![^>]*loading=)/gi,
+    '<img loading="lazy"'
+  );
 
   const canonicalUrl = `${window.location.origin}${pageData.url_path}`;
 
@@ -204,24 +101,26 @@ const GeneratedPage = () => {
         ogTitle={pageData.page_title}
         ogDescription={pageData.meta_description}
         ogUrl={canonicalUrl}
-        ogImage={company.logo_url}
+        ogImage={company?.logo_url}
         twitterTitle={pageData.page_title}
         twitterDescription={pageData.meta_description}
-        twitterImage={company.logo_url}
+        twitterImage={company?.logo_url}
       />
 
       {/* LocalBusiness Schema */}
-      <LocalBusinessSchema
-        businessName={pageData.company_name}
-        description={pageData.company_description}
-        address={pageData.company_address}
-        phone={pageData.company_phone}
-        email={pageData.company_email}
-        url={window.location.origin}
-        logo={pageData.logo_url}
-        serviceArea={[pageData.city_name]}
-        services={[pageData.service_name]}
-      />
+      {company && (
+        <LocalBusinessSchema
+          businessName={company.business_name}
+          description={company.description || ''}
+          address={company.address}
+          phone={company.phone}
+          email={company.email}
+          url={window.location.origin}
+          logo={company.logo_url || ''}
+          serviceArea={[pageData.city_name]}
+          services={[pageData.service_name]}
+        />
+      )}
 
       {/* Breadcrumbs */}
       <nav aria-label="Breadcrumb" className="bg-muted/30 border-b">
@@ -261,13 +160,13 @@ const GeneratedPage = () => {
           <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
             Professional {pageData.service_name} services serving {pageData.city_name} and surrounding areas
           </p>
-          <Button 
+          <Button
             size="lg"
             className="text-lg py-6 px-8"
             onClick={() => openModal(
               `Get a Free Quote for ${pageData.service_name} in ${pageData.city_name}`,
               {
-                serviceId: page.service_id,
+                serviceId: page?.service_id,
                 serviceName: pageData.service_name,
                 city: pageData.city_name,
                 originatingUrl: window.location.href,
@@ -283,7 +182,7 @@ const GeneratedPage = () => {
       {/* Rendered Content */}
       <div
         className="container mx-auto px-4 py-8 prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: renderedContent }}
+        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />
 
       {/* Bottom CTA Section */}
@@ -295,12 +194,12 @@ const GeneratedPage = () => {
           <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
             Contact us today for a free consultation and quote
           </p>
-          <Button 
+          <Button
             size="lg"
             onClick={() => openModal(
               `Get a Free Quote for ${pageData.service_name} in ${pageData.city_name}`,
               {
-                serviceId: page.service_id,
+                serviceId: page?.service_id,
                 serviceName: pageData.service_name,
                 city: pageData.city_name,
                 originatingUrl: window.location.href,
@@ -314,10 +213,10 @@ const GeneratedPage = () => {
       </div>
 
       {/* Service Reviews Section */}
-      {page.service_id && (
-        <ServiceReviews 
-          serviceId={page.service_id} 
-          serviceName={service.name}
+      {page?.service_id && (
+        <ServiceReviews
+          serviceId={page.service_id}
+          serviceName={pageData.service_name}
         />
       )}
     </>

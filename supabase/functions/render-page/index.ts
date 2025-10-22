@@ -149,19 +149,26 @@ serve(async (req) => {
     );
 
     const url = new URL(req.url);
-    const pathParts = url.pathname.split('/').filter(Boolean);
-    
-    // Expect format: /render-page/city-slug/service-slug
-    if (pathParts.length < 3) {
-      return new Response(JSON.stringify({ error: 'Invalid URL format' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
 
-    const citySlug = pathParts[1];
-    const serviceSlug = pathParts[2];
-    const urlPath = `/${citySlug}/${serviceSlug}`;
+    // Support both URL path and JSON body with urlPath
+    let urlPath: string;
+
+    if (req.method === 'POST') {
+      const body = await req.json();
+      urlPath = body.urlPath;
+    } else {
+      const pathParts = url.pathname.split('/').filter(Boolean);
+      // Expect format: /render-page/city-slug/service-slug
+      if (pathParts.length < 3) {
+        return new Response(JSON.stringify({ error: 'Invalid URL format' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      const citySlug = pathParts[1];
+      const serviceSlug = pathParts[2];
+      urlPath = `/${citySlug}/${serviceSlug}`;
+    }
 
     console.log(`Rendering page: ${urlPath}`);
 
@@ -300,14 +307,48 @@ serve(async (req) => {
       })
       .eq('id', page.id);
 
-    return new Response(finalHtml, {
-      status: 200,
-      headers: {
-        ...corsHeaders,
-        'Content-Type': 'text/html',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
-      },
-    });
+    // Return JSON for API calls (POST), HTML for direct access (GET)
+    if (req.method === 'POST') {
+      // Extract just the content HTML (without layout wrapper) for client-side rendering
+      const contentMatch = finalHtml.match(/<main>([\s\S]*)<\/main>/);
+      const contentHtml = contentMatch ? contentMatch[1] : finalHtml;
+
+      return new Response(
+        JSON.stringify({
+          content: contentHtml,
+          pageData: {
+            service_name: page.service.name,
+            service_slug: page.service.slug,
+            service_description: page.service.full_description || '',
+            service_starting_price: formatPrice(page.service.starting_price || 0),
+            service_category: page.service.category,
+            city_name: page.service_area.city_name,
+            city_slug: page.service_area.city_slug,
+            display_name: page.service_area.display_name || page.service_area.city_name,
+            page_title: localizedContent?.meta_title_override || page.page_title,
+            meta_description: localizedContent?.meta_description_override || page.meta_description || '',
+            url_path: page.url_path,
+          }
+        }),
+        {
+          status: 200,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, max-age=3600',
+          },
+        }
+      );
+    } else {
+      return new Response(finalHtml, {
+        status: 200,
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'text/html',
+          'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        },
+      });
+    }
   } catch (error) {
     console.error('Error rendering page:', error);
     return new Response(
