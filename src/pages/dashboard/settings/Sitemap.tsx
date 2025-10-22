@@ -11,28 +11,18 @@ import {
   FileText, 
   Globe, 
   Archive,
-  Sparkles,
-  LayoutGrid,
-  List
+  ChevronDown,
+  ChevronRight,
+  Layers,
+  Zap,
+  AlertTriangle
 } from 'lucide-react';
-import {
-  ReactFlow,
-  Node,
-  Edge,
-  Background,
-  Controls,
-  MiniMap,
-  useNodesState,
-  useEdgesState,
-  Panel,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from '@/components/ui/hover-card';
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 interface PageNode {
   id: string;
@@ -43,13 +33,12 @@ interface PageNode {
   service?: string;
   area?: string;
   meta_description?: string;
+  category?: string;
 }
 
 const SitemapPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'graph' | 'list'>('list'); // Default to list view for better UX with many pages
-  const [layoutMode, setLayoutMode] = useState<'hierarchical' | 'force' | 'circular'>('hierarchical');
-  const [graphPageLimit, setGraphPageLimit] = useState(50);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // Fetch static pages
   const { data: staticPages } = useQuery({
@@ -79,7 +68,8 @@ const SitemapPage = () => {
           meta_description,
           services (
             name,
-            archived
+            archived,
+            category
           ),
           service_areas (
             city_name,
@@ -113,16 +103,45 @@ const SitemapPage = () => {
       service: page.services?.name,
       area: page.service_areas?.city_name,
       meta_description: page.meta_description,
+      category: page.services?.category,
     })) || []),
   ];
 
   // Filter pages
-  const filteredPages = allPages.filter(page =>
-    page.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    page.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    page.service?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    page.area?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredPages = allPages.filter(page => {
+    const matchesSearch = page.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      page.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      page.service?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      page.area?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    if (!matchesSearch) return false;
+    if (!selectedCategory) return true;
+    return page.category === selectedCategory;
+  });
+
+  // Group pages by service and category
+  const groupedTemplatePages = React.useMemo(() => {
+    const pages = filteredPages.filter(p => p.type === 'generated');
+    const grouped = new Map<string, Map<string, PageNode[]>>();
+    
+    pages.forEach(page => {
+      const category = page.category || 'Other';
+      const service = page.service || 'Unknown';
+      
+      if (!grouped.has(category)) {
+        grouped.set(category, new Map());
+      }
+      
+      const categoryMap = grouped.get(category)!;
+      if (!categoryMap.has(service)) {
+        categoryMap.set(service, []);
+      }
+      
+      categoryMap.get(service)!.push(page);
+    });
+    
+    return grouped;
+  }, [filteredPages]);
 
   // Calculate stats
   const stats = {
@@ -135,218 +154,11 @@ const SitemapPage = () => {
     generatedActive: allPages.filter(p => p.type === 'generated' && p.status === 'active').length,
   };
 
-  // Limit pages shown in graph view for performance
-  const graphPages = React.useMemo(() => {
-    return filteredPages.slice(0, graphPageLimit);
-  }, [filteredPages, graphPageLimit]);
-
-  // Create nodes for React Flow
-  const createNodes = React.useCallback((): Node[] => {
-    const nodes: Node[] = [];
-    
-    const staticPages = graphPages.filter(p => p.type === 'static');
-    const generatedPages = graphPages.filter(p => p.type === 'generated');
-    
-    // Calculate grid layout dimensions
-    const columns = 3;
-    const nodeWidth = 250;
-    const nodeHeight = 120;
-    const horizontalSpacing = 300;
-    const verticalSpacing = 150;
-    
-    // Root node (centered)
-    nodes.push({
-      id: 'root',
-      type: 'input',
-      data: { label: '🏠 Home' },
-      position: { x: horizontalSpacing * (columns / 2), y: 0 },
-      style: {
-        background: 'hsl(var(--primary))',
-        color: 'hsl(var(--primary-foreground))',
-        border: '2px solid hsl(var(--primary))',
-        borderRadius: '12px',
-        padding: '16px',
-        fontSize: '16px',
-        fontWeight: 'bold',
-        minWidth: `${nodeWidth}px`,
-      },
-    });
-
-    // Static pages group
-    if (staticPages.length > 0) {
-      nodes.push({
-        id: 'static-group',
-        type: 'default',
-        data: { label: `📄 Static Pages (${staticPages.length})` },
-        position: { x: horizontalSpacing, y: verticalSpacing },
-        style: {
-          background: 'hsl(var(--muted))',
-          border: '2px solid hsl(var(--border))',
-          borderRadius: '12px',
-          padding: '12px',
-          fontWeight: 'bold',
-          minWidth: `${nodeWidth}px`,
-        },
-      });
-    }
-
-    // Generated pages group
-    if (generatedPages.length > 0) {
-      nodes.push({
-        id: 'generated-group',
-        type: 'default',
-        data: { label: `🔄 Generated Pages (${generatedPages.length})` },
-        position: { x: horizontalSpacing * 2, y: verticalSpacing },
-        style: {
-          background: 'hsl(var(--muted))',
-          border: '2px solid hsl(var(--border))',
-          borderRadius: '12px',
-          padding: '12px',
-          fontWeight: 'bold',
-          minWidth: `${nodeWidth}px`,
-        },
-      });
-    }
-
-    // Add static page nodes in grid layout
-    staticPages.forEach((page, idx) => {
-      const row = Math.floor(idx / columns);
-      const col = idx % columns;
-      nodes.push({
-        id: page.id,
-        data: { 
-          label: (
-            <div className="flex flex-col gap-1">
-              <div className="font-medium text-sm">{page.title}</div>
-              <div className="text-xs opacity-70 truncate">{page.url}</div>
-            </div>
-          )
-        },
-        position: { 
-          x: col * horizontalSpacing + 50, 
-          y: verticalSpacing * 2 + row * verticalSpacing 
-        },
-        style: {
-          background: page.status === 'archived' 
-            ? 'hsl(var(--muted) / 0.5)' 
-            : 'hsl(var(--card))',
-          border: page.status === 'archived'
-            ? '1px dashed hsl(var(--muted-foreground))'
-            : '2px solid hsl(var(--accent))',
-          borderRadius: '8px',
-          padding: '12px',
-          opacity: page.status === 'archived' ? 0.6 : 1,
-          width: `${nodeWidth}px`,
-        },
-      });
-    });
-
-    // Add generated page nodes in grid layout
-    generatedPages.forEach((page, idx) => {
-      const row = Math.floor(idx / columns);
-      const col = idx % columns;
-      nodes.push({
-        id: page.id,
-        data: { 
-          label: (
-            <div className="flex flex-col gap-1">
-              <div className="font-medium text-sm truncate">{page.service}</div>
-              <div className="text-xs opacity-70 truncate">{page.area}</div>
-              <div className="text-xs opacity-50 truncate">{page.url}</div>
-            </div>
-          )
-        },
-        position: { 
-          x: col * horizontalSpacing + horizontalSpacing * 3, 
-          y: verticalSpacing * 2 + row * verticalSpacing 
-        },
-        style: {
-          background: page.status === 'archived' 
-            ? 'hsl(var(--muted) / 0.5)' 
-            : 'hsl(var(--card))',
-          border: page.status === 'archived'
-            ? '1px dashed hsl(var(--muted-foreground))'
-            : '2px solid hsl(var(--primary))',
-          borderRadius: '8px',
-          padding: '12px',
-          opacity: page.status === 'archived' ? 0.6 : 1,
-          width: `${nodeWidth}px`,
-        },
-      });
-    });
-
-    return nodes;
-  }, [graphPages]);
-
-  // Create edges
-  const createEdges = React.useCallback((): Edge[] => {
-    const edges: Edge[] = [];
-    
-    const staticPages = graphPages.filter(p => p.type === 'static');
-    const generatedPages = graphPages.filter(p => p.type === 'generated');
-
-    // Connect root to groups
-    if (staticPages.length > 0) {
-      edges.push({
-        id: 'root-static',
-        source: 'root',
-        target: 'static-group',
-        animated: true,
-        style: { stroke: 'hsl(var(--muted-foreground))' },
-      });
-    }
-    
-    if (generatedPages.length > 0) {
-      edges.push({
-        id: 'root-generated',
-        source: 'root',
-        target: 'generated-group',
-        animated: true,
-        style: { stroke: 'hsl(var(--muted-foreground))' },
-      });
-    }
-
-    // Connect static pages
-    staticPages.forEach(page => {
-      edges.push({
-        id: `static-group-${page.id}`,
-        source: 'static-group',
-        target: page.id,
-        animated: page.status === 'active',
-        style: { 
-          stroke: page.status === 'archived' 
-            ? 'hsl(var(--muted-foreground) / 0.3)' 
-            : 'hsl(var(--accent))' 
-        },
-      });
-    });
-
-    // Connect generated pages
-    generatedPages.forEach(page => {
-      edges.push({
-        id: `generated-group-${page.id}`,
-        source: 'generated-group',
-        target: page.id,
-        animated: page.status === 'active',
-        style: { 
-          stroke: page.status === 'archived' 
-            ? 'hsl(var(--muted-foreground) / 0.3)' 
-            : 'hsl(var(--primary))' 
-        },
-      });
-    });
-
-    return edges;
-  }, [graphPages]);
-
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-
-  // Update nodes/edges when data or filters change
-  React.useEffect(() => {
-    setNodes(createNodes());
-    setEdges(createEdges());
-  }, [createNodes, createEdges, setNodes, setEdges]);
+  const categoryIcons = {
+    'Granular Services': Layers,
+    'Emergency Services': Zap,
+    'Authority Hub': AlertTriangle,
+  };
 
   return (
     <div className="space-y-6">
@@ -389,10 +201,10 @@ const SitemapPage = () => {
         </Card>
       </div>
 
-      {/* Search and View Controls */}
+      {/* Search and Filters */}
       <Card className="p-4">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 relative">
+        <div className="flex flex-col gap-4">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search pages by title, URL, service, or area..."
@@ -401,189 +213,186 @@ const SitemapPage = () => {
               className="pl-10"
             />
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant={viewMode === 'graph' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('graph')}
-            >
-              <LayoutGrid className="h-4 w-4 mr-2" />
-              Graph
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-            >
-              <List className="h-4 w-4 mr-2" />
-              List
-            </Button>
-          </div>
+          {selectedCategory && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Filtering by:</span>
+              <Badge variant="secondary" className="gap-2">
+                {selectedCategory}
+                <button
+                  onClick={() => setSelectedCategory(null)}
+                  className="ml-1 hover:text-destructive"
+                >
+                  ×
+                </button>
+              </Badge>
+            </div>
+          )}
         </div>
       </Card>
 
       {/* Main Content */}
-      {viewMode === 'graph' ? (
-        <div className="space-y-4">
-          {filteredPages.length > graphPageLimit && (
-            <Card className="p-4 bg-muted/50">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">
-                    Showing {graphPageLimit} of {filteredPages.length} pages in graph view
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Use search to filter pages or increase the limit. Graph view works best with fewer pages.
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setGraphPageLimit(Math.min(graphPageLimit + 50, filteredPages.length))}
-                  >
-                    Show More
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setViewMode('list')}
-                  >
-                    Switch to List View
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          )}
-          <Card className="p-0 overflow-hidden" style={{ height: '700px' }}>
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              fitView
-              attributionPosition="bottom-left"
-              minZoom={0.1}
-              maxZoom={1.5}
-            >
-              <Background />
-              <Controls />
-              <MiniMap 
-                nodeColor={(node) => {
-                  if (node.id === 'root') return 'hsl(var(--primary))';
-                  if (node.id.includes('group')) return 'hsl(var(--muted))';
-                  return 'hsl(var(--card))';
-                }}
-              />
-              <Panel position="top-right" className="bg-card border rounded-lg p-3">
-                <div className="space-y-2">
-                  <div className="text-sm font-medium">Pages in View</div>
-                  <div className="text-2xl font-bold text-primary">
-                    {graphPages.length}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    of {filteredPages.length} total
-                  </div>
-                </div>
-              </Panel>
-            </ReactFlow>
-          </Card>
-        </div>
-      ) : (
-        <Card className="p-6">
-          <Tabs defaultValue="all" className="w-full">
-            <TabsList className="mb-4">
-              <TabsTrigger value="all">All Pages ({filteredPages.length})</TabsTrigger>
-              <TabsTrigger value="static">Static ({filteredPages.filter(p => p.type === 'static').length})</TabsTrigger>
-              <TabsTrigger value="generated">Generated ({filteredPages.filter(p => p.type === 'generated').length})</TabsTrigger>
-            </TabsList>
+      <Card className="p-6">
+        <Tabs defaultValue="templates" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="templates">
+              Templates ({filteredPages.filter(p => p.type === 'generated').length})
+            </TabsTrigger>
+            <TabsTrigger value="static">
+              Static Pages ({filteredPages.filter(p => p.type === 'static').length})
+            </TabsTrigger>
+          </TabsList>
 
-            {['all', 'static', 'generated'].map(tab => (
-              <TabsContent key={tab} value={tab} className="space-y-2">
-                {filteredPages
-                  .filter(page => tab === 'all' || page.type === tab)
-                  .map(page => (
-                    <HoverCard key={page.id} openDelay={200}>
-                      <HoverCardTrigger asChild>
-                        <div
-                          className={`
-                            p-4 rounded-lg border-2 transition-all cursor-pointer
-                            hover:shadow-lg hover:border-primary
-                            ${page.status === 'archived' 
-                              ? 'opacity-50 border-dashed border-muted-foreground' 
-                              : 'border-border'
-                            }
-                          `}
-                        >
-                          <div className="flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-3 flex-1">
-                              {page.type === 'static' ? (
-                                <FileText className="h-5 w-5 text-accent" />
-                              ) : (
-                                <Globe className="h-5 w-5 text-primary" />
-                              )}
-                              <div className="flex-1">
-                                <div className="font-medium">{page.title}</div>
-                                <div className="text-sm text-muted-foreground font-mono">
-                                  {page.url}
+          {/* Templates Tab */}
+          <TabsContent value="templates" className="space-y-4">
+            {Array.from(groupedTemplatePages.entries()).map(([category, services]) => {
+              const CategoryIcon = categoryIcons[category as keyof typeof categoryIcons] || Layers;
+              const totalPages = Array.from(services.values()).reduce((sum, pages) => sum + pages.length, 0);
+              
+              return (
+                <Card key={category} className="overflow-hidden">
+                  <div className="p-4 bg-muted/50 border-b">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <CategoryIcon className="h-5 w-5 text-primary" />
+                        <div>
+                          <h3 className="font-semibold">{category}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {services.size} services • {totalPages} pages
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedCategory(
+                          selectedCategory === category ? null : category
+                        )}
+                      >
+                        {selectedCategory === category ? 'Clear Filter' : 'Filter'}
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="divide-y">
+                    {Array.from(services.entries()).map(([service, pages]) => (
+                      <Collapsible key={service}>
+                        <CollapsibleTrigger className="w-full p-4 hover:bg-muted/50 transition-colors">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90" />
+                              <Globe className="h-4 w-4 text-muted-foreground" />
+                              <div className="text-left">
+                                <div className="font-medium">{service}</div>
+                                <div className="text-sm text-muted-foreground">
+                                  {pages.length} {pages.length === 1 ? 'page' : 'pages'}
+                                  {pages.filter(p => p.status === 'active').length < pages.length && (
+                                    <span className="ml-2">
+                                      • {pages.filter(p => p.status === 'archived').length} archived
+                                    </span>
+                                  )}
                                 </div>
-                                {page.service && page.area && (
-                                  <div className="text-xs text-muted-foreground mt-1">
-                                    {page.service} • {page.area}
-                                  </div>
-                                )}
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Badge
-                                variant={page.status === 'active' ? 'default' : 'secondary'}
-                              >
-                                {page.status === 'archived' ? (
-                                  <>
-                                    <Archive className="h-3 w-3 mr-1" />
-                                    Archived
-                                  </>
-                                ) : (
-                                  'Active'
-                                )}
+                              <Badge variant={
+                                pages.every(p => p.status === 'active') ? 'default' : 'secondary'
+                              }>
+                                {pages.filter(p => p.status === 'active').length} active
                               </Badge>
-                              <Badge variant="outline">
-                                {page.type === 'static' ? 'Static' : 'Generated'}
-                              </Badge>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.open(page.url, '_blank');
-                                }}
-                              >
-                                <ExternalLink className="h-4 w-4" />
-                              </Button>
                             </div>
                           </div>
-                        </div>
-                      </HoverCardTrigger>
-                      <HoverCardContent side="left" className="w-96">
-                        <div className="space-y-2">
-                          <div className="font-semibold">{page.title}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {page.meta_description || 'No description available'}
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <div className="px-4 py-2 bg-muted/20 space-y-1">
+                            {pages.map(page => (
+                              <div
+                                key={page.id}
+                                className="flex items-center justify-between py-2 px-3 rounded hover:bg-background transition-colors group"
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm font-medium truncate">
+                                      {page.area}
+                                    </span>
+                                    {page.status === 'archived' && (
+                                      <Archive className="h-3 w-3 text-muted-foreground" />
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground font-mono truncate">
+                                    {page.url}
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                  asChild
+                                >
+                                  <a href={page.url} target="_blank" rel="noopener noreferrer">
+                                    <ExternalLink className="h-3 w-3" />
+                                  </a>
+                                </Button>
+                              </div>
+                            ))}
                           </div>
-                          <div className="text-xs text-muted-foreground pt-2 border-t">
-                            <div>Type: {page.type}</div>
-                            <div>Status: {page.status}</div>
-                            <div>URL: {page.url}</div>
-                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    ))}
+                  </div>
+                </Card>
+              );
+            })}
+          </TabsContent>
+
+          {/* Static Pages Tab */}
+          <TabsContent value="static" className="space-y-3">
+            {filteredPages
+              .filter(page => page.type === 'static')
+              .map(page => (
+                <div
+                  key={page.id}
+                  className={`
+                    p-4 rounded-lg border transition-all
+                    hover:shadow-md hover:border-accent
+                    ${page.status === 'archived' 
+                      ? 'opacity-50 border-dashed' 
+                      : 'border-border'
+                    }
+                  `}
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <FileText className="h-5 w-5 text-accent flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium">{page.title}</div>
+                        <div className="text-sm text-muted-foreground font-mono truncate">
+                          {page.url}
                         </div>
-                      </HoverCardContent>
-                    </HoverCard>
-                  ))}
-              </TabsContent>
-            ))}
-          </Tabs>
-        </Card>
-      )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {page.status === 'archived' && (
+                        <Badge variant="secondary">
+                          <Archive className="h-3 w-3 mr-1" />
+                          Archived
+                        </Badge>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        asChild
+                      >
+                        <a href={page.url} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+          </TabsContent>
+        </Tabs>
+      </Card>
     </div>
   );
 };
