@@ -358,27 +358,22 @@ const UnifiedPageEditor = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-[95vw] h-[90vh] p-0">
         <DialogHeader className="px-6 py-4 border-b">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <DialogTitle>Editing: {pageTitle}</DialogTitle>
-              <div className="text-xs text-muted-foreground">
-                {isSaving ? (
-                  <span className="flex items-center gap-1">
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    Saving...
-                  </span>
-                ) : lastSaved ? (
-                  <span>Saved {new Date(lastSaved).toLocaleTimeString()}</span>
-                ) : templateHtml !== originalHtml ? (
-                  <span>Unsaved changes</span>
-                ) : (
-                  <span>All changes saved</span>
-                )}
-              </div>
+          <div className="flex items-center gap-3">
+            <DialogTitle>Editing: {pageTitle}</DialogTitle>
+            <div className="text-xs text-muted-foreground">
+              {isSaving ? (
+                <span className="flex items-center gap-1">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Saving...
+                </span>
+              ) : lastSaved ? (
+                <span>Saved {new Date(lastSaved).toLocaleTimeString()}</span>
+              ) : templateHtml !== originalHtml ? (
+                <span>Unsaved changes</span>
+              ) : (
+                <span>All changes saved</span>
+              )}
             </div>
-            <Button variant="ghost" size="sm" onClick={() => closeMutation.mutate()}>
-              <X className="h-4 w-4" />
-            </Button>
           </div>
         </DialogHeader>
 
