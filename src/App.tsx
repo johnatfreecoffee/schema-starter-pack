@@ -21,6 +21,7 @@ import ServiceOverviewPage from "./pages/ServiceOverviewPage";
 import StaticPage from "./pages/StaticPage";
 import AcceptInvite from "./pages/AcceptInvite";
 import ReviewsPage from "./pages/Reviews";
+import UpdateCommercialTemplate from "./pages/UpdateCommercialTemplate";
 
 // Lazy load heavy dashboard pages for better initial load time
 import * as LazyRoutes from './lib/lazyRoutes';
@@ -46,6 +47,7 @@ const AppContent = () => {
             <Route path="/reviews" element={<ReviewsPage />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/accept-invite" element={<AcceptInvite />} />
+            <Route path="/update-commercial-template" element={<UpdateCommercialTemplate />} />
             <Route path="/:slug" element={<StaticPage />} />
           </Route>
           
