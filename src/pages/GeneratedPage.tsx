@@ -35,9 +35,9 @@ const GeneratedPage = () => {
   });
 
   // Fetch related records separately to avoid RLS join issues
-  const { data: service } = useCachedQuery({
+  const { data: service, isLoading: isServiceLoading, error: serviceError } = useCachedQuery({
     queryKey: ['service', page?.service_id],
-    cacheKey: page?.service_id ? `services:${page.service_id}` : undefined,
+    cacheKey: page?.service_id ? `services:${page.service_id}` : 'services:pending',
     cacheTTL: 60 * 60 * 1000, // 1 hour
     enabled: !!page?.service_id,
     queryFn: async () => {
@@ -51,9 +51,9 @@ const GeneratedPage = () => {
     },
   });
 
-  const { data: area } = useCachedQuery({
+  const { data: area, isLoading: isAreaLoading, error: areaError } = useCachedQuery({
     queryKey: ['service-area', page?.service_area_id],
-    cacheKey: page?.service_area_id ? `service-areas:${page.service_area_id}` : undefined,
+    cacheKey: page?.service_area_id ? `service-areas:${page.service_area_id}` : 'service-areas:pending',
     cacheTTL: 60 * 60 * 1000, // 1 hour
     enabled: !!page?.service_area_id,
     queryFn: async () => {
@@ -67,7 +67,7 @@ const GeneratedPage = () => {
     },
   });
 
-  const { data: company } = useCachedQuery({
+  const { data: company, isLoading: isCompanyLoading, error: companyError } = useCachedQuery({
     queryKey: ['company-settings'],
     cacheKey: 'company:settings',
     cacheTTL: 24 * 60 * 60 * 1000, // 24 hours
@@ -131,7 +131,7 @@ const GeneratedPage = () => {
     enabled: !!(page && pageData),
   });
 
-  if (isLoading || isRendering) {
+  if (isLoading || isRendering || isServiceLoading || isAreaLoading || isCompanyLoading) {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="animate-pulse space-y-4">
@@ -143,7 +143,7 @@ const GeneratedPage = () => {
     );
   }
 
-  if (error || !page || !company || !service || !area || !pageData) {
+  if (error || serviceError || areaError || companyError || !page || !company || !service || !area || !pageData) {
     return <NotFound />;
   }
 
