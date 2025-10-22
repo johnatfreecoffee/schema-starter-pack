@@ -9,6 +9,26 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import Editor from '@monaco-editor/react';
 
+/**
+ * Static Page Form
+ * 
+ * IMPORTANT: Static pages follow the Static Pages Template Guide
+ * Reference: src/templates/STATIC_PAGES_TEMPLATE_GUIDE.md
+ * 
+ * ALLOWED VARIABLES (Company Only):
+ * {{company_name}}, {{company_phone}}, {{company_email}}, {{company_address}},
+ * {{years_experience}}, {{business_hours}}, {{logo_url}}, {{description}}, etc.
+ * 
+ * FORBIDDEN VARIABLES (Service/Area):
+ * {{service_name}}, {{city_name}}, {{service_starting_price}}, etc.
+ * 
+ * DESIGN SYSTEM:
+ * - shadcn/ui components only
+ * - Semantic color tokens only (bg-background, text-foreground)
+ * - Mobile-first responsive design
+ * - Reference: src/templates/UNIVERSAL_TEMPLATE_SYSTEM.md
+ */
+
 interface StaticPageFormProps {
   page?: any;
   onClose: () => void;
