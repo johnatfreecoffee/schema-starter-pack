@@ -35,7 +35,7 @@ const GeneratedPage = () => {
   });
 
   // Fetch related records separately to avoid RLS join issues
-  const { data: service, isLoading: isServiceLoading, error: serviceError } = useCachedQuery({
+  const { data: service, isLoading: isServiceLoading } = useCachedQuery({
     queryKey: ['service', page?.service_id],
     cacheKey: page?.service_id ? `services:${page.service_id}` : 'services:pending',
     cacheTTL: 60 * 60 * 1000, // 1 hour
@@ -43,15 +43,37 @@ const GeneratedPage = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('services')
-        .select('*, template:templates(*)')
+        .select('id, name, slug, full_description, starting_price, category, template_id')
         .eq('id', page!.service_id)
         .maybeSingle();
-      if (error) throw error;
+      if (error) {
+        return null as any;
+      }
       return data;
     },
   });
 
-  const { data: area, isLoading: isAreaLoading, error: areaError } = useCachedQuery({
+  const templateId = (service as any)?.template_id;
+
+  const { data: template, isLoading: isTemplateLoading } = useCachedQuery({
+    queryKey: ['template', templateId as string],
+    cacheKey: templateId ? `templates:${templateId}` : 'templates:pending',
+    cacheTTL: 60 * 60 * 1000, // 1 hour
+    enabled: !!templateId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('templates')
+        .select('template_html')
+        .eq('id', templateId as string)
+        .maybeSingle();
+      if (error) {
+        return null as any;
+      }
+      return data;
+    },
+  });
+
+  const { data: area, isLoading: isAreaLoading } = useCachedQuery({
     queryKey: ['service-area', page?.service_area_id],
     cacheKey: page?.service_area_id ? `service-areas:${page.service_area_id}` : 'service-areas:pending',
     cacheTTL: 60 * 60 * 1000, // 1 hour
@@ -62,7 +84,9 @@ const GeneratedPage = () => {
         .select('*')
         .eq('id', page!.service_area_id)
         .maybeSingle();
-      if (error) throw error;
+      if (error) {
+        return null as any;
+      }
       return data;
     },
   });
@@ -110,13 +134,20 @@ const GeneratedPage = () => {
   const { data: renderedContent, isLoading: isRendering } = useQuery({
     queryKey: ['rendered-page', urlPath, pageData],
     queryFn: async () => {
-      if (!page || !pageData || !service?.template) return '';
+      if (!page || !pageData) return '';
       
-      let content = await renderTemplateWithReviews(
-        service.template.template_html,
-        pageData,
-        { serviceId: page.service_id }
-      );
+      let content = '';
+      if (template?.template_html) {
+        content = await renderTemplateWithReviews(
+          template.template_html,
+          pageData,
+          { serviceId: page.service_id }
+        );
+      } else if (page.rendered_html) {
+        content = page.rendered_html;
+      } else {
+        return '';
+      }
       
       content = sanitizeHtml(content);
       
@@ -143,7 +174,7 @@ const GeneratedPage = () => {
     );
   }
 
-  if (error || serviceError || areaError || companyError || !page || !company || !service || !area || !pageData) {
+  if (error || companyError || !page || !company || !pageData) {
     return <NotFound />;
   }
 
