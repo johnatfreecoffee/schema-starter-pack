@@ -41,9 +41,11 @@ const UnifiedPageEditor = ({
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
   const [renderedPreview, setRenderedPreview] = useState('');
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load template for service
   const { data: template, isLoading } = useQuery({
@@ -248,10 +250,9 @@ const UnifiedPageEditor = ({
 
   const applyAiSuggestion = (suggestion: string) => {
     setTemplateHtml(suggestion);
-    setHasUnsavedChanges(true);
     toast({
       title: 'Changes applied',
-      description: 'Review the preview and save when ready.',
+      description: 'Changes will be saved automatically.',
     });
   };
 
@@ -273,10 +274,12 @@ const UnifiedPageEditor = ({
     }
   };
 
-  const saveMutation = useMutation({
-    mutationFn: async () => {
-      if (!template?.id) throw new Error('No template found');
+  // Auto-save function
+  const autoSave = async () => {
+    if (!template?.id || templateHtml === originalHtml) return;
 
+    setIsSaving(true);
+    try {
       const { error } = await supabase
         .from('templates')
         .update({ 
@@ -294,22 +297,48 @@ const UnifiedPageEditor = ({
           .eq('service_id', service.id);
       }
 
-      await onSave(templateHtml);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['service-template', service?.id] });
-      queryClient.invalidateQueries({ queryKey: ['services'] });
-      setHasUnsavedChanges(false);
       setOriginalHtml(templateHtml);
-      toast({ title: 'Saved successfully' });
-      onClose();
-    },
-    onError: (error: any) => {
+      setLastSaved(new Date());
+      queryClient.invalidateQueries({ queryKey: ['service-template', service?.id] });
+    } catch (error: any) {
+      console.error('Auto-save error:', error);
       toast({
-        title: 'Error saving',
+        title: 'Auto-save failed',
         description: error.message,
         variant: 'destructive',
       });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Debounced auto-save effect
+  useEffect(() => {
+    if (templateHtml !== originalHtml) {
+      // Clear existing timeout
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+
+      // Set new timeout for auto-save (2 seconds after user stops typing)
+      autoSaveTimeoutRef.current = setTimeout(() => {
+        autoSave();
+      }, 2000);
+    }
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [templateHtml, originalHtml]);
+
+  const closeMutation = useMutation({
+    mutationFn: async () => {
+      await onSave(templateHtml);
+    },
+    onSuccess: () => {
+      onClose();
     },
   });
 
@@ -330,24 +359,26 @@ const UnifiedPageEditor = ({
       <DialogContent className="max-w-[95vw] h-[90vh] p-0">
         <DialogHeader className="px-6 py-4 border-b">
           <div className="flex items-center justify-between">
-            <DialogTitle>Editing: {pageTitle}</DialogTitle>
-            <div className="flex gap-2">
-              <Button 
-                variant="default" 
-                size="sm" 
-                onClick={() => saveMutation.mutate()} 
-                disabled={!hasUnsavedChanges || saveMutation.isPending}
-              >
-                {saveMutation.isPending ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>
+            <div className="flex items-center gap-3">
+              <DialogTitle>Editing: {pageTitle}</DialogTitle>
+              <div className="text-xs text-muted-foreground">
+                {isSaving ? (
+                  <span className="flex items-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Saving...
+                  </span>
+                ) : lastSaved ? (
+                  <span>Saved {new Date(lastSaved).toLocaleTimeString()}</span>
+                ) : templateHtml !== originalHtml ? (
+                  <span>Unsaved changes</span>
                 ) : (
-                  <><Save className="mr-2 h-4 w-4" /> Save Changes</>
+                  <span>All changes saved</span>
                 )}
-              </Button>
-              <Button variant="ghost" size="sm" onClick={onClose}>
-                <X className="h-4 w-4" />
-              </Button>
+              </div>
             </div>
+            <Button variant="ghost" size="sm" onClick={() => closeMutation.mutate()}>
+              <X className="h-4 w-4" />
+            </Button>
           </div>
         </DialogHeader>
 
@@ -493,7 +524,6 @@ const UnifiedPageEditor = ({
                   value={templateHtml}
                   onChange={(value) => {
                     setTemplateHtml(value || '');
-                    setHasUnsavedChanges(true);
                   }}
                   theme="vs-dark"
                   options={{
