@@ -24,6 +24,14 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface PageNode {
   id: string;
@@ -41,7 +49,7 @@ const SitemapPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
   const [openServices, setOpenServices] = useState<Set<string>>(new Set());
-  const [openTemplates, setOpenTemplates] = useState<Set<string>>(new Set());
+  const [selectedTemplate, setSelectedTemplate] = useState<{ name: string; content: string; service: string } | null>(null);
 
   // Fetch static pages
   const { data: staticPages } = useQuery({
@@ -291,8 +299,7 @@ const SitemapPage = () => {
                     <CollapsibleContent>
                       <div className="divide-y">
                         {Array.from(services.entries()).map(([service, serviceData]) => {
-                          const isServiceOpen = openServices.has(service);
-                          const isTemplateOpen = openTemplates.has(service);
+                           const isServiceOpen = openServices.has(service);
                           const template = templates?.find(t => t.id === serviceData.templateId);
                           const { pages } = serviceData;
                           
@@ -332,10 +339,24 @@ const SitemapPage = () => {
                                       </div>
                                     </div>
                                      <div className="flex items-center gap-2">
-                                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                         <Eye className="h-3 w-3" />
-                                         <span className="hidden sm:inline">Template</span>
-                                       </div>
+                                       <Button
+                                         variant="ghost"
+                                         size="sm"
+                                         className="h-auto py-1 px-2"
+                                         onClick={(e) => {
+                                           e.stopPropagation();
+                                           setSelectedTemplate({
+                                             name: template?.name || service,
+                                             content: template?.template_html || 'No template configured for this service yet. Configure a template in the Services settings.',
+                                             service: service
+                                           });
+                                         }}
+                                       >
+                                         <div className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                                           <Eye className="h-3 w-3" />
+                                           <span className="hidden sm:inline">Template</span>
+                                         </div>
+                                       </Button>
                                        <Badge variant={
                                          pages.every(p => p.status === 'active') ? 'default' : 'secondary'
                                        }>
@@ -344,66 +365,13 @@ const SitemapPage = () => {
                                      </div>
                                   </div>
                                 </CollapsibleTrigger>
-                                <CollapsibleContent>
-                                  <div className="bg-muted/20">
-                                    {/* Template Preview Section */}
-                                    <div className="border-b">
-                                      <Collapsible
-                                        open={isTemplateOpen}
-                                        onOpenChange={(open) => {
-                                          const newOpen = new Set(openTemplates);
-                                          if (open) {
-                                            newOpen.add(service);
-                                          } else {
-                                            newOpen.delete(service);
-                                          }
-                                          setOpenTemplates(newOpen);
-                                        }}
-                                      >
-                                        <CollapsibleTrigger className="w-full px-4 py-3 hover:bg-muted/30 transition-colors">
-                                          <div className="flex items-center gap-3">
-                                            {isTemplateOpen ? (
-                                              <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                                            ) : (
-                                              <ChevronRight className="h-3 w-3 text-muted-foreground" />
-                                            )}
-                                            <FileText className="h-3 w-3 text-primary" />
-                                            <span className="text-sm font-medium text-left">Template Preview</span>
-                                            {template && (
-                                              <Badge variant="outline" className="text-xs">
-                                                {template.name || 'Template'}
-                                              </Badge>
-                                            )}
-                                          </div>
-                                        </CollapsibleTrigger>
-                                        <CollapsibleContent>
-                                          <div className="px-4 py-3 bg-background/50">
-                                            <div className="text-xs text-muted-foreground mb-2">
-                                              Template with variables (backend view only)
-                                            </div>
-                                            {template ? (
-                                              <div className="bg-muted rounded-lg p-4 overflow-x-auto">
-                                                <pre className="text-xs font-mono whitespace-pre-wrap break-words">
-                                                  {template.template_html}
-                                                </pre>
-                                              </div>
-                                            ) : (
-                                              <div className="bg-muted rounded-lg p-4">
-                                                <p className="text-xs text-muted-foreground">
-                                                  No template configured for this service yet. Configure a template in the Services settings.
-                                                </p>
-                                              </div>
-                                            )}
-                                          </div>
-                                        </CollapsibleContent>
-                                      </Collapsible>
-                                    </div>
-                                    
-                                    {/* Pages List */}
-                                    <div className="px-4 py-2 space-y-1">
-                                      <div className="text-xs font-medium text-muted-foreground px-3 py-2">
-                                        Generated Pages
-                                      </div>
+                                 <CollapsibleContent>
+                                   <div className="bg-muted/20">
+                                     {/* Pages List */}
+                                     <div className="px-4 py-2 space-y-1">
+                                       <div className="text-xs font-medium text-muted-foreground px-3 py-2">
+                                         Generated Pages
+                                       </div>
                                       {pages.map(page => (
                                         <div
                                           key={page.id}
@@ -498,6 +466,25 @@ const SitemapPage = () => {
           </TabsContent>
         </Tabs>
       </Card>
+
+      {/* Template Preview Dialog */}
+      <Dialog open={!!selectedTemplate} onOpenChange={(open) => !open && setSelectedTemplate(null)}>
+        <DialogContent className="max-w-4xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle>{selectedTemplate?.service} - Template Preview</DialogTitle>
+            <DialogDescription>
+              Backend view showing template with variables (not visible to public)
+            </DialogDescription>
+          </DialogHeader>
+          <div className="overflow-auto max-h-[60vh]">
+            <div className="bg-muted rounded-lg p-4">
+              <pre className="text-xs font-mono whitespace-pre-wrap break-words">
+                {selectedTemplate?.content}
+              </pre>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
