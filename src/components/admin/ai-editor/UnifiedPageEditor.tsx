@@ -46,7 +46,6 @@ const UnifiedPageEditor = ({
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
   const [renderedPreview, setRenderedPreview] = useState('');
-  const [previewUrl, setPreviewUrl] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -231,21 +230,7 @@ const UnifiedPageEditor = ({
     }
   }, [templateHtml, serviceAreas, companySettings, service, pageType]);
 
-  // Build a Blob URL for robust preview rendering (more reliable than srcDoc on some browsers)
-  useEffect(() => {
-    if (!renderedPreview) {
-      setPreviewUrl('');
-      return;
-    }
-    const blob = new Blob([renderedPreview], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    setPreviewUrl(url);
-    return () => {
-      URL.revokeObjectURL(url);
-    };
-  }, [renderedPreview]);
- 
-   const sendToAi = async () => {
+  const sendToAi = async () => {
     if (!aiPrompt.trim()) return;
 
     const userMessage: ChatMessage = { role: 'user', content: aiPrompt };
@@ -568,18 +553,22 @@ const UnifiedPageEditor = ({
               </Tabs>
             </div>
 
-            <div className="flex-1 overflow-hidden h-full">
+            <div className="flex-1 overflow-hidden" style={{ minHeight: 0 }}>
               {viewMode === 'preview' ? (
-                <div className="w-full h-full bg-white overflow-auto">
+                <div className="w-full h-full bg-white">
                   {renderedPreview ? (
                     <iframe 
-                      src={previewUrl}
-                      className="w-full h-full border-0"
+                      key={renderedPreview.substring(0, 100)}
+                      srcDoc={renderedPreview}
+                      className="w-full border-0"
+                      style={{ height: '100%', minHeight: '500px' }}
                       title="Page Preview"
+                      sandbox="allow-same-origin allow-scripts"
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full text-muted-foreground">
-                      <p>Loading preview...</p>
+                      <Loader2 className="h-8 w-8 animate-spin" />
+                      <p className="ml-2">Loading preview...</p>
                     </div>
                   )}
                 </div>
