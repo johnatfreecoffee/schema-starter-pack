@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Loader2, Send, Sparkles, Eye, Code, Save, X } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
@@ -46,6 +46,7 @@ const UnifiedPageEditor = ({
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
   const [renderedPreview, setRenderedPreview] = useState('');
+  const [previewUrl, setPreviewUrl] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -230,7 +231,21 @@ const UnifiedPageEditor = ({
     }
   }, [templateHtml, serviceAreas, companySettings, service, pageType]);
 
-  const sendToAi = async () => {
+  // Build a Blob URL for robust preview rendering (more reliable than srcDoc on some browsers)
+  useEffect(() => {
+    if (!renderedPreview) {
+      setPreviewUrl('');
+      return;
+    }
+    const blob = new Blob([renderedPreview], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    setPreviewUrl(url);
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [renderedPreview]);
+ 
+   const sendToAi = async () => {
     if (!aiPrompt.trim()) return;
 
     const userMessage: ChatMessage = { role: 'user', content: aiPrompt };
@@ -404,6 +419,10 @@ const UnifiedPageEditor = ({
     return (
       <Dialog open={open} onOpenChange={onClose}>
         <DialogContent className="max-w-[95vw] h-[90vh]">
+          <DialogHeader className="px-6 py-4 border-b">
+            <DialogTitle>Loading editor…</DialogTitle>
+            <DialogDescription className="sr-only">Preparing the page editor</DialogDescription>
+          </DialogHeader>
           <div className="flex items-center justify-center h-full">
             <Loader2 className="h-8 w-8 animate-spin" />
           </div>
@@ -554,7 +573,7 @@ const UnifiedPageEditor = ({
                 <div className="w-full h-full bg-white overflow-auto">
                   {renderedPreview ? (
                     <iframe 
-                      srcDoc={renderedPreview}
+                      src={previewUrl}
                       className="w-full h-full border-0"
                       title="Page Preview"
                     />
