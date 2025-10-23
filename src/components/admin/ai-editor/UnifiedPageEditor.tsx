@@ -575,32 +575,18 @@ const UnifiedPageEditor = ({
           {/* Right Panel - Preview/Code */}
           <div className="w-3/5 flex flex-col">
             <div className="p-4 border-b space-y-3">
-              <div className="flex justify-between items-center">
-                <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'preview' | 'code')}>
-                  <TabsList>
-                    <TabsTrigger value="preview">
-                      <Eye className="mr-2 h-4 w-4" />
-                      Preview
-                    </TabsTrigger>
-                    <TabsTrigger value="code">
-                      <Code className="mr-2 h-4 w-4" />
-                      Code
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
-                <Button
-                  onClick={() => autoSave()}
-                  disabled={isSaving || templateHtml === originalHtml}
-                  variant="default"
-                  size="sm"
-                >
-                  {isSaving ? (
-                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>
-                  ) : (
-                    <><Save className="mr-2 h-4 w-4" /> Save</>
-                  )}
-                </Button>
-              </div>
+              <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'preview' | 'code')}>
+                <TabsList>
+                  <TabsTrigger value="preview">
+                    <Eye className="mr-2 h-4 w-4" />
+                    Preview
+                  </TabsTrigger>
+                  <TabsTrigger value="code">
+                    <Code className="mr-2 h-4 w-4" />
+                    Code
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
               <div className="text-xs text-muted-foreground font-mono bg-muted/50 px-3 py-1.5 rounded">
                 {pageType === 'static' && pageId ? (
                   <span>static_pages/{pageId}/content_html</span>
