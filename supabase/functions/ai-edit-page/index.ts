@@ -509,22 +509,57 @@ LOVABLE DESIGN SYSTEM - USE THESE PATTERNS:
    ↳ EXCEPTION: You MAY use the company favicon/icon ({{icon_url}}) sparingly in midsections if absolutely necessary
    ↳ Focus on typography, colors, and content hierarchy instead of redundant logo placement
 
-2. **AVOID EMOJIS - USE PROFESSIONAL ICON LIBRARIES**
-   ↳ NEVER use emojis (🎯, ⭐, 📦, etc.) - they appear unprofessional and childish
-   ↳ INSTEAD: Use SVG icons from professional icon libraries
-   ↳ RECOMMENDED: Phosphor Icons, Heroicons, or other open-source icon sets
-   ↳ For inline icons: Use SVG code directly in HTML
-   ↳ Example of proper icon usage:
+2. **ICON & EMOJI USAGE - PROFESSIONAL FIRST**
+   ↳ PRIMARY: Use SVG icons from professional icon libraries (Phosphor Icons, Heroicons, etc.)
+   ↳ SECONDARY: Minimal emoji use is acceptable but must be very limited and tasteful
+   ↳ RULE: Professional SVG icons should make up 80%+ of visual elements, emojis only 20% maximum
+   ↳ WHEN TO USE EMOJIS: Only for emphasis in specific contexts (e.g., single star for rating, checkmark for benefits)
+   ↳ WHEN TO USE SVG ICONS: Feature cards, navigation elements, service icons, decorative elements
+   ↳ These are professional business websites - maintain a polished, credible appearance
    
-   <!-- ✅ CORRECT: Professional SVG icon -->
+   Example icon hierarchy:
+   <!-- ✅ BEST: Professional SVG icon for main features -->
    <div class="w-14 h-14 bg-gradient-to-br from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] rounded-xl flex items-center justify-center mb-6">
      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="white" viewBox="0 0 256 256">
        <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-68a28,28,0,0,1-28,28H116a8,8,0,0,1,0-16h24a12,12,0,0,0,0-24H116a28,28,0,0,1,0-56h4V72a8,8,0,0,1,16,0v8h4a8,8,0,0,1,0,16H116a12,12,0,0,0,0,24h24A28,28,0,0,1,168,148Z"/>
      </svg>
    </div>
    
-   <!-- ❌ WRONG: Childish emoji -->
-   <div class="w-14 h-14 bg-gradient-to-br from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] rounded-xl flex items-center justify-center mb-6 text-2xl">🎯</div>
+   <!-- ✓ ACCEPTABLE: Minimal emoji for inline emphasis -->
+   <li class="flex items-center gap-2">✓ Professional service delivery</li>
+
+3. **SUBTLE ANIMATIONS & HOVER EFFECTS - ENHANCE USER EXPERIENCE**
+   ↳ ADD simple, professional hover effects to interactive elements
+   ↳ USE Tailwind's transition classes: transition-all, duration-300, hover:-translate-y-1
+   ↳ APPLY subtle scale effects: hover:scale-105, hover:scale-110 (max)
+   ↳ IMPLEMENT smooth elevation changes with shadows
+   ↳ AVOID excessive or distracting animations - keep it professional
+   
+   Professional hover effect examples:
+   
+   <!-- Card hover with elevation & subtle lift -->
+   <div class="transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+   
+   <!-- Button hover with lift and glow -->
+   <button class="transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]">
+   
+   <!-- Icon container hover with scale -->
+   <div class="transition-transform duration-200 hover:scale-110">
+   
+   <!-- Text link hover with color change -->
+   <a class="transition-colors duration-200 hover:text-[hsl(221,83%,53%)]">
+   
+   <!-- Image hover with scale and overlay -->
+   <div class="overflow-hidden rounded-xl">
+     <img class="transition-transform duration-500 hover:scale-110" />
+   </div>
+   
+   🎯 ANIMATION GOALS:
+   • Make pages feel responsive and interactive
+   • Guide user attention to clickable elements
+   • Maintain professional credibility
+   • Avoid flashy or excessive motion
+   • Use subtle movements that enhance, not distract
 
 🔑 CRITICAL IMPLEMENTATION RULES:
 
