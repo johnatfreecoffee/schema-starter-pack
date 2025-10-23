@@ -389,8 +389,20 @@ const UnifiedPageEditor = ({
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current);
       }
+      // Flush pending changes on unmount
+      if (templateHtml !== originalHtml) {
+        autoSave();
+      }
     };
   }, [templateHtml, originalHtml]);
+
+  // Save immediately when dialog closes
+  useEffect(() => {
+    if (!open && templateHtml !== originalHtml) {
+      autoSave();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   // Auto-scroll chat to bottom when messages change or AI state updates
   useEffect(() => {
