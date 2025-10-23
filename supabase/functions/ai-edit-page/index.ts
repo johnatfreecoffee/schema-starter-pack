@@ -17,9 +17,9 @@ serve(async (req) => {
     
     console.log('AI Edit Request:', { command, contextKeys: Object.keys(context) });
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
+    const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
+    if (!ANTHROPIC_API_KEY) {
+      throw new Error('ANTHROPIC_API_KEY is not configured');
     }
 
     // Build comprehensive company profile
@@ -398,20 +398,21 @@ CRITICAL INSTRUCTIONS:
 
 Return the complete, beautiful HTML page now:`;
 
-    console.log('Calling Lovable AI...');
+    console.log('Calling Claude (Anthropic)...');
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'claude-sonnet-4-5',
+        max_tokens: 8192,
         messages: [
           { role: 'user', content: prompt }
         ],
-        max_tokens: 8000,
       }),
     });
 
@@ -422,9 +423,9 @@ Return the complete, beautiful HTML page now:`;
     }
 
     const data = await response.json();
-    const updatedHtml = data.choices?.[0]?.message?.content || '';
+    const updatedHtml = data.content?.[0]?.text || '';
 
-    console.log('AI Edit Success, response length:', updatedHtml.length);
+    console.log('Claude Edit Success, response length:', updatedHtml.length);
 
     // Clean up the response - remove markdown code blocks if present
     let cleanedHtml = updatedHtml.trim();
