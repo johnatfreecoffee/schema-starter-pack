@@ -256,6 +256,8 @@ async function updateStaticPage(supabase: any, fileName: string, html: string) {
       .insert({
         slug: pageInfo.slug,
         title: pageInfo.title,
+        meta_title: pageInfo.title,
+        url_path: `/${pageInfo.slug}`,
         content_html: html,
         status: true,
         created_at: new Date().toISOString(),
