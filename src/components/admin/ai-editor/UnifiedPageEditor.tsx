@@ -51,7 +51,6 @@ const UnifiedPageEditor = ({
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [previewBlobUrl, setPreviewBlobUrl] = useState<string>('');
   const queryClient = useQueryClient();
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -236,59 +235,32 @@ const UnifiedPageEditor = ({
   // Force iframe remount when preview content changes
   useEffect(() => {
     if (renderedPreview && viewMode === 'preview') {
-      console.log('🔄 Forcing iframe remount with new content');
+      console.log('🔄 Remounting iframe with new content');
       setIframeKey(prev => prev + 1);
     }
   }, [renderedPreview, viewMode]);
 
-  // Debug effect to verify iframe rendering
+  // Write content to iframe using document.write() for better reliability
   useEffect(() => {
     if (!iframeRef.current || !renderedPreview || viewMode !== 'preview') return;
 
     const iframe = iframeRef.current;
-    const rect = iframe.getBoundingClientRect();
-    
-    console.log('📊 DEBUG - iframe status:', {
-      key: `preview-${iframeKey}`,
-      dimensions: `${rect.width}px × ${rect.height}px`,
-      srcDocLength: iframe.getAttribute('srcdoc')?.length || 0,
-      contentLength: renderedPreview.length
-    });
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
 
-    const timer = setTimeout(() => {
-      try {
-        const doc = iframe.contentDocument;
-        if (doc) {
-          console.log('✅ iframe content loaded:', {
-            hasBody: !!doc.body,
-            bodyChildren: doc.body?.children.length || 0,
-            firstChild: doc.body?.children[0]?.tagName,
-            hasParseError: !!doc.querySelector('parsererror')
-          });
-        } else {
-          console.warn('⚠️ iframe contentDocument is null');
-        }
-      } catch (e) {
-        console.error('❌ Cannot access iframe content:', e);
-      }
-    }, 200);
-
-    return () => clearTimeout(timer);
-  }, [iframeKey, renderedPreview, viewMode]);
-
-  // Generate Blob URL for preview content to improve rendering reliability
-  useEffect(() => {
-    if (!renderedPreview) {
-      setPreviewBlobUrl('');
+    if (!doc) {
+      console.warn('⚠️ iframe contentDocument is null');
       return;
     }
-    const blob = new Blob([renderedPreview], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    setPreviewBlobUrl(url);
-    return () => {
-      URL.revokeObjectURL(url);
-    };
-  }, [renderedPreview]);
+
+    try {
+      doc.open();
+      doc.write(renderedPreview);
+      doc.close();
+      console.log('✅ iframe content written successfully via document.write()');
+    } catch (error) {
+      console.error('❌ Failed to write to iframe:', error);
+    }
+  }, [renderedPreview, viewMode, iframeKey]);
 
   const sendToAi = async () => {
     if (!aiPrompt.trim()) return;
@@ -616,28 +588,14 @@ const UnifiedPageEditor = ({
             <div className="flex-1 min-h-0 relative bg-white">
               {viewMode === 'preview' ? (
                 renderedPreview ? (
-                  <>
-                    <iframe 
-                      ref={iframeRef}
-                      key={`preview-${iframeKey}-${previewBlobUrl}`}
-                      src={previewBlobUrl}
-                      className="absolute inset-0 w-full h-full border-0"
-                      style={{ display: 'block' }}
-                      title="Page Preview"
-                      sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                      onLoad={() => {
-                        console.log('✅ iframe onLoad event fired');
-                      }}
-                      onError={(e) => {
-                        console.error('❌ iframe onError event:', e);
-                      }}
-                    />
-                    
-                    {/* Debug indicator */}
-                    <div className="absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded shadow-lg pointer-events-none z-50">
-                      ✓ Preview Active (Key: {iframeKey})
-                    </div>
-                  </>
+                  <iframe
+                    ref={iframeRef}
+                    key={`preview-${iframeKey}`}
+                    className="absolute inset-0 w-full h-full border-0"
+                    style={{ display: 'block' }}
+                    title="Page Preview"
+                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                  />
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin" />
