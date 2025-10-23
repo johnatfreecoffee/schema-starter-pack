@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Loader2, Send, Sparkles, Eye, Code, Save, X } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
+import TruncatedMessage from './TruncatedMessage';
 
 interface UnifiedPageEditorProps {
   open: boolean;
@@ -417,7 +418,7 @@ const UnifiedPageEditor = ({
 
         <div className="flex h-[calc(100%-80px)]">
           {/* Left Panel - AI Chat */}
-          <div className="w-2/5 border-r flex flex-col h-full overflow-hidden">
+          <div className="w-2/5 border-r flex flex-col overflow-hidden">
             <div className="p-4 border-b flex-shrink-0">
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="h-5 w-5 text-primary" />
@@ -428,8 +429,8 @@ const UnifiedPageEditor = ({
               </p>
             </div>
 
-            <ScrollArea className="flex-1 min-h-0">
-              <div className="space-y-4 p-4 pb-24">
+            <ScrollArea className="flex-1 overflow-auto">
+              <div className="space-y-4 p-4 pb-4">
                 {chatMessages.length === 0 ? (
                   <div className="text-center text-muted-foreground py-12">
                     <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -448,13 +449,16 @@ const UnifiedPageEditor = ({
                   chatMessages.map((msg, idx) => (
                     <div 
                       key={idx} 
-                      className={`p-3 rounded-lg ${
+                      className={`p-3 rounded-lg max-w-full ${
                         msg.role === 'user' 
                           ? 'bg-primary text-primary-foreground ml-8' 
                           : 'bg-muted mr-8'
                       }`}
                     >
-                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                      <TruncatedMessage 
+                        content={msg.content}
+                        className={msg.role === 'user' ? 'text-primary-foreground' : ''}
+                      />
                     </div>
                   ))
                 )}
@@ -464,8 +468,8 @@ const UnifiedPageEditor = ({
                     <span className="text-sm">AI is working...</span>
                   </div>
                 )}
-              <div ref={chatEndRef} className="h-1" />
-            </div>
+                <div ref={chatEndRef} className="h-1" />
+              </div>
             </ScrollArea>
 
             <div className="p-4 border-t space-y-2 flex-shrink-0 bg-background">
@@ -526,9 +530,9 @@ const UnifiedPageEditor = ({
               </Tabs>
             </div>
 
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-hidden h-full">
               {viewMode === 'preview' ? (
-                <div className="w-full h-full bg-white">
+                <div className="w-full h-full bg-white overflow-auto">
                   {renderedPreview ? (
                     <iframe 
                       srcDoc={renderedPreview}
