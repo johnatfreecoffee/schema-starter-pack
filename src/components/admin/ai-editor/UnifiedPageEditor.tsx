@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Loader2, Send, Sparkles, Eye, Code, Save, X } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
@@ -691,25 +692,26 @@ const UnifiedPageEditor = ({
                   className="min-h-[80px] resize-none"
                 />
               </div>
-              <div className="flex gap-3 items-end justify-end">
-                <div className="flex flex-col gap-1">
-                  <Label className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
-                    To Send
-                  </Label>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => toggleSendOnEnter(!sendOnEnter)}
-                    className="text-xs h-9 px-3 font-normal"
-                  >
-                    {sendOnEnter ? 'Cmd/Ctrl + Enter' : 'Enter'}
-                  </Button>
-                </div>
+              <div className="flex gap-3 items-center justify-between">
+                <ToggleGroup 
+                  type="single" 
+                  value={sendOnEnter ? "cmd" : "enter"}
+                  onValueChange={(value) => {
+                    if (value) toggleSendOnEnter(value === "cmd");
+                  }}
+                  className="border rounded-md"
+                >
+                  <ToggleGroupItem value="enter" className="text-xs px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+                    Enter
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="cmd" className="text-xs px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+                    Cmd/Ctrl+Enter
+                  </ToggleGroupItem>
+                </ToggleGroup>
                 <Button 
                   onClick={sendToAi} 
                   disabled={isAiLoading || !aiPrompt.trim()}
                   size="sm"
-                  className="h-9"
                 >
                   {isAiLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
