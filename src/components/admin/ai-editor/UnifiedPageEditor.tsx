@@ -44,7 +44,8 @@ const UnifiedPageEditor = ({
 }: UnifiedPageEditorProps) => {
   const [templateHtml, setTemplateHtml] = useState('');
   const [originalHtml, setOriginalHtml] = useState('');
-  const [aiPrompt, setAiPrompt] = useState('');
+  const [claudePrompt, setClaudePrompt] = useState('');
+  const [grokPrompt, setGrokPrompt] = useState('');
   const [claudeChatMessages, setClaudeChatMessages] = useState<ChatMessage[]>([]);
   const [grokChatMessages, setGrokChatMessages] = useState<ChatMessage[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -302,7 +303,8 @@ const UnifiedPageEditor = ({
     }
   }, [displayedHtml, serviceAreas, companySettings, service, pageType]);
   const sendToAi = async () => {
-    if (!aiPrompt.trim()) return;
+    const currentPrompt = selectedModel === 'claude' ? claudePrompt : grokPrompt;
+    if (!currentPrompt.trim()) return;
 
     // Check token limits
     if (tokenCount >= TOKEN_HARD_LIMIT) {
@@ -316,19 +318,19 @@ const UnifiedPageEditor = ({
     
     const userMessage: ChatMessage = {
       role: 'user',
-      content: aiPrompt
+      content: currentPrompt
     };
     
     // Add to the appropriate chat history
     if (selectedModel === 'claude') {
       setClaudeChatMessages(prev => [...prev, userMessage]);
+      setClaudePrompt(''); // Clear Claude's input
     } else {
       setGrokChatMessages(prev => [...prev, userMessage]);
+      setGrokPrompt(''); // Clear Grok's input
     }
     
     setIsAiLoading(true);
-    const currentPrompt = aiPrompt;
-    setAiPrompt('');
     
     try {
       // Only call the selected model
@@ -444,9 +446,15 @@ const UnifiedPageEditor = ({
     if (textareaRef.current) {
       const start = textareaRef.current.selectionStart;
       const end = textareaRef.current.selectionEnd;
-      const text = aiPrompt;
-      const newText = text.substring(0, start) + variable + text.substring(end);
-      setAiPrompt(newText);
+      const currentText = selectedModel === 'claude' ? claudePrompt : grokPrompt;
+      const newText = currentText.substring(0, start) + variable + currentText.substring(end);
+      
+      if (selectedModel === 'claude') {
+        setClaudePrompt(newText);
+      } else {
+        setGrokPrompt(newText);
+      }
+      
       setTimeout(() => {
         if (textareaRef.current) {
           textareaRef.current.focus();
@@ -746,7 +754,13 @@ const UnifiedPageEditor = ({
                 <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
               </div>
               <div className="flex gap-2">
-                <Textarea ref={textareaRef} placeholder="Describe your changes or ask AI to build something..." value={aiPrompt} onChange={e => setAiPrompt(e.target.value)} onKeyDown={e => {
+                <Textarea ref={textareaRef} placeholder={`Ask ${selectedModel === 'claude' ? 'Claude' : 'Grok'} to build something...`} value={selectedModel === 'claude' ? claudePrompt : grokPrompt} onChange={e => {
+                  if (selectedModel === 'claude') {
+                    setClaudePrompt(e.target.value);
+                  } else {
+                    setGrokPrompt(e.target.value);
+                  }
+                }} onKeyDown={e => {
                 if (sendOnEnter && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                   e.preventDefault();
                   sendToAi();
@@ -763,7 +777,7 @@ const UnifiedPageEditor = ({
                   </Label>
                   <Switch id="send-on-enter" checked={sendOnEnter} onCheckedChange={toggleSendOnEnter} />
                 </div>
-                <Button onClick={sendToAi} disabled={isAiLoading || !aiPrompt.trim()} size="sm">
+                <Button onClick={sendToAi} disabled={isAiLoading || !(selectedModel === 'claude' ? claudePrompt : grokPrompt).trim()} size="sm">
                   {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="mr-2 h-4 w-4" /> Send</>}
                 </Button>
               </div>
