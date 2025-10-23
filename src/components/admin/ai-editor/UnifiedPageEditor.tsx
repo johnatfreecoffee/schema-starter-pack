@@ -18,6 +18,8 @@ interface UnifiedPageEditorProps {
   pageType: 'service' | 'static' | 'generated';
   pageTitle: string;
   onSave: (html: string) => Promise<void>;
+  initialHtml?: string; // For static pages
+  pageId?: string; // For static pages
 }
 
 interface ChatMessage {
@@ -32,7 +34,9 @@ const UnifiedPageEditor = ({
   service,
   pageType,
   pageTitle,
-  onSave
+  onSave,
+  initialHtml,
+  pageId
 }: UnifiedPageEditorProps) => {
   const [templateHtml, setTemplateHtml] = useState('');
   const [originalHtml, setOriginalHtml] = useState('');
@@ -47,10 +51,20 @@ const UnifiedPageEditor = ({
   const queryClient = useQueryClient();
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Load template for service
+  // Load template for service or static page
   const { data: template, isLoading } = useQuery({
-    queryKey: ['service-template', service?.id],
+    queryKey: ['service-template', service?.id, 'static-page', pageId],
     queryFn: async () => {
+      // For static pages, return initial HTML directly
+      if (pageType === 'static' && initialHtml) {
+        return {
+          id: pageId || 'static',
+          template_html: initialHtml,
+          name: pageTitle,
+          template_type: 'static'
+        };
+      }
+
       if (!service?.id) return null;
 
       const { data: serviceData } = await supabase
@@ -120,7 +134,7 @@ const UnifiedPageEditor = ({
 
       return newTemplate;
     },
-    enabled: !!service?.id && open,
+    enabled: (!!service?.id || (pageType === 'static' && !!initialHtml)) && open,
   });
 
   // Load company settings and AI training
@@ -284,26 +298,40 @@ const UnifiedPageEditor = ({
 
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('templates')
-        .update({ 
-          template_html: templateHtml,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', template.id);
+      // For static pages, save directly to static_pages table
+      if (pageType === 'static' && pageId) {
+        const { error } = await supabase
+          .from('static_pages')
+          .update({ 
+            content_html: templateHtml,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', pageId);
 
-      if (error) throw error;
+        if (error) throw error;
+      } else {
+        // For service templates, save to templates table
+        const { error } = await supabase
+          .from('templates')
+          .update({ 
+            template_html: templateHtml,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', template.id);
 
-      if (service) {
-        await supabase
-          .from('generated_pages')
-          .update({ needs_regeneration: true })
-          .eq('service_id', service.id);
+        if (error) throw error;
+
+        if (service) {
+          await supabase
+            .from('generated_pages')
+            .update({ needs_regeneration: true })
+            .eq('service_id', service.id);
+        }
       }
 
       setOriginalHtml(templateHtml);
       setLastSaved(new Date());
-      queryClient.invalidateQueries({ queryKey: ['service-template', service?.id] });
+      queryClient.invalidateQueries({ queryKey: ['service-template', service?.id, 'static-page', pageId, 'static-pages'] });
     } catch (error: any) {
       console.error('Auto-save error:', error);
       toast({

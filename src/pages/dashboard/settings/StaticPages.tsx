@@ -11,7 +11,7 @@ import { Plus, Eye, Edit, Trash2, Sparkles, FileUp } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import StaticPageForm from '@/components/admin/settings/static-pages/StaticPageForm';
 import HTMLImporter from '@/components/admin/settings/static-pages/HTMLImporter';
-import AIPageEditor from '@/components/admin/ai-editor/AIPageEditor';
+import UnifiedPageEditor from '@/components/admin/ai-editor/UnifiedPageEditor';
 
 const StaticPages = () => {
   const { toast } = useToast();
@@ -180,12 +180,12 @@ const StaticPages = () => {
         </Dialog>
 
         {showAIEditor && selectedPage && (
-          <AIPageEditor
+          <UnifiedPageEditor
             open={showAIEditor}
             pageId={selectedPage.id}
             pageType="static"
-            initialContent={selectedPage.content_html}
             pageTitle={selectedPage.title}
+            initialHtml={selectedPage.content_html}
             onClose={() => setShowAIEditor(false)}
             onSave={async (newContent) => {
               const { error } = await supabase
