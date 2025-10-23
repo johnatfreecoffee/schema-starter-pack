@@ -454,7 +454,9 @@ const UnifiedPageEditor = ({
 
   // Publish function - copies draft to live
   const handlePublish = async () => {
-    if (!templateHtml || isPublishing) return;
+    if (isPublishing) return;
+    
+    console.log('Publishing...', { templateHtml: templateHtml?.substring(0, 100), pageType, pageId, templateId: template?.id });
     setIsPublishing(true);
     try {
       if (pageType === 'static' && pageId) {
@@ -469,6 +471,10 @@ const UnifiedPageEditor = ({
         if (error) throw error;
         queryClient.invalidateQueries({
           queryKey: ['static-pages', pageId]
+        });
+        toast({
+          title: 'Published successfully',
+          description: 'Your changes are now live.'
         });
       } else if (template?.id) {
         const {
@@ -488,7 +494,12 @@ const UnifiedPageEditor = ({
         queryClient.invalidateQueries({
           queryKey: ['service-template', service?.id]
         });
+        toast({
+          title: 'Published successfully',
+          description: 'Your changes are now live.'
+        });
       }
+      setOriginalHtml(templateHtml);
       setShowPublishConfirm(true);
       setTimeout(() => setShowPublishConfirm(false), 3000);
     } catch (error: any) {
@@ -705,10 +716,10 @@ const UnifiedPageEditor = ({
                     <Loader2 className="h-8 w-8 animate-spin" />
                     <p className="mt-2">Loading preview...</p>
                   </div> : <Editor height="100%" defaultLanguage="html" value={displayedHtml} onChange={value => {
-              if (!isShowingPrevious) {
-                setTemplateHtml(value || '');
+              if (!isShowingPrevious && value !== undefined) {
+                setTemplateHtml(value);
                 if (pageType === 'static' || pageType === 'generated') {
-                  setRenderedPreview(value || '');
+                  setRenderedPreview(value);
                 }
               }
             }} theme="vs-dark" options={{
