@@ -230,10 +230,14 @@ const UnifiedPageEditor = ({
 
       if (error) throw error;
 
+      // Auto-apply changes immediately
+      if (data.updatedHtml) {
+        setTemplateHtml(data.updatedHtml);
+      }
+
       const assistantMessage: ChatMessage = {
         role: 'assistant',
         content: data.explanation || 'I\'ve updated the page based on your request.',
-        suggestion: data.updatedHtml,
       };
       setChatMessages(prev => [...prev, assistantMessage]);
     } catch (error: any) {
@@ -417,16 +421,6 @@ const UnifiedPageEditor = ({
                       }`}
                     >
                       <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                      {msg.role === 'assistant' && msg.suggestion && (
-                        <Button 
-                          size="sm" 
-                          variant="secondary" 
-                          className="mt-2"
-                          onClick={() => applyAiSuggestion(msg.suggestion!)}
-                        >
-                          Apply Changes
-                        </Button>
-                      )}
                     </div>
                   ))
                 )}
