@@ -76,8 +76,20 @@ const StaticPageForm = ({ page, onClose }: StaticPageFormProps) => {
       const pageData = {
         ...data,
         url_path: '/' + data.slug,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        published_at: new Date().toISOString(),
+        // Save to both live and draft when using form editor
+        content_html_draft: data.content_html
       };
+
+      // If setting as homepage, clear homepage flag from other pages first
+      if (data.is_homepage) {
+        const { error: clearError } = await supabase
+          .from('static_pages')
+          .update({ is_homepage: false })
+          .neq('id', page?.id || '00000000-0000-0000-0000-000000000000');
+        if (clearError) throw clearError;
+      }
 
       if (page) {
         const { error } = await supabase
