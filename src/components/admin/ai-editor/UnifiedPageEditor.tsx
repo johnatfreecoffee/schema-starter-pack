@@ -411,8 +411,8 @@ const UnifiedPageEditor = ({
 
         <div className="flex h-[calc(100%-80px)]">
           {/* Left Panel - AI Chat */}
-          <div className="w-2/5 border-r flex flex-col">
-            <div className="p-4 border-b">
+          <div className="w-2/5 border-r flex flex-col h-full">
+            <div className="p-4 border-b flex-shrink-0">
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="h-5 w-5 text-primary" />
                 <h3 className="font-semibold">AI Assistant</h3>
@@ -422,8 +422,8 @@ const UnifiedPageEditor = ({
               </p>
             </div>
 
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4 pr-4">
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="space-y-4 p-4">
                 {chatMessages.length === 0 ? (
                   <div className="text-center text-muted-foreground py-12">
                     <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -461,7 +461,7 @@ const UnifiedPageEditor = ({
               </div>
             </ScrollArea>
 
-            <div className="p-4 border-t space-y-2">
+            <div className="p-4 border-t space-y-2 flex-shrink-0">
               <div className="flex gap-2 mb-2">
                 <VariablePicker 
                   onInsert={handleInsertVariable}
