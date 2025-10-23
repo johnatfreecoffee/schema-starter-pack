@@ -11,6 +11,7 @@ import { Loader2, Send, Sparkles, Eye, Code, Save, X } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
 import TruncatedMessage from './TruncatedMessage';
+import PreviewFrame from './PreviewFrame';
 
 interface UnifiedPageEditorProps {
   open: boolean;
@@ -51,7 +52,7 @@ const UnifiedPageEditor = ({
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [previewBlobUrl, setPreviewBlobUrl] = useState<string>('');
+  
   const queryClient = useQueryClient();
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -276,19 +277,6 @@ const UnifiedPageEditor = ({
     return () => clearTimeout(timer);
   }, [iframeKey, renderedPreview, viewMode]);
 
-  // Generate Blob URL for preview content to improve rendering reliability
-  useEffect(() => {
-    if (!renderedPreview) {
-      setPreviewBlobUrl('');
-      return;
-    }
-    const blob = new Blob([renderedPreview], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    setPreviewBlobUrl(url);
-    return () => {
-      URL.revokeObjectURL(url);
-    };
-  }, [renderedPreview]);
 
   const sendToAi = async () => {
     if (!aiPrompt.trim()) return;
@@ -617,20 +605,10 @@ const UnifiedPageEditor = ({
               {viewMode === 'preview' ? (
                 renderedPreview ? (
                   <>
-                    <iframe 
-                      ref={iframeRef}
-                      key={`preview-${iframeKey}-${previewBlobUrl}`}
-                      src={previewBlobUrl}
+                    <PreviewFrame 
+                      key={`preview-${iframeKey}`}
+                      html={renderedPreview}
                       className="absolute inset-0 w-full h-full border-0"
-                      style={{ display: 'block' }}
-                      title="Page Preview"
-                      sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                      onLoad={() => {
-                        console.log('✅ iframe onLoad event fired');
-                      }}
-                      onError={(e) => {
-                        console.error('❌ iframe onError event:', e);
-                      }}
                     />
                     
                     {/* Debug indicator */}
