@@ -691,7 +691,7 @@ const UnifiedPageEditor = ({
                   className="min-h-[80px] resize-none"
                 />
               </div>
-              <div className="flex gap-3 items-end justify-end">
+              <div className="flex gap-3 items-end">
                 <div className="flex flex-col gap-1">
                   <Label htmlFor="send-on-enter" className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
                     To Send
