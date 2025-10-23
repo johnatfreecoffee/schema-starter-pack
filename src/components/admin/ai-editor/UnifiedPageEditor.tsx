@@ -45,7 +45,8 @@ const UnifiedPageEditor = ({
   const [templateHtml, setTemplateHtml] = useState('');
   const [originalHtml, setOriginalHtml] = useState('');
   const [aiPrompt, setAiPrompt] = useState('');
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [claudeChatMessages, setClaudeChatMessages] = useState<ChatMessage[]>([]);
+  const [grokChatMessages, setGrokChatMessages] = useState<ChatMessage[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
   const [renderedPreview, setRenderedPreview] = useState('');
@@ -238,7 +239,8 @@ const UnifiedPageEditor = ({
   // Reset chat when dialog opens
   useEffect(() => {
     if (open) {
-      setChatMessages([]);
+      setClaudeChatMessages([]);
+      setGrokChatMessages([]);
       setTokenCount(0);
       setIsShowingPrevious(false);
     }
@@ -311,126 +313,111 @@ const UnifiedPageEditor = ({
       });
       return;
     }
+    
     const userMessage: ChatMessage = {
       role: 'user',
       content: aiPrompt
     };
-    setChatMessages(prev => [...prev, userMessage]);
+    
+    // Add to the appropriate chat history
+    if (selectedModel === 'claude') {
+      setClaudeChatMessages(prev => [...prev, userMessage]);
+    } else {
+      setGrokChatMessages(prev => [...prev, userMessage]);
+    }
+    
     setIsAiLoading(true);
     const currentPrompt = aiPrompt;
     setAiPrompt('');
     
     try {
-      // Send to both Claude and Grok in parallel
-      const currentClaudeHtml = selectedModel === 'claude' ? claudeHtml : claudeHtml;
-      const currentGrokHtml = selectedModel === 'grok' ? grokHtml : grokHtml;
+      // Only call the selected model
+      const currentHtml = selectedModel === 'claude' ? claudeHtml : grokHtml;
+      const currentChatHistory = selectedModel === 'claude' ? claudeChatMessages : grokChatMessages;
       
-      const [claudeResponse, grokResponse] = await Promise.all([
-        supabase.functions.invoke('ai-edit-page', {
-          body: {
-            command: currentPrompt,
-            mode: editorMode,
-            model: 'claude',
-            conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
-            context: {
-              currentPage: {
-                type: pageType,
-                url: service ? `/${service.slug}` : '/',
-                html: currentClaudeHtml
-              },
-              serviceInfo: service ? {
-                name: service.name,
-                slug: service.slug,
-                description: service.description || service.full_description || '',
-                category: service.category,
-                starting_price: service.starting_price,
-                is_active: service.is_active
-              } : null,
-              companyInfo: companySettings,
-              aiTraining: aiTraining
-            }
+      const { data, error } = await supabase.functions.invoke('ai-edit-page', {
+        body: {
+          command: currentPrompt,
+          mode: editorMode,
+          model: selectedModel,
+          conversationHistory: editorMode === 'chat' ? currentChatHistory : undefined,
+          context: {
+            currentPage: {
+              type: pageType,
+              url: service ? `/${service.slug}` : '/',
+              html: currentHtml
+            },
+            serviceInfo: service ? {
+              name: service.name,
+              slug: service.slug,
+              description: service.description || service.full_description || '',
+              category: service.category,
+              starting_price: service.starting_price,
+              is_active: service.is_active
+            } : null,
+            companyInfo: companySettings,
+            aiTraining: aiTraining
           }
-        }),
-        supabase.functions.invoke('ai-edit-page', {
-          body: {
-            command: currentPrompt,
-            mode: editorMode,
-            model: 'grok',
-            conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
-            context: {
-              currentPage: {
-                type: pageType,
-                url: service ? `/${service.slug}` : '/',
-                html: currentGrokHtml
-              },
-              serviceInfo: service ? {
-                name: service.name,
-                slug: service.slug,
-                description: service.description || service.full_description || '',
-                category: service.category,
-                starting_price: service.starting_price,
-                is_active: service.is_active
-              } : null,
-              companyInfo: companySettings,
-              aiTraining: aiTraining
-            }
-          }
-        })
-      ]);
+        }
+      });
 
-      if (claudeResponse.error) throw new Error(`Claude error: ${claudeResponse.error.message}`);
-      if (grokResponse.error) throw new Error(`Grok error: ${grokResponse.error.message}`);
+      if (error) throw error;
 
       // Update token count
-      const totalTokens = (claudeResponse.data?.tokenUsage || 0) + (grokResponse.data?.tokenUsage || 0);
-      if (totalTokens) {
-        setTokenCount(prev => prev + totalTokens);
+      if (data?.tokenUsage) {
+        setTokenCount(prev => prev + data.tokenUsage);
       }
 
-      // In build mode, auto-apply changes immediately to both models
-      if (editorMode === 'build') {
-        if (claudeResponse.data?.updatedHtml) {
+      // In build mode, auto-apply changes immediately
+      if (editorMode === 'build' && data?.updatedHtml) {
+        if (selectedModel === 'claude') {
           setPreviousClaudeHtml(claudeHtml);
-          setClaudeHtml(claudeResponse.data.updatedHtml);
-        }
-        if (grokResponse.data?.updatedHtml) {
+          setClaudeHtml(data.updatedHtml);
+        } else {
           setPreviousGrokHtml(grokHtml);
-          setGrokHtml(grokResponse.data.updatedHtml);
+          setGrokHtml(data.updatedHtml);
         }
         setIsShowingPrevious(false);
-        
-        // Update templateHtml with the selected model's response
-        if (selectedModel === 'claude' && claudeResponse.data?.updatedHtml) {
-          setTemplateHtml(claudeResponse.data.updatedHtml);
-        } else if (selectedModel === 'grok' && grokResponse.data?.updatedHtml) {
-          setTemplateHtml(grokResponse.data.updatedHtml);
-        }
+        setTemplateHtml(data.updatedHtml);
       }
       
       const assistantMessage: ChatMessage = {
         role: 'assistant',
-        content: selectedModel === 'claude' 
-          ? (claudeResponse.data?.explanation || 'Claude has updated the page.')
-          : (grokResponse.data?.explanation || 'Grok has updated the page.')
+        content: data?.explanation || `${selectedModel === 'claude' ? 'Claude' : 'Grok'} has updated the page.`
       };
-      setChatMessages(prev => [...prev, assistantMessage]);
+      
+      // Add to the appropriate chat history
+      if (selectedModel === 'claude') {
+        setClaudeChatMessages(prev => [...prev, assistantMessage]);
+      } else {
+        setGrokChatMessages(prev => [...prev, assistantMessage]);
+      }
     } catch (error: any) {
       toast({
         title: 'AI Error',
         description: error.message,
         variant: 'destructive'
       });
-      setChatMessages(prev => prev.slice(0, -1));
+      // Remove the user message on error
+      if (selectedModel === 'claude') {
+        setClaudeChatMessages(prev => prev.slice(0, -1));
+      } else {
+        setGrokChatMessages(prev => prev.slice(0, -1));
+      }
     } finally {
       setIsAiLoading(false);
     }
   };
   const resetChat = () => {
-    setChatMessages([]);
+    if (selectedModel === 'claude') {
+      setClaudeChatMessages([]);
+    } else {
+      setGrokChatMessages([]);
+    }
     setTokenCount(0);
     toast({
       title: 'Chat Reset',
-      description: 'Conversation history and token count cleared.'
+      description: `${selectedModel === 'claude' ? 'Claude' : 'Grok'} conversation history cleared.`
     });
   };
   const toggleVersion = () => {
@@ -616,7 +603,7 @@ const UnifiedPageEditor = ({
       behavior: 'smooth',
       block: 'end'
     });
-  }, [chatMessages, isAiLoading]);
+  }, [claudeChatMessages, grokChatMessages, isAiLoading]);
   const closeMutation = useMutation({
     mutationFn: async () => {
       await onSave(templateHtml);
@@ -641,8 +628,8 @@ const UnifiedPageEditor = ({
   return <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-[95vw] h-[90vh] p-0">
         <DialogHeader className="px-6 py-4 border-b">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 flex-1">
               <DialogTitle>Editing: {pageTitle}</DialogTitle>
               <div className="text-xs text-muted-foreground">
                 {isSaving ? <span className="flex items-center gap-1">
@@ -651,15 +638,39 @@ const UnifiedPageEditor = ({
                   </span> : lastSaved ? <span>Draft saved {new Date(lastSaved).toLocaleTimeString()}</span> : templateHtml !== originalHtml ? <span>Unsaved changes</span> : <span>All changes saved</span>}
               </div>
             </div>
+            
+            {/* Model Selector - Wide Tabs with Icons */}
+            <Tabs value={selectedModel} onValueChange={(v) => {
+              setSelectedModel(v as 'claude' | 'grok');
+              if (v === 'claude') {
+                setTemplateHtml(claudeHtml);
+              } else {
+                setTemplateHtml(grokHtml);
+              }
+            }} className="flex-1 max-w-md">
+              <TabsList className="grid w-full grid-cols-2 h-12">
+                <TabsTrigger value="claude" className="gap-2 text-base">
+                  <Sparkles className="h-5 w-5" />
+                  Claude
+                </TabsTrigger>
+                <TabsTrigger value="grok" className="gap-2 text-base">
+                  <Sparkles className="h-5 w-5" />
+                  Grok
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            
             <div className="flex items-center gap-2">
-              {previousHtml !== templateHtml && <Button variant={isShowingPrevious ? 'default' : 'outline'} size="sm" onClick={toggleVersion} className="flex items-center gap-2">
-                  {isShowingPrevious ? 'Current Version' : 'Previous Version'}
+              {((selectedModel === 'claude' && previousClaudeHtml !== claudeHtml) || 
+                (selectedModel === 'grok' && previousGrokHtml !== grokHtml)) && 
+                <Button variant={isShowingPrevious ? 'default' : 'outline'} size="sm" onClick={toggleVersion} className="flex items-center gap-2">
+                  {isShowingPrevious ? 'Current' : 'Previous'}
                 </Button>}
               <Button onClick={handlePublish} disabled={isPublishing} size="sm" className="gap-2">
                 {isPublishing ? <>
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Publishing...
-                  </> : <>Publish</>}
+                  </> : <>Publish {selectedModel === 'claude' ? 'Claude' : 'Grok'}</>}
               </Button>
             </div>
           </div>
@@ -707,9 +718,9 @@ const UnifiedPageEditor = ({
 
             <ScrollArea className="flex-1 min-h-0">
               <div className="space-y-4 p-4 pb-4">
-                {chatMessages.length === 0 ? <div className="text-center text-muted-foreground py-12">
+                {(selectedModel === 'claude' ? claudeChatMessages : grokChatMessages).length === 0 ? <div className="text-center text-muted-foreground py-12">
                     <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p className="text-sm mb-2">Ask AI to modify your page</p>
+                    <p className="text-sm mb-2">Ask {selectedModel === 'claude' ? 'Claude' : 'Grok'} to modify your page</p>
                     <div className="text-xs space-y-1 max-w-xs mx-auto text-left">
                       <p>Examples:</p>
                       <ul className="list-disc list-inside mt-2 space-y-1">
@@ -719,12 +730,12 @@ const UnifiedPageEditor = ({
                         <li>Build a beautiful hero section</li>
                       </ul>
                     </div>
-                  </div> : chatMessages.map((msg, idx) => <div key={idx} className={`p-3 rounded-lg max-w-full overflow-hidden break-words ${msg.role === 'user' ? 'bg-primary text-primary-foreground ml-8' : 'bg-muted mr-8'}`}>
+                  </div> : (selectedModel === 'claude' ? claudeChatMessages : grokChatMessages).map((msg, idx) => <div key={idx} className={`p-3 rounded-lg max-w-full overflow-hidden break-words ${msg.role === 'user' ? 'bg-primary text-primary-foreground ml-8' : 'bg-muted mr-8'}`}>
                       <TruncatedMessage content={msg.content} isUser={msg.role === 'user'} />
                     </div>)}
                 {isAiLoading && <div className="flex items-center gap-2 text-muted-foreground p-3">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="text-sm">AI is working...</span>
+                    <span className="text-sm">{selectedModel === 'claude' ? 'Claude' : 'Grok'} is working...</span>
                   </div>}
                 <div ref={chatEndRef} className="h-1" />
               </div>
@@ -761,27 +772,7 @@ const UnifiedPageEditor = ({
 
           {/* Right Panel - Preview/Code */}
           <div className="w-3/5 flex flex-col">
-            <div className="p-4 border-b space-y-3">
-              {/* Model Selection Tabs */}
-              <Tabs value={selectedModel} onValueChange={(v) => {
-                setSelectedModel(v as 'claude' | 'grok');
-                // Update templateHtml when switching models
-                if (v === 'claude') {
-                  setTemplateHtml(claudeHtml);
-                } else {
-                  setTemplateHtml(grokHtml);
-                }
-              }}>
-                <TabsList>
-                  <TabsTrigger value="claude">
-                    Claude
-                  </TabsTrigger>
-                  <TabsTrigger value="grok">
-                    Grok
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-              
+            <div className="p-4 border-b">
               {/* Preview/Code Tabs */}
               <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'preview' | 'code')}>
                 <TabsList>
@@ -795,7 +786,6 @@ const UnifiedPageEditor = ({
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-              
             </div>
 
             <div className="flex-1 min-h-0 relative bg-white">
