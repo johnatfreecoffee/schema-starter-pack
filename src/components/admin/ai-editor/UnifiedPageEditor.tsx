@@ -51,6 +51,7 @@ const UnifiedPageEditor = ({
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [previewBlobUrl, setPreviewBlobUrl] = useState<string>('');
   const queryClient = useQueryClient();
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -274,6 +275,20 @@ const UnifiedPageEditor = ({
 
     return () => clearTimeout(timer);
   }, [iframeKey, renderedPreview, viewMode]);
+
+  // Generate Blob URL for preview content to improve rendering reliability
+  useEffect(() => {
+    if (!renderedPreview) {
+      setPreviewBlobUrl('');
+      return;
+    }
+    const blob = new Blob([renderedPreview], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    setPreviewBlobUrl(url);
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [renderedPreview]);
 
   const sendToAi = async () => {
     if (!aiPrompt.trim()) return;
@@ -604,8 +619,8 @@ const UnifiedPageEditor = ({
                   <>
                     <iframe 
                       ref={iframeRef}
-                      key={`preview-${iframeKey}`}
-                      srcDoc={renderedPreview}
+                      key={`preview-${iframeKey}-${previewBlobUrl}`}
+                      src={previewBlobUrl}
                       className="absolute inset-0 w-full h-full border-0"
                       style={{ display: 'block' }}
                       title="Page Preview"
@@ -636,6 +651,9 @@ const UnifiedPageEditor = ({
                   value={templateHtml}
                   onChange={(value) => {
                     setTemplateHtml(value || '');
+                    if (pageType === 'static' || pageType === 'generated') {
+                      setRenderedPreview(value || '');
+                    }
                   }}
                   theme="vs-dark"
                   options={{
