@@ -181,6 +181,15 @@ const UnifiedPageEditor = ({
 
   // Update preview when template changes
   useEffect(() => {
+    if (!templateHtml) return;
+
+    // For static pages, render without variable substitution
+    if (pageType === 'static') {
+      setRenderedPreview(templateHtml);
+      return;
+    }
+
+    // For service pages, require service data for variable substitution
     if (templateHtml && serviceAreas?.[0] && companySettings && service) {
       try {
         const previewData = {
@@ -209,7 +218,7 @@ const UnifiedPageEditor = ({
         console.error('Preview render error:', error);
       }
     }
-  }, [templateHtml, serviceAreas, companySettings, service]);
+  }, [templateHtml, serviceAreas, companySettings, service, pageType]);
 
   const sendToAi = async () => {
     if (!aiPrompt.trim()) return;
