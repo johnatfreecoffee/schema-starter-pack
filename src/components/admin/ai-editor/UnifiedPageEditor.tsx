@@ -625,7 +625,9 @@ const UnifiedPageEditor = ({
                 </p>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">
-                    Tokens: <span className={tokenCount >= TOKEN_SOFT_LIMIT ? 'text-destructive font-semibold' : ''}>{tokenCount.toLocaleString()}</span>
+                    Tokens: <span className={tokenCount >= TOKEN_SOFT_LIMIT ? 'text-destructive font-semibold' : ''}>
+                      {(tokenCount / 1000000).toFixed(2)}M
+                    </span>
                   </span>
                   {tokenCount > 0 && <Button variant="ghost" size="sm" onClick={resetChat} className="text-xs h-6 px-2">
                       Reset
