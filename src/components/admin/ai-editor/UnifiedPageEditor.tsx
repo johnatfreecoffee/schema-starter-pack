@@ -570,6 +570,18 @@ const UnifiedPageEditor = ({
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
+                <Button
+                  onClick={() => autoSave()}
+                  disabled={isSaving || templateHtml === originalHtml}
+                  variant="default"
+                  size="sm"
+                >
+                  {isSaving ? (
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>
+                  ) : (
+                    <><Save className="mr-2 h-4 w-4" /> Save</>
+                  )}
+                </Button>
               </div>
               <div className="text-xs text-muted-foreground font-mono bg-muted/50 px-3 py-1.5 rounded">
                 {pageType === 'static' && pageId ? (
