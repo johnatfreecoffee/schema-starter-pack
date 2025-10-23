@@ -580,7 +580,7 @@ const UnifiedPageEditor = ({
               {previousHtml !== templateHtml && <Button variant={isShowingPrevious ? 'default' : 'outline'} size="sm" onClick={toggleVersion} className="flex items-center gap-2">
                   {isShowingPrevious ? 'Current Version' : 'Previous Version'}
                 </Button>}
-              <Button onClick={handlePublish} disabled={isPublishing || isSaving} size="sm" className="gap-2">
+              <Button onClick={handlePublish} disabled={isPublishing} size="sm" className="gap-2">
                 {isPublishing ? <>
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Publishing...
