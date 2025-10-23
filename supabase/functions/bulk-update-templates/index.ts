@@ -256,7 +256,7 @@ async function updateStaticPage(supabase: any, fileName: string, html: string) {
       .insert({
         slug: pageInfo.slug,
         title: pageInfo.title,
-        html_content: html,
+        content_html: html,
         status: true,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -277,7 +277,7 @@ async function updateStaticPage(supabase: any, fileName: string, html: string) {
     const { error: updateError } = await supabase
       .from('static_pages')
       .update({
-        html_content: html,
+        content_html: html,
         updated_at: new Date().toISOString()
       })
       .eq('id', pageId)
