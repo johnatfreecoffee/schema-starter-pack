@@ -7,6 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { Loader2, Send, Sparkles, Eye, Code, Save, X } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
@@ -58,6 +60,10 @@ const UnifiedPageEditor = ({
   const [tokenCount, setTokenCount] = useState(0);
   const [previousHtml, setPreviousHtml] = useState('');
   const [isShowingPrevious, setIsShowingPrevious] = useState(false);
+  const [sendOnEnter, setSendOnEnter] = useState(() => {
+    const saved = localStorage.getItem('ai-editor-send-on-enter');
+    return saved !== null ? saved === 'true' : true;
+  });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const queryClient = useQueryClient();
@@ -369,6 +375,11 @@ const UnifiedPageEditor = ({
     }
   };
 
+  const toggleSendOnEnter = (checked: boolean) => {
+    setSendOnEnter(checked);
+    localStorage.setItem('ai-editor-send-on-enter', checked.toString());
+  };
+
   const applyAiSuggestion = (suggestion: string) => {
     setTemplateHtml(suggestion);
     toast({
@@ -668,7 +679,7 @@ const UnifiedPageEditor = ({
                   value={aiPrompt}
                   onChange={(e) => setAiPrompt(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                    if (sendOnEnter && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                       e.preventDefault();
                       sendToAi();
                     }
@@ -678,7 +689,16 @@ const UnifiedPageEditor = ({
                 />
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs text-muted-foreground">Cmd/Ctrl + Enter to send</span>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="send-on-enter"
+                    checked={sendOnEnter}
+                    onCheckedChange={toggleSendOnEnter}
+                  />
+                  <Label htmlFor="send-on-enter" className="text-xs text-muted-foreground cursor-pointer">
+                    Cmd/Ctrl + Enter to send
+                  </Label>
+                </div>
                 <Button 
                   onClick={sendToAi} 
                   disabled={isAiLoading || !aiPrompt.trim()}
