@@ -2961,6 +2961,7 @@ export type Database = {
       }
       static_pages: {
         Row: {
+          archived: boolean
           content_html: string
           content_html_draft: string | null
           created_at: string
@@ -2981,6 +2982,7 @@ export type Database = {
           url_path: string
         }
         Insert: {
+          archived?: boolean
           content_html: string
           content_html_draft?: string | null
           created_at?: string
@@ -3001,6 +3003,7 @@ export type Database = {
           url_path: string
         }
         Update: {
+          archived?: boolean
           content_html?: string
           content_html_draft?: string | null
           created_at?: string
