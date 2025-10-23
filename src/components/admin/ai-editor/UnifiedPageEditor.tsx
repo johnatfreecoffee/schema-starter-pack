@@ -693,24 +693,23 @@ const UnifiedPageEditor = ({
               </div>
               <div className="flex gap-3 items-end justify-end">
                 <div className="flex flex-col gap-1">
-                  <Label htmlFor="send-on-enter" className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
+                  <Label className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
                     To Send
                   </Label>
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-md">
-                    <Switch
-                      id="send-on-enter"
-                      checked={sendOnEnter}
-                      onCheckedChange={toggleSendOnEnter}
-                    />
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">
-                      {sendOnEnter ? 'Cmd/Ctrl + Enter' : 'Enter'}
-                    </span>
-                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => toggleSendOnEnter(!sendOnEnter)}
+                    className="text-xs h-9 px-3 font-normal"
+                  >
+                    {sendOnEnter ? 'Cmd/Ctrl + Enter' : 'Enter'}
+                  </Button>
                 </div>
                 <Button 
                   onClick={sendToAi} 
                   disabled={isAiLoading || !aiPrompt.trim()}
                   size="sm"
+                  className="h-9"
                 >
                   {isAiLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
