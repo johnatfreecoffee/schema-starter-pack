@@ -59,9 +59,27 @@ const UnifiedPageEditor = ({
   const { data: template, isLoading } = useQuery({
     queryKey: ['service-template', service?.id, 'static-page', pageId, pageType, initialHtml],
     queryFn: async () => {
-      // For static pages, return initial HTML directly
+      // For static pages, always fetch latest from DB (fallback to initialHtml)
       if (pageType === 'static') {
         console.log('Loading static page template', { pageId, hasInitialHtml: !!initialHtml });
+        if (pageId) {
+          const { data, error } = await supabase
+            .from('static_pages')
+            .select('id, title, content_html, url_path, updated_at')
+            .eq('id', pageId)
+            .single();
+          if (error) {
+            console.warn('Static page fetch error, falling back to initialHtml:', error.message);
+          }
+          if (data) {
+            return {
+              id: data.id,
+              template_html: data.content_html || '',
+              name: data.title || pageTitle,
+              template_type: 'static'
+            };
+          }
+        }
         return {
           id: pageId || 'static',
           template_html: initialHtml || '',
