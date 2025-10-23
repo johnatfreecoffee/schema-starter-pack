@@ -13,9 +13,9 @@ serve(async (req) => {
   }
 
   try {
-    const { command, context } = await req.json();
+    const { command, mode = 'build', conversationHistory = [], context } = await req.json();
     
-    console.log('AI Edit Request:', { command, contextKeys: Object.keys(context) });
+    console.log('AI Edit Request:', { command, mode, contextKeys: Object.keys(context) });
 
     const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
     if (!ANTHROPIC_API_KEY) {
@@ -155,8 +155,12 @@ Starting Price: $${(context.serviceInfo.starting_price / 100).toFixed(2)}
 
 ═══════════════════════════════════════════════════════════════`;
 
-    // Build AI prompt with full context - Enhanced for beautiful design generation
-    const prompt = `You are an elite web designer and developer who creates stunning, modern, conversion-focused web pages. You build pages that are visually breathtaking, highly engaging, and professionally polished.
+    // Build AI prompt with full context
+    const systemRole = mode === 'chat' 
+      ? `You are a helpful AI assistant discussing web page content. You can read and analyze the current HTML and provide conversational feedback, suggestions, and answers. You do NOT modify the HTML in chat mode - you only provide insights and recommendations. Be conversational, helpful, and detailed in your responses.`
+      : `You are an elite web designer and developer who creates stunning, modern, conversion-focused web pages. You build pages that are visually breathtaking, highly engaging, and professionally polished. In build mode, you make actual changes to the HTML and provide brief confirmations.`;
+
+    const prompt = systemRole + `
 
 ${companyProfile}
 
@@ -199,6 +203,14 @@ If the user requests a specialized form (not a standard contact/lead form), you 
 - Use third-party form services without explicit instruction
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+MODE: ${mode.toUpperCase()}
+${mode === 'chat' ? '(Chat mode - provide conversational feedback WITHOUT modifying HTML)' : '(Build mode - make actual HTML changes and provide brief confirmation)'}
+
+${conversationHistory.length > 0 ? `
+CONVERSATION HISTORY:
+${conversationHistory.map((msg: any) => `${msg.role.toUpperCase()}: ${msg.content}`).join('\n\n')}
+` : ''}
 
 USER REQUEST:
 ${command}
@@ -488,8 +500,10 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
 
     const data = await response.json();
     const updatedHtml = data.content?.[0]?.text || '';
+    const usage = data.usage || {};
+    const tokenUsage = (usage.input_tokens || 0) + (usage.output_tokens || 0);
 
-    console.log('Claude Edit Success, response length:', updatedHtml.length);
+    console.log('Claude Edit Success, response length:', updatedHtml.length, 'tokens:', tokenUsage);
 
     // Clean up the response - remove markdown code blocks if present
     let cleanedHtml = updatedHtml.trim();
@@ -499,33 +513,42 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
       cleanedHtml = cleanedHtml.replace(/^```\n/, '').replace(/\n```$/, '');
     }
 
-    // Generate a friendly natural language message
-    let message = "✨ I've updated your page! ";
+    // Generate response based on mode
+    let message = "";
+    let responseHtml = mode === 'build' ? cleanedHtml : null;
     
-    const commandLower = command.toLowerCase();
-    if (commandLower.includes('form') || commandLower.includes('contact') || commandLower.includes('quote')) {
-      if (commandLower.includes('different') || commandLower.includes('custom') || commandLower.includes('specific')) {
-        message += "If you need a custom form beyond the Universal Lead Form, please build it in Dashboard > Settings > Forms first, then let me know which form to place.";
-      } else {
-        message += "I've added the Universal Lead Form button. Customers can click it to submit their information.";
-      }
-    } else if (commandLower.includes('hero') || commandLower.includes('header')) {
-      message += "The hero section looks great with the new design.";
-    } else if (commandLower.includes('cta') || commandLower.includes('button')) {
-      message += "The call-to-action is now more prominent and engaging.";
-    } else if (commandLower.includes('testimonial') || commandLower.includes('review')) {
-      message += "Added testimonials to build trust with visitors.";
-    } else if (commandLower.includes('feature') || commandLower.includes('service')) {
-      message += "The features section now highlights your key services.";
+    if (mode === 'chat') {
+      // In chat mode, AI response is the conversation, no HTML changes
+      message = cleanedHtml;
+      responseHtml = null;
     } else {
-      message += "Your changes have been applied.";
+      // In build mode, provide brief confirmation
+      const commandLower = command.toLowerCase();
+      if (commandLower.includes('form') || commandLower.includes('contact') || commandLower.includes('quote')) {
+        if (commandLower.includes('different') || commandLower.includes('custom') || commandLower.includes('specific')) {
+          message = "If you need a custom form beyond the Universal Lead Form, please build it in Dashboard > Settings > Forms first, then let me know which form to place.";
+        } else {
+          message = "Added the Universal Lead Form button.";
+        }
+      } else if (commandLower.includes('hero') || commandLower.includes('header')) {
+        message = "Hero section updated.";
+      } else if (commandLower.includes('cta') || commandLower.includes('button')) {
+        message = "Call-to-action updated.";
+      } else if (commandLower.includes('testimonial') || commandLower.includes('review')) {
+        message = "Testimonials added.";
+      } else if (commandLower.includes('feature') || commandLower.includes('service')) {
+        message = "Features section updated.";
+      } else {
+        message = "Page updated.";
+      }
     }
 
     return new Response(
       JSON.stringify({
-        updatedHtml: cleanedHtml,
+        updatedHtml: responseHtml,
         message: message,
-        explanation: message
+        explanation: message,
+        tokenUsage: tokenUsage
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

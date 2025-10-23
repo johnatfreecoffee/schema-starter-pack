@@ -30,6 +30,11 @@ interface ChatMessage {
   suggestion?: string;
 }
 
+type EditorMode = 'chat' | 'build';
+
+const TOKEN_SOFT_LIMIT = 15000;
+const TOKEN_HARD_LIMIT = 20000;
+
 const UnifiedPageEditor = ({
   open,
   onClose,
@@ -49,6 +54,8 @@ const UnifiedPageEditor = ({
   const [renderedPreview, setRenderedPreview] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [editorMode, setEditorMode] = useState<EditorMode>('build');
+  const [tokenCount, setTokenCount] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const queryClient = useQueryClient();
@@ -253,6 +260,16 @@ const UnifiedPageEditor = ({
   const sendToAi = async () => {
     if (!aiPrompt.trim()) return;
 
+    // Check token limits
+    if (tokenCount >= TOKEN_HARD_LIMIT) {
+      toast({
+        title: 'Token Limit Reached',
+        description: 'Please reset the chat to continue.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     const userMessage: ChatMessage = { role: 'user', content: aiPrompt };
     setChatMessages(prev => [...prev, userMessage]);
     setIsAiLoading(true);
@@ -263,6 +280,8 @@ const UnifiedPageEditor = ({
       const { data, error } = await supabase.functions.invoke('ai-edit-page', {
         body: {
           command: currentPrompt,
+          mode: editorMode,
+          conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
           context: {
             currentPage: {
               type: pageType,
@@ -285,14 +304,19 @@ const UnifiedPageEditor = ({
 
       if (error) throw error;
 
-      // Auto-apply changes immediately
-      if (data.updatedHtml) {
+      // Update token count
+      if (data.tokenUsage) {
+        setTokenCount(prev => prev + data.tokenUsage);
+      }
+
+      // In build mode, auto-apply changes immediately
+      if (editorMode === 'build' && data.updatedHtml) {
         setTemplateHtml(data.updatedHtml);
       }
 
       const assistantMessage: ChatMessage = {
         role: 'assistant',
-        content: data.explanation || 'I\'ve updated the page based on your request.',
+        content: data.explanation || (editorMode === 'build' ? 'I\'ve updated the page based on your request.' : 'Let me help you with that.'),
       };
       setChatMessages(prev => [...prev, assistantMessage]);
     } catch (error: any) {
@@ -305,6 +329,15 @@ const UnifiedPageEditor = ({
     } finally {
       setIsAiLoading(false);
     }
+  };
+
+  const resetChat = () => {
+    setChatMessages([]);
+    setTokenCount(0);
+    toast({
+      title: 'Chat Reset',
+      description: 'Conversation history and token count cleared.',
+    });
   };
 
   const applyAiSuggestion = (suggestion: string) => {
@@ -479,13 +512,61 @@ const UnifiedPageEditor = ({
           {/* Left Panel - AI Chat */}
           <div className="w-2/5 border-r flex flex-col overflow-hidden">
             <div className="p-4 border-b flex-shrink-0">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold">AI Assistant</h3>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold">AI Assistant</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant={editorMode === 'chat' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setEditorMode('chat')}
+                    className="text-xs h-7"
+                  >
+                    Chat
+                  </Button>
+                  <Button
+                    variant={editorMode === 'build' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setEditorMode('build')}
+                    className="text-xs h-7"
+                  >
+                    Build
+                  </Button>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Describe changes you want, or ask AI to build the page for you
-              </p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-muted-foreground">
+                  {editorMode === 'chat' 
+                    ? 'Chat about your page and get feedback' 
+                    : 'Describe changes to build your page'}
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    Tokens: <span className={tokenCount >= TOKEN_SOFT_LIMIT ? 'text-destructive font-semibold' : ''}>{tokenCount.toLocaleString()}</span>
+                  </span>
+                  {tokenCount > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={resetChat}
+                      className="text-xs h-6 px-2"
+                    >
+                      Reset
+                    </Button>
+                  )}
+                </div>
+              </div>
+              {tokenCount >= TOKEN_SOFT_LIMIT && (
+                <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded-md">
+                  <p className="text-xs text-destructive">
+                    {tokenCount >= TOKEN_HARD_LIMIT 
+                      ? 'Token limit reached. Please reset the chat to continue.' 
+                      : 'Approaching token limit. Consider resetting the chat soon.'}
+                  </p>
+                </div>
+              )}
             </div>
 
             <ScrollArea className="flex-1 min-h-0">
