@@ -166,6 +166,40 @@ URL: ${context.currentPage?.url || 'N/A'}
 Current HTML:
 ${context.currentPage?.html || ''}
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 CRITICAL FORM INSTRUCTIONS - READ CAREFULLY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**UNIVERSAL FORM USAGE**:
+When the user indicates they want to add a form, contact form, lead form, quote form, or any similar form to capture customer information, you MUST use the Universal Lead Form component.
+
+**HOW TO IMPLEMENT THE UNIVERSAL FORM**:
+1. Add a button that triggers the form modal
+2. Use this exact button pattern:
+   <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Request a Quote')" class="[button classes here]">
+     Request a Quote
+   </button>
+3. The text inside openLeadFormModal('...') becomes the form header
+4. The button text can be anything: "Get a Quote", "Contact Us", "Schedule Service", etc.
+5. The form header will automatically match the button's purpose
+
+**FORBIDDEN FORMS**:
+- DO NOT create custom contact forms with individual input fields
+- DO NOT create custom lead capture forms
+- DO NOT create custom quote request forms
+- The ONLY exception is if the user specifically asks for a sign-up/login form for authentication
+
+**WHEN USER WANTS A DIFFERENT FORM**:
+If the user requests a specialized form (not a standard contact/lead form), you MUST respond with:
+"I understand you need a [specific form type]. To create custom forms beyond our Universal Lead Form, please build the form in the Forms management section (Dashboard > Settings > Forms) first, then tell me which form to place and where."
+
+**DO NOT**:
+- Create forms from scratch unless explicitly requested AND it's a sign-up/login form
+- Assume you can build any form type directly in the page
+- Use third-party form services without explicit instruction
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 USER REQUEST:
 ${command}
 
@@ -465,10 +499,33 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
       cleanedHtml = cleanedHtml.replace(/^```\n/, '').replace(/\n```$/, '');
     }
 
+    // Generate a friendly natural language message
+    let message = "✨ I've updated your page! ";
+    
+    const commandLower = command.toLowerCase();
+    if (commandLower.includes('form') || commandLower.includes('contact') || commandLower.includes('quote')) {
+      if (commandLower.includes('different') || commandLower.includes('custom') || commandLower.includes('specific')) {
+        message += "If you need a custom form beyond the Universal Lead Form, please build it in Dashboard > Settings > Forms first, then let me know which form to place.";
+      } else {
+        message += "I've added the Universal Lead Form button. Customers can click it to submit their information.";
+      }
+    } else if (commandLower.includes('hero') || commandLower.includes('header')) {
+      message += "The hero section looks great with the new design.";
+    } else if (commandLower.includes('cta') || commandLower.includes('button')) {
+      message += "The call-to-action is now more prominent and engaging.";
+    } else if (commandLower.includes('testimonial') || commandLower.includes('review')) {
+      message += "Added testimonials to build trust with visitors.";
+    } else if (commandLower.includes('feature') || commandLower.includes('service')) {
+      message += "The features section now highlights your key services.";
+    } else {
+      message += "Your changes have been applied.";
+    }
+
     return new Response(
       JSON.stringify({
         updatedHtml: cleanedHtml,
-        explanation: 'AI processed your request and updated the page'
+        message: message,
+        explanation: message
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

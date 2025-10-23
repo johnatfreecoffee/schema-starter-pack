@@ -117,6 +117,7 @@ const AppContent = () => {
             <Route path="settings/templates" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Templates /></Suspense>} />
             <Route path="settings/static-pages" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.StaticPages /></Suspense>} />
             <Route path="settings/sitemap" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Sitemap /></Suspense>} />
+            <Route path="settings/forms" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Forms /></Suspense>} />
             <Route path="settings/form-fields" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.FormFields /></Suspense>} />
             <Route path="settings/email-templates" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.EmailTemplates /></Suspense>} />
             <Route path="settings/email-settings" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.EmailSettings /></Suspense>} />

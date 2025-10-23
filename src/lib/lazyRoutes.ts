@@ -61,6 +61,7 @@ export const EmailTemplates = lazy(() => import('@/pages/dashboard/settings/Emai
 export const DocumentTemplates = lazy(() => import('@/pages/dashboard/settings/DocumentTemplates'));
 export const Templates = lazy(() => import('@/pages/dashboard/settings/Templates'));
 export const FormFields = lazy(() => import('@/pages/dashboard/settings/FormFields'));
+export const Forms = lazy(() => import('@/pages/dashboard/settings/Forms'));
 export const Notifications = lazy(() => import('@/pages/dashboard/settings/Notifications'));
 export const EmailSettings = lazy(() => import('@/pages/dashboard/settings/EmailSettings'));
 export const BackupManagement = lazy(() => import('@/pages/dashboard/settings/BackupManagement'));
