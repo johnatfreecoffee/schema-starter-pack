@@ -429,7 +429,7 @@ const UnifiedPageEditor = ({
               </p>
             </div>
 
-            <ScrollArea className="flex-1 overflow-auto">
+            <ScrollArea className="flex-1 min-h-0">
               <div className="space-y-4 p-4 pb-4">
                 {chatMessages.length === 0 ? (
                   <div className="text-center text-muted-foreground py-12">
@@ -449,7 +449,7 @@ const UnifiedPageEditor = ({
                   chatMessages.map((msg, idx) => (
                     <div 
                       key={idx} 
-                      className={`p-3 rounded-lg max-w-full ${
+                      className={`p-3 rounded-lg max-w-full overflow-hidden break-words ${
                         msg.role === 'user' 
                           ? 'bg-primary text-primary-foreground ml-8' 
                           : 'bg-muted mr-8'
@@ -457,7 +457,7 @@ const UnifiedPageEditor = ({
                     >
                       <TruncatedMessage 
                         content={msg.content}
-                        className={msg.role === 'user' ? 'text-primary-foreground' : ''}
+                        isUser={msg.role === 'user'}
                       />
                     </div>
                   ))
