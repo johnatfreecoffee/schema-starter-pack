@@ -293,110 +293,140 @@ HIGH-VALUE TRANSACTIONAL EXAMPLES:
    ↳ Reference payment options to remove friction
    ↳ Set clear project timeline expectations where relevant
 
-DESIGN SYSTEM & COMPONENT LIBRARY - USE THESE EXTENSIVELY:
+LOVABLE DESIGN SYSTEM - USE THESE PATTERNS:
 
-1. MODERN CSS TECHNIQUES:
-   - Use CSS gradients: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
-   - Apply subtle shadows: box-shadow: 0 10px 30px rgba(0,0,0,0.1)
-   - Add smooth transitions: transition: all 0.3s ease
-   - Use backdrop-filter: backdrop-filter: blur(10px)
-   - Implement grid/flexbox for layouts
-   - Add hover effects on interactive elements
+📦 REQUIRED: Include Tailwind CDN in <head>:
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @layer base {
+    :root {
+      --primary: 221 83% 53%;
+      --primary-foreground: 0 0% 100%;
+      --primary-glow: 221 83% 65%;
+      --accent: 142 76% 36%;
+      --accent-foreground: 0 0% 100%;
+      --destructive: 0 84% 60%;
+      --destructive-foreground: 0 0% 100%;
+      --background: 0 0% 100%;
+      --foreground: 222 47% 11%;
+      --muted: 210 40% 96%;
+      --muted-foreground: 215 16% 47%;
+      --border: 214 32% 91%;
+      --radius: 0.75rem;
+    }
+  }
+</style>
 
-2. BEAUTIFUL HERO SECTIONS:
-   <div class="hero" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 80px 20px; border-radius: 16px; color: white; text-align: center; margin-bottom: 60px;">
-     <h1 style="font-size: 3.5rem; font-weight: 800; margin: 0 0 1.5rem; line-height: 1.2;">{{service_name}} in {{city_name}}</h1>
-     <p style="font-size: 1.5rem; opacity: 0.95; margin-bottom: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">{{service_description}}</p>
-     <a href="#contact" style="background: white; color: #667eea; padding: 18px 40px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.3s; hover: transform: translateY(-2px);">Get Started Today</a>
-   </div>
+🎨 COMPONENT PATTERNS:
 
-3. STUNNING FEATURE CARDS:
-   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin: 60px 0;">
-     <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); transition: transform 0.3s, box-shadow 0.3s; border: 1px solid rgba(0,0,0,0.05);" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.12)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.08)'">
-       <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-         <span style="color: white; font-size: 24px;">🎯</span>
-       </div>
-       <h3 style="font-size: 1.5rem; margin-bottom: 12px; color: #1a202c;">Feature Title</h3>
-       <p style="color: #718096; line-height: 1.7;">Feature description goes here with compelling copy.</p>
-     </div>
-   </div>
+1. HERO SECTION:
+<section class="relative bg-gradient-to-br from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] text-white py-20 px-6 rounded-xl mb-16 overflow-hidden">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-5xl font-bold mb-6 leading-tight">{{service_name}} in {{city_name}}</h1>
+    <p class="text-xl opacity-95 mb-8 max-w-3xl">{{service_description}}</p>
+    <a href="#contact" class="inline-block bg-white text-[hsl(221,83%,53%)] px-8 py-4 rounded-xl font-bold shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)] hover:-translate-y-1 transition-all duration-300">Get Started Today</a>
+  </div>
+</section>
 
-4. TESTIMONIAL SECTIONS:
-   <div style="background: linear-gradient(135deg, #f6f8fb 0%, #e9ecef 100%); padding: 80px 20px; border-radius: 16px; margin: 60px 0;">
-     <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 50px; color: #1a202c;">What Our Customers Say</h2>
-     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto;">
-       <div style="background: white; padding: 35px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
-         <div style="display: flex; gap: 4px; margin-bottom: 15px;">
-           <span style="color: #fbbf24; font-size: 20px;">⭐</span>
-           <span style="color: #fbbf24; font-size: 20px;">⭐</span>
-           <span style="color: #fbbf24; font-size: 20px;">⭐</span>
-           <span style="color: #fbbf24; font-size: 20px;">⭐</span>
-           <span style="color: #fbbf24; font-size: 20px;">⭐</span>
-         </div>
-         <p style="font-style: italic; color: #4a5568; line-height: 1.7; margin-bottom: 20px;">"Outstanding service! Highly recommend."</p>
-         <p style="font-weight: 700; color: #1a202c;">- Customer Name</p>
-       </div>
-     </div>
-   </div>
+2. FEATURE CARDS:
+<div class="grid md:grid-cols-3 gap-8 my-16">
+  <div class="bg-white p-8 rounded-xl shadow-[0_10px_30px_-10px_hsl(221,83%,53%,0.15)] border border-[hsl(214,32%,91%)] hover:shadow-[0_20px_40px_-10px_hsl(221,83%,53%,0.25)] hover:-translate-y-2 transition-all duration-300">
+    <div class="w-14 h-14 bg-gradient-to-br from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] rounded-xl flex items-center justify-center mb-6 text-2xl">🎯</div>
+    <h3 class="text-2xl font-bold mb-4 text-[hsl(222,47%,11%)]">Feature Title</h3>
+    <p class="text-[hsl(215,16%,47%)] leading-relaxed">Feature description with compelling benefits.</p>
+  </div>
+</div>
 
-5. CALL-TO-ACTION SECTIONS:
-   <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 40px; border-radius: 16px; text-align: center; color: white; margin: 60px 0;">
-     <h2 style="font-size: 2.5rem; margin-bottom: 20px; font-weight: 700;">Ready to Get Started?</h2>
-     <p style="font-size: 1.25rem; opacity: 0.95; margin-bottom: 35px;">Contact {{company_name}} today for a free consultation</p>
-     <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-       <a href="tel:{{company_phone}}" style="background: white; color: #667eea; padding: 18px 40px; border-radius: 12px; text-decoration: none; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">Call {{company_phone}}</a>
-       <a href="mailto:{{company_email}}" style="background: rgba(255,255,255,0.2); color: white; padding: 18px 40px; border-radius: 12px; text-decoration: none; font-weight: 700; backdrop-filter: blur(10px);">Email Us</a>
-     </div>
-   </div>
+3. TESTIMONIAL SECTION:
+<section class="bg-gradient-to-br from-[hsl(210,40%,98%)] to-[hsl(210,40%,96%)] py-20 px-6 rounded-xl my-16">
+  <h2 class="text-4xl font-bold text-center mb-12 text-[hsl(222,47%,11%)]">What Our Customers Say</h2>
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+    <div class="bg-white p-8 rounded-xl shadow-[0_5px_20px_rgba(0,0,0,0.08)]">
+      <div class="flex gap-1 mb-4">
+        <span class="text-yellow-400 text-xl">⭐</span>
+        <span class="text-yellow-400 text-xl">⭐</span>
+        <span class="text-yellow-400 text-xl">⭐</span>
+        <span class="text-yellow-400 text-xl">⭐</span>
+        <span class="text-yellow-400 text-xl">⭐</span>
+      </div>
+      <p class="text-[hsl(215,16%,47%)] mb-4 leading-relaxed">"Testimonial text goes here..."</p>
+      <div class="font-semibold text-[hsl(222,47%,11%)]">— Customer Name</div>
+    </div>
+  </div>
+</section>
 
-6. PRICING TABLES:
-   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin: 60px 0;">
-     <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 2px solid transparent; transition: all 0.3s;" onmouseover="this.style.borderColor='#667eea'; this.style.transform='scale(1.03)'" onmouseout="this.style.borderColor='transparent'; this.style.transform=''">
-       <h3 style="font-size: 1.5rem; margin-bottom: 10px; color: #1a202c;">Basic Package</h3>
-       <div style="font-size: 3rem; font-weight: 800; color: #667eea; margin: 20px 0;">$999</div>
-       <ul style="list-style: none; padding: 0; margin: 30px 0;">
-         <li style="padding: 12px 0; border-bottom: 1px solid #e2e8f0; color: #4a5568;">✓ Feature one</li>
-         <li style="padding: 12px 0; border-bottom: 1px solid #e2e8f0; color: #4a5568;">✓ Feature two</li>
-         <li style="padding: 12px 0; border-bottom: 1px solid #e2e8f0; color: #4a5568;">✓ Feature three</li>
-       </ul>
-       <a href="#contact" style="display: block; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 16px; border-radius: 10px; text-align: center; text-decoration: none; font-weight: 700; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">Choose Plan</a>
-     </div>
-   </div>
+4. CTA BUTTON VARIANTS:
+<!-- Primary CTA -->
+<a href="#contact" class="inline-block bg-[hsl(221,83%,53%)] text-white px-8 py-4 rounded-xl font-bold shadow-[0_10px_30px_-10px_hsl(221,83%,53%,0.3)] hover:bg-[hsl(221,83%,45%)] hover:-translate-y-1 transition-all duration-300">Contact Us Now</a>
 
-7. STATS/NUMBERS SECTION:
-   <div style="background: #1a202c; padding: 80px 20px; border-radius: 16px; margin: 60px 0;">
-     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; text-align: center;">
-       <div>
-         <div style="font-size: 3.5rem; font-weight: 800; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;">500+</div>
-         <div style="color: #a0aec0; font-size: 1.1rem;">Projects Completed</div>
-       </div>
-       <div>
-         <div style="font-size: 3.5rem; font-weight: 800; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;">25+</div>
-         <div style="color: #a0aec0; font-size: 1.1rem;">Years Experience</div>
-       </div>
-       <div>
-         <div style="font-size: 3.5rem; font-weight: 800; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;">100%</div>
-         <div style="color: #a0aec0; font-size: 1.1rem;">Customer Satisfaction</div>
-       </div>
-     </div>
-   </div>
+<!-- Accent CTA (Green) -->
+<a href="#call" class="inline-block bg-[hsl(142,76%,36%)] text-white px-8 py-4 rounded-xl font-bold shadow-[0_10px_30px_-10px_hsl(142,76%,36%,0.3)] hover:bg-[hsl(142,76%,30%)] hover:-translate-y-1 transition-all duration-300">Call Now</a>
 
-CRITICAL INSTRUCTIONS:
-1. Create STUNNING, visually impressive pages with modern design
-2. Use the component patterns above extensively
-3. Apply beautiful gradients, shadows, and transitions
-4. Maintain all Handlebars variables like {{service_name}}, {{city_name}}, {{company_phone}}
-5. Return a complete HTML document with <!DOCTYPE html>, proper <head> with meta tags and embedded CSS
-6. Include responsive design with proper viewport meta tag
-7. Add smooth transitions and hover effects
-8. Use semantic HTML5 elements
-9. Ensure excellent typography with proper font sizing and hierarchy
-10. Create clear visual hierarchy with proper spacing
-11. Return ONLY the HTML - no explanations, no markdown code blocks
-12. Make it mobile-responsive using CSS media queries
-13. Add compelling copy that converts visitors
+<!-- Emergency/Urgent CTA (Red) -->
+<a href="tel:{{company_phone}}" class="inline-block bg-[hsl(0,84%,60%)] text-white px-8 py-4 rounded-xl font-bold shadow-[0_10px_30px_-10px_hsl(0,84%,60%,0.3)] hover:bg-[hsl(0,84%,50%)] hover:-translate-y-1 transition-all duration-300">Emergency Service</a>
 
-Return the complete, beautiful HTML page now:`;
+5. STATS/NUMBERS:
+<div class="bg-[hsl(222,47%,11%)] py-20 px-6 rounded-xl my-16">
+  <div class="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto text-center">
+    <div>
+      <div class="text-6xl font-extrabold bg-gradient-to-r from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] bg-clip-text text-transparent mb-3">500+</div>
+      <div class="text-[hsl(210,40%,70%)] text-lg">Projects Completed</div>
+    </div>
+    <div>
+      <div class="text-6xl font-extrabold bg-gradient-to-r from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] bg-clip-text text-transparent mb-3">25+</div>
+      <div class="text-[hsl(210,40%,70%)] text-lg">Years Experience</div>
+    </div>
+    <div>
+      <div class="text-6xl font-extrabold bg-gradient-to-r from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] bg-clip-text text-transparent mb-3">100%</div>
+      <div class="text-[hsl(210,40%,70%)] text-lg">Satisfaction Rate</div>
+    </div>
+  </div>
+</div>
+
+6. PRICING CARDS:
+<div class="grid md:grid-cols-3 gap-8 my-16">
+  <div class="bg-white p-8 rounded-xl border-2 border-[hsl(214,32%,91%)] hover:border-[hsl(221,83%,53%)] hover:shadow-[0_20px_40px_-10px_hsl(221,83%,53%,0.2)] transition-all duration-300">
+    <h3 class="text-2xl font-bold mb-2 text-[hsl(222,47%,11%)]">Basic Plan</h3>
+    <div class="text-4xl font-extrabold mb-6 text-[hsl(221,83%,53%)]">$99<span class="text-lg text-[hsl(215,16%,47%)]">/mo</span></div>
+    <ul class="space-y-3 mb-8">
+      <li class="flex items-center text-[hsl(215,16%,47%)]">✓ Feature one</li>
+      <li class="flex items-center text-[hsl(215,16%,47%)]">✓ Feature two</li>
+      <li class="flex items-center text-[hsl(215,16%,47%)]">✓ Feature three</li>
+    </ul>
+    <a href="#contact" class="block text-center bg-gradient-to-r from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] text-white py-4 rounded-xl font-bold hover:-translate-y-1 transition-all duration-300">Choose Plan</a>
+  </div>
+</div>
+
+7. CONTACT SECTION:
+<section class="bg-white p-12 rounded-xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] my-16">
+  <h2 class="text-4xl font-bold text-center mb-8 text-[hsl(222,47%,11%)]">Get in Touch</h2>
+  <div class="max-w-2xl mx-auto">
+    <form class="space-y-6">
+      <input type="text" placeholder="Your Name" class="w-full px-4 py-3 border border-[hsl(214,32%,91%)] rounded-xl focus:ring-2 focus:ring-[hsl(221,83%,53%)] outline-none transition-all">
+      <input type="email" placeholder="Your Email" class="w-full px-4 py-3 border border-[hsl(214,32%,91%)] rounded-xl focus:ring-2 focus:ring-[hsl(221,83%,53%)] outline-none transition-all">
+      <textarea placeholder="Your Message" rows="4" class="w-full px-4 py-3 border border-[hsl(214,32%,91%)] rounded-xl focus:ring-2 focus:ring-[hsl(221,83%,53%)] outline-none transition-all resize-none"></textarea>
+      <button type="submit" class="w-full bg-[hsl(142,76%,36%)] text-white py-4 rounded-xl font-bold shadow-[0_10px_30px_-10px_hsl(142,76%,36%,0.3)] hover:bg-[hsl(142,76%,30%)] hover:-translate-y-1 transition-all duration-300">Send Message</button>
+    </form>
+  </div>
+</section>
+
+🔑 CRITICAL IMPLEMENTATION RULES:
+
+1. **Include Tailwind CDN** - ALWAYS add the Tailwind script in <head>
+2. **Use Lovable Design Tokens** - Reference HSL colors from the :root CSS variables
+3. **Maintain Handlebars Variables** - Keep {{service_name}}, {{city_name}}, {{company_phone}}, etc.
+4. **Complete HTML Document** - Include <!DOCTYPE html>, proper <head>, meta tags, and the Tailwind CDN
+5. **Responsive Design** - Use Tailwind's responsive prefixes (md:, lg:)
+6. **Semantic HTML** - Use <section>, <article>, <header>, <footer> properly
+7. **Accessible** - Include proper alt text, ARIA labels, and keyboard navigation
+8. **SEO Optimized** - Include proper title, meta description, Open Graph tags
+9. **Mobile-First** - Design for mobile, enhance for desktop
+10. **Performance** - Minimize custom CSS, leverage Tailwind utilities
+11. **Return ONLY HTML** - No explanations, no markdown code blocks
+12. **Conversion-Focused** - Clear CTAs, visible contact info, trust signals
+13. **Beautiful Design** - Use gradients, shadows, transitions from the design system above
+
+Return the complete, stunning HTML page using Lovable's design system now:`;
 
     console.log('Calling Claude (Anthropic)...');
 
