@@ -146,7 +146,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
         { path: '/dashboard/settings/static-pages', icon: FileTextAlt, label: 'Static Pages' },
         { path: '/dashboard/settings/sitemap', icon: Map, label: 'Site Map' },
         { path: '/dashboard/settings/forms', icon: FileText, label: 'Forms' },
-        { path: '/dashboard/settings/form-fields', icon: FileText, label: 'Form Fields' },
+        
         { path: '/dashboard/settings/email-templates', icon: FileText, label: 'Email Templates' },
         { path: '/dashboard/settings/email-settings', icon: Settings, label: 'Email Settings' },
         { path: '/dashboard/settings/document-templates', icon: FileText, label: 'Document Templates' },
