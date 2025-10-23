@@ -56,6 +56,8 @@ const UnifiedPageEditor = ({
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [editorMode, setEditorMode] = useState<EditorMode>('build');
   const [tokenCount, setTokenCount] = useState(0);
+  const [previousHtml, setPreviousHtml] = useState('');
+  const [isShowingPrevious, setIsShowingPrevious] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const queryClient = useQueryClient();
@@ -205,25 +207,40 @@ const UnifiedPageEditor = ({
       console.log('Setting template HTML', { length: template.template_html.length, pageType });
       setTemplateHtml(template.template_html);
       setOriginalHtml(template.template_html);
+      setPreviousHtml(template.template_html);
     }
   }, [template, pageType]);
 
+  // Reset chat when dialog opens
+  useEffect(() => {
+    if (open) {
+      setChatMessages([]);
+      setTokenCount(0);
+      setIsShowingPrevious(false);
+    }
+  }, [open]);
+
+  // Compute displayed HTML based on version toggle
+  const displayedHtml = isShowingPrevious ? previousHtml : templateHtml;
+
   // Update preview when template changes
   useEffect(() => {
-    if (!templateHtml) {
-      console.log('No templateHtml yet');
+    const htmlToRender = displayedHtml;
+    
+    if (!htmlToRender) {
+      console.log('No htmlToRender yet');
       return;
     }
 
     // For static and generated pages, render without variable substitution
     if (pageType === 'static' || pageType === 'generated') {
-      console.log('Setting preview for', { pageType, length: templateHtml.length });
-      setRenderedPreview(templateHtml);
+      console.log('Setting preview for', { pageType, length: htmlToRender.length });
+      setRenderedPreview(htmlToRender);
       return;
     }
 
     // For service pages, try variable substitution; fallback to raw HTML
-    if (templateHtml && serviceAreas?.[0] && companySettings && service) {
+    if (htmlToRender && serviceAreas?.[0] && companySettings && service) {
       try {
         const previewData = {
           service_name: service.name,
@@ -240,7 +257,7 @@ const UnifiedPageEditor = ({
           company_address: companySettings.address,
         };
 
-        let rendered = templateHtml;
+        let rendered = htmlToRender;
         Object.entries(previewData).forEach(([key, value]) => {
           const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
           rendered = rendered.replace(regex, String(value));
@@ -249,13 +266,13 @@ const UnifiedPageEditor = ({
         setRenderedPreview(rendered);
       } catch (error) {
         console.error('Preview render error:', error);
-        setRenderedPreview(templateHtml);
+        setRenderedPreview(htmlToRender);
       }
     } else {
       // Fallback: show raw template without substitution so preview never stays blank
-      setRenderedPreview(templateHtml);
+      setRenderedPreview(htmlToRender);
     }
-  }, [templateHtml, serviceAreas, companySettings, service, pageType]);
+  }, [displayedHtml, serviceAreas, companySettings, service, pageType]);
 
   const sendToAi = async () => {
     if (!aiPrompt.trim()) return;
@@ -311,7 +328,9 @@ const UnifiedPageEditor = ({
 
       // In build mode, auto-apply changes immediately
       if (editorMode === 'build' && data.updatedHtml) {
+        setPreviousHtml(templateHtml); // Store current as previous
         setTemplateHtml(data.updatedHtml);
+        setIsShowingPrevious(false);
       }
 
       const assistantMessage: ChatMessage = {
@@ -338,6 +357,16 @@ const UnifiedPageEditor = ({
       title: 'Chat Reset',
       description: 'Conversation history and token count cleared.',
     });
+  };
+
+  const toggleVersion = () => {
+    if (isShowingPrevious) {
+      // Switch to current
+      setIsShowingPrevious(false);
+    } else {
+      // Switch to previous
+      setIsShowingPrevious(true);
+    }
   };
 
   const applyAiSuggestion = (suggestion: string) => {
@@ -489,22 +518,34 @@ const UnifiedPageEditor = ({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-[95vw] h-[90vh] p-0">
         <DialogHeader className="px-6 py-4 border-b">
-          <div className="flex items-center gap-3">
-            <DialogTitle>Editing: {pageTitle}</DialogTitle>
-            <div className="text-xs text-muted-foreground">
-              {isSaving ? (
-                <span className="flex items-center gap-1">
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                  Saving...
-                </span>
-              ) : lastSaved ? (
-                <span>Saved {new Date(lastSaved).toLocaleTimeString()}</span>
-              ) : templateHtml !== originalHtml ? (
-                <span>Unsaved changes</span>
-              ) : (
-                <span>All changes saved</span>
-              )}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <DialogTitle>Editing: {pageTitle}</DialogTitle>
+              <div className="text-xs text-muted-foreground">
+                {isSaving ? (
+                  <span className="flex items-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Saving...
+                  </span>
+                ) : lastSaved ? (
+                  <span>Saved {new Date(lastSaved).toLocaleTimeString()}</span>
+                ) : templateHtml !== originalHtml ? (
+                  <span>Unsaved changes</span>
+                ) : (
+                  <span>All changes saved</span>
+                )}
+              </div>
             </div>
+            {previousHtml !== templateHtml && (
+              <Button
+                variant={isShowingPrevious ? 'default' : 'outline'}
+                size="sm"
+                onClick={toggleVersion}
+                className="flex items-center gap-2"
+              >
+                {isShowingPrevious ? 'Current Version' : 'Previous Version'}
+              </Button>
+            )}
           </div>
         </DialogHeader>
 
@@ -693,11 +734,13 @@ const UnifiedPageEditor = ({
                 <Editor
                   height="100%"
                   defaultLanguage="html"
-                  value={templateHtml}
+                  value={displayedHtml}
                   onChange={(value) => {
-                    setTemplateHtml(value || '');
-                    if (pageType === 'static' || pageType === 'generated') {
-                      setRenderedPreview(value || '');
+                    if (!isShowingPrevious) {
+                      setTemplateHtml(value || '');
+                      if (pageType === 'static' || pageType === 'generated') {
+                        setRenderedPreview(value || '');
+                      }
                     }
                   }}
                   theme="vs-dark"
@@ -706,6 +749,7 @@ const UnifiedPageEditor = ({
                     wordWrap: 'on',
                     automaticLayout: true,
                     fontSize: 14,
+                    readOnly: isShowingPrevious,
                   }}
                 />
               )}
