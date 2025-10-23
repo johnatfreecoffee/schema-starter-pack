@@ -11,6 +11,7 @@ import { Loader2, Send, Sparkles, Eye, Code, Save, X } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
 import TruncatedMessage from './TruncatedMessage';
+import PreviewIframe from './PreviewIframe';
 
 interface UnifiedPageEditorProps {
   open: boolean;
@@ -557,14 +558,7 @@ const UnifiedPageEditor = ({
             <div className="flex-1 min-h-0 relative bg-white">
               {viewMode === 'preview' ? (
                 renderedPreview ? (
-                  <iframe
-                    ref={iframeRef}
-                    srcDoc={renderedPreview}
-                    className="absolute inset-0 w-full h-full border-0"
-                    style={{ display: 'block' }}
-                    title="Page Preview"
-                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                  />
+                  <PreviewIframe html={renderedPreview} />
                 ) : (
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin" />
