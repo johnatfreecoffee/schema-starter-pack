@@ -682,6 +682,9 @@ const UnifiedPageEditor = ({
                     if (sendOnEnter && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                       e.preventDefault();
                       sendToAi();
+                    } else if (!sendOnEnter && e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      sendToAi();
                     }
                   }}
                   disabled={isAiLoading}
@@ -696,7 +699,7 @@ const UnifiedPageEditor = ({
                     onCheckedChange={toggleSendOnEnter}
                   />
                   <Label htmlFor="send-on-enter" className="text-xs text-muted-foreground cursor-pointer">
-                    Cmd/Ctrl + Enter to send
+                    {sendOnEnter ? 'Cmd/Ctrl + Enter to send' : 'Enter to send'}
                   </Label>
                 </div>
                 <Button 
