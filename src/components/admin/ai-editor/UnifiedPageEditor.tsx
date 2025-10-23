@@ -14,7 +14,6 @@ import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
 import TruncatedMessage from './TruncatedMessage';
 import PreviewIframe from './PreviewIframe';
-
 interface UnifiedPageEditorProps {
   open: boolean;
   onClose: () => void;
@@ -25,18 +24,14 @@ interface UnifiedPageEditorProps {
   initialHtml?: string; // For static pages
   pageId?: string; // For static pages
 }
-
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   suggestion?: string;
 }
-
 type EditorMode = 'chat' | 'build';
-
 const TOKEN_SOFT_LIMIT = 15000;
 const TOKEN_HARD_LIMIT = 20000;
-
 const UnifiedPageEditor = ({
   open,
   onClose,
@@ -73,18 +68,23 @@ const UnifiedPageEditor = ({
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Load template for service or static page
-  const { data: template, isLoading } = useQuery({
+  const {
+    data: template,
+    isLoading
+  } = useQuery({
     queryKey: ['service-template', service?.id, 'static-page', pageId, pageType, initialHtml],
     queryFn: async () => {
       // For static pages, load draft content from DB
       if (pageType === 'static') {
-        console.log('Loading static page template', { pageId, hasInitialHtml: !!initialHtml });
+        console.log('Loading static page template', {
+          pageId,
+          hasInitialHtml: !!initialHtml
+        });
         if (pageId) {
-          const { data, error } = await supabase
-            .from('static_pages')
-            .select('id, title, content_html_draft, content_html, url_path, updated_at')
-            .eq('id', pageId)
-            .single();
+          const {
+            data,
+            error
+          } = await supabase.from('static_pages').select('id, title, content_html_draft, content_html, url_path, updated_at').eq('id', pageId).single();
           if (error) {
             console.warn('Static page fetch error, falling back to initialHtml:', error.message);
           }
@@ -104,15 +104,10 @@ const UnifiedPageEditor = ({
           template_type: 'static'
         };
       }
-
       if (!service?.id) return null;
-
-      const { data: serviceData } = await supabase
-        .from('services')
-        .select('template_id, templates(id, name, template_html, template_html_draft, template_type)')
-        .eq('id', service.id)
-        .single();
-
+      const {
+        data: serviceData
+      } = await supabase.from('services').select('template_id, templates(id, name, template_html, template_html_draft, template_type)').eq('id', service.id).single();
       if (serviceData?.template_id && serviceData.templates) {
         // Return draft version if it exists, otherwise fall back to published
         return {
@@ -158,66 +153,69 @@ const UnifiedPageEditor = ({
   </div>
 </body>
 </html>`;
-
-      const { data: newTemplate, error } = await supabase
-        .from('templates')
-        .insert({
-          name: `${service.name} Template`,
-          template_html: defaultHtml,
-          template_html_draft: defaultHtml,
-          template_type: 'service',
-        })
-        .select()
-        .single();
-
+      const {
+        data: newTemplate,
+        error
+      } = await supabase.from('templates').insert({
+        name: `${service.name} Template`,
+        template_html: defaultHtml,
+        template_html_draft: defaultHtml,
+        template_type: 'service'
+      }).select().single();
       if (error) throw error;
-
-      await supabase
-        .from('services')
-        .update({ template_id: newTemplate.id })
-        .eq('id', service.id);
-
+      await supabase.from('services').update({
+        template_id: newTemplate.id
+      }).eq('id', service.id);
       return newTemplate;
     },
-    enabled: (!!service?.id || pageType === 'static') && open,
+    enabled: (!!service?.id || pageType === 'static') && open
   });
 
   // Load company settings and AI training
-  const { data: companySettings } = useQuery({
+  const {
+    data: companySettings
+  } = useQuery({
     queryKey: ['company-settings'],
     queryFn: async () => {
-      const { data } = await supabase.from('company_settings').select('*').single();
+      const {
+        data
+      } = await supabase.from('company_settings').select('*').single();
       return data;
     },
-    enabled: open,
+    enabled: open
   });
-
-  const { data: aiTraining } = useQuery({
+  const {
+    data: aiTraining
+  } = useQuery({
     queryKey: ['ai-training'],
     queryFn: async () => {
-      const { data } = await supabase.from('ai_training').select('*').single();
+      const {
+        data
+      } = await supabase.from('ai_training').select('*').single();
       return data;
     },
-    enabled: open,
+    enabled: open
   });
 
   // Load service areas for preview data
-  const { data: serviceAreas } = useQuery({
+  const {
+    data: serviceAreas
+  } = useQuery({
     queryKey: ['service-areas-preview'],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('service_areas')
-        .select('*')
-        .eq('status', true)
-        .limit(1);
+      const {
+        data
+      } = await supabase.from('service_areas').select('*').eq('status', true).limit(1);
       return data;
     },
-    enabled: open,
+    enabled: open
   });
-
   useEffect(() => {
     if (template?.template_html) {
-      console.log('Setting template HTML', { length: template.template_html.length, pageType });
+      console.log('Setting template HTML', {
+        length: template.template_html.length,
+        pageType
+      });
       setTemplateHtml(template.template_html);
       setOriginalHtml(template.template_html);
       setPreviousHtml(template.template_html);
@@ -239,7 +237,6 @@ const UnifiedPageEditor = ({
   // Update preview when template changes
   useEffect(() => {
     const htmlToRender = displayedHtml;
-    
     if (!htmlToRender) {
       console.log('No htmlToRender yet');
       return;
@@ -247,7 +244,10 @@ const UnifiedPageEditor = ({
 
     // For static and generated pages, render without variable substitution
     if (pageType === 'static' || pageType === 'generated') {
-      console.log('Setting preview for', { pageType, length: htmlToRender.length });
+      console.log('Setting preview for', {
+        pageType,
+        length: htmlToRender.length
+      });
       setRenderedPreview(htmlToRender);
       return;
     }
@@ -267,15 +267,13 @@ const UnifiedPageEditor = ({
           company_name: companySettings.business_name,
           company_phone: companySettings.phone,
           company_email: companySettings.email,
-          company_address: companySettings.address,
+          company_address: companySettings.address
         };
-
         let rendered = htmlToRender;
         Object.entries(previewData).forEach(([key, value]) => {
           const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
           rendered = rendered.replace(regex, String(value));
         });
-        
         setRenderedPreview(rendered);
       } catch (error) {
         console.error('Preview render error:', error);
@@ -286,7 +284,6 @@ const UnifiedPageEditor = ({
       setRenderedPreview(htmlToRender);
     }
   }, [displayedHtml, serviceAreas, companySettings, service, pageType]);
-
   const sendToAi = async () => {
     if (!aiPrompt.trim()) return;
 
@@ -295,19 +292,23 @@ const UnifiedPageEditor = ({
       toast({
         title: 'Token Limit Reached',
         description: 'Please reset the chat to continue.',
-        variant: 'destructive',
+        variant: 'destructive'
       });
       return;
     }
-
-    const userMessage: ChatMessage = { role: 'user', content: aiPrompt };
+    const userMessage: ChatMessage = {
+      role: 'user',
+      content: aiPrompt
+    };
     setChatMessages(prev => [...prev, userMessage]);
     setIsAiLoading(true);
     const currentPrompt = aiPrompt;
     setAiPrompt('');
-
     try {
-      const { data, error } = await supabase.functions.invoke('ai-edit-page', {
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('ai-edit-page', {
         body: {
           command: currentPrompt,
           mode: editorMode,
@@ -316,7 +317,7 @@ const UnifiedPageEditor = ({
             currentPage: {
               type: pageType,
               url: service ? `/${service.slug}` : '/',
-              html: templateHtml,
+              html: templateHtml
             },
             serviceInfo: service ? {
               name: service.name,
@@ -324,14 +325,13 @@ const UnifiedPageEditor = ({
               description: service.description || service.full_description || '',
               category: service.category,
               starting_price: service.starting_price,
-              is_active: service.is_active,
+              is_active: service.is_active
             } : null,
             companyInfo: companySettings,
-            aiTraining: aiTraining,
-          },
-        },
+            aiTraining: aiTraining
+          }
+        }
       });
-
       if (error) throw error;
 
       // Update token count
@@ -345,33 +345,30 @@ const UnifiedPageEditor = ({
         setTemplateHtml(data.updatedHtml);
         setIsShowingPrevious(false);
       }
-
       const assistantMessage: ChatMessage = {
         role: 'assistant',
-        content: data.explanation || (editorMode === 'build' ? 'I\'ve updated the page based on your request.' : 'Let me help you with that.'),
+        content: data.explanation || (editorMode === 'build' ? 'I\'ve updated the page based on your request.' : 'Let me help you with that.')
       };
       setChatMessages(prev => [...prev, assistantMessage]);
     } catch (error: any) {
       toast({
         title: 'AI Error',
         description: error.message,
-        variant: 'destructive',
+        variant: 'destructive'
       });
       setChatMessages(prev => prev.slice(0, -1));
     } finally {
       setIsAiLoading(false);
     }
   };
-
   const resetChat = () => {
     setChatMessages([]);
     setTokenCount(0);
     toast({
       title: 'Chat Reset',
-      description: 'Conversation history and token count cleared.',
+      description: 'Conversation history and token count cleared.'
     });
   };
-
   const toggleVersion = () => {
     if (isShowingPrevious) {
       // Switch to current
@@ -381,20 +378,17 @@ const UnifiedPageEditor = ({
       setIsShowingPrevious(true);
     }
   };
-
   const toggleSendOnEnter = (checked: boolean) => {
     setSendOnEnter(checked);
     localStorage.setItem('ai-editor-send-on-enter', checked.toString());
   };
-
   const applyAiSuggestion = (suggestion: string) => {
     setTemplateHtml(suggestion);
     toast({
       title: 'Changes applied',
-      description: 'Changes will be saved automatically.',
+      description: 'Changes will be saved automatically.'
     });
   };
-
   const handleInsertVariable = (variable: string) => {
     if (textareaRef.current) {
       const start = textareaRef.current.selectionStart;
@@ -402,7 +396,6 @@ const UnifiedPageEditor = ({
       const text = aiPrompt;
       const newText = text.substring(0, start) + variable + text.substring(end);
       setAiPrompt(newText);
-      
       setTimeout(() => {
         if (textareaRef.current) {
           textareaRef.current.focus();
@@ -416,46 +409,43 @@ const UnifiedPageEditor = ({
   // Auto-save function - saves to draft
   const autoSave = async () => {
     if (templateHtml === originalHtml) return;
-
     setIsSaving(true);
     try {
       // For static pages, save to draft column
       if (pageType === 'static' && pageId) {
-        const { error } = await supabase
-          .from('static_pages')
-          .update({ 
-            content_html_draft: templateHtml,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', pageId);
-
+        const {
+          error
+        } = await supabase.from('static_pages').update({
+          content_html_draft: templateHtml,
+          updated_at: new Date().toISOString()
+        }).eq('id', pageId);
         if (error) throw error;
-        
         setOriginalHtml(templateHtml);
         setLastSaved(new Date());
-        queryClient.invalidateQueries({ queryKey: ['static-pages', pageId] });
+        queryClient.invalidateQueries({
+          queryKey: ['static-pages', pageId]
+        });
       } else if (template?.id) {
         // For service templates, save to draft column
-        const { error } = await supabase
-          .from('templates')
-          .update({ 
-            template_html_draft: templateHtml,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', template.id);
-
+        const {
+          error
+        } = await supabase.from('templates').update({
+          template_html_draft: templateHtml,
+          updated_at: new Date().toISOString()
+        }).eq('id', template.id);
         if (error) throw error;
-        
         setOriginalHtml(templateHtml);
         setLastSaved(new Date());
-        queryClient.invalidateQueries({ queryKey: ['service-template', service?.id] });
+        queryClient.invalidateQueries({
+          queryKey: ['service-template', service?.id]
+        });
       }
     } catch (error: any) {
       console.error('Auto-save error:', error);
       toast({
         title: 'Auto-save failed',
         description: error.message,
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } finally {
       setIsSaving(false);
@@ -465,42 +455,40 @@ const UnifiedPageEditor = ({
   // Publish function - copies draft to live
   const handlePublish = async () => {
     if (!templateHtml || isPublishing) return;
-    
     setIsPublishing(true);
     try {
       if (pageType === 'static' && pageId) {
-        const { error } = await supabase
-          .from('static_pages')
-          .update({ 
-            content_html: templateHtml,
-            content_html_draft: templateHtml,
-            published_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', pageId);
+        const {
+          error
+        } = await supabase.from('static_pages').update({
+          content_html: templateHtml,
+          content_html_draft: templateHtml,
+          published_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }).eq('id', pageId);
         if (error) throw error;
-        queryClient.invalidateQueries({ queryKey: ['static-pages', pageId] });
+        queryClient.invalidateQueries({
+          queryKey: ['static-pages', pageId]
+        });
       } else if (template?.id) {
-        const { error } = await supabase
-          .from('templates')
-          .update({ 
-            template_html: templateHtml,
-            template_html_draft: templateHtml,
-            published_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', template.id);
+        const {
+          error
+        } = await supabase.from('templates').update({
+          template_html: templateHtml,
+          template_html_draft: templateHtml,
+          published_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }).eq('id', template.id);
         if (error) throw error;
-
         if (service) {
-          await supabase
-            .from('generated_pages')
-            .update({ needs_regeneration: true })
-            .eq('service_id', service.id);
+          await supabase.from('generated_pages').update({
+            needs_regeneration: true
+          }).eq('service_id', service.id);
         }
-        queryClient.invalidateQueries({ queryKey: ['service-template', service?.id] });
+        queryClient.invalidateQueries({
+          queryKey: ['service-template', service?.id]
+        });
       }
-      
       setShowPublishConfirm(true);
       setTimeout(() => setShowPublishConfirm(false), 3000);
     } catch (error: any) {
@@ -508,7 +496,7 @@ const UnifiedPageEditor = ({
       toast({
         title: 'Publish failed',
         description: error.message,
-        variant: 'destructive',
+        variant: 'destructive'
       });
     } finally {
       setIsPublishing(false);
@@ -528,7 +516,6 @@ const UnifiedPageEditor = ({
         autoSave();
       }, 2000);
     }
-
     return () => {
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current);
@@ -550,21 +537,21 @@ const UnifiedPageEditor = ({
 
   // Auto-scroll chat to bottom when messages change or AI state updates
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    chatEndRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end'
+    });
   }, [chatMessages, isAiLoading]);
-
   const closeMutation = useMutation({
     mutationFn: async () => {
       await onSave(templateHtml);
     },
     onSuccess: () => {
       onClose();
-    },
+    }
   });
-
   if (isLoading) {
-    return (
-      <Dialog open={open} onOpenChange={onClose}>
+    return <Dialog open={open} onOpenChange={onClose}>
         <DialogContent className="max-w-[95vw] h-[90vh]">
           <DialogHeader className="px-6 py-4 border-b">
             <DialogTitle>Loading editor…</DialogTitle>
@@ -574,57 +561,30 @@ const UnifiedPageEditor = ({
             <Loader2 className="h-8 w-8 animate-spin" />
           </div>
         </DialogContent>
-      </Dialog>
-    );
+      </Dialog>;
   }
-
-  return (
-    <Dialog open={open} onOpenChange={onClose}>
+  return <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-[95vw] h-[90vh] p-0">
         <DialogHeader className="px-6 py-4 border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <DialogTitle>Editing: {pageTitle}</DialogTitle>
               <div className="text-xs text-muted-foreground">
-                {isSaving ? (
-                  <span className="flex items-center gap-1">
+                {isSaving ? <span className="flex items-center gap-1">
                     <Loader2 className="h-3 w-3 animate-spin" />
                     Saving draft...
-                  </span>
-                ) : lastSaved ? (
-                  <span>Draft saved {new Date(lastSaved).toLocaleTimeString()}</span>
-                ) : templateHtml !== originalHtml ? (
-                  <span>Unsaved changes</span>
-                ) : (
-                  <span>All changes saved</span>
-                )}
+                  </span> : lastSaved ? <span>Draft saved {new Date(lastSaved).toLocaleTimeString()}</span> : templateHtml !== originalHtml ? <span>Unsaved changes</span> : <span>All changes saved</span>}
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {previousHtml !== templateHtml && (
-                <Button
-                  variant={isShowingPrevious ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={toggleVersion}
-                  className="flex items-center gap-2"
-                >
+              {previousHtml !== templateHtml && <Button variant={isShowingPrevious ? 'default' : 'outline'} size="sm" onClick={toggleVersion} className="flex items-center gap-2">
                   {isShowingPrevious ? 'Current Version' : 'Previous Version'}
-                </Button>
-              )}
-              <Button
-                onClick={handlePublish}
-                disabled={isPublishing || isSaving}
-                size="sm"
-                className="gap-2"
-              >
-                {isPublishing ? (
-                  <>
+                </Button>}
+              <Button onClick={handlePublish} disabled={isPublishing || isSaving} size="sm" className="gap-2">
+                {isPublishing ? <>
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Publishing...
-                  </>
-                ) : (
-                  <>Publish</>
-                )}
+                  </> : <>Publish</>}
               </Button>
             </div>
           </div>
@@ -640,61 +600,37 @@ const UnifiedPageEditor = ({
                   <h3 className="font-semibold">AI Assistant</h3>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant={editorMode === 'chat' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setEditorMode('chat')}
-                    className="text-xs h-7"
-                  >
+                  <Button variant={editorMode === 'chat' ? 'default' : 'outline'} size="sm" onClick={() => setEditorMode('chat')} className="text-xs h-7">
                     Chat
                   </Button>
-                  <Button
-                    variant={editorMode === 'build' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setEditorMode('build')}
-                    className="text-xs h-7"
-                  >
+                  <Button variant={editorMode === 'build' ? 'default' : 'outline'} size="sm" onClick={() => setEditorMode('build')} className="text-xs h-7">
                     Build
                   </Button>
                 </div>
               </div>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs text-muted-foreground">
-                  {editorMode === 'chat' 
-                    ? 'Chat about your page and get feedback' 
-                    : 'Describe changes to build your page'}
+                  {editorMode === 'chat' ? 'Chat about your page and get feedback' : 'Describe changes to build your page'}
                 </p>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">
                     Tokens: <span className={tokenCount >= TOKEN_SOFT_LIMIT ? 'text-destructive font-semibold' : ''}>{tokenCount.toLocaleString()}</span>
                   </span>
-                  {tokenCount > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={resetChat}
-                      className="text-xs h-6 px-2"
-                    >
+                  {tokenCount > 0 && <Button variant="ghost" size="sm" onClick={resetChat} className="text-xs h-6 px-2">
                       Reset
-                    </Button>
-                  )}
+                    </Button>}
                 </div>
               </div>
-              {tokenCount >= TOKEN_SOFT_LIMIT && (
-                <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded-md">
+              {tokenCount >= TOKEN_SOFT_LIMIT && <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded-md">
                   <p className="text-xs text-destructive">
-                    {tokenCount >= TOKEN_HARD_LIMIT 
-                      ? 'Token limit reached. Please reset the chat to continue.' 
-                      : 'Approaching token limit. Consider resetting the chat soon.'}
+                    {tokenCount >= TOKEN_HARD_LIMIT ? 'Token limit reached. Please reset the chat to continue.' : 'Approaching token limit. Consider resetting the chat soon.'}
                   </p>
-                </div>
-              )}
+                </div>}
             </div>
 
             <ScrollArea className="flex-1 min-h-0">
               <div className="space-y-4 p-4 pb-4">
-                {chatMessages.length === 0 ? (
-                  <div className="text-center text-muted-foreground py-12">
+                {chatMessages.length === 0 ? <div className="text-center text-muted-foreground py-12">
                     <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p className="text-sm mb-2">Ask AI to modify your page</p>
                     <div className="text-xs space-y-1 max-w-xs mx-auto text-left">
@@ -706,82 +642,41 @@ const UnifiedPageEditor = ({
                         <li>Build a beautiful hero section</li>
                       </ul>
                     </div>
-                  </div>
-                ) : (
-                  chatMessages.map((msg, idx) => (
-                    <div 
-                      key={idx} 
-                      className={`p-3 rounded-lg max-w-full overflow-hidden break-words ${
-                        msg.role === 'user' 
-                          ? 'bg-primary text-primary-foreground ml-8' 
-                          : 'bg-muted mr-8'
-                      }`}
-                    >
-                      <TruncatedMessage 
-                        content={msg.content}
-                        isUser={msg.role === 'user'}
-                      />
-                    </div>
-                  ))
-                )}
-                {isAiLoading && (
-                  <div className="flex items-center gap-2 text-muted-foreground p-3">
+                  </div> : chatMessages.map((msg, idx) => <div key={idx} className={`p-3 rounded-lg max-w-full overflow-hidden break-words ${msg.role === 'user' ? 'bg-primary text-primary-foreground ml-8' : 'bg-muted mr-8'}`}>
+                      <TruncatedMessage content={msg.content} isUser={msg.role === 'user'} />
+                    </div>)}
+                {isAiLoading && <div className="flex items-center gap-2 text-muted-foreground p-3">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span className="text-sm">AI is working...</span>
-                  </div>
-                )}
+                  </div>}
                 <div ref={chatEndRef} className="h-1" />
               </div>
             </ScrollArea>
 
             <div className="p-4 border-t space-y-2 flex-shrink-0 bg-background">
               <div className="flex gap-2 mb-2">
-                <VariablePicker 
-                  onInsert={handleInsertVariable}
-                  includeServiceVars={pageType === 'service'}
-                  includeServiceAreaVars={pageType === 'service'}
-                />
+                <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
               </div>
               <div className="flex gap-2">
-                <Textarea
-                  ref={textareaRef}
-                  placeholder="Describe your changes or ask AI to build something..."
-                  value={aiPrompt}
-                  onChange={(e) => setAiPrompt(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (sendOnEnter && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                      e.preventDefault();
-                      sendToAi();
-                    } else if (!sendOnEnter && e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      sendToAi();
-                    }
-                  }}
-                  disabled={isAiLoading}
-                  className="min-h-[80px] resize-none"
-                />
+                <Textarea ref={textareaRef} placeholder="Describe your changes or ask AI to build something..." value={aiPrompt} onChange={e => setAiPrompt(e.target.value)} onKeyDown={e => {
+                if (sendOnEnter && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                  e.preventDefault();
+                  sendToAi();
+                } else if (!sendOnEnter && e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  sendToAi();
+                }
+              }} disabled={isAiLoading} className="min-h-[80px] resize-none" />
               </div>
               <div className="flex justify-end items-center gap-2">
                 <div className="flex items-center gap-1.5 scale-75">
                   <Label htmlFor="send-on-enter" className="text-xs text-muted-foreground cursor-pointer w-[180px] text-right whitespace-nowrap">
                     {sendOnEnter ? 'Cmd/Ctrl + Enter to send' : 'Enter to send'}
                   </Label>
-                  <Switch
-                    id="send-on-enter"
-                    checked={sendOnEnter}
-                    onCheckedChange={toggleSendOnEnter}
-                  />
+                  <Switch id="send-on-enter" checked={sendOnEnter} onCheckedChange={toggleSendOnEnter} />
                 </div>
-                <Button 
-                  onClick={sendToAi} 
-                  disabled={isAiLoading || !aiPrompt.trim()}
-                  size="sm"
-                >
-                  {isAiLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <><Send className="mr-2 h-4 w-4" /> Send</>
-                  )}
+                <Button onClick={sendToAi} disabled={isAiLoading || !aiPrompt.trim()} size="sm">
+                  {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="mr-2 h-4 w-4" /> Send</>}
                 </Button>
               </div>
             </div>
@@ -790,7 +685,7 @@ const UnifiedPageEditor = ({
           {/* Right Panel - Preview/Code */}
           <div className="w-3/5 flex flex-col">
             <div className="p-4 border-b space-y-3">
-              <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'preview' | 'code')}>
+              <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'preview' | 'code')}>
                 <TabsList>
                   <TabsTrigger value="preview">
                     <Eye className="mr-2 h-4 w-4" />
@@ -802,50 +697,29 @@ const UnifiedPageEditor = ({
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
-              <div className="text-xs text-muted-foreground font-mono bg-muted/50 px-3 py-1.5 rounded">
-                {pageType === 'static' && pageId ? (
-                  <span>static_pages/{pageId}/content_html</span>
-                ) : pageType === 'service' && service ? (
-                  <span>templates/{service.slug}/template_html</span>
-                ) : (
-                  <span>templates/default/template_html</span>
-                )}
-              </div>
+              
             </div>
 
             <div className="flex-1 min-h-0 relative bg-white">
-              {viewMode === 'preview' ? (
-                renderedPreview ? (
-                  <PreviewIframe html={renderedPreview} />
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
+              {viewMode === 'preview' ? renderedPreview ? <PreviewIframe html={renderedPreview} /> : <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin" />
                     <p className="mt-2">Loading preview...</p>
-                  </div>
-                )
-              ) : (
-                <Editor
-                  height="100%"
-                  defaultLanguage="html"
-                  value={displayedHtml}
-                  onChange={(value) => {
-                    if (!isShowingPrevious) {
-                      setTemplateHtml(value || '');
-                      if (pageType === 'static' || pageType === 'generated') {
-                        setRenderedPreview(value || '');
-                      }
-                    }
-                  }}
-                  theme="vs-dark"
-                  options={{
-                    minimap: { enabled: true },
-                    wordWrap: 'on',
-                    automaticLayout: true,
-                    fontSize: 14,
-                    readOnly: isShowingPrevious,
-                  }}
-                />
-              )}
+                  </div> : <Editor height="100%" defaultLanguage="html" value={displayedHtml} onChange={value => {
+              if (!isShowingPrevious) {
+                setTemplateHtml(value || '');
+                if (pageType === 'static' || pageType === 'generated') {
+                  setRenderedPreview(value || '');
+                }
+              }
+            }} theme="vs-dark" options={{
+              minimap: {
+                enabled: true
+              },
+              wordWrap: 'on',
+              automaticLayout: true,
+              fontSize: 14,
+              readOnly: isShowingPrevious
+            }} />}
             </div>
           </div>
         </div>
@@ -866,8 +740,6 @@ const UnifiedPageEditor = ({
           </div>
         </DialogContent>
       </Dialog>
-    </Dialog>
-  );
+    </Dialog>;
 };
-
 export default UnifiedPageEditor;
