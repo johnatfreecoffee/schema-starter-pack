@@ -46,7 +46,6 @@ const UnifiedPageEditor = ({
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
   const [renderedPreview, setRenderedPreview] = useState('');
-  const [iframeKey, setIframeKey] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -231,36 +230,6 @@ const UnifiedPageEditor = ({
       setRenderedPreview(templateHtml);
     }
   }, [templateHtml, serviceAreas, companySettings, service, pageType]);
-
-  // Force iframe remount when preview content changes
-  useEffect(() => {
-    if (renderedPreview && viewMode === 'preview') {
-      console.log('🔄 Remounting iframe with new content');
-      setIframeKey(prev => prev + 1);
-    }
-  }, [renderedPreview, viewMode]);
-
-  // Write content to iframe using document.write() for better reliability
-  useEffect(() => {
-    if (!iframeRef.current || !renderedPreview || viewMode !== 'preview') return;
-
-    const iframe = iframeRef.current;
-    const doc = iframe.contentDocument || iframe.contentWindow?.document;
-
-    if (!doc) {
-      console.warn('⚠️ iframe contentDocument is null');
-      return;
-    }
-
-    try {
-      doc.open();
-      doc.write(renderedPreview);
-      doc.close();
-      console.log('✅ iframe content written successfully via document.write()');
-    } catch (error) {
-      console.error('❌ Failed to write to iframe:', error);
-    }
-  }, [renderedPreview, viewMode, iframeKey]);
 
   const sendToAi = async () => {
     if (!aiPrompt.trim()) return;
@@ -590,7 +559,7 @@ const UnifiedPageEditor = ({
                 renderedPreview ? (
                   <iframe
                     ref={iframeRef}
-                    key={`preview-${iframeKey}`}
+                    srcDoc={renderedPreview}
                     className="absolute inset-0 w-full h-full border-0"
                     style={{ display: 'block' }}
                     title="Page Preview"
