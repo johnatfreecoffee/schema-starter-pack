@@ -50,6 +50,7 @@ const UnifiedPageEditor = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Load template for service or static page
   const { data: template, isLoading } = useQuery({
@@ -365,6 +366,11 @@ const UnifiedPageEditor = ({
     };
   }, [templateHtml, originalHtml]);
 
+  // Auto-scroll chat to bottom when messages change or AI state updates
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [chatMessages, isAiLoading]);
+
   const closeMutation = useMutation({
     mutationFn: async () => {
       await onSave(templateHtml);
@@ -458,7 +464,8 @@ const UnifiedPageEditor = ({
                     <span className="text-sm">AI is working...</span>
                   </div>
                 )}
-              </div>
+              <div ref={chatEndRef} className="h-1" />
+            </div>
             </ScrollArea>
 
             <div className="p-4 border-t space-y-2 flex-shrink-0 bg-background">
