@@ -55,6 +55,9 @@ const StaticPageForm = ({ page, onClose }: StaticPageFormProps) => {
   const title = watch('title');
   const slug = watch('slug');
   const contentHtml = watch('content_html');
+  const isHomepage = watch('is_homepage');
+  const showInMenu = watch('show_in_menu');
+  const status = watch('status');
 
   const generateSlug = (text: string) => {
     return text
@@ -144,7 +147,8 @@ const StaticPageForm = ({ page, onClose }: StaticPageFormProps) => {
       <div className="flex items-center space-x-2">
         <Switch
           id="is_homepage"
-          {...register('is_homepage')}
+          checked={isHomepage}
+          onCheckedChange={(checked) => setValue('is_homepage', checked)}
         />
         <Label htmlFor="is_homepage">Set as Homepage</Label>
       </div>
@@ -152,8 +156,8 @@ const StaticPageForm = ({ page, onClose }: StaticPageFormProps) => {
       <div className="flex items-center space-x-2">
         <Switch
           id="show_in_menu"
-          defaultChecked
-          {...register('show_in_menu')}
+          checked={showInMenu}
+          onCheckedChange={(checked) => setValue('show_in_menu', checked)}
         />
         <Label htmlFor="show_in_menu">Show in Navigation Menu</Label>
       </div>
@@ -218,8 +222,8 @@ const StaticPageForm = ({ page, onClose }: StaticPageFormProps) => {
       <div className="flex items-center space-x-2">
         <Switch
           id="status"
-          defaultChecked
-          {...register('status')}
+          checked={status}
+          onCheckedChange={(checked) => setValue('status', checked)}
         />
         <Label htmlFor="status">Active</Label>
       </div>
