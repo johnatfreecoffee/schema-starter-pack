@@ -55,13 +55,14 @@ const UnifiedPageEditor = ({
 
   // Load template for service or static page
   const { data: template, isLoading } = useQuery({
-    queryKey: ['service-template', service?.id, 'static-page', pageId],
+    queryKey: ['service-template', service?.id, 'static-page', pageId, pageType, initialHtml],
     queryFn: async () => {
       // For static pages, return initial HTML directly
-      if (pageType === 'static' && initialHtml) {
+      if (pageType === 'static') {
+        console.log('Loading static page template', { pageId, hasInitialHtml: !!initialHtml });
         return {
           id: pageId || 'static',
-          template_html: initialHtml,
+          template_html: initialHtml || '',
           name: pageTitle,
           template_type: 'static'
         };
@@ -136,7 +137,7 @@ const UnifiedPageEditor = ({
 
       return newTemplate;
     },
-    enabled: (!!service?.id || (pageType === 'static' && !!initialHtml)) && open,
+    enabled: (!!service?.id || pageType === 'static') && open,
   });
 
   // Load company settings and AI training
@@ -174,17 +175,22 @@ const UnifiedPageEditor = ({
 
   useEffect(() => {
     if (template?.template_html) {
+      console.log('Setting template HTML', { length: template.template_html.length, pageType });
       setTemplateHtml(template.template_html);
       setOriginalHtml(template.template_html);
     }
-  }, [template]);
+  }, [template, pageType]);
 
   // Update preview when template changes
   useEffect(() => {
-    if (!templateHtml) return;
+    if (!templateHtml) {
+      console.log('No templateHtml yet');
+      return;
+    }
 
     // For static pages, render without variable substitution
     if (pageType === 'static') {
+      console.log('Setting preview for static page', { length: templateHtml.length });
       setRenderedPreview(templateHtml);
       return;
     }
