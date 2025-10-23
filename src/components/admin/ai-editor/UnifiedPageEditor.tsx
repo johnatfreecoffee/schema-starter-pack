@@ -64,6 +64,8 @@ const UnifiedPageEditor = ({
     const saved = localStorage.getItem('ai-editor-send-on-enter');
     return saved !== null ? saved === 'true' : true;
   });
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [showPublishConfirm, setShowPublishConfirm] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const queryClient = useQueryClient();
@@ -74,13 +76,13 @@ const UnifiedPageEditor = ({
   const { data: template, isLoading } = useQuery({
     queryKey: ['service-template', service?.id, 'static-page', pageId, pageType, initialHtml],
     queryFn: async () => {
-      // For static pages, always fetch latest from DB (fallback to initialHtml)
+      // For static pages, load draft content from DB
       if (pageType === 'static') {
         console.log('Loading static page template', { pageId, hasInitialHtml: !!initialHtml });
         if (pageId) {
           const { data, error } = await supabase
             .from('static_pages')
-            .select('id, title, content_html, url_path, updated_at')
+            .select('id, title, content_html_draft, content_html, url_path, updated_at')
             .eq('id', pageId)
             .single();
           if (error) {
@@ -89,7 +91,7 @@ const UnifiedPageEditor = ({
           if (data) {
             return {
               id: data.id,
-              template_html: data.content_html || '',
+              template_html: data.content_html_draft || data.content_html || '',
               name: data.title || pageTitle,
               template_type: 'static'
             };
@@ -107,12 +109,16 @@ const UnifiedPageEditor = ({
 
       const { data: serviceData } = await supabase
         .from('services')
-        .select('template_id, templates(*)')
+        .select('template_id, templates(id, name, template_html, template_html_draft, template_type)')
         .eq('id', service.id)
         .single();
 
       if (serviceData?.template_id && serviceData.templates) {
-        return serviceData.templates;
+        // Return draft version if it exists, otherwise fall back to published
+        return {
+          ...serviceData.templates,
+          template_html: serviceData.templates.template_html_draft || serviceData.templates.template_html
+        };
       }
 
       // Create default template
@@ -158,6 +164,7 @@ const UnifiedPageEditor = ({
         .insert({
           name: `${service.name} Template`,
           template_html: defaultHtml,
+          template_html_draft: defaultHtml,
           template_type: 'service',
         })
         .select()
@@ -406,18 +413,18 @@ const UnifiedPageEditor = ({
     }
   };
 
-  // Auto-save function
+  // Auto-save function - saves to draft
   const autoSave = async () => {
     if (templateHtml === originalHtml) return;
 
     setIsSaving(true);
     try {
-      // For static pages, save directly to static_pages table
+      // For static pages, save to draft column
       if (pageType === 'static' && pageId) {
         const { error } = await supabase
           .from('static_pages')
           .update({ 
-            content_html: templateHtml,
+            content_html_draft: templateHtml,
             updated_at: new Date().toISOString()
           })
           .eq('id', pageId);
@@ -428,23 +435,16 @@ const UnifiedPageEditor = ({
         setLastSaved(new Date());
         queryClient.invalidateQueries({ queryKey: ['static-pages', pageId] });
       } else if (template?.id) {
-        // For service templates, save to templates table
+        // For service templates, save to draft column
         const { error } = await supabase
           .from('templates')
           .update({ 
-            template_html: templateHtml,
+            template_html_draft: templateHtml,
             updated_at: new Date().toISOString()
           })
           .eq('id', template.id);
 
         if (error) throw error;
-
-        if (service) {
-          await supabase
-            .from('generated_pages')
-            .update({ needs_regeneration: true })
-            .eq('service_id', service.id);
-        }
         
         setOriginalHtml(templateHtml);
         setLastSaved(new Date());
@@ -459,6 +459,59 @@ const UnifiedPageEditor = ({
       });
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Publish function - copies draft to live
+  const handlePublish = async () => {
+    if (!templateHtml || isPublishing) return;
+    
+    setIsPublishing(true);
+    try {
+      if (pageType === 'static' && pageId) {
+        const { error } = await supabase
+          .from('static_pages')
+          .update({ 
+            content_html: templateHtml,
+            content_html_draft: templateHtml,
+            published_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', pageId);
+        if (error) throw error;
+        queryClient.invalidateQueries({ queryKey: ['static-pages', pageId] });
+      } else if (template?.id) {
+        const { error } = await supabase
+          .from('templates')
+          .update({ 
+            template_html: templateHtml,
+            template_html_draft: templateHtml,
+            published_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', template.id);
+        if (error) throw error;
+
+        if (service) {
+          await supabase
+            .from('generated_pages')
+            .update({ needs_regeneration: true })
+            .eq('service_id', service.id);
+        }
+        queryClient.invalidateQueries({ queryKey: ['service-template', service?.id] });
+      }
+      
+      setShowPublishConfirm(true);
+      setTimeout(() => setShowPublishConfirm(false), 3000);
+    } catch (error: any) {
+      console.error('Publish error:', error);
+      toast({
+        title: 'Publish failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsPublishing(false);
     }
   };
 
@@ -536,10 +589,10 @@ const UnifiedPageEditor = ({
                 {isSaving ? (
                   <span className="flex items-center gap-1">
                     <Loader2 className="h-3 w-3 animate-spin" />
-                    Saving...
+                    Saving draft...
                   </span>
                 ) : lastSaved ? (
-                  <span>Saved {new Date(lastSaved).toLocaleTimeString()}</span>
+                  <span>Draft saved {new Date(lastSaved).toLocaleTimeString()}</span>
                 ) : templateHtml !== originalHtml ? (
                   <span>Unsaved changes</span>
                 ) : (
@@ -547,16 +600,33 @@ const UnifiedPageEditor = ({
                 )}
               </div>
             </div>
-            {previousHtml !== templateHtml && (
+            <div className="flex items-center gap-2">
+              {previousHtml !== templateHtml && (
+                <Button
+                  variant={isShowingPrevious ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={toggleVersion}
+                  className="flex items-center gap-2"
+                >
+                  {isShowingPrevious ? 'Current Version' : 'Previous Version'}
+                </Button>
+              )}
               <Button
-                variant={isShowingPrevious ? 'default' : 'outline'}
+                onClick={handlePublish}
+                disabled={isPublishing || isSaving}
                 size="sm"
-                onClick={toggleVersion}
-                className="flex items-center gap-2"
+                className="gap-2"
               >
-                {isShowingPrevious ? 'Current Version' : 'Previous Version'}
+                {isPublishing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Publishing...
+                  </>
+                ) : (
+                  <>Publish</>
+                )}
               </Button>
-            )}
+            </div>
           </div>
         </DialogHeader>
 
@@ -780,6 +850,22 @@ const UnifiedPageEditor = ({
           </div>
         </div>
       </DialogContent>
+
+      {/* Publish Confirmation Modal */}
+      <Dialog open={showPublishConfirm} onOpenChange={setShowPublishConfirm}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <span className="text-2xl">✓</span> Published Successfully
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-muted-foreground">
+              Your changes have been published and are now live on the website.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 };

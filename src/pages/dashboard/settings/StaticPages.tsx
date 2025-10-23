@@ -185,14 +185,9 @@ const StaticPages = () => {
             pageId={selectedPage.id}
             pageType="static"
             pageTitle={selectedPage.title}
-            initialHtml={selectedPage.content_html}
+            initialHtml={selectedPage.content_html_draft || selectedPage.content_html}
             onClose={() => setShowAIEditor(false)}
-            onSave={async (newContent) => {
-              const { error } = await supabase
-                .from('static_pages')
-                .update({ content_html: newContent })
-                .eq('id', selectedPage.id);
-              if (error) throw error;
+            onSave={async () => {
               queryClient.invalidateQueries({ queryKey: ['static-pages'] });
             }}
         />

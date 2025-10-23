@@ -2962,6 +2962,7 @@ export type Database = {
       static_pages: {
         Row: {
           content_html: string
+          content_html_draft: string | null
           created_at: string
           created_by: string | null
           display_order: number | null
@@ -2970,6 +2971,7 @@ export type Database = {
           meta_description: string | null
           meta_keywords: string | null
           meta_title: string | null
+          published_at: string | null
           show_in_menu: boolean | null
           slug: string
           status: boolean | null
@@ -2980,6 +2982,7 @@ export type Database = {
         }
         Insert: {
           content_html: string
+          content_html_draft?: string | null
           created_at?: string
           created_by?: string | null
           display_order?: number | null
@@ -2988,6 +2991,7 @@ export type Database = {
           meta_description?: string | null
           meta_keywords?: string | null
           meta_title?: string | null
+          published_at?: string | null
           show_in_menu?: boolean | null
           slug: string
           status?: boolean | null
@@ -2998,6 +3002,7 @@ export type Database = {
         }
         Update: {
           content_html?: string
+          content_html_draft?: string | null
           created_at?: string
           created_by?: string | null
           display_order?: number | null
@@ -3006,6 +3011,7 @@ export type Database = {
           meta_description?: string | null
           meta_keywords?: string | null
           meta_title?: string | null
+          published_at?: string | null
           show_in_menu?: boolean | null
           slug?: string
           status?: boolean | null
@@ -3138,7 +3144,9 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          published_at: string | null
           template_html: string
+          template_html_draft: string | null
           template_type: Database["public"]["Enums"]["template_type"]
           updated_at: string
         }
@@ -3146,7 +3154,9 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
+          published_at?: string | null
           template_html: string
+          template_html_draft?: string | null
           template_type: Database["public"]["Enums"]["template_type"]
           updated_at?: string
         }
@@ -3154,7 +3164,9 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
+          published_at?: string | null
           template_html?: string
+          template_html_draft?: string | null
           template_type?: Database["public"]["Enums"]["template_type"]
           updated_at?: string
         }
