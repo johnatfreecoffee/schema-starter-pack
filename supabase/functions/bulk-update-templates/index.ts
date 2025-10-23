@@ -98,6 +98,10 @@ function stripUnwantedSections(html: string): string {
   return cleaned
 }
 
+function isValidUuid(id: string | null): boolean {
+  return !!id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+}
+
 async function updateServiceTemplate(supabase: any, fileName: string, html: string) {
   // Map file names to service names
   const serviceMap: Record<string, string> = {
@@ -107,7 +111,7 @@ async function updateServiceTemplate(supabase: any, fileName: string, html: stri
     'residential-roofing.html': 'Residential Roofing',
     'storm-damage-restoration.html': 'Storm Damage Restoration',
     'hail-damage-repair.html': 'Hail Damage Repair',
-    'leak-detection-repair.html': 'Leak Detection & Repair',
+    'leak-detection-repair.html': 'Leak Detection and Repair',
     'wind-damage-restoration.html': 'Wind Damage Restoration',
     'asphalt-shingle-roofing-3.html': 'Asphalt Shingle Roofing',
     'attic-ventilation.html': 'Attic Ventilation',
@@ -135,25 +139,72 @@ async function updateServiceTemplate(supabase: any, fileName: string, html: stri
     throw new Error(`Unknown service mapping for ${fileName}`)
   }
 
-  // Find the service
-  const { data: service, error: serviceError } = await supabase
+  // Try exact name
+  let { data: service, error: serviceError } = await supabase
     .from('services')
-    .select('id, template_id')
+    .select('id, template_id, name')
     .eq('name', serviceName)
-    .single()
+    .maybeSingle()
 
-  if (serviceError || !service) {
+  // Fallbacks: replace ampersand with 'and' and trim
+  if (!service) {
+    const altName = serviceName.replace(/&/g, 'and').replace(/\s+/g, ' ').trim()
+    const { data: altService } = await supabase
+      .from('services')
+      .select('id, template_id, name')
+      .eq('name', altName)
+      .maybeSingle()
+    service = altService
+  }
+
+  if (!service) {
     throw new Error(`Service not found: ${serviceName}`)
   }
 
-  // Update the template
+  // If service has no template, create one and link it
+  let templateId = (service as any).template_id as string | null
+  if (!templateId || templateId === 'null') {
+    // Try to reuse an existing template with the same name
+    const { data: existingTpl } = await supabase
+      .from('templates')
+      .select('id')
+      .eq('name', service.name)
+      .maybeSingle()
+
+    if (existingTpl?.id) {
+      templateId = existingTpl.id
+    } else {
+      const { data: newTpl, error: tplErr } = await supabase
+        .from('templates')
+        .insert({
+          name: service.name,
+          template_type: 'service',
+          template_html: html,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .select('id')
+        .single()
+      if (tplErr) throw new Error(`Failed to create template: ${tplErr.message}`)
+      templateId = newTpl.id
+    }
+
+    // Link template to service
+    const { error: linkErr } = await supabase
+      .from('services')
+      .update({ template_id: templateId, updated_at: new Date().toISOString() })
+      .eq('id', service.id)
+    if (linkErr) throw new Error(`Failed to link template to service: ${linkErr.message}`)
+  }
+
+  // Update the template HTML
   const { error: updateError } = await supabase
     .from('templates')
     .update({
       template_html: html,
       updated_at: new Date().toISOString()
     })
-    .eq('id', service.template_id)
+    .eq('id', templateId)
 
   if (updateError) {
     throw new Error(`Failed to update template: ${updateError.message}`)
@@ -165,11 +216,11 @@ async function updateServiceTemplate(supabase: any, fileName: string, html: stri
     .update({ needs_regeneration: true })
     .eq('service_id', service.id)
 
-  console.log(`✅ Updated template for ${serviceName}`)
+  console.log(`✅ Updated template for ${service.name}`)
 
   return {
     fileName,
-    serviceName,
+    serviceName: service.name,
     success: true,
     pagesMarkedForRegen: !regenError
   }
