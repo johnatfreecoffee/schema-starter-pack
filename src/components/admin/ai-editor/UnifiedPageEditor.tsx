@@ -188,14 +188,14 @@ const UnifiedPageEditor = ({
       return;
     }
 
-    // For static pages, render without variable substitution
-    if (pageType === 'static') {
-      console.log('Setting preview for static page', { length: templateHtml.length });
+    // For static and generated pages, render without variable substitution
+    if (pageType === 'static' || pageType === 'generated') {
+      console.log('Setting preview for', { pageType, length: templateHtml.length });
       setRenderedPreview(templateHtml);
       return;
     }
 
-    // For service pages, require service data for variable substitution
+    // For service pages, try variable substitution; fallback to raw HTML
     if (templateHtml && serviceAreas?.[0] && companySettings && service) {
       try {
         const previewData = {
@@ -222,7 +222,11 @@ const UnifiedPageEditor = ({
         setRenderedPreview(rendered);
       } catch (error) {
         console.error('Preview render error:', error);
+        setRenderedPreview(templateHtml);
       }
+    } else {
+      // Fallback: show raw template without substitution so preview never stays blank
+      setRenderedPreview(templateHtml);
     }
   }, [templateHtml, serviceAreas, companySettings, service, pageType]);
 
