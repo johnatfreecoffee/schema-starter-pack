@@ -203,6 +203,38 @@ If the user requests a specialized form (not a standard contact/lead form), you 
 - Use third-party form services without explicit instruction
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚫 CRITICAL HEADER & FOOTER POLICY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**DO NOT CREATE SITE HEADERS OR FOOTERS**:
+If the user's request includes building a header, navigation menu, footer, or site-wide layout:
+1. Build everything ELSE they requested
+2. Skip the header/footer entirely
+3. In your response, explicitly state: "I've built everything except the header/footer as those are managed separately in your site's global settings."
+
+**WHAT TO SKIP**:
+- Site navigation headers
+- Main navigation menus
+- Global footers with company info/links
+- Fixed top/bottom navigation bars that persist across pages
+
+**WHAT YOU CAN BUILD** (these are NOT headers/footers):
+- Hero sections at the top of the page content
+- Top announcement bars (e.g., "Limited time offer!")
+- Section headers within the page (e.g., "Our Services")
+- Content-specific navigation (e.g., table of contents)
+- Call-to-action sections at the bottom of content
+- Contact information sections within page content
+
+**KEY DISTINCTION**:
+- Header/Footer = Site-wide navigation/branding that appears on every page
+- Top Bar/Hero/Section = Page-specific content that's part of this individual page
+
+If unsure, ask yourself: "Would this element appear on every page of the website?" 
+- If YES → It's a header/footer, skip it
+- If NO → It's page content, you can build it
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 MODE: ${mode.toUpperCase()}
 ${mode === 'chat' ? '(Chat mode - provide conversational feedback WITHOUT modifying HTML)' : '(Build mode - make actual HTML changes and provide brief confirmation)'}
@@ -524,13 +556,26 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
     } else {
       // In build mode, provide brief confirmation
       const commandLower = command.toLowerCase();
-      if (commandLower.includes('form') || commandLower.includes('contact') || commandLower.includes('quote')) {
+      
+      // Check for header/footer requests
+      const hasHeaderFooter = commandLower.includes('site header') || 
+                              commandLower.includes('site footer') || 
+                              commandLower.includes('navigation menu') || 
+                              commandLower.includes('nav menu') || 
+                              commandLower.includes('main navigation') ||
+                              commandLower.includes('global footer') ||
+                              (commandLower.includes('footer') && !commandLower.includes('section')) ||
+                              (commandLower.includes('header') && !commandLower.includes('hero') && !commandLower.includes('section'));
+      
+      if (hasHeaderFooter) {
+        message = "I've built everything except the header/footer as those are managed separately in your site's global settings.";
+      } else if (commandLower.includes('form') || commandLower.includes('contact') || commandLower.includes('quote')) {
         if (commandLower.includes('different') || commandLower.includes('custom') || commandLower.includes('specific')) {
           message = "If you need a custom form beyond the Universal Lead Form, please build it in Dashboard > Settings > Forms first, then let me know which form to place.";
         } else {
           message = "Added the Universal Lead Form button.";
         }
-      } else if (commandLower.includes('hero') || commandLower.includes('header')) {
+      } else if (commandLower.includes('hero')) {
         message = "Hero section updated.";
       } else if (commandLower.includes('cta') || commandLower.includes('button')) {
         message = "Call-to-action updated.";
