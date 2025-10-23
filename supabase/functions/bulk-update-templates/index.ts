@@ -43,10 +43,13 @@ Deno.serve(async (req) => {
         }
       } catch (error) {
         console.error(`Error processing ${template.fileName}:`, error)
+        const errMsg = (error && typeof error === 'object' && 'message' in (error as any)) 
+          ? (error as any).message 
+          : String(error)
         results.push({
           fileName: template.fileName,
           success: false,
-          error: error.message
+          error: errMsg
         })
       }
     }
@@ -57,8 +60,11 @@ Deno.serve(async (req) => {
     )
   } catch (error) {
     console.error('Bulk update error:', error)
+    const errMsg = (error && typeof error === 'object' && 'message' in (error as any)) 
+      ? (error as any).message 
+      : String(error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errMsg }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     )
   }
