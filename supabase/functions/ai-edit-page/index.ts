@@ -371,6 +371,79 @@ HIGH-VALUE TRANSACTIONAL EXAMPLES:
    ↳ Reference payment options to remove friction
    ↳ Set clear project timeline expectations where relevant
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎨 CRITICAL PAGE QUALITY REQUIREMENTS - MUST FOLLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. **ALWAYS COMPLETE THE ENTIRE PAGE**
+   ↳ NEVER truncate or leave incomplete HTML - generate the FULL page from <!DOCTYPE> to </html>
+   ↳ If you run out of space, prioritize completing sections rather than starting new ones
+   ↳ All opening tags MUST have closing tags - validate HTML structure
+   ↳ Every section you start MUST be finished with proper closing elements
+   ↳ CRITICAL: User should receive a fully functional, complete HTML page every time
+
+2. **CONTRAST & READABILITY REQUIREMENTS**
+   ↳ HERO SECTIONS WITH BACKGROUND IMAGES:
+     • Background overlay MUST be opaque enough to read white text clearly
+     • Use: <div class="absolute inset-0 bg-black opacity-60"></div> (minimum 60% opacity)
+     • For dark backgrounds with light text, use opacity-50 to opacity-70
+     • For light backgrounds with dark text, use white overlay with opacity-70 to opacity-80
+     • ALWAYS test readability: Can you read white text over this overlay + image combo?
+   
+   ↳ TEXT OVER COLORED BACKGROUNDS:
+     • On blue/primary backgrounds: Use white text (text-white)
+     • On white backgrounds: Use foreground color (text-[hsl(222,47%,11%)])
+     • On dark backgrounds: Use white or light text with sufficient opacity
+     • Badge/pill elements: Ensure background is dark/vibrant enough for white text
+   
+   ↳ OVERLAY CONTAINERS:
+     • Semi-transparent containers (e.g., bg-white/20) need dark text shadows OR
+     • Must be backed by a more opaque layer for text to be readable
+     • Example: bg-white/10 backdrop-blur-sm is TOO LIGHT for small text - use bg-white/20 minimum
+     • For glass-morphism effects, use backdrop-blur-md with bg-white/30 minimum
+
+3. **IMAGE SELECTION - INDUSTRY APPROPRIATE**
+   ↳ MATCH THE COMPANY'S INDUSTRY:
+     • Roofing company → Show roofs, shingles, contractors working on roofs
+     • Plumbing company → Show pipes, fixtures, plumbers at work
+     • HVAC company → Show air conditioning units, heating systems, technicians
+     • Restaurant → Show the actual food/dishes they serve, NOT random stock food
+     • IT company → Show computers, servers, office tech setups
+   
+   ↳ USE UNSPLASH WITH SPECIFIC SEARCH TERMS:
+     • https://images.unsplash.com/photo-[ID]?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80
+     • Search terms MUST match the service (e.g., "roof repair" not "restaurant food")
+     • For emergency services: Show damage, emergency response, or professional work
+     • For professional services: Show relevant workplace or client interactions
+   
+   ↳ AVOID COMPLETELY:
+     • Generic stock photos that don't match the industry
+     • Random food images for non-restaurant businesses
+     • Office meetings for hands-on service businesses
+     • Unrelated imagery that confuses the service offering
+
+4. **BACKGROUND IMAGE BEST PRACTICES**
+   ↳ Hero sections with background images need:
+     • Relevant image that matches the service/industry
+     • Dark overlay (bg-black opacity-50 to opacity-70) for white text
+     • Or gradient overlay: bg-gradient-to-br from-black/60 to-black/40
+     • Background image should be high quality (w=1600 to w=2400)
+     • Use background-size: cover and background-position: center
+   
+   Example proper hero structure:
+   <section class="relative">
+     <!-- Background Image -->
+     <div class="absolute inset-0" style="background-image: url('[INDUSTRY-APPROPRIATE-IMAGE]'); background-size: cover; background-position: center; z-index: 0;"></div>
+     <!-- Dark Overlay for Readability -->
+     <div class="absolute inset-0 bg-black opacity-60 z-10"></div>
+     <!-- Content (readable white text) -->
+     <div class="relative z-20 text-white py-20 px-6">
+       <h1>Perfectly Readable Text</h1>
+     </div>
+   </section>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 LOVABLE DESIGN SYSTEM - USE THESE PATTERNS:
 
 📦 REQUIRED: Include Tailwind CDN in <head>:
