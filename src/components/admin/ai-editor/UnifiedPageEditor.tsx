@@ -317,7 +317,7 @@ const UnifiedPageEditor = ({
 
   // Auto-save function
   const autoSave = async () => {
-    if (!template?.id || templateHtml === originalHtml) return;
+    if (templateHtml === originalHtml) return;
 
     setIsSaving(true);
     try {
@@ -332,7 +332,11 @@ const UnifiedPageEditor = ({
           .eq('id', pageId);
 
         if (error) throw error;
-      } else {
+        
+        setOriginalHtml(templateHtml);
+        setLastSaved(new Date());
+        queryClient.invalidateQueries({ queryKey: ['static-pages', pageId] });
+      } else if (template?.id) {
         // For service templates, save to templates table
         const { error } = await supabase
           .from('templates')
@@ -350,11 +354,11 @@ const UnifiedPageEditor = ({
             .update({ needs_regeneration: true })
             .eq('service_id', service.id);
         }
+        
+        setOriginalHtml(templateHtml);
+        setLastSaved(new Date());
+        queryClient.invalidateQueries({ queryKey: ['service-template', service?.id] });
       }
-
-      setOriginalHtml(templateHtml);
-      setLastSaved(new Date());
-      queryClient.invalidateQueries({ queryKey: ['service-template', service?.id, 'static-page', pageId, 'static-pages'] });
     } catch (error: any) {
       console.error('Auto-save error:', error);
       toast({
@@ -540,19 +544,30 @@ const UnifiedPageEditor = ({
 
           {/* Right Panel - Preview/Code */}
           <div className="w-3/5 flex flex-col">
-            <div className="p-4 border-b flex justify-between items-center">
-              <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'preview' | 'code')}>
-                <TabsList>
-                  <TabsTrigger value="preview">
-                    <Eye className="mr-2 h-4 w-4" />
-                    Preview
-                  </TabsTrigger>
-                  <TabsTrigger value="code">
-                    <Code className="mr-2 h-4 w-4" />
-                    Code
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+            <div className="p-4 border-b space-y-3">
+              <div className="flex justify-between items-center">
+                <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'preview' | 'code')}>
+                  <TabsList>
+                    <TabsTrigger value="preview">
+                      <Eye className="mr-2 h-4 w-4" />
+                      Preview
+                    </TabsTrigger>
+                    <TabsTrigger value="code">
+                      <Code className="mr-2 h-4 w-4" />
+                      Code
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+              <div className="text-xs text-muted-foreground font-mono bg-muted/50 px-3 py-1.5 rounded">
+                {pageType === 'static' && pageId ? (
+                  <span>static_pages/{pageId}/content_html</span>
+                ) : pageType === 'service' && service ? (
+                  <span>templates/{service.slug}/template_html</span>
+                ) : (
+                  <span>templates/default/template_html</span>
+                )}
+              </div>
             </div>
 
             <div className="flex-1 min-h-0 relative bg-white">
