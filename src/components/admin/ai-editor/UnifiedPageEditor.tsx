@@ -691,8 +691,8 @@ const UnifiedPageEditor = ({
                   className="min-h-[80px] resize-none"
                 />
               </div>
-              <div className="flex justify-end items-center">
-                <div className="flex items-center gap-2">
+              <div className="flex justify-end items-center gap-4">
+                <div className="flex items-center gap-1.5 scale-75">
                   <Label htmlFor="send-on-enter" className="text-xs text-muted-foreground cursor-pointer">
                     {sendOnEnter ? 'Cmd/Ctrl + Enter to send' : 'Enter to send'}
                   </Label>
