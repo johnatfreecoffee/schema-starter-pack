@@ -9,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Loader2, Send, Sparkles, Eye, Code, Save, X } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
@@ -692,22 +691,22 @@ const UnifiedPageEditor = ({
                   className="min-h-[80px] resize-none"
                 />
               </div>
-              <div className="flex gap-3 items-center justify-between">
-                <ToggleGroup 
-                  type="single" 
-                  value={sendOnEnter ? "cmd" : "enter"}
-                  onValueChange={(value) => {
-                    if (value) toggleSendOnEnter(value === "cmd");
-                  }}
-                  className="border rounded-md"
-                >
-                  <ToggleGroupItem value="enter" className="text-xs px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-                    Enter
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="cmd" className="text-xs px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-                    Cmd/Ctrl+Enter
-                  </ToggleGroupItem>
-                </ToggleGroup>
+              <div className="flex gap-3 items-end justify-end">
+                <div className="flex flex-col gap-1">
+                  <Label htmlFor="send-on-enter" className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">
+                    To Send
+                  </Label>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-md">
+                    <Switch
+                      id="send-on-enter"
+                      checked={sendOnEnter}
+                      onCheckedChange={toggleSendOnEnter}
+                    />
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                      {sendOnEnter ? 'Cmd/Ctrl + Enter' : 'Enter'}
+                    </span>
+                  </div>
+                </div>
                 <Button 
                   onClick={sendToAi} 
                   disabled={isAiLoading || !aiPrompt.trim()}
