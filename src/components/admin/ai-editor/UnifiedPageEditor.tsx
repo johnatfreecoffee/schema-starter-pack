@@ -306,6 +306,17 @@ const UnifiedPageEditor = ({
     const currentPrompt = selectedModel === 'claude' ? claudePrompt : grokPrompt;
     if (!currentPrompt.trim()) return;
 
+    // Check if user is authenticated
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast({
+        title: 'Authentication Required',
+        description: 'Your session has expired. Please refresh the page and log in again.',
+        variant: 'destructive'
+      });
+      return;
+    }
+
     // Check token limits
     if (tokenCount >= TOKEN_HARD_LIMIT) {
       toast({
@@ -337,7 +348,12 @@ const UnifiedPageEditor = ({
       const currentHtml = selectedModel === 'claude' ? claudeHtml : grokHtml;
       const currentChatHistory = selectedModel === 'claude' ? claudeChatMessages : grokChatMessages;
       
-      const { data, error } = await supabase.functions.invoke('ai-edit-page', {
+      // Add timeout to the edge function call (60 seconds)
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout - AI took too long to respond. Please try a shorter prompt or reset the chat.')), 60000)
+      );
+      
+      const invokePromise = supabase.functions.invoke('ai-edit-page', {
         body: {
           command: currentPrompt,
           mode: editorMode,
@@ -362,6 +378,8 @@ const UnifiedPageEditor = ({
           }
         }
       });
+
+      const { data, error } = await Promise.race([invokePromise, timeoutPromise]) as any;
 
       if (error) throw error;
 
@@ -395,9 +413,34 @@ const UnifiedPageEditor = ({
         setGrokChatMessages(prev => [...prev, assistantMessage]);
       }
     } catch (error: any) {
+      console.error('AI Editor Error:', error);
+      
+      // Provide more detailed error message
+      let errorMessage = 'Unknown error occurred';
+      let errorTitle = 'AI Error';
+      
+      if (error?.message) {
+        errorMessage = error.message;
+        
+        // Check for common error patterns
+        if (error.message.includes('JWT') || error.message.includes('auth') || error.message.includes('unauthorized')) {
+          errorTitle = 'Authentication Error';
+          errorMessage = 'Your session may have expired. Please refresh the page and try again.';
+        } else if (error.message.includes('timeout')) {
+          errorTitle = 'Timeout Error';
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+          errorTitle = 'Network Error';
+          errorMessage = 'Unable to reach the server. Please check your connection and try again.';
+        }
+      } else if (error?.error) {
+        errorMessage = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
       toast({
-        title: 'AI Error',
-        description: error.message,
+        title: errorTitle,
+        description: errorMessage,
         variant: 'destructive'
       });
       // Remove the user message on error

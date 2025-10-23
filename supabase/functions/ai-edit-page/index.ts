@@ -13,9 +13,17 @@ serve(async (req) => {
   }
 
   try {
-    const { command, mode = 'build', conversationHistory = [], context, model = 'claude' } = await req.json();
+    const requestBody = await req.json();
+    const { command, mode = 'build', conversationHistory = [], context, model = 'claude' } = requestBody;
     
-    console.log('AI Edit Request:', { command, mode, model, contextKeys: Object.keys(context) });
+    console.log('AI Edit Request:', { 
+      command: command.substring(0, 200) + (command.length > 200 ? '...' : ''), 
+      mode, 
+      model, 
+      contextKeys: Object.keys(context),
+      promptLength: command.length,
+      htmlLength: context?.currentPage?.html?.length || 0
+    });
 
     const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
     const XAI_API_KEY = Deno.env.get('XAI_API_KEY');
@@ -699,7 +707,17 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
     if (!response.ok) {
       const errorText = await response.text();
       console.error('AI gateway error:', response.status, errorText);
-      throw new Error(`AI gateway error: ${response.status}`);
+      
+      let errorMessage = `AI gateway error: ${response.status}`;
+      try {
+        const errorData = JSON.parse(errorText);
+        errorMessage = errorData.error?.message || errorData.message || errorMessage;
+      } catch (e) {
+        // If parsing fails, use the raw text
+        errorMessage = errorText || errorMessage;
+      }
+      
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
@@ -784,8 +802,16 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
 
   } catch (error) {
     console.error('Error in ai-edit-page function:', error);
+    
+    // Provide detailed error information
+    const errorDetails = {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      errorType: error instanceof Error ? error.constructor.name : typeof error,
+      stack: error instanceof Error ? error.stack : undefined
+    };
+    
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify(errorDetails),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
