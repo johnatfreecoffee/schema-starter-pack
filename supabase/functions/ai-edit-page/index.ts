@@ -13,13 +13,18 @@ serve(async (req) => {
   }
 
   try {
-    const { command, mode = 'build', conversationHistory = [], context } = await req.json();
+    const { command, mode = 'build', conversationHistory = [], context, model = 'claude' } = await req.json();
     
-    console.log('AI Edit Request:', { command, mode, contextKeys: Object.keys(context) });
+    console.log('AI Edit Request:', { command, mode, model, contextKeys: Object.keys(context) });
 
     const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
-    if (!ANTHROPIC_API_KEY) {
+    const XAI_API_KEY = Deno.env.get('XAI_API_KEY');
+    
+    if (model === 'claude' && !ANTHROPIC_API_KEY) {
       throw new Error('ANTHROPIC_API_KEY is not configured');
+    }
+    if (model === 'grok' && !XAI_API_KEY) {
+      throw new Error('XAI_API_KEY is not configured');
     }
 
     // Build comprehensive company profile
@@ -654,23 +659,42 @@ LOVABLE DESIGN SYSTEM - USE THESE PATTERNS:
 
 Return the complete, stunning HTML page using Lovable's design system now:`;
 
-    console.log('Calling Claude (Anthropic)...');
+    console.log(`Calling ${model === 'claude' ? 'Claude (Anthropic)' : 'Grok (xAI)'}...`);
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 64000,
-        messages: [
-          { role: 'user', content: prompt }
-        ],
-      }),
-    });
+    let response: Response;
+    if (model === 'claude') {
+      response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': ANTHROPIC_API_KEY!,
+          'anthropic-version': '2023-06-01',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5',
+          max_tokens: 64000,
+          messages: [
+            { role: 'user', content: prompt }
+          ],
+        }),
+      });
+    } else {
+      // Grok
+      response = await fetch('https://api.x.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${XAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'grok-4-fast-reasoning',
+          messages: [
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.7,
+        }),
+      });
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -679,11 +703,21 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
     }
 
     const data = await response.json();
-    const updatedHtml = data.content?.[0]?.text || '';
-    const usage = data.usage || {};
-    const tokenUsage = (usage.input_tokens || 0) + (usage.output_tokens || 0);
+    let updatedHtml = '';
+    let tokenUsage = 0;
+    
+    if (model === 'claude') {
+      updatedHtml = data.content?.[0]?.text || '';
+      const usage = data.usage || {};
+      tokenUsage = (usage.input_tokens || 0) + (usage.output_tokens || 0);
+    } else {
+      // Grok
+      updatedHtml = data.choices?.[0]?.message?.content || '';
+      const usage = data.usage || {};
+      tokenUsage = (usage.prompt_tokens || 0) + (usage.completion_tokens || 0);
+    }
 
-    console.log('Claude Edit Success, response length:', updatedHtml.length, 'tokens:', tokenUsage);
+    console.log(`${model === 'claude' ? 'Claude' : 'Grok'} Edit Success, response length:`, updatedHtml.length, 'tokens:', tokenUsage);
 
     // Clean up the response - remove markdown code blocks if present
     let cleanedHtml = updatedHtml.trim();

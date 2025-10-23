@@ -61,6 +61,14 @@ const UnifiedPageEditor = ({
   });
   const [isPublishing, setIsPublishing] = useState(false);
   const [showPublishConfirm, setShowPublishConfirm] = useState(false);
+  
+  // Dual model support
+  const [selectedModel, setSelectedModel] = useState<'claude' | 'grok'>('claude');
+  const [claudeHtml, setClaudeHtml] = useState('');
+  const [grokHtml, setGrokHtml] = useState('');
+  const [previousClaudeHtml, setPreviousClaudeHtml] = useState('');
+  const [previousGrokHtml, setPreviousGrokHtml] = useState('');
+  
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const queryClient = useQueryClient();
@@ -219,6 +227,11 @@ const UnifiedPageEditor = ({
       setTemplateHtml(template.template_html);
       setOriginalHtml(template.template_html);
       setPreviousHtml(template.template_html);
+      // Initialize both models with the same HTML
+      setClaudeHtml(template.template_html);
+      setGrokHtml(template.template_html);
+      setPreviousClaudeHtml(template.template_html);
+      setPreviousGrokHtml(template.template_html);
     }
   }, [template, pageType]);
 
@@ -231,8 +244,10 @@ const UnifiedPageEditor = ({
     }
   }, [open]);
 
-  // Compute displayed HTML based on version toggle
-  const displayedHtml = isShowingPrevious ? previousHtml : templateHtml;
+  // Compute displayed HTML based on version toggle and selected model
+  const displayedHtml = isShowingPrevious 
+    ? (selectedModel === 'claude' ? previousClaudeHtml : previousGrokHtml)
+    : (selectedModel === 'claude' ? claudeHtml : grokHtml);
 
   // Update preview when template changes
   useEffect(() => {
@@ -304,50 +319,99 @@ const UnifiedPageEditor = ({
     setIsAiLoading(true);
     const currentPrompt = aiPrompt;
     setAiPrompt('');
+    
     try {
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('ai-edit-page', {
-        body: {
-          command: currentPrompt,
-          mode: editorMode,
-          conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
-          context: {
-            currentPage: {
-              type: pageType,
-              url: service ? `/${service.slug}` : '/',
-              html: templateHtml
-            },
-            serviceInfo: service ? {
-              name: service.name,
-              slug: service.slug,
-              description: service.description || service.full_description || '',
-              category: service.category,
-              starting_price: service.starting_price,
-              is_active: service.is_active
-            } : null,
-            companyInfo: companySettings,
-            aiTraining: aiTraining
+      // Send to both Claude and Grok in parallel
+      const currentClaudeHtml = selectedModel === 'claude' ? claudeHtml : claudeHtml;
+      const currentGrokHtml = selectedModel === 'grok' ? grokHtml : grokHtml;
+      
+      const [claudeResponse, grokResponse] = await Promise.all([
+        supabase.functions.invoke('ai-edit-page', {
+          body: {
+            command: currentPrompt,
+            mode: editorMode,
+            model: 'claude',
+            conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
+            context: {
+              currentPage: {
+                type: pageType,
+                url: service ? `/${service.slug}` : '/',
+                html: currentClaudeHtml
+              },
+              serviceInfo: service ? {
+                name: service.name,
+                slug: service.slug,
+                description: service.description || service.full_description || '',
+                category: service.category,
+                starting_price: service.starting_price,
+                is_active: service.is_active
+              } : null,
+              companyInfo: companySettings,
+              aiTraining: aiTraining
+            }
           }
-        }
-      });
-      if (error) throw error;
+        }),
+        supabase.functions.invoke('ai-edit-page', {
+          body: {
+            command: currentPrompt,
+            mode: editorMode,
+            model: 'grok',
+            conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
+            context: {
+              currentPage: {
+                type: pageType,
+                url: service ? `/${service.slug}` : '/',
+                html: currentGrokHtml
+              },
+              serviceInfo: service ? {
+                name: service.name,
+                slug: service.slug,
+                description: service.description || service.full_description || '',
+                category: service.category,
+                starting_price: service.starting_price,
+                is_active: service.is_active
+              } : null,
+              companyInfo: companySettings,
+              aiTraining: aiTraining
+            }
+          }
+        })
+      ]);
+
+      if (claudeResponse.error) throw new Error(`Claude error: ${claudeResponse.error.message}`);
+      if (grokResponse.error) throw new Error(`Grok error: ${grokResponse.error.message}`);
 
       // Update token count
-      if (data.tokenUsage) {
-        setTokenCount(prev => prev + data.tokenUsage);
+      const totalTokens = (claudeResponse.data?.tokenUsage || 0) + (grokResponse.data?.tokenUsage || 0);
+      if (totalTokens) {
+        setTokenCount(prev => prev + totalTokens);
       }
 
-      // In build mode, auto-apply changes immediately
-      if (editorMode === 'build' && data.updatedHtml) {
-        setPreviousHtml(templateHtml); // Store current as previous
-        setTemplateHtml(data.updatedHtml);
+      // In build mode, auto-apply changes immediately to both models
+      if (editorMode === 'build') {
+        if (claudeResponse.data?.updatedHtml) {
+          setPreviousClaudeHtml(claudeHtml);
+          setClaudeHtml(claudeResponse.data.updatedHtml);
+        }
+        if (grokResponse.data?.updatedHtml) {
+          setPreviousGrokHtml(grokHtml);
+          setGrokHtml(grokResponse.data.updatedHtml);
+        }
         setIsShowingPrevious(false);
+        
+        // Update templateHtml with the selected model's response
+        if (selectedModel === 'claude' && claudeResponse.data?.updatedHtml) {
+          setTemplateHtml(claudeResponse.data.updatedHtml);
+        } else if (selectedModel === 'grok' && grokResponse.data?.updatedHtml) {
+          setTemplateHtml(grokResponse.data.updatedHtml);
+        }
       }
+      
       const assistantMessage: ChatMessage = {
         role: 'assistant',
-        content: data.explanation || (editorMode === 'build' ? 'I\'ve updated the page based on your request.' : 'Let me help you with that.')
+        content: selectedModel === 'claude' 
+          ? (claudeResponse.data?.explanation || 'Claude has updated the page.')
+          : (grokResponse.data?.explanation || 'Grok has updated the page.')
       };
       setChatMessages(prev => [...prev, assistantMessage]);
     } catch (error: any) {
@@ -406,9 +470,10 @@ const UnifiedPageEditor = ({
     }
   };
 
-  // Auto-save function - saves to draft
+  // Auto-save function - saves to draft (uses currently selected model)
   const autoSave = async () => {
-    if (templateHtml === originalHtml) return;
+    const currentHtml = selectedModel === 'claude' ? claudeHtml : grokHtml;
+    if (currentHtml === originalHtml) return;
     setIsSaving(true);
     try {
       // For static pages, save to draft column
@@ -416,11 +481,11 @@ const UnifiedPageEditor = ({
         const {
           error
         } = await supabase.from('static_pages').update({
-          content_html_draft: templateHtml,
+          content_html_draft: currentHtml,
           updated_at: new Date().toISOString()
         }).eq('id', pageId);
         if (error) throw error;
-        setOriginalHtml(templateHtml);
+        setOriginalHtml(currentHtml);
         setLastSaved(new Date());
         queryClient.invalidateQueries({
           queryKey: ['static-pages', pageId]
@@ -430,11 +495,11 @@ const UnifiedPageEditor = ({
         const {
           error
         } = await supabase.from('templates').update({
-          template_html_draft: templateHtml,
+          template_html_draft: currentHtml,
           updated_at: new Date().toISOString()
         }).eq('id', template.id);
         if (error) throw error;
-        setOriginalHtml(templateHtml);
+        setOriginalHtml(currentHtml);
         setLastSaved(new Date());
         queryClient.invalidateQueries({
           queryKey: ['service-template', service?.id]
@@ -452,19 +517,20 @@ const UnifiedPageEditor = ({
     }
   };
 
-  // Publish function - copies draft to live
+  // Publish function - copies draft to live (uses currently selected model)
   const handlePublish = async () => {
     if (isPublishing) return;
     
-    console.log('Publishing...', { templateHtml: templateHtml?.substring(0, 100), pageType, pageId, templateId: template?.id });
+    const currentHtml = selectedModel === 'claude' ? claudeHtml : grokHtml;
+    console.log('Publishing...', { currentHtml: currentHtml?.substring(0, 100), pageType, pageId, templateId: template?.id, model: selectedModel });
     setIsPublishing(true);
     try {
       if (pageType === 'static' && pageId) {
         const {
           error
         } = await supabase.from('static_pages').update({
-          content_html: templateHtml,
-          content_html_draft: templateHtml,
+          content_html: currentHtml,
+          content_html_draft: currentHtml,
           published_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         }).eq('id', pageId);
@@ -474,14 +540,14 @@ const UnifiedPageEditor = ({
         });
         toast({
           title: 'Published successfully',
-          description: 'Your changes are now live.'
+          description: `Your ${selectedModel === 'claude' ? 'Claude' : 'Grok'} changes are now live.`
         });
       } else if (template?.id) {
         const {
           error
         } = await supabase.from('templates').update({
-          template_html: templateHtml,
-          template_html_draft: templateHtml,
+          template_html: currentHtml,
+          template_html_draft: currentHtml,
           published_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         }).eq('id', template.id);
@@ -496,10 +562,10 @@ const UnifiedPageEditor = ({
         });
         toast({
           title: 'Published successfully',
-          description: 'Your changes are now live.'
+          description: `Your ${selectedModel === 'claude' ? 'Claude' : 'Grok'} changes are now live.`
         });
       }
-      setOriginalHtml(templateHtml);
+      setOriginalHtml(currentHtml);
       setShowPublishConfirm(true);
       setTimeout(() => setShowPublishConfirm(false), 3000);
     } catch (error: any) {
@@ -514,9 +580,10 @@ const UnifiedPageEditor = ({
     }
   };
 
-  // Debounced auto-save effect
+  // Debounced auto-save effect (watches current model's HTML)
   useEffect(() => {
-    if (templateHtml !== originalHtml) {
+    const currentHtml = selectedModel === 'claude' ? claudeHtml : grokHtml;
+    if (currentHtml !== originalHtml) {
       // Clear existing timeout
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current);
@@ -531,16 +598,13 @@ const UnifiedPageEditor = ({
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current);
       }
-      // Flush pending changes on unmount
-      if (templateHtml !== originalHtml) {
-        autoSave();
-      }
     };
-  }, [templateHtml, originalHtml]);
+  }, [claudeHtml, grokHtml, originalHtml, selectedModel]);
 
   // Save immediately when dialog closes
   useEffect(() => {
-    if (!open && templateHtml !== originalHtml) {
+    const currentHtml = selectedModel === 'claude' ? claudeHtml : grokHtml;
+    if (!open && currentHtml !== originalHtml) {
       autoSave();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -698,6 +762,27 @@ const UnifiedPageEditor = ({
           {/* Right Panel - Preview/Code */}
           <div className="w-3/5 flex flex-col">
             <div className="p-4 border-b space-y-3">
+              {/* Model Selection Tabs */}
+              <Tabs value={selectedModel} onValueChange={(v) => {
+                setSelectedModel(v as 'claude' | 'grok');
+                // Update templateHtml when switching models
+                if (v === 'claude') {
+                  setTemplateHtml(claudeHtml);
+                } else {
+                  setTemplateHtml(grokHtml);
+                }
+              }}>
+                <TabsList>
+                  <TabsTrigger value="claude">
+                    Claude
+                  </TabsTrigger>
+                  <TabsTrigger value="grok">
+                    Grok
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              
+              {/* Preview/Code Tabs */}
               <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'preview' | 'code')}>
                 <TabsList>
                   <TabsTrigger value="preview">
@@ -719,6 +804,12 @@ const UnifiedPageEditor = ({
                     <p className="mt-2">Loading preview...</p>
                   </div> : <Editor height="100%" defaultLanguage="html" value={displayedHtml} onChange={value => {
               if (!isShowingPrevious && value !== undefined) {
+                // Update the appropriate model's HTML when editing
+                if (selectedModel === 'claude') {
+                  setClaudeHtml(value);
+                } else {
+                  setGrokHtml(value);
+                }
                 setTemplateHtml(value);
                 if (pageType === 'static' || pageType === 'generated') {
                   setRenderedPreview(value);
