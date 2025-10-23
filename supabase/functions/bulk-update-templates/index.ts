@@ -227,48 +227,71 @@ async function updateServiceTemplate(supabase: any, fileName: string, html: stri
 }
 
 async function updateStaticPage(supabase: any, fileName: string, html: string) {
-  // Map file names to page slugs
-  const pageMap: Record<string, string> = {
-    'about.html': 'about',
-    'contact.html': 'contact',
-    'home.html': 'home',
-    'services.html': 'services',
+  // Map file names to page slugs and titles
+  const pageMap: Record<string, { slug: string; title: string }> = {
+    'about.html': { slug: 'about', title: 'About Us' },
+    'contact.html': { slug: 'contact', title: 'Contact Us' },
+    'home.html': { slug: 'home', title: 'Home' },
+    'services.html': { slug: 'services', title: 'Our Services' },
   }
 
-  const slug = pageMap[fileName]
-  if (!slug) {
+  const pageInfo = pageMap[fileName]
+  if (!pageInfo) {
     throw new Error(`Unknown static page mapping for ${fileName}`)
   }
 
-  // Find the static page
-  const { data: page, error: pageError } = await supabase
+  // Try to find the static page
+  const { data: page } = await supabase
     .from('static_pages')
     .select('id')
-    .eq('slug', slug)
-    .single()
+    .eq('slug', pageInfo.slug)
+    .maybeSingle()
 
-  if (pageError || !page) {
-    throw new Error(`Static page not found: ${slug}`)
+  let pageId: string
+
+  if (!page) {
+    // Create the static page if it doesn't exist
+    const { data: newPage, error: createError } = await supabase
+      .from('static_pages')
+      .insert({
+        slug: pageInfo.slug,
+        title: pageInfo.title,
+        html_content: html,
+        status: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select('id')
+      .single()
+
+    if (createError) {
+      throw new Error(`Failed to create static page: ${createError.message}`)
+    }
+
+    pageId = newPage.id
+    console.log(`✅ Created new static page: ${pageInfo.slug}`)
+  } else {
+    pageId = page.id
+
+    // Update the existing page content
+    const { error: updateError } = await supabase
+      .from('static_pages')
+      .update({
+        html_content: html,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', pageId)
+
+    if (updateError) {
+      throw new Error(`Failed to update static page: ${updateError.message}`)
+    }
+
+    console.log(`✅ Updated static page: ${pageInfo.slug}`)
   }
-
-  // Update the page content
-  const { error: updateError } = await supabase
-    .from('static_pages')
-    .update({
-      html_content: html,
-      updated_at: new Date().toISOString()
-    })
-    .eq('id', page.id)
-
-  if (updateError) {
-    throw new Error(`Failed to update static page: ${updateError.message}`)
-  }
-
-  console.log(`✅ Updated static page: ${slug}`)
 
   return {
     fileName,
-    slug,
+    slug: pageInfo.slug,
     success: true
   }
 }
