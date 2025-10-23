@@ -409,7 +409,11 @@ LOVABLE DESIGN SYSTEM - USE THESE PATTERNS:
 2. FEATURE CARDS:
 <div class="grid md:grid-cols-3 gap-8 my-16">
   <div class="bg-white p-8 rounded-xl shadow-[0_10px_30px_-10px_hsl(221,83%,53%,0.15)] border border-[hsl(214,32%,91%)] hover:shadow-[0_20px_40px_-10px_hsl(221,83%,53%,0.25)] hover:-translate-y-2 transition-all duration-300">
-    <div class="w-14 h-14 bg-gradient-to-br from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] rounded-xl flex items-center justify-center mb-6 text-2xl">🎯</div>
+    <div class="w-14 h-14 bg-gradient-to-br from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] rounded-xl flex items-center justify-center mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="white" viewBox="0 0 256 256">
+        <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-68a28,28,0,0,1-28,28H116a8,8,0,0,1,0-16h24a12,12,0,0,0,0-24H116a28,28,0,0,1,0-56h4V72a8,8,0,0,1,16,0v8h4a8,8,0,0,1,0,16H116a12,12,0,0,0,0,24h24A28,28,0,0,1,168,148Z"/>
+      </svg>
+    </div>
     <h3 class="text-2xl font-bold mb-4 text-[hsl(222,47%,11%)]">Feature Title</h3>
     <p class="text-[hsl(215,16%,47%)] leading-relaxed">Feature description with compelling benefits.</p>
   </div>
@@ -421,11 +425,11 @@ LOVABLE DESIGN SYSTEM - USE THESE PATTERNS:
   <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
     <div class="bg-white p-8 rounded-xl shadow-[0_5px_20px_rgba(0,0,0,0.08)]">
       <div class="flex gap-1 mb-4">
-        <span class="text-yellow-400 text-xl">⭐</span>
-        <span class="text-yellow-400 text-xl">⭐</span>
-        <span class="text-yellow-400 text-xl">⭐</span>
-        <span class="text-yellow-400 text-xl">⭐</span>
-        <span class="text-yellow-400 text-xl">⭐</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fbbf24" viewBox="0 0 256 256"><path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a16,16,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fbbf24" viewBox="0 0 256 256"><path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a16,16,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fbbf24" viewBox="0 0 256 256"><path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a16,16,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fbbf24" viewBox="0 0 256 256"><path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a16,16,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fbbf24" viewBox="0 0 256 256"><path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a16,16,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"/></svg>
       </div>
       <p class="text-[hsl(215,16%,47%)] mb-4 leading-relaxed">"Testimonial text goes here..."</p>
       <div class="font-semibold text-[hsl(222,47%,11%)]">— Customer Name</div>
@@ -467,9 +471,18 @@ LOVABLE DESIGN SYSTEM - USE THESE PATTERNS:
     <h3 class="text-2xl font-bold mb-2 text-[hsl(222,47%,11%)]">Basic Plan</h3>
     <div class="text-4xl font-extrabold mb-6 text-[hsl(221,83%,53%)]">$99<span class="text-lg text-[hsl(215,16%,47%)]">/mo</span></div>
     <ul class="space-y-3 mb-8">
-      <li class="flex items-center text-[hsl(215,16%,47%)]">✓ Feature one</li>
-      <li class="flex items-center text-[hsl(215,16%,47%)]">✓ Feature two</li>
-      <li class="flex items-center text-[hsl(215,16%,47%)]">✓ Feature three</li>
+      <li class="flex items-center gap-2 text-[hsl(215,16%,47%)]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#16a34a" viewBox="0 0 256 256"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg>
+        Feature one
+      </li>
+      <li class="flex items-center gap-2 text-[hsl(215,16%,47%)]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#16a34a" viewBox="0 0 256 256"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg>
+        Feature two
+      </li>
+      <li class="flex items-center gap-2 text-[hsl(215,16%,47%)]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#16a34a" viewBox="0 0 256 256"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg>
+        Feature three
+      </li>
     </ul>
     <a href="#contact" class="block text-center bg-gradient-to-r from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] text-white py-4 rounded-xl font-bold hover:-translate-y-1 transition-all duration-300">Choose Plan</a>
   </div>
@@ -488,6 +501,31 @@ LOVABLE DESIGN SYSTEM - USE THESE PATTERNS:
   </div>
 </section>
 
+🚫 CRITICAL BRANDING & VISUAL ASSETS POLICY:
+
+1. **NEVER USE COMPANY LOGOS IN PAGE CONTENT**
+   ↳ The company logo is already included in the site's header and footer
+   ↳ DO NOT add logos to hero sections, feature cards, or any page content
+   ↳ EXCEPTION: You MAY use the company favicon/icon ({{icon_url}}) sparingly in midsections if absolutely necessary
+   ↳ Focus on typography, colors, and content hierarchy instead of redundant logo placement
+
+2. **AVOID EMOJIS - USE PROFESSIONAL ICON LIBRARIES**
+   ↳ NEVER use emojis (🎯, ⭐, 📦, etc.) - they appear unprofessional and childish
+   ↳ INSTEAD: Use SVG icons from professional icon libraries
+   ↳ RECOMMENDED: Phosphor Icons, Heroicons, or other open-source icon sets
+   ↳ For inline icons: Use SVG code directly in HTML
+   ↳ Example of proper icon usage:
+   
+   <!-- ✅ CORRECT: Professional SVG icon -->
+   <div class="w-14 h-14 bg-gradient-to-br from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] rounded-xl flex items-center justify-center mb-6">
+     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="white" viewBox="0 0 256 256">
+       <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-68a28,28,0,0,1-28,28H116a8,8,0,0,1,0-16h24a12,12,0,0,0,0-24H116a28,28,0,0,1,0-56h4V72a8,8,0,0,1,16,0v8h4a8,8,0,0,1,0,16H116a12,12,0,0,0,0,24h24A28,28,0,0,1,168,148Z"/>
+     </svg>
+   </div>
+   
+   <!-- ❌ WRONG: Childish emoji -->
+   <div class="w-14 h-14 bg-gradient-to-br from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] rounded-xl flex items-center justify-center mb-6 text-2xl">🎯</div>
+
 🔑 CRITICAL IMPLEMENTATION RULES:
 
 1. **Include Tailwind CDN** - ALWAYS add the Tailwind script in <head>
@@ -498,6 +536,8 @@ LOVABLE DESIGN SYSTEM - USE THESE PATTERNS:
 6. **Semantic HTML** - Use <section>, <article>, <header>, <footer> properly
 7. **Accessible** - Include proper alt text, ARIA labels, and keyboard navigation
 8. **SEO Optimized** - Include proper title, meta description, Open Graph tags
+9. **Professional Icons Only** - Use SVG icons from professional libraries, NEVER emojis
+10. **No Logo Redundancy** - Never place company logos in page content
 9. **Mobile-First** - Design for mobile, enhance for desktop
 10. **Performance** - Minimize custom CSS, leverage Tailwind utilities
 11. **Return ONLY HTML** - No explanations, no markdown code blocks
