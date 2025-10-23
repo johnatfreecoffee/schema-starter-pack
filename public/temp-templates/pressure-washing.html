@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="en" data-testid="html-element">
+<head data-testid="head-element">
+    <meta charset="UTF-8" data-testid="meta-charset">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" data-testid="meta-viewport">
+    <title data-testid="page-title">Professional Pressure Washing Services {{city_name}}, {{state_abbr}} - Exterior Cleaning Experts | Clear Home Roofing</title>
+    
+    <meta name="description" data-testid="meta-description" 
+          content="Expert pressure washing & soft washing services in {{city_name}}, {{state_abbr}}. Safe exterior cleaning for roofs, siding, concrete & more. Free quotes. Call {{company_phone}}.">
+    
+    <meta name="keywords" data-testid="meta-keywords" 
+          content="pressure washing {{city_name}}, soft washing {{state_abbr}}, exterior cleaning, roof cleaning, house washing, concrete cleaning, deck cleaning">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" data-testid="og-title" 
+          content="Professional Pressure Washing Services {{city_name}}, {{state_abbr}} | Clear Home Roofing">
+    <meta property="og:description" data-testid="og-description" 
+          content="Expert exterior cleaning that protects your property's value and prevents damage. Professional pressure washing in {{city_name}}.">
+    <meta property="og:image" data-testid="og-image" 
+          content="https://www.clearhomeroofing.com/images/pressure-washing-{{city_slug}}.jpg">
+    <meta property="og:url" data-testid="og-url" 
+          content="https://www.clearhomeroofing.com/pressure-washing-{{city_slug}}-{{state_abbr}}">
+    <meta property="og:type" data-testid="og-type" content="website">
+
+    <!-- Structured Data Schemas -->
+    <script type="application/ld+json" data-testid="schema-localbusiness">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Clear Home Roofing & Restoration",
+        "image": "https://www.clearhomeroofing.com/images/clear-home-logo.jpg",
+        "telephone": "{{company_phone}}",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "{{city_name}}",
+            "addressRegion": "{{state_abbr}}",
+            "addressCountry": "US"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "{{city_latitude}}",
+            "longitude": "{{city_longitude}}"
+        },
+        "url": "https://www.clearhomeroofing.com",
+        "priceRange": "$$",
+        "openingHours": "Mo-Fr 07:00-19:00, Sa 08:00-17:00",
+        "areaServed": {
+            "@type": "City",
+            "name": "{{city_name}}, {{state_abbr}}"
+        }
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-service">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "Pressure Washing Services",
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "Clear Home Roofing & Restoration"
+        },
+        "description": "Professional pressure washing and soft washing services including roof cleaning, house siding cleaning, concrete cleaning, and deck restoration in {{city_name}}, {{state_abbr}}.",
+        "areaServed": {
+            "@type": "City",
+            "name": "{{city_name}}, {{state_abbr}}"
+        },
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Pressure Washing Services",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Roof Soft Washing"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "House Siding Cleaning"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Concrete Pressure Washing"
+                    }
+                }
+            ]
+        }
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-faqpage">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "How often should I have my property pressure washed?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Most homes benefit from annual cleaning, though specific surfaces may need more or less frequent attention. Roofs typically need cleaning every 2-3 years, while driveways may need annual or bi-annual cleaning depending on use and staining."
+                }
+            },
+            {
+                "@type": "Question", 
+                "name": "Is pressure washing safe for all surfaces?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Not all surfaces can handle high-pressure cleaning. That's why we assess each surface and use appropriate methods - soft washing for delicate materials and pressure washing for durable surfaces. Professional assessment prevents damage."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What's the difference between pressure washing and soft washing?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Pressure washing uses high-pressure water to physically remove dirt and stains from durable surfaces. Soft washing uses low pressure with specialized cleaning solutions to chemically break down and remove organic growth and stains from delicate surfaces."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Will pressure washing damage my landscaping?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Professional pressure washing includes protecting your landscaping through pre-treatment watering, covering sensitive plants, and using eco-friendly cleaning solutions. We take extensive precautions to prevent any landscape damage."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How long does professional pressure washing take?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Timing varies based on property size and services selected. A typical house exterior cleaning takes 2-4 hours, while comprehensive property cleaning may take a full day. We provide accurate time estimates during your free consultation."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can pressure washing remove all stains?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Most stains can be removed or significantly lightened with professional cleaning. Some permanent staining (like rust on concrete) may not fully remove but will be dramatically improved. We'll assess stain types during inspection and set realistic expectations."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-breadcrumb">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.clearhomeroofing.com"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Services",
+                "item": "https://www.clearhomeroofing.com/services"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Pressure Washing",
+                "item": "https://www.clearhomeroofing.com/pressure-washing-{{city_slug}}-{{state_abbr}}"
+            }
+        ]
+    }
+    </script>
+
+    <style data-testid="page-styles">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1A202C;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(26,32,44,0.8) 0%, rgba(45,55,72,0.7) 100%), 
+                        url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI0NTAiIHZpZXdCb3g9IjAgMCAxMjAwIDQ1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI0NTAiIGZpbGw9IiNGN0ZBRkMiLz48cmVjdCB4PSIxMDAiIHk9IjEwMCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIyNTAiIGZpbGw9IiMyQjZDQjAiLz48cmVjdCB4PSI1MDAiIHk9IjE1MCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiM0QTU1NjgiLz48dGV4dCB4PSI2MDAiIHk9IjI1MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UHJlc3N1cmUgV2FzaGluZzwvdGV4dD48L3N2Zz4K');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 0;
+            position: relative;
+            min-height: 450px;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            margin-bottom: 32px;
+            opacity: 0.9;
+        }
+
+        .supporting-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .feature-check {
+            color: #48BB78;
+            font-weight: bold;
+        }
+
+        /* Quote Form */
+        .quote-form {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2D3748;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #2B6CB0;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-form {
+            width: 100%;
+            background: linear-gradient(135deg, #2B6CB0 0%, #215387 100%);
+            color: white;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-form:hover {
+            transform: translateY(-2px);
+        }
+
+        .privacy-note {
+            font-size: 12px;
+            color: #718096;
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        /* Trust Bar Section */
+        .trust-bar {
+            background-color: #F7FAFC;
+            padding: 40px 0;
+        }
+
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .trust-card {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .trust-icon {
+            font-size: 48px;
+            color: #2B6CB0;
+            margin-bottom: 16px;
+        }
+
+        .trust-stat {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 8px;
+        }
+
+        .trust-desc {
+            font-size: 14px;
+            color: #4A5568;
+        }
+
+        /* Content Sections */
+        .content-section {
+            padding: 80px 0;
+        }
+
+        .section-light {
+            background-color: #F7FAFC;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .overline {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2B6CB0;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 20px;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            color: #4A5568;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Services Overview */
+        .services-overview {
+            display: grid;
+            grid-template-columns: 2fr 3fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .services-intro h2 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 24px;
+        }
+
+        .services-intro p {
+            font-size: 16px;
+            color: #4A5568;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .services-checklist {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #2D3748;
+        }
+
+        .checklist-check {
+            color: #48BB78;
+            font-weight: bold;
+        }
+
+        /* Benefits Grid */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .benefit-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .benefit-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+
+        .benefit-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 16px;
+        }
+
+        .benefit-card p {
+            color: #4A5568;
+            line-height: 1.6;
+        }
+
+        /* Process Timeline */
+        .process-timeline {
+            max-width: 900px;
+            margin: 60px auto 0;
+        }
+
+        .process-step {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 50px;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2B6CB0 0%, #215387 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 12px;
+        }
+
+        .step-content p {
+            color: #4A5568;
+            line-height: 1.7;
+        }
+
+        /* Comparison Section */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .comparison-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .comparison-card.soft-wash {
+            background: linear-gradient(135deg, #EBF8FF 0%, #BEE3F8 100%);
+        }
+
+        .comparison-card.pressure-wash {
+            background: linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 100%);
+        }
+
+        .comparison-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .comparison-section {
+            margin-bottom: 20px;
+        }
+
+        .comparison-section h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2D3748;
+            margin-bottom: 10px;
+        }
+
+        .comparison-list {
+            list-style: none;
+        }
+
+        .comparison-list li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #4A5568;
+        }
+
+        .comparison-check {
+            color: #48BB78;
+            font-weight: bold;
+        }
+
+        /* FAQ Section */
+        .faq-container {
+            max-width: 900px;
+            margin: 60px auto 0;
+        }
+
+        .faq-item {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 24px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1A202C;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        .faq-question:hover {
+            background-color: #F7FAFC;
+        }
+
+        .faq-answer {
+            padding: 0 24px 24px;
+            color: #4A5568;
+            line-height: 1.7;
+            display: none;
+        }
+
+        .expand-icon {
+            color: #718096;
+            font-size: 20px;
+            transition: transform 0.3s;
+        }
+
+        /* Contact Section */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-top: 60px;
+        }
+
+        .contact-info h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 24px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            background: #2B6CB0;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .contact-details h4 {
+            font-weight: 600;
+            color: #1A202C;
+            margin-bottom: 4px;
+        }
+
+        .contact-details p {
+            color: #4A5568;
+        }
+
+        .contact-form {
+            background: #F7FAFC;
+            padding: 40px;
+            border-radius: 12px;
+        }
+
+        /* Damage Prevention Warning */
+        .warning-box {
+            background: #FFF3CD;
+            border-left: 4px solid #F59E0B;
+            padding: 30px;
+            margin: 60px auto;
+            max-width: 900px;
+            border-radius: 8px;
+        }
+
+        .warning-box h3 {
+            color: #92400E;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .warning-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .warning-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 15px;
+            color: #78350F;
+        }
+
+        .warning-icon {
+            color: #DC2626;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .solution-statement {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            color: #1A202C;
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .hero-content h1 {
+                font-size: 36px;
+            }
+
+            .trust-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .services-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .process-step {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .services-checklist {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .trust-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .supporting-features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body data-testid="body-element">
+
+    <!-- Hero Section -->
+    <section class="hero" data-testid="section-hero">
+        <div class="container" data-testid="hero-container">
+            <div class="hero-grid" data-testid="hero-grid">
+                <div class="hero-content" data-testid="hero-content">
+                    <h1 data-testid="heading-main">
+                        <span data-testid="professional">Professional</span> 
+                        <span data-testid="pressure">Pressure</span> 
+                        <span data-testid="washing">Washing</span> 
+                        <span data-testid="services">Services</span> 
+                        <span data-testid="in">in</span> 
+                        <span data-testid="city">{{city_name}}</span>
+                    </h1>
+                    <p class="hero-subtitle" data-testid="subtitle-hero">
+                        <span data-testid="expert">Expert</span> 
+                        <span data-testid="exterior">Exterior</span> 
+                        <span data-testid="cleaning">Cleaning</span> 
+                        <span data-testid="that">That</span> 
+                        <span data-testid="protects">Protects</span> 
+                        <span data-testid="your">Your</span> 
+                        <span data-testid="property">Property's</span> 
+                        <span data-testid="value">Value</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="prevents">Prevents</span> 
+                        <span data-testid="damage">Damage</span>
+                    </p>
+                    
+                    <div class="supporting-features" data-testid="supporting-features">
+                        <div class="feature-item" data-testid="feature-soft-wash">
+                            <span class="feature-check" data-testid="check-soft-wash">YES</span>
+                            <span data-testid="text-soft-wash">Soft Wash & High Pressure Options</span>
+                        </div>
+                        <div class="feature-item" data-testid="feature-roof-siding">
+                            <span class="feature-check" data-testid="check-roof-siding">YES</span>
+                            <span data-testid="text-roof-siding">Roof, Siding & Concrete Cleaning</span>
+                        </div>
+                        <div class="feature-item" data-testid="feature-protect">
+                            <span class="feature-check" data-testid="check-protect">YES</span>
+                            <span data-testid="text-protect">Protect Your Investment</span>
+                        </div>
+                        <div class="feature-item" data-testid="feature-experience">
+                            <span class="feature-check" data-testid="check-experience">YES</span>
+                            <span data-testid="text-experience">20+ Years Experience</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quote Form -->
+                <div class="quote-form" data-testid="quote-form">
+                    <h2 class="form-title" data-testid="form-title">
+                        <span data-testid="get">Get</span> 
+                        <span data-testid="free">Free</span> 
+                        <span data-testid="cleaning">Cleaning</span> 
+                        <span data-testid="quote">Quote</span>
+                    </h2>
+                    
+                    <form action="/submit-quote" method="POST" data-testid="hero-quote-form">
+                        <div class="form-group" data-testid="form-group-name">
+                            <label for="name" class="form-label" data-testid="label-name">Full Name *</label>
+                            <input type="text" id="name" name="name" class="form-input" data-testid="input-name" required>
+                        </div>
+
+                        <div class="form-group" data-testid="form-group-email">
+                            <label for="email" class="form-label" data-testid="label-email">Email Address *</label>
+                            <input type="email" id="email" name="email" class="form-input" data-testid="input-email" required>
+                        </div>
+
+                        <div class="form-group" data-testid="form-group-phone">
+                            <label for="phone" class="form-label" data-testid="label-phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" class="form-input" data-testid="input-phone" required>
+                        </div>
+
+                        <div class="form-group" data-testid="form-group-service">
+                            <label for="service" class="form-label" data-testid="label-service">Service Needed *</label>
+                            <select id="service" name="service" class="form-select" data-testid="select-service" required>
+                                <option value="" data-testid="option-default">Select a Service</option>
+                                <option value="house-washing" data-testid="option-house">House Washing</option>
+                                <option value="roof-cleaning" data-testid="option-roof">Roof Cleaning</option>
+                                <option value="concrete-cleaning" data-testid="option-concrete">Concrete Cleaning</option>
+                                <option value="deck-cleaning" data-testid="option-deck">Deck Cleaning</option>
+                                <option value="commercial" data-testid="option-commercial">Commercial Cleaning</option>
+                                <option value="multiple" data-testid="option-multiple">Multiple Services</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" data-testid="form-group-property">
+                            <label for="property" class="form-label" data-testid="label-property">Property Address</label>
+                            <input type="text" id="property" name="property" class="form-input" data-testid="input-property" placeholder="Street Address, {{city_name}}, {{state_abbr}}">
+                        </div>
+
+                        <div class="form-group" data-testid="form-group-details">
+                            <label for="details" class="form-label" data-testid="label-details">Project Details</label>
+                            <textarea id="details" name="details" class="form-textarea" data-testid="textarea-details" placeholder="Tell us about your pressure washing needs, property size, and any specific concerns..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-form" data-testid="button-submit">
+                            <span data-testid="submit-text">Get FREE Quote Today</span>
+                        </button>
+
+                        <p class="privacy-note" data-testid="privacy-note">
+                            <span data-testid="privacy-text">Your information is secure and will only be used to provide your estimate.</span>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Bar Section -->
+    <section class="trust-bar" data-testid="section-trust-bar">
+        <div class="container" data-testid="trust-container">
+            <div class="trust-grid" data-testid="trust-grid">
+                <div class="trust-card" data-testid="trust-properties">
+                    <div class="trust-icon" data-testid="icon-properties">HOME</div>
+                    <div class="trust-stat" data-testid="stat-properties">
+                        <span data-testid="number-500">500+</span> 
+                        <span data-testid="properties">Properties</span>
+                    </div>
+                    <div class="trust-desc" data-testid="desc-properties">
+                        <span data-testid="cleaned">Cleaned</span> 
+                        <span data-testid="annually">Annually</span>
+                    </div>
+                </div>
+
+                <div class="trust-card" data-testid="trust-rated">
+                    <div class="trust-icon" data-testid="icon-rated">STAR</div>
+                    <div class="trust-stat" data-testid="stat-rated">
+                        <span data-testid="five-star">5-Star</span> 
+                        <span data-testid="rated">Rated</span>
+                    </div>
+                    <div class="trust-desc" data-testid="desc-rated">
+                        <span data-testid="customer">Customer</span> 
+                        <span data-testid="satisfaction">Satisfaction</span>
+                    </div>
+                </div>
+
+                <div class="trust-card" data-testid="trust-prevention">
+                    <div class="trust-icon" data-testid="icon-prevention">SHIELD</div>
+                    <div class="trust-stat" data-testid="stat-prevention">
+                        <span data-testid="damage-prevention">Damage</span> 
+                        <span data-testid="prevention">Prevention</span>
+                    </div>
+                    <div class="trust-desc" data-testid="desc-prevention">
+                        <span data-testid="safe">Safe</span> 
+                        <span data-testid="cleaning-methods">Cleaning Methods</span>
+                    </div>
+                </div>
+
+                <div class="trust-card" data-testid="trust-service">
+                    <div class="trust-icon" data-testid="icon-service">CALENDAR</div>
+                    <div class="trust-stat" data-testid="stat-service">
+                        <span data-testid="same-day">Same-Day</span> 
+                        <span data-testid="service">Service</span>
+                    </div>
+                    <div class="trust-desc" data-testid="desc-service">
+                        <span data-testid="available">Available</span> 
+                        <span data-testid="in-city">in {{city_name}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Overview Section -->
+    <section class="content-section" data-testid="section-services-overview">
+        <div class="container" data-testid="services-container">
+            <div class="services-overview" data-testid="services-overview">
+                <div class="services-intro" data-testid="services-intro">
+                    <h2 data-testid="heading-services">
+                        <span data-testid="complete">Complete</span> 
+                        <span data-testid="exterior-cleaning">Exterior Cleaning</span> 
+                        <span data-testid="solutions">Solutions</span> 
+                        <span data-testid="for-city">for {{city_name}}</span> 
+                        <span data-testid="properties">Properties</span>
+                    </h2>
+                    <p data-testid="intro-paragraph-1">
+                        <span data-testid="clear-home">Clear Home</span> 
+                        <span data-testid="provides">provides</span> 
+                        <span data-testid="professional-pressure-washing">professional pressure washing</span> 
+                        <span data-testid="services-that">services that</span> 
+                        <span data-testid="clean-protect">clean, protect,</span> 
+                        <span data-testid="and-extend">and extend</span> 
+                        <span data-testid="the-life">the life</span> 
+                        <span data-testid="of-your-property">of your property's</span> 
+                        <span data-testid="exterior-surfaces">exterior surfaces.</span>
+                    </p>
+                    <p data-testid="intro-paragraph-2">
+                        <span data-testid="our-experienced">Our experienced</span> 
+                        <span data-testid="team-uses">team uses</span> 
+                        <span data-testid="the-right">the right</span> 
+                        <span data-testid="cleaning-method">cleaning method</span> 
+                        <span data-testid="for-each">for each</span> 
+                        <span data-testid="surface">surface</span> 
+                        <span data-testid="from-gentle">from gentle</span> 
+                        <span data-testid="soft-washing">soft washing</span> 
+                        <span data-testid="for-delicate">for delicate</span> 
+                        <span data-testid="materials">materials</span> 
+                        <span data-testid="to-high-pressure">to high-pressure</span> 
+                        <span data-testid="cleaning-for">cleaning for</span> 
+                        <span data-testid="tough-stains">tough stains.</span>
+                    </p>
+                </div>
+
+                <div class="services-checklist" data-testid="services-checklist">
+                    <div class="checklist-item" data-testid="checklist-roof">
+                        <span class="checklist-check" data-testid="check-roof">YES</span>
+                        <span data-testid="text-roof">Roof Soft Washing & Algae Removal</span>
+                    </div>
+                    <div class="checklist-item" data-testid="checklist-siding">
+                        <span class="checklist-check" data-testid="check-siding">YES</span>
+                        <span data-testid="text-siding">House Siding & Exterior Cleaning</span>
+                    </div>
+                    <div class="checklist-item" data-testid="checklist-concrete">
+                        <span class="checklist-check" data-testid="check-concrete">YES</span>
+                        <span data-testid="text-concrete">Concrete & Driveway Pressure Washing</span>
+                    </div>
+                    <div class="checklist-item" data-testid="checklist-deck">
+                        <span class="checklist-check" data-testid="check-deck">YES</span>
+                        <span data-testid="text-deck">Deck & Patio Cleaning</span>
+                    </div>
+                    <div class="checklist-item" data-testid="checklist-fence">
+                        <span class="checklist-check" data-testid="check-fence">YES</span>
+                        <span data-testid="text-fence">Fence Cleaning & Restoration</span>
+                    </div>
+                    <div class="checklist-item" data-testid="checklist-gutter">
+                        <span class="checklist-check" data-testid="check-gutter">YES</span>
+                        <span data-testid="text-gutter">Gutter Exterior Cleaning</span>
+                    </div>
+                    <div class="checklist-item" data-testid="checklist-commercial">
+                        <span class="checklist-check" data-testid="check-commercial">YES</span>
+                        <span data-testid="text-commercial">Commercial Building Washing</span>
+                    </div>
+                    <div class="checklist-item" data-testid="checklist-prep">
+                        <span class="checklist-check" data-testid="check-prep">YES</span>
+                        <span data-testid="text-prep">Pre-Painting Surface Preparation</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="content-section section-light" data-testid="section-benefits">
+        <div class="container" data-testid="benefits-container">
+            <div class="section-header" data-testid="section-header-benefits">
+                <div class="overline" data-testid="overline-why">
+                    <span data-testid="why">WHY</span> 
+                    <span data-testid="professional">PROFESSIONAL</span> 
+                    <span data-testid="matters">CLEANING MATTERS</span>
+                </div>
+                <h2 data-testid="heading-benefits">
+                    <span data-testid="why-professional">Why Professional</span> 
+                    <span data-testid="pressure-washing">Pressure Washing</span> 
+                    <span data-testid="protects-investment">Protects Your Investment</span>
+                </h2>
+            </div>
+
+            <div class="benefits-grid" data-testid="benefits-grid">
+                <div class="benefit-card" data-testid="benefit-damage">
+                    <div class="benefit-icon" data-testid="icon-damage">SHIELD</div>
+                    <h3 data-testid="title-damage">
+                        <span data-testid="prevents">Prevents</span> 
+                        <span data-testid="costly">Costly</span> 
+                        <span data-testid="damage-title">Damage</span>
+                    </h3>
+                    <p data-testid="description-damage">
+                        <span data-testid="diy">DIY pressure washing</span> 
+                        <span data-testid="often">often causes</span> 
+                        <span data-testid="irreversible">irreversible damage</span> 
+                        <span data-testid="stripped">stripped paint,</span> 
+                        <span data-testid="etched">etched concrete,</span> 
+                        <span data-testid="cracked">cracked siding,</span> 
+                        <span data-testid="forced">and forced</span> 
+                        <span data-testid="water">water intrusion.</span> 
+                        <span data-testid="professional-equipment">Professional equipment</span> 
+                        <span data-testid="expertise">and expertise</span> 
+                        <span data-testid="prevent">prevent these</span> 
+                        <span data-testid="expensive">expensive mistakes.</span>
+                    </p>
+                </div>
+
+                <div class="benefit-card" data-testid="benefit-lifespan">
+                    <div class="benefit-icon" data-testid="icon-lifespan">TIME</div>
+                    <h3 data-testid="title-lifespan">
+                        <span data-testid="extends">Extends</span> 
+                        <span data-testid="surface">Surface</span> 
+                        <span data-testid="lifespan">Lifespan</span>
+                    </h3>
+                    <p data-testid="description-lifespan">
+                        <span data-testid="regular">Regular</span> 
+                        <span data-testid="professional-cleaning">professional cleaning</span> 
+                        <span data-testid="removes">removes</span> 
+                        <span data-testid="destructive">destructive</span> 
+                        <span data-testid="organic">organic growth,</span> 
+                        <span data-testid="prevents-staining">prevents staining,</span> 
+                        <span data-testid="protects-surfaces">and protects surfaces</span> 
+                        <span data-testid="from">from premature</span> 
+                        <span data-testid="deterioration">deterioration.</span> 
+                        <span data-testid="this">This extends</span> 
+                        <span data-testid="life">the life</span> 
+                        <span data-testid="of-roofs">of roofs, siding,</span> 
+                        <span data-testid="hardscaping">and hardscaping</span> 
+                        <span data-testid="by-years">by years.</span>
+                    </p>
+                </div>
+
+                <div class="benefit-card" data-testid="benefit-value">
+                    <div class="benefit-icon" data-testid="icon-value">VALUE</div>
+                    <h3 data-testid="title-value">
+                        <span data-testid="maintains">Maintains</span> 
+                        <span data-testid="curb">Curb Appeal</span> 
+                        <span data-testid="value-title">& Value</span>
+                    </h3>
+                    <p data-testid="description-value">
+                        <span data-testid="clean">A clean</span> 
+                        <span data-testid="exterior-dramatically">exterior dramatically</span> 
+                        <span data-testid="improves">improves</span> 
+                        <span data-testid="curb-appeal">curb appeal</span> 
+                        <span data-testid="property-value">and property value.</span> 
+                        <span data-testid="professional-cleaning-removes">Professional cleaning removes</span> 
+                        <span data-testid="years">years of</span> 
+                        <span data-testid="grime">grime, algae,</span> 
+                        <span data-testid="stains">and stains</span> 
+                        <span data-testid="that">that detract</span> 
+                        <span data-testid="from">from your</span> 
+                        <span data-testid="homes">home's appearance</span> 
+                        <span data-testid="marketability">and marketability.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="content-section" data-testid="section-process">
+        <div class="container" data-testid="process-container">
+            <div class="section-header" data-testid="section-header-process">
+                <div class="overline" data-testid="overline-process">
+                    <span data-testid="our">OUR</span> 
+                    <span data-testid="professional">PROFESSIONAL</span> 
+                    <span data-testid="process">PROCESS</span>
+                </div>
+                <h2 data-testid="heading-process">
+                    <span data-testid="our-professional">Our Professional</span> 
+                    <span data-testid="cleaning-process">Cleaning Process</span>
+                </h2>
+            </div>
+
+            <div class="process-timeline" data-testid="process-timeline">
+                <div class="process-step" data-testid="step-1">
+                    <div class="step-number" data-testid="number-1">1</div>
+                    <div class="step-content" data-testid="content-1">
+                        <h3 data-testid="title-assessment">
+                            <span data-testid="property">Property</span> 
+                            <span data-testid="assessment">Assessment</span>
+                        </h3>
+                        <p data-testid="description-assessment">
+                            <span data-testid="we">We inspect</span> 
+                            <span data-testid="all">all surfaces</span> 
+                            <span data-testid="to-be">to be cleaned,</span> 
+                            <span data-testid="identify">identify the</span> 
+                            <span data-testid="appropriate">appropriate</span> 
+                            <span data-testid="cleaning-method">cleaning method</span> 
+                            <span data-testid="for-each-material">for each material,</span> 
+                            <span data-testid="note">and note</span> 
+                            <span data-testid="any">any areas</span> 
+                            <span data-testid="requiring">requiring</span> 
+                            <span data-testid="special">special attention</span> 
+                            <span data-testid="or">or pre-existing</span> 
+                            <span data-testid="damage-assessment">damage.</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="process-step" data-testid="step-2">
+                    <div class="step-number" data-testid="number-2">2</div>
+                    <div class="step-content" data-testid="content-2">
+                        <h3 data-testid="title-preparation">
+                            <span data-testid="area">Area</span> 
+                            <span data-testid="preparation">Preparation</span>
+                        </h3>
+                        <p data-testid="description-preparation">
+                            <span data-testid="we-protect">We protect</span> 
+                            <span data-testid="landscaping">landscaping,</span> 
+                            <span data-testid="cover">cover electrical</span> 
+                            <span data-testid="components">components,</span> 
+                            <span data-testid="close">close windows</span> 
+                            <span data-testid="doors">and doors,</span> 
+                            <span data-testid="prepare">and prepare</span> 
+                            <span data-testid="work">the work area</span> 
+                            <span data-testid="to-prevent">to prevent</span> 
+                            <span data-testid="damage-ensure">damage and ensure</span> 
+                            <span data-testid="safety">safety throughout</span> 
+                            <span data-testid="cleaning-process">the cleaning process.</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="process-step" data-testid="step-3">
+                    <div class="step-number" data-testid="number-3">3</div>
+                    <div class="step-content" data-testid="content-3">
+                        <h3 data-testid="title-method">
+                            <span data-testid="appropriate-method">Appropriate Method</span> 
+                            <span data-testid="selection">Selection</span>
+                        </h3>
+                        <p data-testid="description-method">
+                            <span data-testid="based">Based on</span> 
+                            <span data-testid="surface-type">surface type</span> 
+                            <span data-testid="condition">and condition,</span> 
+                            <span data-testid="we-select">we select</span> 
+                            <span data-testid="either">either</span> 
+                            <span data-testid="soft-washing-method">soft washing</span> 
+                            <span data-testid="low-pressure">low pressure</span> 
+                            <span data-testid="with">with specialized</span> 
+                            <span data-testid="cleaning-solutions">cleaning solutions</span> 
+                            <span data-testid="or-pressure">or pressure washing</span> 
+                            <span data-testid="controlled">controlled</span> 
+                            <span data-testid="high-pressure">high pressure</span> 
+                            <span data-testid="for-durable">for durable surfaces.</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="process-step" data-testid="step-4">
+                    <div class="step-number" data-testid="number-4">4</div>
+                    <div class="step-content" data-testid="content-4">
+                        <h3 data-testid="title-cleaning">
+                            <span data-testid="professional-cleaning">Professional</span> 
+                            <span data-testid="cleaning-title">Cleaning</span>
+                        </h3>
+                        <p data-testid="description-cleaning">
+                            <span data-testid="our-experienced">Our experienced</span> 
+                            <span data-testid="technicians">technicians</span> 
+                            <span data-testid="clean">clean each</span> 
+                            <span data-testid="surface-using">surface using</span> 
+                            <span data-testid="proven">proven techniques,</span> 
+                            <span data-testid="proper">proper equipment</span> 
+                            <span data-testid="settings">settings,</span> 
+                            <span data-testid="effective">and effective</span> 
+                            <span data-testid="cleaning-solutions-that">cleaning solutions that</span> 
+                            <span data-testid="remove-dirt">remove dirt, algae,</span> 
+                            <span data-testid="mold">mold, and stains</span> 
+                            <span data-testid="without-causing">without causing damage.</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="process-step" data-testid="step-5">
+                    <div class="step-number" data-testid="number-5">5</div>
+                    <div class="step-content" data-testid="content-5">
+                        <h3 data-testid="title-inspection">
+                            <span data-testid="quality">Quality</span> 
+                            <span data-testid="inspection">Inspection</span>
+                        </h3>
+                        <p data-testid="description-inspection">
+                            <span data-testid="after">After cleaning,</span> 
+                            <span data-testid="we-inspect">we inspect</span> 
+                            <span data-testid="all-areas">all areas</span> 
+                            <span data-testid="to-ensure">to ensure</span> 
+                            <span data-testid="complete">complete cleaning,</span> 
+                            <span data-testid="check">check for</span> 
+                            <span data-testid="any-issues">any issues,</span> 
+                            <span data-testid="verify">and verify</span> 
+                            <span data-testid="your-complete">your complete</span> 
+                            <span data-testid="satisfaction-with">satisfaction with</span> 
+                            <span data-testid="results">the results</span> 
+                            <span data-testid="before">before considering</span> 
+                            <span data-testid="job">the job complete.</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Soft Wash vs Pressure Wash Comparison -->
+    <section class="content-section section-light" data-testid="section-comparison">
+        <div class="container" data-testid="comparison-container">
+            <div class="section-header" data-testid="section-header-comparison">
+                <div class="overline" data-testid="overline-choosing">
+                    <span data-testid="choosing">CHOOSING</span> 
+                    <span data-testid="the-right">THE RIGHT</span> 
+                    <span data-testid="method">METHOD</span>
+                </div>
+                <h2 data-testid="heading-comparison">
+                    <span data-testid="choosing-right">Choosing the Right</span> 
+                    <span data-testid="cleaning-method-title">Cleaning Method</span> 
+                    <span data-testid="for-your-property">for Your Property</span>
+                </h2>
+            </div>
+
+            <div class="comparison-grid" data-testid="comparison-grid">
+                <div class="comparison-card soft-wash" data-testid="card-soft-wash">
+                    <h3 data-testid="title-soft-wash">
+                        <span data-testid="soft">Soft</span> 
+                        <span data-testid="washing">Washing</span>
+                    </h3>
+                    
+                    <div class="comparison-section" data-testid="section-best-for-soft">
+                        <h4 data-testid="best-for-soft">
+                            <span data-testid="best">Best</span> 
+                            <span data-testid="for">For:</span>
+                        </h4>
+                        <ul class="comparison-list" data-testid="list-soft-wash">
+                            <li data-testid="item-roofs">
+                                <span class="comparison-check" data-testid="check-roofs">YES</span>
+                                <span data-testid="text-roofs">Roofs (shingles, tile, metal)</span>
+                            </li>
+                            <li data-testid="item-house-siding">
+                                <span class="comparison-check" data-testid="check-house-siding">YES</span>
+                                <span data-testid="text-house-siding">House siding (vinyl, wood, stucco)</span>
+                            </li>
+                            <li data-testid="item-painted">
+                                <span class="comparison-check" data-testid="check-painted">YES</span>
+                                <span data-testid="text-painted">Painted surfaces</span>
+                            </li>
+                            <li data-testid="item-windows">
+                                <span class="comparison-check" data-testid="check-windows">YES</span>
+                                <span data-testid="text-windows">Windows and trim</span>
+                            </li>
+                            <li data-testid="item-delicate">
+                                <span class="comparison-check" data-testid="check-delicate">YES</span>
+                                <span data-testid="text-delicate">Delicate materials</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="comparison-section" data-testid="section-how-soft">
+                        <h4 data-testid="how-works-soft">
+                            <span data-testid="how">How</span> 
+                            <span data-testid="it">It</span> 
+                            <span data-testid="works">Works:</span>
+                        </h4>
+                        <p data-testid="description-soft-wash">
+                            <span data-testid="low-pressure-application">Low-pressure application</span> 
+                            <span data-testid="of-specialized">of specialized</span> 
+                            <span data-testid="cleaning-solutions-soft">cleaning solutions</span> 
+                            <span data-testid="that-kill">that kill</span> 
+                            <span data-testid="organic-growth">organic growth,</span> 
+                            <span data-testid="dissolve">dissolve stains,</span> 
+                            <span data-testid="rinse">and rinse</span> 
+                            <span data-testid="away">away cleanly</span> 
+                            <span data-testid="without-damage">without damage.</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="comparison-card pressure-wash" data-testid="card-pressure-wash">
+                    <h3 data-testid="title-pressure-wash">
+                        <span data-testid="pressure-title">Pressure</span> 
+                        <span data-testid="washing-title">Washing</span>
+                    </h3>
+                    
+                    <div class="comparison-section" data-testid="section-best-for-pressure">
+                        <h4 data-testid="best-for-pressure">
+                            <span data-testid="best-pressure">Best</span> 
+                            <span data-testid="for-pressure">For:</span>
+                        </h4>
+                        <ul class="comparison-list" data-testid="list-pressure-wash">
+                            <li data-testid="item-concrete">
+                                <span class="comparison-check" data-testid="check-concrete-pressure">YES</span>
+                                <span data-testid="text-concrete-pressure">Concrete driveways and walkways</span>
+                            </li>
+                            <li data-testid="item-brick">
+                                <span class="comparison-check" data-testid="check-brick">YES</span>
+                                <span data-testid="text-brick">Brick and masonry</span>
+                            </li>
+                            <li data-testid="item-deck-patio">
+                                <span class="comparison-check" data-testid="check-deck-patio">YES</span>
+                                <span data-testid="text-deck-patio">Deck and patio surfaces</span>
+                            </li>
+                            <li data-testid="item-fences">
+                                <span class="comparison-check" data-testid="check-fences">YES</span>
+                                <span data-testid="text-fences">Fences and retaining walls</span>
+                            </li>
+                            <li data-testid="item-equipment">
+                                <span class="comparison-check" data-testid="check-equipment">YES</span>
+                                <span data-testid="text-equipment">Heavy equipment or vehicles</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="comparison-section" data-testid="section-how-pressure">
+                        <h4 data-testid="how-works-pressure">
+                            <span data-testid="how-pressure">How</span> 
+                            <span data-testid="it-pressure">It</span> 
+                            <span data-testid="works-pressure">Works:</span>
+                        </h4>
+                        <p data-testid="description-pressure-wash">
+                            <span data-testid="controlled-high">Controlled high-pressure</span> 
+                            <span data-testid="water-removes">water removes</span> 
+                            <span data-testid="deep-set">deep-set stains,</span> 
+                            <span data-testid="grime-buildup">grime, and buildup</span> 
+                            <span data-testid="from-durable">from durable</span> 
+                            <span data-testid="surfaces-that">surfaces that</span> 
+                            <span data-testid="can-withstand">can withstand</span> 
+                            <span data-testid="intensive">intensive cleaning.</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Damage Prevention Warning -->
+    <section class="content-section" data-testid="section-warning">
+        <div class="container" data-testid="warning-container">
+            <div class="warning-box" data-testid="warning-box">
+                <h3 data-testid="warning-title">
+                    <span data-testid="warning-icon">WARNING</span>
+                    <span data-testid="diy-mistakes">DIY Pressure Washing</span> 
+                    <span data-testid="mistakes">Mistakes That</span> 
+                    <span data-testid="cause">Cause Thousands</span> 
+                    <span data-testid="in-damage">in Damage</span>
+                </h3>
+                
+                <ul class="warning-list" data-testid="warning-list">
+                    <li data-testid="warning-pressure">
+                        <span class="warning-icon" data-testid="icon-pressure-warning">NO</span>
+                        <div data-testid="text-pressure-warning">
+                            <strong data-testid="too-much">Too Much Pressure</strong> 
+                            <span data-testid="strips">- Strips paint,</span> 
+                            <span data-testid="damages">damages siding,</span> 
+                            <span data-testid="cracks">cracks concrete,</span> 
+                            <span data-testid="forces-water">and forces water</span> 
+                            <span data-testid="behind">behind surfaces</span>
+                        </div>
+                    </li>
+                    <li data-testid="warning-nozzle">
+                        <span class="warning-icon" data-testid="icon-nozzle">NO</span>
+                        <div data-testid="text-nozzle">
+                            <strong data-testid="wrong-nozzle">Wrong Nozzle Angle</strong> 
+                            <span data-testid="causes">- Causes</span> 
+                            <span data-testid="visible">visible etching,</span> 
+                            <span data-testid="surface">surface scarring,</span> 
+                            <span data-testid="permanent">and permanent</span> 
+                            <span data-testid="damage-marks">damage marks</span>
+                        </div>
+                    </li>
+                    <li data-testid="warning-technique">
+                        <span class="warning-icon" data-testid="icon-technique">NO</span>
+                        <div data-testid="text-technique">
+                            <strong data-testid="improper">Improper Technique</strong> 
+                            <span data-testid="creates">- Creates</span> 
+                            <span data-testid="streaking">streaking,</span> 
+                            <span data-testid="uneven">uneven cleaning,</span> 
+                            <span data-testid="spreads">and spreads</span> 
+                            <span data-testid="contamination">contamination</span> 
+                            <span data-testid="instead">instead of</span> 
+                            <span data-testid="removing">removing it</span>
+                        </div>
+                    </li>
+                    <li data-testid="warning-chemicals">
+                        <span class="warning-icon" data-testid="icon-chemicals">NO</span>
+                        <div data-testid="text-chemicals">
+                            <strong data-testid="wrong-chemicals">Using Wrong Chemicals</strong> 
+                            <span data-testid="kills">- Kills</span> 
+                            <span data-testid="landscaping-damages">landscaping, damages</span> 
+                            <span data-testid="surfaces-creates">surfaces, creates</span> 
+                            <span data-testid="toxic">toxic runoff,</span> 
+                            <span data-testid="discoloration">and causes discoloration</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="solution-statement" data-testid="solution-statement">
+                    <span data-testid="our-professional-team">Our professional team</span> 
+                    <span data-testid="has-training">has the training,</span> 
+                    <span data-testid="equipment-experience">equipment, and experience</span> 
+                    <span data-testid="to-clean">to clean</span> 
+                    <span data-testid="effectively">effectively</span> 
+                    <span data-testid="without-causing-costly">without causing costly</span> 
+                    <span data-testid="damage-protect">damage. Protect</span> 
+                    <span data-testid="your-investment">your investment</span> 
+                    <span data-testid="choose">choose</span> 
+                    <span data-testid="professional-cleaning">professional cleaning.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="content-section" data-testid="section-faq">
+        <div class="container" data-testid="faq-container">
+            <div class="section-header" data-testid="section-header-faq">
+                <div class="overline" data-testid="overline-faq">
+                    <span data-testid="pressure-washing">PRESSURE WASHING</span> 
+                    <span data-testid="questions">QUESTIONS</span> 
+                    <span data-testid="answered">ANSWERED</span>
+                </div>
+                <h2 data-testid="heading-faq">
+                    <span data-testid="pressure-washing-questions">Pressure Washing</span> 
+                    <span data-testid="questions-answered">Questions Answered</span>
+                </h2>
+            </div>
+
+            <div class="faq-container" data-testid="faq-items-container">
+                <div class="faq-item" data-testid="faq-frequency">
+                    <div class="faq-question" data-testid="question-frequency">
+                        <span data-testid="question-text-1">
+                            <span data-testid="how-often">How often</span> 
+                            <span data-testid="should-i-have">should I have</span> 
+                            <span data-testid="my-property">my property</span> 
+                            <span data-testid="pressure-washed">pressure washed?</span>
+                        </span>
+                        <span class="expand-icon" data-testid="icon-frequency">+</span>
+                    </div>
+                    <div class="faq-answer" data-testid="answer-frequency">
+                        <span data-testid="most-homes">Most homes</span> 
+                        <span data-testid="benefit-from">benefit from</span> 
+                        <span data-testid="annual-cleaning">annual cleaning,</span> 
+                        <span data-testid="though-specific">though specific</span> 
+                        <span data-testid="surfaces-may">surfaces may</span> 
+                        <span data-testid="need-more">need more</span> 
+                        <span data-testid="or-less">or less</span> 
+                        <span data-testid="frequent">frequent attention.</span> 
+                        <span data-testid="roofs-typically">Roofs typically</span> 
+                        <span data-testid="need-cleaning">need cleaning</span> 
+                        <span data-testid="every-2-3">every 2-3 years,</span> 
+                        <span data-testid="while-driveways">while driveways</span> 
+                        <span data-testid="may-need-annual">may need annual</span> 
+                        <span data-testid="or-bi-annual">or bi-annual</span> 
+                        <span data-testid="cleaning-depending">cleaning depending</span> 
+                        <span data-testid="on-use">on use</span> 
+                        <span data-testid="and-staining">and staining.</span>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-testid="faq-safety">
+                    <div class="faq-question" data-testid="question-safety">
+                        <span data-testid="question-text-2">
+                            <span data-testid="is-pressure-washing">Is pressure washing</span> 
+                            <span data-testid="safe-for-all">safe for all</span> 
+                            <span data-testid="surfaces">surfaces?</span>
+                        </span>
+                        <span class="expand-icon" data-testid="icon-safety">+</span>
+                    </div>
+                    <div class="faq-answer" data-testid="answer-safety">
+                        <span data-testid="not-all">Not all</span> 
+                        <span data-testid="surfaces-can">surfaces can</span> 
+                        <span data-testid="handle-high">handle high-pressure</span> 
+                        <span data-testid="cleaning-thats">cleaning. That's</span> 
+                        <span data-testid="why-we-assess">why we assess</span> 
+                        <span data-testid="each-surface">each surface</span> 
+                        <span data-testid="and-use">and use</span> 
+                        <span data-testid="appropriate-methods">appropriate methods</span> 
+                        <span data-testid="soft-washing-for">soft washing for</span> 
+                        <span data-testid="delicate-materials">delicate materials</span> 
+                        <span data-testid="and-pressure-washing">and pressure washing</span> 
+                        <span data-testid="for-durable-surfaces">for durable surfaces.</span> 
+                        <span data-testid="professional-assessment">Professional assessment</span> 
+                        <span data-testid="prevents-damage">prevents damage.</span>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-testid="faq-difference">
+                    <div class="faq-question" data-testid="question-difference">
+                        <span data-testid="question-text-3">
+                            <span data-testid="whats-the-difference">What's the difference</span> 
+                            <span data-testid="between-pressure">between pressure</span> 
+                            <span data-testid="washing-and-soft">washing and soft</span> 
+                            <span data-testid="washing-question">washing?</span>
+                        </span>
+                        <span class="expand-icon" data-testid="icon-difference">+</span>
+                    </div>
+                    <div class="faq-answer" data-testid="answer-difference">
+                        <span data-testid="pressure-washing-uses">Pressure washing</span> 
+                        <span data-testid="uses-high-pressure">uses high-pressure</span> 
+                        <span data-testid="water-to-physically">water to physically</span> 
+                        <span data-testid="remove-dirt-stains">remove dirt and stains</span> 
+                        <span data-testid="from-durable-surfaces">from durable surfaces.</span> 
+                        <span data-testid="soft-washing-uses">Soft washing uses</span> 
+                        <span data-testid="low-pressure-with">low pressure with</span> 
+                        <span data-testid="specialized-cleaning">specialized cleaning</span> 
+                        <span data-testid="solutions-to">solutions to</span> 
+                        <span data-testid="chemically-break">chemically break</span> 
+                        <span data-testid="down-and-remove">down and remove</span> 
+                        <span data-testid="organic-growth-stains">organic growth and stains</span> 
+                        <span data-testid="from-delicate-surfaces">from delicate surfaces.</span>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-testid="faq-landscaping">
+                    <div class="faq-question" data-testid="question-landscaping">
+                        <span data-testid="question-text-4">
+                            <span data-testid="will-pressure-washing">Will pressure washing</span> 
+                            <span data-testid="damage-my">damage my</span> 
+                            <span data-testid="landscaping">landscaping?</span>
+                        </span>
+                        <span class="expand-icon" data-testid="icon-landscaping">+</span>
+                    </div>
+                    <div class="faq-answer" data-testid="answer-landscaping">
+                        <span data-testid="professional-pressure-washing">Professional pressure washing</span> 
+                        <span data-testid="includes-protecting">includes protecting</span> 
+                        <span data-testid="your-landscaping">your landscaping</span> 
+                        <span data-testid="through-pre-treatment">through pre-treatment</span> 
+                        <span data-testid="watering-covering">watering, covering</span> 
+                        <span data-testid="sensitive-plants">sensitive plants,</span> 
+                        <span data-testid="and-using-eco">and using eco-friendly</span> 
+                        <span data-testid="cleaning-solutions">cleaning solutions.</span> 
+                        <span data-testid="we-take">We take</span> 
+                        <span data-testid="extensive-precautions">extensive precautions</span> 
+                        <span data-testid="to-prevent-any">to prevent any</span> 
+                        <span data-testid="landscape-damage">landscape damage.</span>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-testid="faq-duration">
+                    <div class="faq-question" data-testid="question-duration">
+                        <span data-testid="question-text-5">
+                            <span data-testid="how-long-does">How long does</span> 
+                            <span data-testid="professional-pressure">professional pressure</span> 
+                            <span data-testid="washing-take">washing take?</span>
+                        </span>
+                        <span class="expand-icon" data-testid="icon-duration">+</span>
+                    </div>
+                    <div class="faq-answer" data-testid="answer-duration">
+                        <span data-testid="timing-varies">Timing varies</span> 
+                        <span data-testid="based-on-property">based on property</span> 
+                        <span data-testid="size-and-services">size and services</span> 
+                        <span data-testid="selected-typical">selected. A typical</span> 
+                        <span data-testid="house-exterior">house exterior</span> 
+                        <span data-testid="cleaning-takes">cleaning takes</span> 
+                        <span data-testid="2-4-hours">2-4 hours,</span> 
+                        <span data-testid="while-comprehensive">while comprehensive</span> 
+                        <span data-testid="property-cleaning">property cleaning</span> 
+                        <span data-testid="may-take">may take</span> 
+                        <span data-testid="full-day">a full day.</span> 
+                        <span data-testid="we-provide-accurate">We provide accurate</span> 
+                        <span data-testid="time-estimates">time estimates</span> 
+                        <span data-testid="during-free">during your</span> 
+                        <span data-testid="consultation">free consultation.</span>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-testid="faq-stains">
+                    <div class="faq-question" data-testid="question-stains">
+                        <span data-testid="question-text-6">
+                            <span data-testid="can-pressure-washing">Can pressure washing</span> 
+                            <span data-testid="remove-all">remove all</span> 
+                            <span data-testid="stains">stains?</span>
+                        </span>
+                        <span class="expand-icon" data-testid="icon-stains">+</span>
+                    </div>
+                    <div class="faq-answer" data-testid="answer-stains">
+                        <span data-testid="most-stains">Most stains</span> 
+                        <span data-testid="can-be-removed">can be removed</span> 
+                        <span data-testid="or-significantly">or significantly</span> 
+                        <span data-testid="lightened-with">lightened with</span> 
+                        <span data-testid="professional-cleaning">professional cleaning.</span> 
+                        <span data-testid="some-permanent">Some permanent</span> 
+                        <span data-testid="staining-like">staining (like</span> 
+                        <span data-testid="rust-on-concrete">rust on concrete)</span> 
+                        <span data-testid="may-not-fully">may not fully</span> 
+                        <span data-testid="remove-but">remove but</span> 
+                        <span data-testid="will-be">will be</span> 
+                        <span data-testid="dramatically-improved">dramatically improved.</span> 
+                        <span data-testid="well-assess">We'll assess</span> 
+                        <span data-testid="stain-types">stain types</span> 
+                        <span data-testid="during-inspection">during inspection</span> 
+                        <span data-testid="and-set">and set</span> 
+                        <span data-testid="realistic-expectations">realistic expectations.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="content-section" data-testid="section-contact">
+        <div class="container" data-testid="contact-container">
+            <div class="section-header" data-testid="section-header-contact">
+                <div class="overline" data-testid="overline-contact">
+                    <span data-testid="ready">READY</span> 
+                    <span data-testid="to">TO</span> 
+                    <span data-testid="restore">RESTORE</span>
+                </div>
+                <h2 data-testid="heading-contact">
+                    <span data-testid="ready-to-restore">Ready to Restore</span> 
+                    <span data-testid="your-property">Your Property's</span> 
+                    <span data-testid="appearance">Appearance?</span>
+                </h2>
+                <p class="section-subtitle" data-testid="subtitle-contact">
+                    <span data-testid="get-your-free">Get your free,</span> 
+                    <span data-testid="no-obligation">no-obligation</span> 
+                    <span data-testid="cleaning-quote">cleaning quote</span> 
+                    <span data-testid="from-city">from {{city_name}}'s</span> 
+                    <span data-testid="trusted">trusted</span> 
+                    <span data-testid="exterior-cleaning">exterior cleaning</span> 
+                    <span data-testid="experts">experts.</span>
+                </p>
+            </div>
+
+            <div class="contact-grid" data-testid="contact-grid">
+                <div class="contact-info" data-testid="contact-info">
+                    <h3 data-testid="contact-title">
+                        <span data-testid="contact-us">Contact</span> 
+                        <span data-testid="today">Us Today</span>
+                    </h3>
+
+                    <div class="contact-item" data-testid="contact-phone">
+                        <div class="contact-icon" data-testid="icon-phone">PHONE</div>
+                        <div class="contact-details" data-testid="details-phone">
+                            <h4 data-testid="phone-title">
+                                <span data-testid="call">Call</span> 
+                                <span data-testid="now">Now</span>
+                            </h4>
+                            <p data-testid="phone-number">
+                                <a href="tel:{{company_phone}}" data-testid="link-phone">{{company_phone}}</a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item" data-testid="contact-email">
+                        <div class="contact-icon" data-testid="icon-email">EMAIL</div>
+                        <div class="contact-details" data-testid="details-email">
+                            <h4 data-testid="email-title">
+                                <span data-testid="email">Email</span> 
+                                <span data-testid="us">Us</span>
+                            </h4>
+                            <p data-testid="email-address">
+                                <a href="mailto:{{company_email}}" data-testid="link-email">{{company_email}}</a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item" data-testid="contact-service-area">
+                        <div class="contact-icon" data-testid="icon-location">LOCATION</div>
+                        <div class="contact-details" data-testid="details-location">
+                            <h4 data-testid="service-area-title">
+                                <span data-testid="service">Service</span> 
+                                <span data-testid="area">Area</span>
+                            </h4>
+                            <p data-testid="service-area-text">
+                                <span data-testid="serving">Serving</span> 
+                                <span data-testid="city-area">{{city_name}}</span> 
+                                <span data-testid="and-surrounding">and surrounding</span> 
+                                <span data-testid="areas">areas</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item" data-testid="contact-hours">
+                        <div class="contact-icon" data-testid="icon-hours">CLOCK</div>
+                        <div class="contact-details" data-testid="details-hours">
+                            <h4 data-testid="hours-title">
+                                <span data-testid="business">Business</span> 
+                                <span data-testid="hours">Hours</span>
+                            </h4>
+                            <p data-testid="hours-weekday">
+                                <span data-testid="mon-fri">Mon-Fri:</span> 
+                                <span data-testid="weekday-hours">7:00 AM - 7:00 PM</span>
+                            </p>
+                            <p data-testid="hours-saturday">
+                                <span data-testid="saturday">Saturday:</span> 
+                                <span data-testid="saturday-hours">8:00 AM - 5:00 PM</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form" data-testid="contact-form">
+                    <h3 data-testid="form-title-contact">
+                        <span data-testid="request">Request</span> 
+                        <span data-testid="free-quote">Free Quote</span>
+                    </h3>
+                    
+                    <form action="/submit-contact" method="POST" data-testid="contact-form-element">
+                        <div class="form-group" data-testid="form-group-contact-name">
+                            <label for="contact-name" class="form-label" data-testid="label-contact-name">Name *</label>
+                            <input type="text" id="contact-name" name="name" class="form-input" data-testid="input-contact-name" required>
+                        </div>
+
+                        <div class="form-group" data-testid="form-group-contact-phone">
+                            <label for="contact-phone" class="form-label" data-testid="label-contact-phone">Phone *</label>
+                            <input type="tel" id="contact-phone" name="phone" class="form-input" data-testid="input-contact-phone" required>
+                        </div>
+
+                        <div class="form-group" data-testid="form-group-contact-email">
+                            <label for="contact-email" class="form-label" data-testid="label-contact-email">Email</label>
+                            <input type="email" id="contact-email" name="email" class="form-input" data-testid="input-contact-email">
+                        </div>
+
+                        <div class="form-group" data-testid="form-group-contact-address">
+                            <label for="address" class="form-label" data-testid="label-address">Address</label>
+                            <input type="text" id="address" name="address" class="form-input" data-testid="input-address" placeholder="{{city_name}}, {{state_abbr}}">
+                        </div>
+
+                        <div class="form-group" data-testid="form-group-contact-service">
+                            <label for="service-needed" class="form-label" data-testid="label-service-needed">Service Needed</label>
+                            <select id="service-needed" name="service_needed" class="form-select" data-testid="select-service-needed">
+                                <option value="" data-testid="option-select">Select Service</option>
+                                <option value="house-washing" data-testid="option-house-washing">House Washing</option>
+                                <option value="roof-cleaning" data-testid="option-roof-cleaning">Roof Cleaning</option>
+                                <option value="concrete-cleaning" data-testid="option-concrete-cleaning">Concrete Cleaning</option>
+                                <option value="deck-cleaning" data-testid="option-deck-cleaning">Deck Cleaning</option>
+                                <option value="multiple-services" data-testid="option-multiple-services">Multiple Services</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" data-testid="form-group-contact-details">
+                            <label for="contact-details" class="form-label" data-testid="label-contact-details">Project Details</label>
+                            <textarea id="contact-details" name="details" class="form-textarea" data-testid="textarea-contact-details" rows="4" placeholder="Tell us about your pressure washing needs..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-form" data-testid="button-contact-submit">
+                            <span data-testid="get-free-quote">Get Free Quote</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- JavaScript for FAQ functionality -->
+    <script data-testid="faq-script">
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const answer = this.nextElementSibling;
+                    const icon = this.querySelector('.expand-icon');
+                    
+                    if (answer.style.display === 'block') {
+                        answer.style.display = 'none';
+                        icon.textContent = '+';
+                    } else {
+                        // Close all other answers
+                        faqQuestions.forEach(otherQuestion => {
+                            const otherAnswer = otherQuestion.nextElementSibling;
+                            const otherIcon = otherQuestion.querySelector('.expand-icon');
+                            otherAnswer.style.display = 'none';
+                            otherIcon.textContent = '+';
+                        });
+                        
+                        // Open this answer
+                        answer.style.display = 'block';
+                        icon.textContent = '-';
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

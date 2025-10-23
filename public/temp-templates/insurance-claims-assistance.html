@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Claims Assistance {{city_name}} | Maximize Your Settlement | Clear Home</title>
+    <meta name="description" content="Professional insurance claims advocacy in {{city_name}}. We maximize storm damage settlements, handle all paperwork, and fight for the coverage you deserve. Free consultation.">
+    <meta name="keywords" content="insurance claims assistance {{city_name}}, roofing insurance claims {{city_name}}, storm damage claims {{city_name}}, insurance claim advocate {{city_name}}">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Insurance Claims Assistance {{city_name}} | Maximize Your Settlement | Clear Home">
+    <meta property="og:description" content="Professional insurance claims advocacy in {{city_name}}. We maximize storm damage settlements, handle all paperwork, and fight for the coverage you deserve. Free consultation.">
+    <meta property="og:url" content="{{base_url}}/{{city_slug}}/insurance-claims-assistance">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{company_name}}">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Insurance Claims Assistance {{city_name}} | Maximize Your Settlement | Clear Home">
+    <meta name="twitter:description" content="Professional insurance claims advocacy in {{city_name}}. We maximize storm damage settlements, handle all paperwork, and fight for the coverage you deserve. Free consultation.">
+    
+    <link rel="canonical" href="{{canonical_url}}">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #2D3748;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .btn-primary {
+            background: #2B6CB0;
+            color: white;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary:hover {
+            background: #215387;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(43, 108, 176, 0.3);
+        }
+        
+        .btn-white {
+            background: white;
+            color: #2B6CB0;
+            padding: 18px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255,255,255,0.3);
+        }
+        
+        /* Header Navigation */
+        .header {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2B6CB0;
+        }
+        
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        .main-nav a {
+            text-decoration: none;
+            color: #4A5568;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .main-nav a:hover {
+            color: #2B6CB0;
+        }
+        
+        .header-phone {
+            background: #2B6CB0;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .header-phone:hover {
+            background: #215387;
+            transform: translateY(-1px);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 100%);
+            padding: 80px 0;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .hero-container {
+            display: grid;
+            grid-template-columns: 60% 40%;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .hero-content h1 {
+            font-size: 42px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 24px;
+            color: #4A5568;
+            margin-bottom: 30px;
+            line-height: 1.3;
+        }
+        
+        .benefits-list {
+            margin-bottom: 30px;
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #1A202C;
+            font-size: 16px;
+        }
+        
+        .benefit-item svg {
+            color: #059669;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .assessment-form {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid #E2E8F0;
+        }
+        
+        .form-title {
+            color: #1A202C;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .form-subtitle {
+            color: #4A5568;
+            font-size: 16px;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #1A202C;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E2E8F0;
+            border-radius: 6px;
+            font-size: 16px;
+            background: white;
+            color: #1A202C;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2B6CB0;
+        }
+        
+        .form-submit {
+            width: 100%;
+            background: #2B6CB0;
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        .form-submit:hover {
+            background: #215387;
+            transform: translateY(-2px);
+        }
+        
+        /* Credibility Section */
+        .credibility-section {
+            background: white;
+            padding: 60px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 30px 20px;
+            background: #F7FAFC;
+            border-radius: 12px;
+            border-left: 4px solid #2B6CB0;
+        }
+        
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2B6CB0;
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+        
+        .stat-description {
+            font-size: 16px;
+            color: #4A5568;
+            font-weight: 600;
+        }
+        
+        /* Problem/Solution Section */
+        .problem-solution {
+            background: #EDF2F7;
+            padding: 80px 0;
+        }
+        
+        .problem-solution-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-top: 50px;
+        }
+        
+        .problem-column,
+        .solution-column {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .problem-column {
+            border-left: 4px solid #DC2626;
+        }
+        
+        .solution-column {
+            border-left: 4px solid #059669;
+        }
+        
+        .column-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 25px;
+        }
+        
+        .point-item {
+            margin-bottom: 20px;
+        }
+        
+        .point-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 8px;
+        }
+        
+        .point-description {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.6;
+        }
+        
+        .comparison-graphic {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #EDF8FF;
+            border-radius: 8px;
+            border: 2px dashed #2B6CB0;
+        }
+        
+        .comparison-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2B6CB0;
+        }
+        
+        /* Service Process Section */
+        .process-section {
+            background: white;
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1A202C;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-intro {
+            font-size: 18px;
+            color: #4A5568;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 50px;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        
+        .process-timeline {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+            position: relative;
+        }
+        
+        .process-timeline::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: #2B6CB0;
+            z-index: 1;
+        }
+        
+        .process-step {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 2px solid #E2E8F0;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: #2B6CB0;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+        
+        .step-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        
+        .step-description {
+            font-size: 14px;
+            color: #4A5568;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .step-timeline {
+            font-size: 12px;
+            color: #2B6CB0;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        /* Services Breakdown */
+        .services-breakdown {
+            background: #F7FAFC;
+            padding: 80px 0;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 50px;
+        }
+        
+        .service-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 4px solid #2B6CB0;
+        }
+        
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            background: #EDF8FF;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2B6CB0;
+            margin-bottom: 20px;
+        }
+        
+        .service-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 20px;
+        }
+        
+        .service-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        
+        .service-list li {
+            padding: 5px 0;
+            color: #4A5568;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .service-list li::before {
+            content: "•";
+            color: #2B6CB0;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .claim-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #059669;
+            background: #F0FDF4;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            background: white;
+            padding: 80px 0;
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .testimonial-card {
+            background: #F7FAFC;
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 4px solid #2B6CB0;
+            position: relative;
+        }
+        
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            font-size: 60px;
+            color: #2B6CB0;
+            line-height: 1;
+        }
+        
+        .testimonial-text {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        
+        .testimonial-author {
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 5px;
+        }
+        
+        .testimonial-details {
+            font-size: 14px;
+            color: #4A5568;
+            margin-bottom: 10px;
+        }
+        
+        .testimonial-result {
+            font-size: 16px;
+            font-weight: 700;
+            color: #059669;
+            background: #F0FDF4;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        /* FAQ Section */
+        .faq-section {
+            background: #F7FAFC;
+            padding: 80px 0;
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            background: white;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .faq-question {
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1A202C;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            padding: 0 20px 20px;
+            color: #4A5568;
+            line-height: 1.6;
+            border-top: 1px solid #E2E8F0;
+        }
+        
+        /* Service Areas */
+        .service-areas {
+            background: white;
+            padding: 80px 0;
+        }
+        
+        .areas-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+            margin-top: 50px;
+        }
+        
+        .areas-list h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 15px;
+        }
+        
+        .area-group {
+            margin-bottom: 25px;
+        }
+        
+        .area-cities {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.8;
+        }
+        
+        .emergency-note {
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #991B1B;
+            font-weight: 600;
+        }
+        
+        .map-placeholder {
+            width: 100%;
+            height: 350px;
+            background: #E5E7EB;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9CA3AF;
+            font-size: 18px;
+            border: 2px dashed #D1D5DB;
+        }
+        
+        /* Final CTA */
+        .final-cta {
+            background: linear-gradient(135deg, #2B6CB0 0%, #215387 100%);
+            padding: 80px 0;
+            text-align: center;
+            color: white;
+        }
+        
+        .cta-content h2 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .cta-subtitle {
+            font-size: 20px;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .urgency-statement {
+            font-size: 18px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #FbbF24;
+        }
+        
+        .value-proposition {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #FbbF24;
+        }
+        
+        .cta-contact {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .contact-item svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .hero-content h1 {
+                font-size: 32px;
+            }
+            
+            .hero-subtitle {
+                font-size: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            
+            .problem-solution-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .process-timeline {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .process-timeline::before {
+                display: none;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .areas-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .cta-contact {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .main-nav {
+                display: none;
+            }
+            
+            .section-title {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header" data-testid="header-main">
+        <div class="nav-container">
+            <div class="logo" data-testid="logo-company">{{company_name}}</div>
+            <nav class="main-nav" data-testid="nav-main">
+                <ul>
+                    <li><a href="/" data-testid="link-nav-home">Home</a></li>
+                    <li><a href="/services" data-testid="link-nav-services">Services</a></li>
+                    <li><a href="/about" data-testid="link-nav-about">About</a></li>
+                    <li><a href="/contact" data-testid="link-nav-contact">Contact</a></li>
+                </ul>
+            </nav>
+            <a href="tel:{{company_phone}}" class="header-phone" data-testid="link-header-phone">{{company_phone}}</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" data-testid="section-hero">
+        <div class="container">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1 data-testid="heading-hero">Expert Insurance Claims Advocacy for Storm Damage Recovery</h1>
+                    
+                    <p class="hero-subtitle" data-testid="subtitle-hero">Navigate Complex Insurance Claims with Professional Guidance - We Handle Everything While You Focus on Recovery</p>
+                    
+                    <div class="benefits-list" data-testid="container-benefits">
+                        <div class="benefit-item" data-testid="benefit-advocacy">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            <span data-testid="text-advocacy"><strong>Professional Insurance Advocacy</strong> - We represent YOUR interests</span>
+                        </div>
+                        <div class="benefit-item" data-testid="benefit-maximize">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            <span data-testid="text-maximize"><strong>Maximize Claim Payouts</strong> - Get the full coverage you deserve</span>
+                        </div>
+                        <div class="benefit-item" data-testid="benefit-documentation">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            <span data-testid="text-documentation"><strong>Handle All Documentation</strong> - No paperwork stress for you</span>
+                        </div>
+                        <div class="benefit-item" data-testid="benefit-communication">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            <span data-testid="text-communication"><strong>Direct Insurance Communication</strong> - We deal with adjusters directly</span>
+                        </div>
+                        <div class="benefit-item" data-testid="benefit-fast">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            <span data-testid="text-fast"><strong>Fast Claim Processing</strong> - Expedite your settlement timeline</span>
+                        </div>
+                    </div>
+                    
+                    <a href="tel:{{company_phone}}" class="btn-primary" data-testid="button-start-claim">Start Your Claim Today</a>
+                </div>
+                
+                <div class="assessment-form" data-testid="form-assessment">
+                    <h3 class="form-title" data-testid="title-form">Get FREE Insurance Claim Assessment</h3>
+                    <p class="form-subtitle" data-testid="subtitle-form">Professional evaluation at no cost to you</p>
+                    
+                    <form data-testid="form-contact">
+                        <div class="form-group">
+                            <label for="first-name" data-testid="label-first-name">First Name *</label>
+                            <input type="text" id="first-name" name="first-name" required data-testid="input-first-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="last-name" data-testid="label-last-name">Last Name *</label>
+                            <input type="text" id="last-name" name="last-name" required data-testid="input-last-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone" data-testid="label-phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required data-testid="input-phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="email" data-testid="label-email">Email *</label>
+                            <input type="email" id="email" name="email" required data-testid="input-email">
+                        </div>
+                        <div class="form-group">
+                            <label for="property-address" data-testid="label-property-address">Property Address *</label>
+                            <input type="text" id="property-address" name="property-address" required data-testid="input-property-address">
+                        </div>
+                        <div class="form-group">
+                            <label for="damage-type" data-testid="label-damage-type">Type of Damage</label>
+                            <select id="damage-type" name="damage-type" required data-testid="select-damage-type">
+                                <option value="" data-testid="option-select-damage">Select Damage Type</option>
+                                <option value="hurricane" data-testid="option-hurricane">Hurricane Damage</option>
+                                <option value="hail" data-testid="option-hail">Hail Damage</option>
+                                <option value="wind" data-testid="option-wind">Wind Damage</option>
+                                <option value="water" data-testid="option-water">Water/Flood Damage</option>
+                                <option value="fire" data-testid="option-fire">Fire Damage</option>
+                                <option value="other" data-testid="option-other-damage">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="claim-status" data-testid="label-claim-status">Claim Status</label>
+                            <select id="claim-status" name="claim-status" required data-testid="select-claim-status">
+                                <option value="" data-testid="option-select-status">Select Claim Status</option>
+                                <option value="not-filed" data-testid="option-not-filed">Not Filed Yet</option>
+                                <option value="filed" data-testid="option-filed">Filed</option>
+                                <option value="denied" data-testid="option-denied">Denied</option>
+                                <option value="underpaid" data-testid="option-underpaid">Underpaid</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="form-submit" data-testid="button-form-submit">SCHEDULE FREE ASSESSMENT</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Credibility Section -->
+    <section class="credibility-section" data-testid="section-credibility">
+        <div class="container">
+            <h2 class="section-title" data-testid="heading-credibility">Proven Track Record of Success</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card" data-testid="stat-experience">
+                    <div class="stat-number" data-testid="number-experience">20+</div>
+                    <p class="stat-description" data-testid="description-experience">Years navigating insurance claims</p>
+                </div>
+                
+                <div class="stat-card" data-testid="stat-secured">
+                    <div class="stat-number" data-testid="number-secured">$2.5M+</div>
+                    <p class="stat-description" data-testid="description-secured">In claim payouts for clients</p>
+                </div>
+                
+                <div class="stat-card" data-testid="stat-claims">
+                    <div class="stat-number" data-testid="number-claims">500+</div>
+                    <p class="stat-description" data-testid="description-claims">Claims successfully processed</p>
+                </div>
+                
+                <div class="stat-card" data-testid="stat-success-rate">
+                    <div class="stat-number" data-testid="number-success-rate">95%</div>
+                    <p class="stat-description" data-testid="description-success-rate">Claims approved & paid</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem/Solution Section -->
+    <section class="problem-solution" data-testid="section-problem-solution">
+        <div class="container">
+            <h2 class="section-title" data-testid="heading-problem-solution">The Insurance Claims Reality</h2>
+            
+            <div class="problem-solution-grid">
+                <div class="problem-column" data-testid="column-problem">
+                    <h3 class="column-title" data-testid="title-problem">Why Insurance Claims Get Denied or Underpaid</h3>
+                    
+                    <div class="point-item" data-testid="problem-documentation">
+                        <div class="point-title" data-testid="title-documentation">Incomplete Documentation</div>
+                        <p class="point-description" data-testid="description-documentation">Missing photos, measurements, or reports that insurance companies require for approval</p>
+                    </div>
+                    
+                    <div class="point-item" data-testid="problem-undervalued">
+                        <div class="point-title" data-testid="title-undervalued">Undervalued Damage</div>
+                        <p class="point-description" data-testid="description-undervalued">Adjusters minimize scope to reduce payouts and protect company profits</p>
+                    </div>
+                    
+                    <div class="point-item" data-testid="problem-policy">
+                        <div class="point-title" data-testid="title-policy">Policy Confusion</div>
+                        <p class="point-description" data-testid="description-policy">Complex language designed to limit coverage and confuse homeowners</p>
+                    </div>
+                    
+                    <div class="point-item" data-testid="problem-deadlines">
+                        <div class="point-title" data-testid="title-deadlines">Deadline Pressure</div>
+                        <p class="point-description" data-testid="description-deadlines">Missing filing deadlines kills your claim permanently</p>
+                    </div>
+                    
+                    <div class="point-item" data-testid="problem-negotiation">
+                        <div class="point-title" data-testid="title-negotiation">Negotiation Inexperience</div>
+                        <p class="point-description" data-testid="description-negotiation">Homeowners accept first lowball offer without understanding their rights</p>
+                    </div>
+                </div>
+                
+                <div class="solution-column" data-testid="column-solution">
+                    <h3 class="column-title" data-testid="title-solution">How Clear Home Maximizes Your Insurance Recovery</h3>
+                    
+                    <div class="point-item" data-testid="solution-professional">
+                        <div class="point-title" data-testid="title-professional">Professional Documentation</div>
+                        <p class="point-description" data-testid="description-professional">Xactimate estimates, comprehensive reports, and thorough damage documentation</p>
+                    </div>
+                    
+                    <div class="point-item" data-testid="solution-assessment">
+                        <div class="point-title" data-testid="title-assessment">Expert Damage Assessment</div>
+                        <p class="point-description" data-testid="description-assessment">20+ years identifying all covered damage that adjusters often miss</p>
+                    </div>
+                    
+                    <div class="point-item" data-testid="solution-advocacy">
+                        <div class="point-title" data-testid="title-advocacy">Policy Advocacy</div>
+                        <p class="point-description" data-testid="description-advocacy">We know every coverage clause and limitation in your policy</p>
+                    </div>
+                    
+                    <div class="point-item" data-testid="solution-timeline">
+                        <div class="point-title" data-testid="title-timeline">Timeline Management</div>
+                        <p class="point-description" data-testid="description-timeline">Never miss critical deadlines or requirements that could void your claim</p>
+                    </div>
+                    
+                    <div class="point-item" data-testid="solution-skilled">
+                        <div class="point-title" data-testid="title-skilled">Skilled Negotiation</div>
+                        <p class="point-description" data-testid="description-skilled">Push back on inadequate settlements professionally and effectively</p>
+                    </div>
+                    
+                    <div class="comparison-graphic" data-testid="graphic-comparison">
+                        <div class="comparison-text" data-testid="text-comparison">Our clients receive 340% more in settlements compared to self-filed claims</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Process Section -->
+    <section class="process-section" data-testid="section-process">
+        <div class="container">
+            <h2 class="section-title" data-testid="heading-process">Our 5-Step Claims Advocacy Process</h2>
+            <p class="section-intro" data-testid="intro-process">Professional guidance through every stage of your insurance claim</p>
+            
+            <div class="process-timeline">
+                <div class="process-step" data-testid="step-consultation">
+                    <div class="step-number" data-testid="number-consultation">1</div>
+                    <h3 class="step-title" data-testid="title-consultation">Initial Consultation & Damage Assessment</h3>
+                    <p class="step-description" data-testid="description-consultation">Free property inspection to document all storm damage and assess claim potential</p>
+                    <div class="step-timeline" data-testid="timeline-consultation">Day 1</div>
+                </div>
+                
+                <div class="process-step" data-testid="step-filing">
+                    <div class="step-number" data-testid="number-filing">2</div>
+                    <h3 class="step-title" data-testid="title-filing">Insurance Claim Filing & Documentation</h3>
+                    <p class="step-description" data-testid="description-filing">Complete claim paperwork, professional damage reports, and comprehensive photo documentation</p>
+                    <div class="step-timeline" data-testid="timeline-filing">Days 2-3</div>
+                </div>
+                
+                <div class="process-step" data-testid="step-coordination">
+                    <div class="step-number" data-testid="number-coordination">3</div>
+                    <h3 class="step-title" data-testid="title-coordination">Adjuster Coordination & Meeting Management</h3>
+                    <p class="step-description" data-testid="description-coordination">Schedule and attend adjuster meetings, present evidence, advocate for full coverage</p>
+                    <div class="step-timeline" data-testid="timeline-coordination">Days 7-14</div>
+                </div>
+                
+                <div class="process-step" data-testid="step-negotiation">
+                    <div class="step-number" data-testid="number-negotiation">4</div>
+                    <h3 class="step-title" data-testid="title-negotiation">Negotiation & Settlement Optimization</h3>
+                    <p class="step-description" data-testid="description-negotiation">Review settlement offers, negotiate upgrades, ensure maximum payout under your policy</p>
+                    <div class="step-timeline" data-testid="timeline-negotiation">Days 14-30</div>
+                </div>
+                
+                <div class="process-step" data-testid="step-repair">
+                    <div class="step-number" data-testid="number-repair">5</div>
+                    <h3 class="step-title" data-testid="title-repair">Repair Authorization & Project Completion</h3>
+                    <p class="step-description" data-testid="description-repair">Approved work begins immediately, all repairs completed to insurance specifications</p>
+                    <div class="step-timeline" data-testid="timeline-repair">Days 30+</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Breakdown -->
+    <section class="services-breakdown" data-testid="section-services-breakdown">
+        <div class="container">
+            <h2 class="section-title" data-testid="heading-services-breakdown">Insurance Claims Services We Handle</h2>
+            
+            <div class="services-grid">
+                <div class="service-card" data-testid="card-storm-damage">
+                    <div class="service-icon" data-testid="icon-storm">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 20l-2-2m2 2l2-2m-2 2V8a4 4 0 0 1 8 0v12"/>
+                            <path d="M16 4l2 6-6-2-2 6"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-title" data-testid="title-storm-damage">Storm Damage Claims</h3>
+                    <ul class="service-list">
+                        <li data-testid="service-hurricane">Hurricane damage assessment</li>
+                        <li data-testid="service-hail">Hail impact documentation</li>
+                        <li data-testid="service-wind">Wind damage evaluation</li>
+                        <li data-testid="service-flood">Flood/water damage claims</li>
+                        <li data-testid="service-tarping">Emergency tarping coverage</li>
+                    </ul>
+                    <div class="claim-value" data-testid="value-storm">Typical Claim Value: $15,000 - $75,000</div>
+                </div>
+                
+                <div class="service-card" data-testid="card-roofing-claims">
+                    <div class="service-icon" data-testid="icon-roofing">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 21l18 0"/>
+                            <path d="M5 21V7l8-6 8 6v14"/>
+                            <path d="M9 21v-6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v6"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-title" data-testid="title-roofing-claims">Roofing Insurance Claims</h3>
+                    <ul class="service-list">
+                        <li data-testid="service-roof-replacement">Complete roof replacement claims</li>
+                        <li data-testid="service-partial-repair">Partial repair authorizations</li>
+                        <li data-testid="service-ventilation">Ventilation upgrade coverage</li>
+                        <li data-testid="service-gutters">Gutter system replacement</li>
+                        <li data-testid="service-fascia">Fascia/soffit damage claims</li>
+                    </ul>
+                    <div class="claim-value" data-testid="value-roofing">Typical Claim Value: $8,000 - $45,000</div>
+                </div>
+                
+                <div class="service-card" data-testid="card-property-claims">
+                    <div class="service-icon" data-testid="icon-property">
+                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-title" data-testid="title-property-claims">General Property Claims</h3>
+                    <ul class="service-list">
+                        <li data-testid="service-siding">Siding damage claims</li>
+                        <li data-testid="service-windows">Window/door replacements</li>
+                        <li data-testid="service-structural">Structural repair coverage</li>
+                        <li data-testid="service-hvac">HVAC system damage</li>
+                        <li data-testid="service-interior">Interior water damage</li>
+                    </ul>
+                    <div class="claim-value" data-testid="value-property">Typical Claim Value: $5,000 - $35,000</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials" data-testid="section-testimonials">
+        <div class="container">
+            <h2 class="section-title" data-testid="heading-testimonials">Success Stories from {{city_name}} Clients</h2>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card" data-testid="testimonial-sarah">
+                    <p class="testimonial-text" data-testid="text-sarah">Clear Home turned our denied claim into a $42,000 payout. They found damage the first adjuster completely missed and fought for every dollar we deserved. Professional, persistent, and absolutely worth it.</p>
+                    <div class="testimonial-author" data-testid="author-sarah">Sarah M., Metairie</div>
+                    <div class="testimonial-details" data-testid="details-sarah">Hurricane damage claim</div>
+                    <div class="testimonial-result" data-testid="result-sarah">$42,000 Settlement</div>
+                </div>
+                
+                <div class="testimonial-card" data-testid="testimonial-robert">
+                    <p class="testimonial-text" data-testid="text-robert">After our roof leaked during a storm, our insurance company offered $3,500. Clear Home's documentation and advocacy got us $28,000 for a complete roof replacement. They saved our home and our finances.</p>
+                    <div class="testimonial-author" data-testid="author-robert">Robert K., Slidell</div>
+                    <div class="testimonial-details" data-testid="details-robert">Storm roof damage claim</div>
+                    <div class="testimonial-result" data-testid="result-robert">$28,000 Settlement</div>
+                </div>
+                
+                <div class="testimonial-card" data-testid="testimonial-maria">
+                    <p class="testimonial-text" data-testid="text-maria">The insurance claim process was completely overwhelming until Clear Home stepped in. They handled every detail, communicated with adjusters, and we never had to stress about paperwork or deadlines.</p>
+                    <div class="testimonial-author" data-testid="author-maria">Maria L., New Orleans</div>
+                    <div class="testimonial-details" data-testid="details-maria">Hail damage claim</div>
+                    <div class="testimonial-result" data-testid="result-maria">Stress-Free Process</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" data-testid="section-faq">
+        <div class="container">
+            <h2 class="section-title" data-testid="heading-faq">Frequently Asked Questions</h2>
+            
+            <div class="faq-container">
+                <div class="faq-item" data-testid="faq-cost">
+                    <button class="faq-question" data-testid="question-cost">
+                        How much does insurance claims assistance cost?
+                        <span data-testid="icon-cost">+</span>
+                    </button>
+                    <div class="faq-answer" data-testid="answer-cost">
+                        Our insurance claims assistance is typically covered by your insurance settlement at no upfront cost to you. We work on a contingency basis, only getting paid when your claim is successfully resolved.
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-denied">
+                    <button class="faq-question" data-testid="question-denied">
+                        What if my claim has already been denied?
+                        <span data-testid="icon-denied">+</span>
+                    </button>
+                    <div class="faq-answer" data-testid="answer-denied">
+                        Denied claims can often be appealed successfully with proper documentation and advocacy. We review denial letters, identify coverage gaps, and build stronger cases for appeal approval.
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-timeline">
+                    <button class="faq-question" data-testid="question-timeline">
+                        How long does the insurance claim process take?
+                        <span data-testid="icon-timeline">+</span>
+                    </button>
+                    <div class="faq-answer" data-testid="answer-timeline">
+                        Timeline varies by damage complexity and insurance company, but most claims resolve within 30-60 days with professional advocacy. Emergency repairs can often begin immediately with advance payments.
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-companies">
+                    <button class="faq-question" data-testid="question-companies">
+                        Do you work with all insurance companies?
+                        <span data-testid="icon-companies">+</span>
+                    </button>
+                    <div class="faq-answer" data-testid="answer-companies">
+                        Yes, we have experience with all major insurance providers including State Farm, Allstate, USAA, Farmers, Progressive, and local carriers. Each company has different processes we navigate expertly.
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-documentation">
+                    <button class="faq-question" data-testid="question-documentation">
+                        What documentation do I need to provide?
+                        <span data-testid="icon-documentation">+</span>
+                    </button>
+                    <div class="faq-answer" data-testid="answer-documentation">
+                        We handle most documentation, but you'll need your insurance policy, photos of damage (if safe to take), and any previous repair estimates. Our team guides you through everything else.
+                    </div>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-commercial">
+                    <button class="faq-question" data-testid="question-commercial">
+                        Can you help with commercial property claims?
+                        <span data-testid="icon-commercial">+</span>
+                    </button>
+                    <div class="faq-answer" data-testid="answer-commercial">
+                        Absolutely. We handle both residential and commercial insurance claims, including complex multi-building properties and business interruption coverage.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Areas -->
+    <section class="service-areas" data-testid="section-service-areas">
+        <div class="container">
+            <h2 class="section-title" data-testid="heading-service-areas">Insurance Claims Service Areas</h2>
+            
+            <div class="areas-content">
+                <div class="areas-list">
+                    <div class="area-group" data-testid="group-primary">
+                        <h3 data-testid="title-primary">Primary Coverage</h3>
+                        <p class="area-cities" data-testid="cities-primary">{{city_name}} - Full service, same-day response<br>
+                        New Orleans - Full service, same-day response<br>
+                        Metairie - Full service, same-day response<br>
+                        Kenner - Full service, same-day response</p>
+                    </div>
+                    
+                    <div class="area-group" data-testid="group-extended">
+                        <h3 data-testid="title-extended">Extended Coverage</h3>
+                        <p class="area-cities" data-testid="cities-extended">Laplace • Arabi • Chalmette • Algiers • Gretna • Harvey • Terrytown • Belle Chasse • Marrero • Slidell • Covington • Mandeville • Madisonville • Hammond • Ponchatoula</p>
+                    </div>
+                    
+                    <div class="emergency-note" data-testid="note-emergency">
+                        <strong>Emergency Response:</strong> 24/7 availability for storm damage claims
+                    </div>
+                </div>
+                
+                <div class="map-placeholder" data-testid="map-service-area">
+                    Greater {{city_name}} Service Area Map<br>
+                    Coverage: Southeast Louisiana
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta" data-testid="section-final-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2 data-testid="heading-final-cta">Don't Let Insurance Companies Shortchange Your Recovery</h2>
+                <p class="cta-subtitle" data-testid="subtitle-final-cta">Professional Claims Advocacy Maximizes Your Settlement and Minimizes Your Stress</p>
+                
+                <div class="urgency-statement" data-testid="statement-urgency">
+                    ⚠️ Storm damage claims have strict filing deadlines. Every day you wait reduces your coverage options.
+                </div>
+                
+                <div class="value-proposition" data-testid="proposition-value">
+                    Our clients receive an average of 340% more in settlements compared to self-filed claims.
+                </div>
+                
+                <a href="tel:{{company_phone}}" class="btn-white" data-testid="button-free-assessment">GET FREE CLAIM ASSESSMENT NOW</a>
+                <p data-testid="text-no-obligation" style="margin-top: 15px; opacity: 0.9;">No obligation consultation</p>
+                
+                <div class="cta-contact" data-testid="container-cta-contact">
+                    <div class="contact-item" data-testid="contact-phone">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                        <span data-testid="text-phone">{{company_phone}}</span>
+                    </div>
+                    
+                    <div class="contact-item" data-testid="contact-email">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        <span data-testid="text-email">admin@clearhome.pro</span>
+                    </div>
+                </div>
+                
+                <p data-testid="text-address" style="margin-top: 20px; opacity: 0.8;">
+                    {{company_address}}
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Clear Home - {{city_name}} Insurance Claims Assistance",
+        "description": "Professional insurance claims advocacy and assistance for storm damage recovery in {{city_name}}",
+        "telephone": "{{company_phone}}",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "900 Camp Street, 3rd Floor",
+            "addressLocality": "New Orleans",
+            "addressRegion": "LA",
+            "postalCode": "70130"
+        },
+        "geo": {
+            "latitude": "{{city_latitude}}",
+            "longitude": "{{city_longitude}}"
+        },
+        "serviceArea": "{{city_name}}, Louisiana",
+        "services": ["Insurance Claims Assistance", "Storm Damage Claims", "Roofing Insurance Claims", "Property Damage Claims"],
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Insurance Claims Services",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Storm Damage Claims",
+                        "description": "Professional advocacy for hurricane, hail, wind, and flood damage insurance claims in {{city_name}}."
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Roofing Insurance Claims",
+                        "description": "Complete roof replacement and repair claims advocacy for {{city_name}} property owners."
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "General Property Claims",
+                        "description": "Comprehensive property damage claims assistance including siding, windows, and structural repairs."
+                    }
+                }
+            ]
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "reviewCount": "500",
+            "bestRating": "5",
+            "worstRating": "1"
+        },
+        "potentialAction": {
+            "@type": "ReserveAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "tel:{{company_phone}}",
+                "inLanguage": "en"
+            },
+            "result": {
+                "@type": "Reservation",
+                "name": "Free Insurance Claim Assessment"
+            }
+        }
+    }
+    </script>
+</body>
+</html>

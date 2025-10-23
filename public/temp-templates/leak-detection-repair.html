@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>24/7 Leak Detection & Repair in {{city_name}} | Clear Home</title>
+    <meta name="description" content="Emergency roof leak detection and repair in {{city_name}}. Advanced thermal imaging technology. Same-day service available. Call {{company_phone}} now!">
+    <link rel="canonical" href="https://clearhome.pro/services/leak-detection-repair/{{city_slug}}">
+    <meta name="keywords" content="roof leak detection {{city_name}}, emergency leak repair {{city_name}}, find roof leak {{city_name}}, thermal imaging roof inspection {{city_name}}, water damage repair {{city_name}}">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="24/7 Leak Detection & Repair in {{city_name}} | Clear Home">
+    <meta property="og:description" content="Emergency roof leak detection and repair in {{city_name}}. Advanced thermal imaging technology. Same-day service available.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clearhome.pro/services/leak-detection-repair/{{city_slug}}">
+    <meta property="og:image" content="https://clearhome.pro/images/leak-detection-{{city_slug}}.jpg">
+    
+    <!-- Local Business Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Clear Home Leak Detection & Repair",
+        "description": "Emergency roof leak detection and repair services in {{city_name}}. Advanced thermal imaging technology, same-day service available.",
+        "url": "https://clearhome.pro/services/leak-detection-repair/{{city_slug}}",
+        "telephone": "{{company_phone}}",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "900 Camp Street, 3rd Floor",
+            "addressLocality": "{{city_name}}",
+            "addressRegion": "{{state_abbr}}",
+            "postalCode": "{{zip_code}}",
+            "addressCountry": "US"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": {{city_latitude}},
+            "longitude": {{city_longitude}}
+        },
+        "serviceArea": {
+            "@type": "City",
+            "name": "{{city_name}}, {{state_abbr}}"
+        },
+        "openingHours": "Mo-Su 00:00-23:59",
+        "availableLanguage": "English",
+        "priceRange": "$$",
+        "specialties": ["Leak Detection", "Thermal Imaging", "Emergency Leak Repair", "Water Damage Assessment"],
+        "services": [
+            "24/7 Leak Detection",
+            "Thermal Imaging Inspection", 
+            "Emergency Leak Repair",
+            "Water Damage Assessment",
+            "Insurance Claims Assistance"
+        ]
+    }
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1a202c;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Emergency Response Bar */
+        .emergency-bar {
+            background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(220, 38, 38, 0.3);
+        }
+        
+        .emergency-bar-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            font-weight: 600;
+        }
+        
+        .emergency-phone {
+            font-size: 1.1rem;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .emergency-phone:hover {
+            text-decoration: underline;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3') center/cover;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            color: white;
+            position: relative;
+        }
+        
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 3rem;
+            align-items: center;
+        }
+        
+        .hero-main h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .hero-main h2 {
+            font-size: 1.25rem;
+            color: #EDF2F7;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+        
+        .trust-elements {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .trust-card {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        
+        .trust-card .icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .trust-card h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .trust-card p {
+            font-size: 0.8rem;
+            color: #F7FAFC;
+        }
+        
+        .emergency-contact-card {
+            background: white;
+            color: #1a202c;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .emergency-contact-card h3 {
+            color: #DC2626;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .emergency-contact-card .phone-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2B6CB0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .emergency-contact-card .availability {
+            color: #4a5568;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-primary {
+            background: #2B6CB0;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            background: #215387;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(43, 108, 176, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #2B6CB0;
+            border: 2px solid #2B6CB0;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .btn-secondary:hover {
+            background: #2B6CB0;
+            color: white;
+        }
+        
+        .trust-badge {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: #F7FAFC;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #4a5568;
+            font-weight: 600;
+        }
+        
+        /* Problem Awareness Section */
+        .problem-awareness {
+            background: #F7FAFC url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="%23E2E8F0"><circle cx="10" cy="10" r="1"/></svg>') repeat;
+            padding: 4rem 0;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        
+        .problem-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+        
+        .problem-list {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+        
+        .problem-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+        
+        .problem-icon {
+            color: #DC2626;
+            font-weight: 700;
+            min-width: 1rem;
+        }
+        
+        .problem-list strong {
+            color: #DC2626;
+        }
+        
+        .warning-callout {
+            background: #FEF2F2;
+            border: 4px solid #DC2626;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .warning-callout h3 {
+            color: #DC2626;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .warning-callout p {
+            color: #742A2A;
+            line-height: 1.6;
+        }
+        
+        /* Technology Section */
+        .technology-section {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .technology-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .tech-card {
+            background: white;
+            border: 1px solid #E2E8F0;
+            padding: 2.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .tech-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(43, 108, 176, 0.1);
+        }
+        
+        .tech-icon {
+            font-size: 4rem;
+            color: #2B6CB0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tech-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        
+        .tech-card p {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .benefits-list {
+            list-style: none;
+            text-align: left;
+        }
+        
+        .benefits-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            gap: 0.5rem;
+        }
+        
+        .benefit-check {
+            color: #22C55E;
+            font-weight: 700;
+        }
+        
+        /* Leak Locations Section */
+        .leak-locations {
+            background: linear-gradient(135deg, #EDF2F7 0%, white 100%);
+            padding: 4rem 0;
+        }
+        
+        .locations-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+        
+        .location-accordion {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .accordion-item {
+            border-bottom: 1px solid #E2E8F0;
+        }
+        
+        .accordion-header {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .accordion-header:hover {
+            background: #F7FAFC;
+        }
+        
+        .location-percentage {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2B6CB0;
+            margin-right: 1rem;
+        }
+        
+        .accordion-content {
+            padding: 0 1.5rem 1.5rem;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+        
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .grid-image {
+            aspect-ratio: 1;
+            background: #E2E8F0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #4a5568;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        /* Process Section */
+        .process-section {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .process-timeline {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-top: 3rem;
+            position: relative;
+        }
+        
+        .process-timeline::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: #E2E8F0;
+            z-index: 1;
+        }
+        
+        .process-step {
+            background: white;
+            padding: 2rem 1rem;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: #2B6CB0;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+        }
+        
+        .process-step h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline-badge {
+            background: #FF6B35;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .process-step p {
+            font-size: 0.9rem;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+        
+        /* Repair Services Section */
+        .repair-services {
+            background: linear-gradient(135deg, #F7FAFC 0%, white 100%);
+            padding: 4rem 0;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .service-card {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(43, 108, 176, 0.1);
+        }
+        
+        .service-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .service-icon {
+            font-size: 3rem;
+            color: #2B6CB0;
+        }
+        
+        .service-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+        
+        .service-card p {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .service-pricing {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2B6CB0;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #2B6CB0;
+            border: 2px solid #2B6CB0;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline:hover {
+            background: #2B6CB0;
+            color: white;
+        }
+        
+        /* Insurance Claims Section */
+        .insurance-claims {
+            background: linear-gradient(rgba(26, 32, 44, 0.85), rgba(26, 32, 44, 0.85)), url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3') center/cover;
+            padding: 4rem 0;
+            color: white;
+            text-align: center;
+        }
+        
+        .claims-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .claims-content h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+        
+        .claims-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        
+        .claims-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+        
+        .claims-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .claims-features strong {
+            color: #FF6B35;
+        }
+        
+        .claims-process {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: left;
+            backdrop-filter: blur(10px);
+        }
+        
+        .claims-process h3 {
+            color: #FF6B35;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .claims-process ol {
+            counter-reset: step-counter;
+            list-style: none;
+        }
+        
+        .claims-process li {
+            counter-increment: step-counter;
+            margin-bottom: 0.75rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+        
+        .claims-process li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #FF6B35;
+            color: white;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        
+        /* Why Choose Section */
+        .why-choose {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+        
+        .stat-number {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #2B6CB0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-description {
+            color: #4a5568;
+            line-height: 1.4;
+        }
+        
+        .stat-icon {
+            width: 80px;
+            height: 80px;
+            background: #EDF2F7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #2B6CB0;
+            margin: 0 auto 1rem;
+        }
+        
+        /* Final CTA Section */
+        .final-cta {
+            background: linear-gradient(135deg, #2B6CB0 0%, #215387 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .final-cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .urgency-message {
+            font-size: 1.25rem;
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .damage-timeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin: 3rem 0;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .timeline-item {
+            text-align: center;
+        }
+        
+        .timeline-day {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #FF6B35;
+        }
+        
+        .timeline-issue {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline-cost {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #DC2626;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                text-align: center;
+            }
+            
+            .problem-content,
+            .locations-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .process-timeline {
+                grid-template-columns: 1fr;
+            }
+            
+            .process-timeline::before {
+                display: none;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .damage-timeline {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-main h1 {
+                font-size: 2rem;
+            }
+            
+            .section-header h2 {
+                font-size: 2rem;
+            }
+            
+            .final-cta h2 {
+                font-size: 2rem;
+            }
+            
+            .emergency-bar-content {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .trust-elements {
+                grid-template-columns: 1fr;
+            }
+            
+            .technology-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .damage-timeline {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Emergency Response Bar -->
+    <div class="emergency-bar" data-testid="emergency-response-bar">
+        <div class="container">
+            <div class="emergency-bar-content" data-testid="emergency-bar-content">
+                <span data-testid="text-emergency-hotline">24/7 EMERGENCY LEAK HOTLINE</span>
+                <a href="tel:{{company_phone}}" class="emergency-phone" data-testid="link-emergency-phone">
+                    <span data-testid="icon-phone">•</span> CALL NOW: {{company_phone}}
+                </a>
+                <span data-testid="text-response-guarantee">2-HOUR RESPONSE GUARANTEE</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hero Section -->
+    <section class="hero" data-testid="section-hero">
+        <div class="container">
+            <div class="hero-content" data-testid="hero-content">
+                <div class="hero-main" data-testid="hero-main">
+                    <h1 data-testid="heading-hero-title">24/7 Emergency Leak Detection & Repair in {{city_name}}</h1>
+                    <h2 data-testid="heading-hero-subtitle">Advanced Technology Finds Hidden Leaks Fast • Same-Day Service Available • Insurance Claims Specialist</h2>
+                    
+                    <div class="trust-elements" data-testid="trust-elements">
+                        <div class="trust-card" data-testid="trust-response-time">
+                            <div class="icon" data-testid="icon-response">⚡</div>
+                            <h3 data-testid="heading-response">Response Time</h3>
+                            <p data-testid="text-response">Emergency Response in Under 2 Hours</p>
+                        </div>
+                        <div class="trust-card" data-testid="trust-technology">
+                            <div class="icon" data-testid="icon-thermal">🔍</div>
+                            <h3 data-testid="heading-technology">Technology</h3>
+                            <p data-testid="text-technology">Thermal Imaging Technology</p>
+                        </div>
+                        <div class="trust-card" data-testid="trust-insurance">
+                            <div class="icon" data-testid="icon-insurance">💰</div>
+                            <h3 data-testid="heading-insurance">Pricing</h3>
+                            <p data-testid="text-insurance">Insurance Claims Accepted</p>
+                        </div>
+                        <div class="trust-card" data-testid="trust-experience">
+                            <div class="icon" data-testid="icon-experience">⭐</div>
+                            <h3 data-testid="heading-experience">Experience</h3>
+                            <p data-testid="text-experience">20+ Years Detecting Leaks</p>
+                        </div>
+                    </div>
+                    
+                    <a href="tel:{{company_phone}}" class="btn-primary" data-testid="button-emergency-call">
+                        CALL NOW FOR EMERGENCY SERVICE
+                    </a>
+                </div>
+                
+                <div class="emergency-contact-card" data-testid="emergency-contact-card">
+                    <h3 data-testid="heading-emergency-hotline">EMERGENCY LEAK HOTLINE</h3>
+                    <div class="phone-number" data-testid="text-phone-number">{{company_phone}}</div>
+                    <div class="availability" data-testid="text-availability">Available 24/7 • 365 Days a Year</div>
+                    <a href="#inspection-form" class="btn-secondary" data-testid="button-request-inspection">Request Inspection</a>
+                    <div class="trust-badge" data-testid="trust-badge">Licensed & Insured</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Problem Awareness Section -->
+    <section class="problem-awareness" data-testid="section-problem-awareness">
+        <div class="container">
+            <div class="section-header" data-testid="problem-section-header">
+                <h2 data-testid="heading-leak-disaster">Don't Let a Small Leak Become a Major Disaster</h2>
+            </div>
+            
+            <div class="problem-content" data-testid="problem-content">
+                <div class="problem-description" data-testid="problem-description">
+                    <p data-testid="text-minute-counts">Every minute counts when water is entering your {{city_name}} home. What starts as a small drip can quickly escalate into:</p>
+                    
+                    <ul class="problem-list" data-testid="problem-list">
+                        <li data-testid="problem-structural">
+                            <span class="problem-icon" data-testid="icon-structural">•</span>
+                            <div>
+                                <strong data-testid="text-structural-damage">Structural Damage</strong> - Weakened roof decking and support beams
+                            </div>
+                        </li>
+                        <li data-testid="problem-mold">
+                            <span class="problem-icon" data-testid="icon-mold">•</span>
+                            <div>
+                                <strong data-testid="text-mold-growth">Mold Growth</strong> - Health hazards developing in 24-48 hours
+                            </div>
+                        </li>
+                        <li data-testid="problem-interior">
+                            <span class="problem-icon" data-testid="icon-interior">•</span>
+                            <div>
+                                <strong data-testid="text-interior-damage">Interior Damage</strong> - Destroyed ceilings, walls, insulation, and belongings
+                            </div>
+                        </li>
+                        <li data-testid="problem-electrical">
+                            <span class="problem-icon" data-testid="icon-electrical">•</span>
+                            <div>
+                                <strong data-testid="text-electrical-hazards">Electrical Hazards</strong> - Water near wiring creates dangerous situations
+                            </div>
+                        </li>
+                        <li data-testid="problem-property">
+                            <span class="problem-icon" data-testid="icon-property">•</span>
+                            <div>
+                                <strong data-testid="text-property-value">Decreased Property Value</strong> - Unaddressed leaks reduce home worth
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    <p data-testid="text-leak-truth"><strong>The truth is, most leaks are discovered too late.</strong> By the time you see water stains on your ceiling, significant damage has already occurred behind the scenes.</p>
+                </div>
+                
+                <div class="warning-callout" data-testid="warning-callout">
+                    <h3 data-testid="heading-critical-warning">⚠️ CRITICAL WARNING</h3>
+                    <p data-testid="text-warning-message">Water damage costs increase by 15-20% for every day repair is delayed. What seems like a minor leak today could cost thousands more next week.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Technology Section -->
+    <section class="technology-section" data-testid="section-technology">
+        <div class="container">
+            <div class="section-header" data-testid="technology-section-header">
+                <h2 data-testid="heading-detection-technology">Advanced Leak Detection Technology That Finds Hidden Problems</h2>
+                <p data-testid="text-technology-subtext">We use state-of-the-art equipment to locate leaks other companies miss</p>
+            </div>
+            
+            <div class="technology-grid" data-testid="technology-grid">
+                <div class="tech-card" data-testid="tech-thermal-imaging">
+                    <div class="tech-icon" data-testid="icon-thermal-imaging">🌡️</div>
+                    <h3 data-testid="heading-thermal-imaging">Infrared Thermal Imaging</h3>
+                    <p data-testid="text-thermal-description">Our FLIR thermal cameras detect temperature differences invisible to the naked eye. Water intrusion shows up as cool spots, revealing hidden leaks behind walls and ceilings without any destructive testing.</p>
+                    <ul class="benefits-list" data-testid="thermal-benefits">
+                        <li data-testid="thermal-benefit-1"><span class="benefit-check" data-testid="check-1">✓</span> Non-invasive detection</li>
+                        <li data-testid="thermal-benefit-2"><span class="benefit-check" data-testid="check-2">✓</span> Pinpoint accuracy</li>
+                        <li data-testid="thermal-benefit-3"><span class="benefit-check" data-testid="check-3">✓</span> No guesswork</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-card" data-testid="tech-moisture-meters">
+                    <div class="tech-icon" data-testid="icon-moisture">💧</div>
+                    <h3 data-testid="heading-moisture-detection">Advanced Moisture Detection</h3>
+                    <p data-testid="text-moisture-description">Professional-grade moisture meters measure water content in building materials. We create detailed moisture maps showing exactly where water has traveled through your roof system.</p>
+                    <ul class="benefits-list" data-testid="moisture-benefits">
+                        <li data-testid="moisture-benefit-1"><span class="benefit-check" data-testid="check-4">✓</span> Identifies secondary damage</li>
+                        <li data-testid="moisture-benefit-2"><span class="benefit-check" data-testid="check-5">✓</span> Tracks water paths</li>
+                        <li data-testid="moisture-benefit-3"><span class="benefit-check" data-testid="check-6">✓</span> Prevents future issues</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-card" data-testid="tech-dye-testing">
+                    <div class="tech-icon" data-testid="icon-dye-testing">🎨</div>
+                    <h3 data-testid="heading-dye-testing">Precision Dye Testing</h3>
+                    <p data-testid="text-dye-description">For difficult-to-locate leaks, we use specialized dyes and UV lights. The dye travels with water flow, revealing the exact entry point and path through your roofing system.</p>
+                    <ul class="benefits-list" data-testid="dye-benefits">
+                        <li data-testid="dye-benefit-1"><span class="benefit-check" data-testid="check-7">✓</span> Finds intermittent leaks</li>
+                        <li data-testid="dye-benefit-2"><span class="benefit-check" data-testid="check-8">✓</span> Traces complex routes</li>
+                        <li data-testid="dye-benefit-3"><span class="benefit-check" data-testid="check-9">✓</span> Confirms repair effectiveness</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Leak Locations Section -->
+    <section class="leak-locations" data-testid="section-leak-locations">
+        <div class="container">
+            <div class="locations-content" data-testid="locations-content">
+                <div class="image-grid" data-testid="image-grid">
+                    <div class="grid-image" data-testid="image-before-1">Before: Damaged Flashing</div>
+                    <div class="grid-image" data-testid="image-after-1">After: Professional Repair</div>
+                    <div class="grid-image" data-testid="image-before-2">Before: Valley Failure</div>
+                    <div class="grid-image" data-testid="image-after-2">After: Proper Installation</div>
+                </div>
+                
+                <div class="locations-info" data-testid="locations-info">
+                    <h3 data-testid="heading-leak-locations">Where {{city_name}} Homes Develop Roof Leaks</h3>
+                    
+                    <div class="location-accordion" data-testid="location-accordion">
+                        <div class="accordion-item" data-testid="accordion-penetrations">
+                            <div class="accordion-header" data-testid="header-penetrations">
+                                <div style="display: flex; align-items: center;">
+                                    <span class="location-percentage" data-testid="percentage-penetrations">40%</span>
+                                    <h4 data-testid="heading-penetrations">Roof Penetrations</h4>
+                                </div>
+                                <span data-testid="toggle-penetrations">+</span>
+                            </div>
+                            <div class="accordion-content" data-testid="content-penetrations">
+                                Vents, chimneys, and skylights are prime leak locations. Flashing failures and seal deterioration allow water entry at these vulnerable points.
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item" data-testid="accordion-valleys">
+                            <div class="accordion-header" data-testid="header-valleys">
+                                <div style="display: flex; align-items: center;">
+                                    <span class="location-percentage" data-testid="percentage-valleys">25%</span>
+                                    <h4 data-testid="heading-valleys">Valley Failures</h4>
+                                </div>
+                                <span data-testid="toggle-valleys">+</span>
+                            </div>
+                            <div class="accordion-content" data-testid="content-valleys">
+                                Where two roof planes meet, valleys channel heavy water flow. Improper installation or debris buildup causes water backup and leaks.
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item" data-testid="accordion-shingles">
+                            <div class="accordion-header" data-testid="header-shingles">
+                                <div style="display: flex; align-items: center;">
+                                    <span class="location-percentage" data-testid="percentage-shingles">20%</span>
+                                    <h4 data-testid="heading-damaged-shingles">Missing or Damaged Shingles</h4>
+                                </div>
+                                <span data-testid="toggle-shingles">+</span>
+                            </div>
+                            <div class="accordion-content" data-testid="content-shingles">
+                                {{city_name}}'s severe weather can lift, crack, or remove shingles. Even one missing shingle creates an entry point for water damage.
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item" data-testid="accordion-flashing">
+                            <div class="accordion-header" data-testid="header-flashing">
+                                <div style="display: flex; align-items: center;">
+                                    <span class="location-percentage" data-testid="percentage-flashing">15%</span>
+                                    <h4 data-testid="heading-flashing-issues">Flashing Issues</h4>
+                                </div>
+                                <span data-testid="toggle-flashing">+</span>
+                            </div>
+                            <div class="accordion-content" data-testid="content-flashing">
+                                Metal flashing around chimneys, walls, and dormers deteriorates over time. Rust, separation, or improper installation allows water infiltration.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Process Section -->
+    <section class="process-section" data-testid="section-process">
+        <div class="container">
+            <div class="section-header" data-testid="process-section-header">
+                <h2 data-testid="heading-detection-process">Our Professional Leak Detection Process</h2>
+                <p data-testid="text-process-subtext">Systematic approach ensures we find and fix every leak</p>
+            </div>
+            
+            <div class="process-timeline" data-testid="process-timeline">
+                <div class="process-step" data-testid="process-step-1">
+                    <div class="timeline-badge" data-testid="timeline-1">0-2 Hours</div>
+                    <div class="step-number" data-testid="step-number-1">1</div>
+                    <h3 data-testid="heading-immediate-dispatch">Immediate Dispatch</h3>
+                    <p data-testid="text-step-1">Call received. Team dispatched. Most {{city_name}} properties reached within 2 hours for emergency situations.</p>
+                </div>
+                
+                <div class="process-step" data-testid="process-step-2">
+                    <div class="timeline-badge" data-testid="timeline-2">30 Minutes</div>
+                    <div class="step-number" data-testid="step-number-2">2</div>
+                    <h3 data-testid="heading-visual-inspection">Visual Inspection</h3>
+                    <p data-testid="text-step-2">Comprehensive exterior and interior assessment. Identify obvious damage and areas requiring detailed investigation.</p>
+                </div>
+                
+                <div class="process-step" data-testid="process-step-3">
+                    <div class="timeline-badge" data-testid="timeline-3">45-60 Minutes</div>
+                    <div class="step-number" data-testid="step-number-3">3</div>
+                    <h3 data-testid="heading-advanced-detection">Advanced Detection</h3>
+                    <p data-testid="text-step-3">Thermal imaging and moisture mapping reveal hidden leaks. Document all findings with photo evidence for insurance claims.</p>
+                </div>
+                
+                <div class="process-step" data-testid="process-step-4">
+                    <div class="timeline-badge" data-testid="timeline-4">30 Minutes</div>
+                    <div class="step-number" data-testid="step-number-4">4</div>
+                    <h3 data-testid="heading-complete-analysis">Complete Analysis</h3>
+                    <p data-testid="text-step-4">Determine full extent of water damage. Provide detailed report with repair recommendations and cost estimates.</p>
+                </div>
+                
+                <div class="process-step" data-testid="process-step-5">
+                    <div class="timeline-badge" data-testid="timeline-5">Same Day Start</div>
+                    <div class="step-number" data-testid="step-number-5">5</div>
+                    <h3 data-testid="heading-solution-delivery">Solution Delivery</h3>
+                    <p data-testid="text-step-5">Present repair options. Emergency temporary repairs available same day. Schedule permanent fix at your convenience.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Repair Services Section -->
+    <section class="repair-services" data-testid="section-repair-services">
+        <div class="container">
+            <div class="section-header" data-testid="repair-section-header">
+                <h2 data-testid="heading-repair-solutions">Complete Leak Repair Solutions</h2>
+                <p data-testid="text-repair-subtext">From emergency patches to permanent fixes</p>
+            </div>
+            
+            <div class="services-grid" data-testid="services-grid">
+                <div class="service-card" data-testid="service-emergency-repairs">
+                    <div class="service-header" data-testid="emergency-repair-header">
+                        <div class="service-icon" data-testid="icon-emergency-repair">⚡</div>
+                        <h3 data-testid="heading-emergency-repair">Immediate Water Stoppage</h3>
+                    </div>
+                    <p data-testid="text-emergency-repair">Emergency tarping and temporary sealing stops active leaks immediately. Protects your {{city_name}} property until permanent repairs scheduled.</p>
+                    <div class="service-pricing" data-testid="pricing-emergency">Starting at $299</div>
+                    <a href="tel:{{company_phone}}" class="btn-outline" data-testid="button-emergency-service">Request Emergency Service</a>
+                </div>
+                
+                <div class="service-card" data-testid="service-shingle-replacement">
+                    <div class="service-header" data-testid="shingle-header">
+                        <div class="service-icon" data-testid="icon-shingle">🏠</div>
+                        <h3 data-testid="heading-shingle-replacement">Missing Shingle Replacement</h3>
+                    </div>
+                    <p data-testid="text-shingle-replacement">Match and replace damaged shingles. Seal surrounding area to prevent future leaks. Maintain warranty compliance.</p>
+                    <div class="service-pricing" data-testid="pricing-shingle">From $450</div>
+                    <a href="#estimate-form" class="btn-outline" data-testid="button-free-estimate">Get Free Estimate</a>
+                </div>
+                
+                <div class="service-card" data-testid="service-flashing-repair">
+                    <div class="service-header" data-testid="flashing-header">
+                        <div class="service-icon" data-testid="icon-flashing">🔨</div>
+                        <h3 data-testid="heading-flashing-work">Professional Flashing Work</h3>
+                    </div>
+                    <p data-testid="text-flashing-repair">Remove and replace failed flashing around chimneys, vents, and walls. Install per manufacturer specs with premium materials.</p>
+                    <div class="service-pricing" data-testid="pricing-flashing">From $600</div>
+                    <a href="#inspection-form" class="btn-outline" data-testid="button-schedule-inspection">Schedule Inspection</a>
+                </div>
+                
+                <div class="service-card" data-testid="service-valley-repair">
+                    <div class="service-header" data-testid="valley-header">
+                        <div class="service-icon" data-testid="icon-valley">⛰️</div>
+                        <h3 data-testid="heading-valley-restoration">Valley System Restoration</h3>
+                    </div>
+                    <p data-testid="text-valley-repair">Complete valley rebuild with proper underlayment and metal installation. Engineered for Louisiana weather conditions.</p>
+                    <div class="service-pricing" data-testid="pricing-valley">From $800</div>
+                    <a href="#assessment-form" class="btn-outline" data-testid="button-request-assessment">Request Assessment</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Insurance Claims Section -->
+    <section class="insurance-claims" data-testid="section-insurance-claims">
+        <div class="container">
+            <div class="claims-content" data-testid="claims-content">
+                <h2 data-testid="heading-insurance-claims">We Handle Your Insurance Claim from Start to Finish</h2>
+                <p class="claims-description" data-testid="text-claims-description">Roof leak insurance claims can be complicated. Water damage isn't always covered, and proving the leak source is crucial. Our team has successfully processed hundreds of leak-related claims for {{city_name}} homeowners.</p>
+                
+                <div class="claims-features" data-testid="claims-features">
+                    <ul style="list-style: none;">
+                        <li data-testid="feature-documentation"><span data-testid="check-documentation">✓</span> <strong>Detailed Documentation</strong> - Photo evidence and moisture reports</li>
+                        <li data-testid="feature-coordination"><span data-testid="check-coordination">✓</span> <strong>Insurance Company Coordination</strong> - We meet with adjusters on your behalf</li>
+                        <li data-testid="feature-filing"><span data-testid="check-filing">✓</span> <strong>Proper Claim Filing</strong> - Ensure all damage is documented and claimed</li>
+                        <li data-testid="feature-estimates"><span data-testid="check-estimates">✓</span> <strong>Xactimate Estimates</strong> - Industry-standard pricing insurers accept</li>
+                        <li data-testid="feature-advocacy"><span data-testid="check-advocacy">✓</span> <strong>Claim Advocacy</strong> - Fight for the coverage you deserve</li>
+                    </ul>
+                </div>
+                
+                <div class="claims-process" data-testid="claims-process">
+                    <h3 data-testid="heading-claims-process">Claims Process Steps</h3>
+                    <ol data-testid="claims-steps">
+                        <li data-testid="step-emergency-stop"><strong>Emergency Leak Stop</strong> - Prevent further damage (covered by most policies)</li>
+                        <li data-testid="step-documentation"><strong>Complete Documentation</strong> - Photograph and document all water damage</li>
+                        <li data-testid="step-notification"><strong>Insurance Notification</strong> - File claim with your carrier immediately</li>
+                        <li data-testid="step-adjuster-meeting"><strong>Adjuster Meeting</strong> - We present evidence and estimates professionally</li>
+                        <li data-testid="step-approval"><strong>Claim Approval</strong> - Negotiate fair settlement for all repairs</li>
+                        <li data-testid="step-professional-repairs"><strong>Professional Repairs</strong> - Complete work to manufacturer specifications</li>
+                    </ol>
+                </div>
+                
+                <a href="#claims-form" class="btn-primary" data-testid="button-start-claim">Start Your Claim Process</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Why Choose Section -->
+    <section class="why-choose" data-testid="section-why-choose">
+        <div class="container">
+            <div class="section-header" data-testid="why-choose-header">
+                <h2 data-testid="heading-why-trust">Why {{city_name}} Trusts Clear Home for Leak Detection</h2>
+            </div>
+            
+            <div class="stats-grid" data-testid="stats-grid">
+                <div class="stat-card" data-testid="stat-track-record">
+                    <div class="stat-icon" data-testid="icon-track-record">✓</div>
+                    <div class="stat-number" data-testid="number-leaks-found">500+</div>
+                    <div class="stat-description" data-testid="description-track-record">Leaks Successfully Located & Repaired in {{city_name}} Area</div>
+                </div>
+                
+                <div class="stat-card" data-testid="stat-response-time">
+                    <div class="stat-icon" data-testid="icon-response-time">⏱️</div>
+                    <div class="stat-number" data-testid="number-response-time">< 2 Hrs</div>
+                    <div class="stat-description" data-testid="description-response-time">Average Emergency Response Time for Critical Leaks</div>
+                </div>
+                
+                <div class="stat-card" data-testid="stat-customer-rating">
+                    <div class="stat-icon" data-testid="icon-customer-rating">⭐</div>
+                    <div class="stat-number" data-testid="number-rating">4.9/5</div>
+                    <div class="stat-description" data-testid="description-rating">Average Rating from Leak Detection Customers</div>
+                </div>
+                
+                <div class="stat-card" data-testid="stat-insurance-success">
+                    <div class="stat-icon" data-testid="icon-insurance-success">📋</div>
+                    <div class="stat-number" data-testid="number-insurance-success">98%</div>
+                    <div class="stat-description" data-testid="description-insurance-success">Claim Approval Rate for Documented Leak Damage</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Final CTA Section -->
+    <section class="final-cta" data-testid="section-final-cta">
+        <div class="container">
+            <h2 data-testid="heading-dont-wait">Don't Wait - Leaks Get Worse Every Day</h2>
+            <p class="urgency-message" data-testid="text-urgency">Every hour of delay allows more water damage, mold growth, and structural deterioration. What costs $500 to fix today could cost $5,000 next week. Our {{city_name}} emergency team is standing by to stop your leak now.</p>
+            
+            <div class="damage-timeline" data-testid="damage-timeline">
+                <div class="timeline-item" data-testid="timeline-day1">
+                    <div class="timeline-day" data-testid="day-1">Day 1</div>
+                    <div class="timeline-issue" data-testid="issue-1">Minor leak</div>
+                    <div class="timeline-cost" data-testid="cost-1">$500 repair</div>
+                </div>
+                <div class="timeline-item" data-testid="timeline-day3">
+                    <div class="timeline-day" data-testid="day-3">Day 3</div>
+                    <div class="timeline-issue" data-testid="issue-3">Ceiling damage</div>
+                    <div class="timeline-cost" data-testid="cost-3">$2,000 repair</div>
+                </div>
+                <div class="timeline-item" data-testid="timeline-week1">
+                    <div class="timeline-day" data-testid="week-1">Week 1</div>
+                    <div class="timeline-issue" data-testid="issue-week1">Mold growth</div>
+                    <div class="timeline-cost" data-testid="cost-week1">$5,000+ remediation</div>
+                </div>
+                <div class="timeline-item" data-testid="timeline-month1">
+                    <div class="timeline-day" data-testid="month-1">Month 1</div>
+                    <div class="timeline-issue" data-testid="issue-month1">Structural damage</div>
+                    <div class="timeline-cost" data-testid="cost-month1">$15,000+ restoration</div>
+                </div>
+            </div>
+            
+            <a href="tel:{{company_phone}}" class="btn-primary" data-testid="button-stop-leak">STOP YOUR LEAK NOW - CALL {{company_phone}}</a>
+        </div>
+    </section>
+</body>
+</html>

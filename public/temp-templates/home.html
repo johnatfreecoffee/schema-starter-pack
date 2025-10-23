@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{page_title}}</title>
+    <meta name="description" content="{{meta_description}}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{canonical_url}}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{canonical_url}}">
+    <meta property="og:title" content="{{page_title}}">
+    <meta property="og:description" content="{{meta_description}}">
+    <meta property="og:image" content="{{og_image}}">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{canonical_url}}">
+    <meta property="twitter:title" content="{{page_title}}">
+    <meta property="twitter:description" content="{{meta_description}}">
+    <meta property="twitter:image" content="{{og_image}}">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "{{company_name}}",
+        "image": "{{company_logo}}",
+        "description": "{{company_description}}",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "{{street_address}}",
+            "addressLocality": "{{city}}",
+            "addressRegion": "{{state}}",
+            "postalCode": "{{zip_code}}",
+            "addressCountry": "US"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "{{latitude}}",
+            "longitude": "{{longitude}}"
+        },
+        "telephone": "{{company_phone}}",
+        "email": "{{email}}",
+        "url": "{{website_url}}",
+        "openingHours": [
+            "Mo-Fr 07:00-19:00",
+            "Sa 08:00-17:00"
+        ],
+        "serviceArea": {
+            "@type": "GeoCircle",
+            "geoMidpoint": {
+                "@type": "GeoCoordinates",
+                "latitude": "{{latitude}}",
+                "longitude": "{{longitude}}"
+            },
+            "geoRadius": "50000"
+        },
+        "priceRange": "$$",
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Roofing and Storm Restoration Services",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Emergency Roof Repair",
+                        "description": "24/7 emergency roofing services for storm damage"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Insurance Claims Assistance",
+                        "description": "Complete insurance claim documentation and advocacy"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Complete Roof Replacement",
+                        "description": "Residential and commercial roof replacement services"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Storm Damage Restoration",
+                        "description": "Comprehensive storm damage restoration services"
+                    }
+                }
+            ]
+        }
+    }
+    </script>
+
+    <style>
+        /* Reset and Base Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Arial', sans-serif; 
+            line-height: 1.6; 
+            color: #2c3e50; 
+            background: #ffffff; 
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 2rem; 
+        }
+        
+        /* Navigation */
+        nav { 
+            background: #2c3e50; 
+            padding: 1rem 0; 
+            position: fixed; 
+            width: 100%; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        
+        nav .container { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .logo { 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+            color: #ffffff; 
+            text-decoration: none; 
+        }
+        
+        .nav-links { 
+            display: flex; 
+            list-style: none; 
+            gap: 2rem; 
+        }
+        
+        .nav-links a { 
+            color: #ffffff; 
+            text-decoration: none; 
+            font-weight: 500; 
+            transition: color 0.3s; 
+        }
+        
+        .nav-links a:hover { color: #e74c3c; }
+        
+        .nav-phone { 
+            color: #e74c3c; 
+            font-weight: bold; 
+            font-size: 1.1rem; 
+            text-decoration: none; 
+        }
+
+        /* Hero Section */
+        .hero { 
+            min-height: 100vh; 
+            background: linear-gradient(rgba(44, 62, 80, 0.4), rgba(44, 62, 80, 0.4)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%232B6CB0" width="1200" height="600"/><path fill="%23215387" d="M0,300 Q300,200 600,300 T1200,300 V600 H0 Z"/></svg>') center/cover;
+            display: flex; 
+            align-items: center; 
+            color: white; 
+            padding-top: 80px; 
+        }
+        
+        .hero-content { 
+            display: grid; 
+            grid-template-columns: 60% 40%; 
+            gap: 3rem; 
+            align-items: center; 
+        }
+        
+        .hero-text h1 { 
+            font-size: 3rem; 
+            margin-bottom: 1rem; 
+            font-weight: 700; 
+            line-height: 1.2; 
+        }
+        
+        .hero-subheading { 
+            font-size: 1.3rem; 
+            margin-bottom: 1.5rem; 
+            color: #e8f4f8; 
+            font-weight: 600; 
+        }
+        
+        .hero-body { 
+            font-size: 1.1rem; 
+            margin-bottom: 2rem; 
+            line-height: 1.7; 
+        }
+        
+        .hero-features { 
+            list-style: none; 
+            margin-bottom: 2rem; 
+        }
+        
+        .hero-features li { 
+            padding: 0.5rem 0; 
+            font-size: 1.1rem; 
+            font-weight: 600; 
+            display: flex; 
+            align-items: center; 
+        }
+        
+        .hero-features li::before { 
+            content: "✓"; 
+            color: #27ae60; 
+            font-weight: bold; 
+            margin-right: 1rem; 
+            font-size: 1.3rem; 
+        }
+        
+        .hero-buttons { 
+            display: flex; 
+            gap: 1rem; 
+            margin-bottom: 2rem; 
+        }
+        
+        .btn-primary { 
+            background: #e74c3c; 
+            color: white; 
+            padding: 1rem 2rem; 
+            border: none; 
+            border-radius: 6px; 
+            font-size: 1.1rem; 
+            font-weight: 600; 
+            text-decoration: none; 
+            display: inline-block; 
+            transition: all 0.3s; 
+            cursor: pointer; 
+        }
+        
+        .btn-primary:hover { 
+            background: #c0392b; 
+            transform: translateY(-2px); 
+        }
+        
+        .btn-secondary { 
+            background: transparent; 
+            color: white; 
+            border: 2px solid white; 
+            padding: 1rem 2rem; 
+            border-radius: 6px; 
+            font-size: 1.1rem; 
+            font-weight: 600; 
+            text-decoration: none; 
+            display: inline-block; 
+            transition: all 0.3s; 
+        }
+        
+        .btn-secondary:hover { 
+            background: white; 
+            color: #2c3e50; 
+        }
+        
+        .hero-phone { 
+            font-size: 2rem; 
+            font-weight: bold; 
+            color: #e74c3c; 
+            text-decoration: none; 
+            display: block; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3); 
+        }
+
+        /* Hero Form */
+        .hero-form { 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 2rem; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
+            backdrop-filter: blur(10px); 
+        }
+        
+        .hero-form h3 { 
+            color: #2c3e50; 
+            margin-bottom: 1.5rem; 
+            font-size: 1.5rem; 
+            text-align: center; 
+        }
+        
+        .form-group { 
+            margin-bottom: 1rem; 
+        }
+        
+        .form-group label { 
+            display: block; 
+            margin-bottom: 0.5rem; 
+            color: #2c3e50; 
+            font-weight: 600; 
+        }
+        
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea { 
+            width: 100%; 
+            padding: 0.8rem; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 6px; 
+            font-size: 1rem; 
+            transition: border-color 0.3s; 
+        }
+        
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus { 
+            outline: none; 
+            border-color: #2B6CB0; 
+        }
+        
+        .form-submit { 
+            width: 100%; 
+            background: #27ae60; 
+            color: white; 
+            padding: 1rem; 
+            border: none; 
+            border-radius: 6px; 
+            font-size: 1.1rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: background 0.3s; 
+        }
+        
+        .form-submit:hover { background: #229954; }
+
+        /* Trust Indicators Bar */
+        .trust-bar { 
+            background: #2c3e50; 
+            color: white; 
+            padding: 2rem 0; 
+        }
+        
+        .trust-stats { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 2rem; 
+            text-align: center; 
+        }
+        
+        .trust-stat { 
+            padding: 1rem; 
+        }
+        
+        .trust-stat-icon { 
+            font-size: 2.5rem; 
+            margin-bottom: 1rem; 
+            color: #e74c3c; 
+        }
+        
+        .trust-stat-number { 
+            font-size: 2rem; 
+            font-weight: bold; 
+            color: #e74c3c; 
+            display: block; 
+        }
+        
+        .trust-stat-label { 
+            font-size: 1rem; 
+            margin-top: 0.5rem; 
+        }
+        
+        .service-areas-quick { 
+            text-align: center; 
+            margin-top: 2rem; 
+            padding-top: 2rem; 
+            border-top: 1px solid #445566; 
+        }
+        
+        .service-areas-quick a { 
+            color: #e74c3c; 
+            text-decoration: none; 
+            font-weight: 600; 
+        }
+
+        /* Core Services Section */
+        .core-services { 
+            padding: 80px 0; 
+            background: #f8f9fa; 
+        }
+        
+        .core-services h2 { 
+            text-align: center; 
+            font-size: 2.5rem; 
+            margin-bottom: 3rem; 
+            color: #2c3e50; 
+        }
+        
+        .services-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 2rem; 
+        }
+        
+        .service-card { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 12px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08); 
+            transition: transform 0.3s, box-shadow 0.3s; 
+            text-align: center; 
+        }
+        
+        .service-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15); 
+        }
+        
+        .service-icon { 
+            font-size: 3rem; 
+            margin-bottom: 1rem; 
+            color: #2B6CB0; 
+        }
+        
+        .service-card h3 { 
+            color: #2c3e50; 
+            margin-bottom: 0.5rem; 
+            font-size: 1.5rem; 
+        }
+        
+        .service-subtitle { 
+            color: #666; 
+            font-style: italic; 
+            margin-bottom: 1.5rem; 
+        }
+        
+        .service-features { 
+            list-style: none; 
+            text-align: left; 
+            margin-bottom: 1.5rem; 
+        }
+        
+        .service-features li { 
+            padding: 0.3rem 0; 
+            position: relative; 
+            padding-left: 1.5rem; 
+        }
+        
+        .service-features li::before { 
+            content: "•"; 
+            color: #2B6CB0; 
+            font-weight: bold; 
+            position: absolute; 
+            left: 0; 
+        }
+        
+        .service-card .btn-emergency { background: #e74c3c; }
+        .service-card .btn-trust { background: #2B6CB0; }
+        .service-card .btn-success { background: #27ae60; }
+        .service-card .btn-action { background: #EA580C; }
+
+        /* Why Choose Section */
+        .why-choose { 
+            padding: 80px 0; 
+            background: white; 
+        }
+        
+        .why-choose h2 { 
+            text-align: center; 
+            font-size: 2.5rem; 
+            margin-bottom: 3rem; 
+            color: #2c3e50; 
+        }
+        
+        .value-prop { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 3rem; 
+            align-items: center; 
+            margin-bottom: 3rem; 
+        }
+        
+        .value-prop:nth-child(even) .value-content { 
+            order: 2; 
+        }
+        
+        .value-content h3 { 
+            color: #2c3e50; 
+            margin-bottom: 1rem; 
+            font-size: 1.8rem; 
+        }
+        
+        .value-content p { 
+            font-size: 1.1rem; 
+            line-height: 1.7; 
+            margin-bottom: 1rem; 
+        }
+        
+        .value-highlight { 
+            background: #e8f4f8; 
+            padding: 1rem; 
+            border-left: 4px solid #2B6CB0; 
+            margin: 1rem 0; 
+            font-weight: 600; 
+            color: #2B6CB0; 
+        }
+        
+        .value-image { 
+            background: #f0f4f8; 
+            height: 300px; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: #666; 
+            font-size: 1.2rem; 
+        }
+
+        /* Service Area Coverage */
+        .service-coverage { 
+            padding: 80px 0; 
+            background: linear-gradient(135deg, #2B6CB0, #215387); 
+            color: white; 
+        }
+        
+        .service-coverage h2 { 
+            text-align: center; 
+            font-size: 2.5rem; 
+            margin-bottom: 3rem; 
+        }
+        
+        .areas-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 1.5rem; 
+        }
+        
+        .area-card { 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 1.5rem; 
+            border-radius: 12px; 
+            text-align: center; 
+            transition: all 0.3s; 
+            backdrop-filter: blur(10px); 
+        }
+        
+        .area-card:hover { 
+            background: rgba(255, 255, 255, 0.2); 
+            transform: translateY(-3px); 
+        }
+        
+        .area-card h4 { 
+            color: #e74c3c; 
+            margin-bottom: 0.5rem; 
+            font-size: 1.2rem; 
+        }
+        
+        .area-card p { 
+            font-size: 0.9rem; 
+            margin-bottom: 1rem; 
+        }
+        
+        .area-card a { 
+            color: white; 
+            text-decoration: none; 
+            font-weight: 600; 
+            border: 1px solid white; 
+            padding: 0.5rem 1rem; 
+            border-radius: 4px; 
+            display: inline-block; 
+            transition: all 0.3s; 
+        }
+        
+        .area-card a:hover { 
+            background: white; 
+            color: #2B6CB0; 
+        }
+
+        /* Social Proof Section */
+        .social-proof { 
+            padding: 80px 0; 
+            background: #f8f9fa; 
+        }
+        
+        .social-proof h2 { 
+            text-align: center; 
+            font-size: 2.5rem; 
+            margin-bottom: 3rem; 
+            color: #2c3e50; 
+        }
+        
+        .testimonial-carousel { 
+            background: white; 
+            padding: 2rem; 
+            border-radius: 12px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08); 
+            margin-bottom: 3rem; 
+        }
+        
+        .testimonial { 
+            text-align: center; 
+            max-width: 800px; 
+            margin: 0 auto; 
+        }
+        
+        .testimonial-stars { 
+            color: #f39c12; 
+            font-size: 1.5rem; 
+            margin-bottom: 1rem; 
+        }
+        
+        .testimonial-text { 
+            font-size: 1.2rem; 
+            font-style: italic; 
+            margin-bottom: 1.5rem; 
+            color: #2c3e50; 
+        }
+        
+        .testimonial-author { 
+            font-weight: 600; 
+            color: #2B6CB0; 
+        }
+        
+        .credentials { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 2rem; 
+            text-align: center; 
+        }
+        
+        .credential { 
+            background: white; 
+            padding: 1.5rem; 
+            border-radius: 12px; 
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05); 
+        }
+        
+        .credential-icon { 
+            font-size: 2rem; 
+            color: #2B6CB0; 
+            margin-bottom: 1rem; 
+        }
+
+        /* Emergency Response Section */
+        .emergency-response { 
+            background: #c0392b; 
+            color: white; 
+            padding: 80px 0; 
+            text-align: center; 
+        }
+        
+        .emergency-response h2 { 
+            font-size: 2.5rem; 
+            margin-bottom: 2rem; 
+        }
+        
+        .emergency-content { 
+            max-width: 800px; 
+            margin: 0 auto 2rem auto; 
+        }
+        
+        .emergency-services { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 1.5rem; 
+            margin: 2rem 0; 
+            text-align: left; 
+        }
+        
+        .emergency-service { 
+            display: flex; 
+            align-items: flex-start; 
+            gap: 1rem; 
+        }
+        
+        .emergency-service-icon { 
+            font-size: 1.5rem; 
+            color: #f39c12; 
+            margin-top: 0.2rem; 
+        }
+        
+        .emergency-cta { 
+            margin-top: 2rem; 
+        }
+        
+        .emergency-phone { 
+            background: white; 
+            color: #c0392b; 
+            padding: 1.5rem 3rem; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+            text-decoration: none; 
+            display: inline-block; 
+            transition: all 0.3s; 
+        }
+        
+        .emergency-phone:hover { 
+            background: #f8f9fa; 
+            transform: scale(1.05); 
+        }
+
+        /* Financing Section */
+        .financing { 
+            padding: 80px 0; 
+            background: white; 
+        }
+        
+        .financing h2 { 
+            text-align: center; 
+            font-size: 2.5rem; 
+            margin-bottom: 3rem; 
+            color: #2c3e50; 
+        }
+        
+        .financing-content { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 3rem; 
+        }
+        
+        .financing-column { 
+            background: #f8f9fa; 
+            padding: 2rem; 
+            border-radius: 12px; 
+        }
+        
+        .financing-icon { 
+            font-size: 2.5rem; 
+            color: #27ae60; 
+            margin-bottom: 1rem; 
+        }
+        
+        .financing-column h3 { 
+            color: #2c3e50; 
+            margin-bottom: 1.5rem; 
+            font-size: 1.5rem; 
+        }
+        
+        .financing-list { 
+            list-style: none; 
+            margin-bottom: 2rem; 
+        }
+        
+        .financing-list li { 
+            padding: 0.5rem 0; 
+            position: relative; 
+            padding-left: 1.5rem; 
+        }
+        
+        .financing-list li::before { 
+            content: "✓"; 
+            color: #27ae60; 
+            font-weight: bold; 
+            position: absolute; 
+            left: 0; 
+        }
+        
+        .process-steps { 
+            counter-reset: step-counter; 
+            list-style: none; 
+        }
+        
+        .process-steps li { 
+            counter-increment: step-counter; 
+            padding: 1rem 0; 
+            position: relative; 
+            padding-left: 3rem; 
+            border-bottom: 1px solid #e0e0e0; 
+        }
+        
+        .process-steps li::before { 
+            content: counter(step-counter); 
+            position: absolute; 
+            left: 0; 
+            top: 1rem; 
+            background: #2B6CB0; 
+            color: white; 
+            width: 2rem; 
+            height: 2rem; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+        }
+
+        /* About Section */
+        .about-section { 
+            padding: 80px 0; 
+            background: #f8f9fa; 
+        }
+        
+        .about-content { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr; 
+            gap: 3rem; 
+            align-items: center; 
+        }
+        
+        .about-section h2 { 
+            color: #2c3e50; 
+            margin-bottom: 2rem; 
+            font-size: 2.2rem; 
+        }
+        
+        .about-section p { 
+            font-size: 1.1rem; 
+            line-height: 1.7; 
+            margin-bottom: 1.5rem; 
+        }
+        
+        .owner-info { 
+            background: white; 
+            padding: 1.5rem; 
+            border-radius: 12px; 
+            margin-top: 1rem; 
+        }
+        
+        .team-photo { 
+            background: #e8f4f8; 
+            height: 400px; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: #666; 
+            font-size: 1.2rem; 
+        }
+
+        /* Contact Location Section */
+        .contact-location { 
+            padding: 80px 0; 
+            background: #2c3e50; 
+            color: white; 
+        }
+        
+        .contact-content { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 3rem; 
+        }
+        
+        .contact-info h3, 
+        .business-hours h3, 
+        .location-map h3 { 
+            color: #e74c3c; 
+            margin-bottom: 1.5rem; 
+            font-size: 1.5rem; 
+        }
+        
+        .contact-phone-large { 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+            color: #e74c3c; 
+            text-decoration: none; 
+            display: block; 
+            margin: 1rem 0; 
+        }
+        
+        .hours-list { 
+            list-style: none; 
+        }
+        
+        .hours-list li { 
+            padding: 0.5rem 0; 
+            display: flex; 
+            justify-content: space-between; 
+            border-bottom: 1px solid #445566; 
+        }
+        
+        .map-placeholder { 
+            background: #445566; 
+            height: 200px; 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: #ccc; 
+        }
+
+        /* Final CTA Section */
+        .final-cta { 
+            background: linear-gradient(135deg, #e74c3c, #c0392b); 
+            color: white; 
+            padding: 80px 0; 
+            text-align: center; 
+        }
+        
+        .final-cta h2 { 
+            font-size: 2.5rem; 
+            margin-bottom: 2rem; 
+        }
+        
+        .final-cta-content { 
+            max-width: 800px; 
+            margin: 0 auto 3rem auto; 
+            font-size: 1.2rem; 
+        }
+        
+        .cta-buttons { 
+            display: flex; 
+            gap: 2rem; 
+            justify-content: center; 
+            margin-bottom: 2rem; 
+        }
+        
+        .cta-emergency, 
+        .cta-estimate { 
+            padding: 1.5rem 3rem; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 1.3rem; 
+            font-weight: bold; 
+            text-decoration: none; 
+            display: inline-block; 
+            transition: all 0.3s; 
+        }
+        
+        .cta-emergency { 
+            background: white; 
+            color: #e74c3c; 
+        }
+        
+        .cta-estimate { 
+            background: #2B6CB0; 
+            color: white; 
+        }
+        
+        .cta-emergency:hover, 
+        .cta-estimate:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
+        }
+        
+        .trust-footer { 
+            font-size: 1rem; 
+            opacity: 0.9; 
+        }
+
+        /* Footer */
+        footer { 
+            background: #2c3e50; 
+            color: white; 
+            padding: 3rem 0 2rem 0; 
+        }
+        
+        .footer-content { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 2rem; 
+            margin-bottom: 2rem; 
+        }
+        
+        .footer-section h4 { 
+            color: #e74c3c; 
+            margin-bottom: 1rem; 
+        }
+        
+        .footer-section ul { 
+            list-style: none; 
+        }
+        
+        .footer-section a { 
+            color: #ccc; 
+            text-decoration: none; 
+            transition: color 0.3s; 
+        }
+        
+        .footer-section a:hover { color: #e74c3c; }
+        
+        .footer-bottom { 
+            text-align: center; 
+            padding-top: 2rem; 
+            border-top: 1px solid #445566; 
+            color: #ccc; 
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container { padding: 0 1rem; }
+            nav { flex-direction: column; gap: 1rem; }
+            .nav-links { flex-direction: column; text-align: center; }
+            .hero-content { grid-template-columns: 1fr; }
+            .hero-text h1 { font-size: 2rem; }
+            .trust-stats { grid-template-columns: repeat(2, 1fr); }
+            .services-grid { grid-template-columns: 1fr; }
+            .value-prop { grid-template-columns: 1fr; }
+            .value-prop:nth-child(even) .value-content { order: 0; }
+            .areas-grid { grid-template-columns: 1fr; }
+            .credentials { grid-template-columns: repeat(3, 1fr); }
+            .emergency-services { grid-template-columns: 1fr; }
+            .financing-content { grid-template-columns: 1fr; }
+            .about-content { grid-template-columns: 1fr; }
+            .contact-content { grid-template-columns: 1fr; }
+            .cta-buttons { flex-direction: column; align-items: center; }
+            .footer-content { grid-template-columns: 1fr; text-align: center; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav data-testid="navigation-main">
+        <div class="container">
+            <a href="/" class="logo" data-testid="link-logo">{{company_name}}</a>
+            <ul class="nav-links">
+                <li><a href="/about" data-testid="link-nav-about">About</a></li>
+                <li><a href="/services" data-testid="link-nav-services">Services</a></li>
+                <li><a href="/contact" data-testid="link-nav-contact">Contact</a></li>
+            </ul>
+            <a href="tel:{{company_phone}}" class="nav-phone" data-testid="link-nav-phone">{{company_phone}}</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" data-testid="section-hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 data-testid="heading-hero-main">{{hero_h1}}</h1>
+                    <p class="hero-subheading" data-testid="text-hero-subheading">Expert Insurance Claim Assistance • 24/7 Emergency Response • 20+ Years Serving Greater New Orleans</p>
+                    <p class="hero-body" data-testid="text-hero-body">When storms damage your Greater New Orleans area property, you need contractors who understand both roofing AND insurance claims. {{company_name}} combines 20+ years of roofing expertise with specialized insurance claim assistance to get your property restored and your claim paid in full.</p>
+                    
+                    <ul class="hero-features" data-testid="list-hero-features">
+                        <li data-testid="feature-emergency-repair">Emergency roof repairs within 24 hours</li>
+                        <li data-testid="feature-insurance-specialists">Insurance claim specialists who fight for full coverage</li>
+                        <li data-testid="feature-service-areas">Storm restoration experts serving 18 Greater New Orleans area communities</li>
+                        <li data-testid="feature-financing">In-house financing available for immediate repairs</li>
+                    </ul>
+                    
+                    <div class="hero-buttons" data-testid="container-hero-buttons">
+                        <a href="#contact-form" class="btn-primary" data-testid="button-emergency-quote">Get Emergency Repair Quote</a>
+                        <a href="/contact" class="btn-secondary" data-testid="button-insurance-assessment">Free Insurance Claim Assessment</a>
+                    </div>
+                    
+                    <a href="tel:{{company_phone}}" class="hero-phone" data-testid="link-hero-phone">{{company_phone}}</a>
+                </div>
+                
+                <div class="hero-form" data-testid="container-hero-form">
+                    <h3 data-testid="heading-hero-form">Get Your FREE Roofing Estimate</h3>
+                    <form data-testid="form-hero-estimate">
+                        <div class="form-group">
+                            <label for="hero-name" data-testid="label-hero-name">Name *</label>
+                            <input type="text" id="hero-name" required data-testid="input-hero-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="hero-phone" data-testid="label-hero-phone">Phone *</label>
+                            <input type="tel" id="hero-phone" required data-testid="input-hero-phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="hero-email" data-testid="label-hero-email">Email *</label>
+                            <input type="email" id="hero-email" required data-testid="input-hero-email">
+                        </div>
+                        <div class="form-group">
+                            <label for="hero-address" data-testid="label-hero-address">Property Address</label>
+                            <input type="text" id="hero-address" data-testid="input-hero-address">
+                        </div>
+                        <div class="form-group">
+                            <label for="hero-service" data-testid="label-hero-service">Service Needed *</label>
+                            <select id="hero-service" required data-testid="select-hero-service">
+                                <option value="" data-testid="option-select-service">Select Service</option>
+                                <option value="emergency-repair" data-testid="option-emergency-repair">Emergency Roof Repair</option>
+                                <option value="insurance-claim" data-testid="option-insurance-claim">Insurance Claim Assistance</option>
+                                <option value="roof-replacement" data-testid="option-roof-replacement">Complete Roof Replacement</option>
+                                <option value="storm-restoration" data-testid="option-storm-restoration">Storm Damage Restoration</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hero-message" data-testid="label-hero-message">Project Details</label>
+                            <textarea id="hero-message" rows="3" data-testid="textarea-hero-message"></textarea>
+                        </div>
+                        <button type="submit" class="form-submit" data-testid="button-hero-submit">Get My Free Estimate</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Indicators Bar -->
+    <section class="trust-bar" data-testid="section-trust-bar">
+        <div class="container">
+            <div class="trust-stats">
+                <div class="trust-stat" data-testid="stat-experience">
+                    <div class="trust-stat-icon" data-testid="icon-experience">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </div>
+                    <span class="trust-stat-number" data-testid="number-experience">20+</span>
+                    <div class="trust-stat-label" data-testid="label-experience">Years Roofing Experience</div>
+                </div>
+                <div class="trust-stat" data-testid="stat-claims">
+                    <div class="trust-stat-icon" data-testid="icon-claims">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <span class="trust-stat-number" data-testid="number-claims">1000+</span>
+                    <div class="trust-stat-label" data-testid="label-claims">Claims Successfully Processed</div>
+                </div>
+                <div class="trust-stat" data-testid="stat-emergency">
+                    <div class="trust-stat-icon" data-testid="icon-emergency">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                    </div>
+                    <span class="trust-stat-number" data-testid="number-emergency">24/7</span>
+                    <div class="trust-stat-label" data-testid="label-emergency">Emergency Response</div>
+                </div>
+                <div class="trust-stat" data-testid="stat-areas">
+                    <div class="trust-stat-icon" data-testid="icon-areas">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+                        </svg>
+                    </div>
+                    <span class="trust-stat-number" data-testid="number-areas">18</span>
+                    <div class="trust-stat-label" data-testid="label-areas">Service Areas Covered</div>
+                </div>
+            </div>
+            
+            <div class="service-areas-quick" data-testid="container-areas-quick">
+                <p data-testid="text-areas-quick">Proudly serving: New Orleans • Metairie • Kenner • Slidell • Covington • Mandeville • and 12 more locations throughout Greater New Orleans</p>
+                <a href="#service-coverage" data-testid="link-view-areas">View All Service Areas</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Services Section -->
+    <section class="core-services" data-testid="section-core-services">
+        <div class="container">
+            <h2 data-testid="heading-core-services">Complete Storm Restoration & Roofing Services for Greater New Orleans Properties</h2>
+            
+            <div class="services-grid">
+                <div class="service-card" data-testid="card-emergency-repair">
+                    <div class="service-icon" data-testid="icon-emergency-repair">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                    </div>
+                    <h3 data-testid="heading-emergency-repair">Emergency Roof Repair</h3>
+                    <p class="service-subtitle" data-testid="subtitle-emergency-repair">When storms strike, we respond immediately</p>
+                    
+                    <ul class="service-features" data-testid="list-emergency-features">
+                        <li data-testid="feature-24-7-response">24/7 emergency response for storm damage</li>
+                        <li data-testid="feature-emergency-tarping">Emergency tarping and temporary repairs</li>
+                        <li data-testid="feature-permanent-repairs">Permanent repairs using insurance-grade materials</li>
+                        <li data-testid="feature-same-day">Same-day service for urgent leaks and structural damage</li>
+                    </ul>
+                    
+                    <a href="/emergency-roof-repair" class="btn-primary btn-emergency" data-testid="button-emergency-help">Get Emergency Help</a>
+                </div>
+                
+                <div class="service-card" data-testid="card-insurance-claims">
+                    <div class="service-icon" data-testid="icon-insurance-claims">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <h3 data-testid="heading-insurance-claims">Insurance Claims Assistance</h3>
+                    <p class="service-subtitle" data-testid="subtitle-insurance-claims">Navigate insurance claims with expert advocates on your side</p>
+                    
+                    <ul class="service-features" data-testid="list-insurance-features">
+                        <li data-testid="feature-claim-documentation">Complete claim documentation and filing</li>
+                        <li data-testid="feature-adjuster-meetings">Adjuster meetings and negotiations</li>
+                        <li data-testid="feature-maximize-settlement">Maximize your insurance settlement</li>
+                        <li data-testid="feature-no-upfront">No upfront costs - we work directly with your insurance</li>
+                    </ul>
+                    
+                    <a href="/insurance-claims-assistance" class="btn-primary btn-trust" data-testid="button-claim-consultation">Free Claim Consultation</a>
+                </div>
+                
+                <div class="service-card" data-testid="card-roof-replacement">
+                    <div class="service-icon" data-testid="icon-roof-replacement">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 21h18"/>
+                            <path d="M5 21V7l8-4v18"/>
+                            <path d="M19 21V11l-6-4"/>
+                        </svg>
+                    </div>
+                    <h3 data-testid="heading-roof-replacement">Complete Roof Replacement</h3>
+                    <p class="service-subtitle" data-testid="subtitle-roof-replacement">Professional installation with materials built for Louisiana weather</p>
+                    
+                    <ul class="service-features" data-testid="list-replacement-features">
+                        <li data-testid="feature-residential-commercial">Residential and commercial roofing systems</li>
+                        <li data-testid="feature-material-expertise">Shingle, metal, slate, and flat roof expertise</li>
+                        <li data-testid="feature-hurricane-resistant">Hurricane-resistant and fortified roofing options</li>
+                        <li data-testid="feature-warranties">Comprehensive warranties and financing available</li>
+                    </ul>
+                    
+                    <a href="/residential-roofing" class="btn-primary btn-success" data-testid="button-roof-quote">Get Roof Quote</a>
+                </div>
+                
+                <div class="service-card" data-testid="card-storm-restoration">
+                    <div class="service-icon" data-testid="icon-storm-restoration">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+                            <path d="M16 11l-4 6-4-6"/>
+                        </svg>
+                    </div>
+                    <h3 data-testid="heading-storm-restoration">Storm Damage Restoration</h3>
+                    <p class="service-subtitle" data-testid="subtitle-storm-restoration">Full-service restoration for hurricane and severe weather damage</p>
+                    
+                    <ul class="service-features" data-testid="list-restoration-features">
+                        <li data-testid="feature-damage-assessment">Comprehensive property damage assessment</li>
+                        <li data-testid="feature-exterior-restoration">Exterior restoration: roofing, siding, gutters, windows</li>
+                        <li data-testid="feature-general-contracting">General contracting for complete property rehabilitation</li>
+                        <li data-testid="feature-project-management">Project management from insurance claim to completion</li>
+                    </ul>
+                    
+                    <a href="/storm-damage-restoration" class="btn-primary btn-action" data-testid="button-storm-assessment">Free Storm Assessment</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Clear Home Section -->
+    <section class="why-choose" data-testid="section-why-choose">
+        <div class="container">
+            <h2 data-testid="heading-why-choose">Why Greater New Orleans Property Owners Trust {{company_name}} for Storm Restoration</h2>
+            
+            <div class="value-prop" data-testid="prop-insurance-specialists">
+                <div class="value-content">
+                    <h3 data-testid="heading-insurance-specialists">Insurance Claim Specialists</h3>
+                    <p data-testid="text-insurance-specialists">Unlike typical contractors, we're experts at navigating Louisiana insurance claims. We document damage properly, meet with adjusters, and fight to get you the full settlement you deserve. Our clients typically receive 30-50% higher settlements than those who handle claims alone.</p>
+                    <div class="value-highlight" data-testid="highlight-settlement">30-50% higher settlements</div>
+                </div>
+                <div class="value-image" data-testid="image-insurance-meeting">Team meeting with insurance adjuster</div>
+            </div>
+            
+            <div class="value-prop" data-testid="prop-local-expertise">
+                <div class="value-content">
+                    <h3 data-testid="heading-local-expertise">Local New Orleans Expertise</h3>
+                    <p data-testid="text-local-expertise">Born and raised in Louisiana, we understand our unique weather challenges. From hurricane season preparation to flood zone requirements, we know what it takes to protect Greater New Orleans area properties against our specific climate risks.</p>
+                    <div class="value-highlight" data-testid="highlight-local-years">20+ years in Louisiana</div>
+                </div>
+                <div class="value-image" data-testid="image-local-architecture">Historic Greater New Orleans architecture</div>
+            </div>
+            
+            <div class="value-prop" data-testid="prop-comprehensive-services">
+                <div class="value-content">
+                    <h3 data-testid="heading-comprehensive-services">Comprehensive Restoration Services</h3>
+                    <p data-testid="text-comprehensive-services">We're not just roofers - we're complete restoration specialists. When storms damage multiple building systems, you need one trusted contractor who can handle roofing, siding, gutters, windows, and general contracting all under one project.</p>
+                    <div class="service-icons" data-testid="container-service-icons">
+                        <span data-testid="icon-roofing">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 21h18"/>
+                                <path d="M5 21V7l8-4v18"/>
+                                <path d="M19 21V11l-6-4"/>
+                            </svg>
+                        </span>
+                        <span data-testid="icon-siding">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                <line x1="8" y1="21" x2="16" y2="21"/>
+                                <line x1="12" y1="17" x2="12" y2="21"/>
+                            </svg>
+                        </span>
+                        <span data-testid="icon-gutters">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M7 19l5-7 5 7"/>
+                                <path d="M8.5 2h7"/>
+                                <path d="M12 5v2"/>
+                            </svg>
+                        </span>
+                        <span data-testid="icon-windows">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="12" y1="3" x2="12" y2="21"/>
+                                <line x1="3" y1="12" x2="21" y2="12"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                <div class="value-image" data-testid="image-services-collage">Multiple services collage</div>
+            </div>
+            
+            <div class="value-prop" data-testid="prop-emergency-capability">
+                <div class="value-content">
+                    <h3 data-testid="heading-emergency-capability">Emergency Response Capability</h3>
+                    <p data-testid="text-emergency-capability">Storms don't wait for business hours. Our emergency response team is on-call 24/7 during severe weather events. We'll tarp damaged roofs immediately to prevent further damage while insurance claims are processed.</p>
+                    <div class="value-highlight" data-testid="highlight-24-7">24/7 Response</div>
+                </div>
+                <div class="value-image" data-testid="image-emergency-response">Emergency response truck</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Area Coverage Section -->
+    <section class="service-coverage" id="service-coverage" data-testid="section-service-coverage">
+        <div class="container">
+            <h2 data-testid="heading-service-coverage">Serving 18 Communities Throughout Greater New Orleans</h2>
+            
+            <div class="areas-grid">
+                <div class="area-card" data-testid="card-new-orleans">
+                    <h4 data-testid="heading-new-orleans">New Orleans</h4>
+                    <p data-testid="text-new-orleans">Orleans Parish</p>
+                    <a href="/new-orleans-roofing" data-testid="link-new-orleans">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-algiers">
+                    <h4 data-testid="heading-algiers">Algiers</h4>
+                    <p data-testid="text-algiers">Orleans Parish</p>
+                    <a href="/algiers-roofing" data-testid="link-algiers">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-metairie">
+                    <h4 data-testid="heading-metairie">Metairie</h4>
+                    <p data-testid="text-metairie">Jefferson Parish</p>
+                    <a href="/metairie-roofing" data-testid="link-metairie">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-kenner">
+                    <h4 data-testid="heading-kenner">Kenner</h4>
+                    <p data-testid="text-kenner">Jefferson Parish</p>
+                    <a href="/kenner-roofing" data-testid="link-kenner">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-gretna">
+                    <h4 data-testid="heading-gretna">Gretna</h4>
+                    <p data-testid="text-gretna">Jefferson Parish</p>
+                    <a href="/gretna-roofing" data-testid="link-gretna">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-harvey">
+                    <h4 data-testid="heading-harvey">Harvey</h4>
+                    <p data-testid="text-harvey">Jefferson Parish</p>
+                    <a href="/harvey-roofing" data-testid="link-harvey">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-terrytown">
+                    <h4 data-testid="heading-terrytown">Terrytown</h4>
+                    <p data-testid="text-terrytown">Jefferson Parish</p>
+                    <a href="/terrytown-roofing" data-testid="link-terrytown">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-marrero">
+                    <h4 data-testid="heading-marrero">Marrero</h4>
+                    <p data-testid="text-marrero">Jefferson Parish</p>
+                    <a href="/marrero-roofing" data-testid="link-marrero">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-laplace">
+                    <h4 data-testid="heading-laplace">Laplace</h4>
+                    <p data-testid="text-laplace">St. Charles Parish</p>
+                    <a href="/laplace-roofing" data-testid="link-laplace">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-belle-chasse">
+                    <h4 data-testid="heading-belle-chasse">Belle Chasse</h4>
+                    <p data-testid="text-belle-chasse">St. Charles Parish</p>
+                    <a href="/belle-chasse-roofing" data-testid="link-belle-chasse">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-arabi">
+                    <h4 data-testid="heading-arabi">Arabi</h4>
+                    <p data-testid="text-arabi">St. Bernard Parish</p>
+                    <a href="/arabi-roofing" data-testid="link-arabi">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-chalmette">
+                    <h4 data-testid="heading-chalmette">Chalmette</h4>
+                    <p data-testid="text-chalmette">St. Bernard Parish</p>
+                    <a href="/chalmette-roofing" data-testid="link-chalmette">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-slidell">
+                    <h4 data-testid="heading-slidell">Slidell</h4>
+                    <p data-testid="text-slidell">St. Tammany Parish</p>
+                    <a href="/slidell-roofing" data-testid="link-slidell">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-covington">
+                    <h4 data-testid="heading-covington">Covington</h4>
+                    <p data-testid="text-covington">St. Tammany Parish</p>
+                    <a href="/covington-roofing" data-testid="link-covington">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-mandeville">
+                    <h4 data-testid="heading-mandeville">Mandeville</h4>
+                    <p data-testid="text-mandeville">St. Tammany Parish</p>
+                    <a href="/mandeville-roofing" data-testid="link-mandeville">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-madisonville">
+                    <h4 data-testid="heading-madisonville">Madisonville</h4>
+                    <p data-testid="text-madisonville">St. Tammany Parish</p>
+                    <a href="/madisonville-roofing" data-testid="link-madisonville">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-hammond">
+                    <h4 data-testid="heading-hammond">Hammond</h4>
+                    <p data-testid="text-hammond">Tangipahoa Parish</p>
+                    <a href="/hammond-roofing" data-testid="link-hammond">Get Quote</a>
+                </div>
+                
+                <div class="area-card" data-testid="card-ponchatoula">
+                    <h4 data-testid="heading-ponchatoula">Ponchatoula</h4>
+                    <p data-testid="text-ponchatoula">Tangipahoa Parish</p>
+                    <a href="/ponchatoula-roofing" data-testid="link-ponchatoula">Get Quote</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof Section -->
+    <section class="social-proof" data-testid="section-social-proof">
+        <div class="container">
+            <h2 data-testid="heading-social-proof">What Our Customers Say</h2>
+            
+            <div class="testimonial-carousel" data-testid="container-testimonials">
+                <div class="testimonial" data-testid="testimonial-active">
+                    <div class="testimonial-stars" data-testid="stars-testimonial">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                        </svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                        </svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                        </svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                        </svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                        </svg>
+                    </div>
+                    <p class="testimonial-text" data-testid="text-testimonial">"{{company_name}} helped us navigate our insurance claim after Hurricane damage. They got us 40% more than we expected and completed the work beautifully. Professional from start to finish."</p>
+                    <div class="testimonial-author" data-testid="author-testimonial">- Sarah M., Metairie</div>
+                </div>
+            </div>
+            
+            <div class="credentials">
+                <div class="credential" data-testid="credential-licensed">
+                    <div class="credential-icon" data-testid="icon-licensed">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
+                        </svg>
+                    </div>
+                    <p data-testid="text-licensed">Licensed Louisiana Contractors</p>
+                </div>
+                
+                <div class="credential" data-testid="credential-gaf">
+                    <div class="credential-icon" data-testid="icon-gaf">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+                            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                            <path d="M4 22h16"/>
+                            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+                            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+                            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+                        </svg>
+                    </div>
+                    <p data-testid="text-gaf">GAF Master Elite Contractor</p>
+                </div>
+                
+                <div class="credential" data-testid="credential-haag">
+                    <div class="credential-icon" data-testid="icon-haag">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </div>
+                    <p data-testid="text-haag">Haag Certified Inspector</p>
+                </div>
+                
+                <div class="credential" data-testid="credential-bbb">
+                    <div class="credential-icon" data-testid="icon-bbb">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                        </svg>
+                    </div>
+                    <p data-testid="text-bbb">Better Business Bureau A+ Rating</p>
+                </div>
+                
+                <div class="credential" data-testid="credential-chamber">
+                    <div class="credential-icon" data-testid="icon-chamber">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 20h12"/>
+                            <path d="M12 16v4"/>
+                            <path d="m8 12 4 4 4-4"/>
+                            <path d="M16 4h2a2 2 0 0 1 2 2v4l-6 6H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                            <path d="M12 2v4"/>
+                        </svg>
+                    </div>
+                    <p data-testid="text-chamber">Local Chamber of Commerce</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emergency Response Section -->
+    <section class="emergency-response" data-testid="section-emergency-response">
+        <div class="container">
+            <h2 data-testid="heading-emergency-response">Storm Damage? Get Immediate Help 24/7</h2>
+            
+            <div class="emergency-content" data-testid="container-emergency-content">
+                <p data-testid="text-emergency-urgency">Don't wait when storms damage your property. Every hour of delay can lead to additional water damage, mold growth, and insurance complications. Our emergency response team provides:</p>
+                
+                <div class="emergency-services">
+                    <div class="emergency-service" data-testid="service-immediate-response">
+                        <div class="emergency-service-icon" data-testid="icon-immediate">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <strong data-testid="title-immediate">Immediate response</strong> within 2-4 hours of your call
+                        </div>
+                    </div>
+                    
+                    <div class="emergency-service" data-testid="service-emergency-tarping">
+                        <div class="emergency-service-icon" data-testid="icon-tarping">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <strong data-testid="title-tarping">Emergency tarping</strong> to prevent further damage
+                        </div>
+                    </div>
+                    
+                    <div class="emergency-service" data-testid="service-damage-documentation">
+                        <div class="emergency-service-icon" data-testid="icon-documentation">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10,9 9,9 8,9"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <strong data-testid="title-documentation">Damage documentation</strong> for insurance purposes
+                        </div>
+                    </div>
+                    
+                    <div class="emergency-service" data-testid="service-temporary-repairs">
+                        <div class="emergency-service-icon" data-testid="icon-temporary">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <strong data-testid="title-temporary">Temporary repairs</strong> to secure your property
+                        </div>
+                    </div>
+                    
+                    <div class="emergency-service" data-testid="service-insurance-notification">
+                        <div class="emergency-service-icon" data-testid="icon-notification">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <strong data-testid="title-notification">Insurance notification</strong> to start your claim immediately
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="emergency-cta" data-testid="container-emergency-cta">
+                <a href="tel:{{company_phone}}" class="emergency-phone" data-testid="button-emergency-call">Call Now: {{company_phone}}</a>
+                <p data-testid="text-emergency-availability">Available 24/7 for storm emergencies</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Financing & Insurance Section -->
+    <section class="financing" data-testid="section-financing">
+        <div class="container">
+            <h2 data-testid="heading-financing">Affordable Solutions with In-House Financing & Insurance Expertise</h2>
+            
+            <div class="financing-content">
+                <div class="financing-column" data-testid="column-financing">
+                    <div class="financing-icon" data-testid="icon-financing">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                    </div>
+                    <h3 data-testid="heading-financing-benefits">Financing Benefits</h3>
+                    
+                    <ul class="financing-list" data-testid="list-financing">
+                        <li data-testid="benefit-no-money-down">No money down for insurance claim work</li>
+                        <li data-testid="benefit-flexible-payments">Flexible payment plans for out-of-pocket repairs</li>
+                        <li data-testid="benefit-in-house">In-house financing available with approved credit</li>
+                        <li data-testid="benefit-advance-coordination">Insurance advance coordination to minimize upfront costs</li>
+                    </ul>
+                    
+                    <a href="/financing" class="btn-primary" data-testid="button-apply-financing">Apply for Financing</a>
+                </div>
+                
+                <div class="financing-column" data-testid="column-insurance">
+                    <div class="financing-icon" data-testid="icon-insurance-process">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <h3 data-testid="heading-insurance-process">Insurance Process</h3>
+                    
+                    <ol class="process-steps" data-testid="list-insurance-process">
+                        <li data-testid="step-assessment">Free damage assessment and insurance claim consultation</li>
+                        <li data-testid="step-documentation">Complete documentation with photos and detailed estimates</li>
+                        <li data-testid="step-coordination">Adjuster meeting coordination with our team present</li>
+                        <li data-testid="step-advocacy">Claim advocacy to maximize your settlement</li>
+                        <li data-testid="step-restoration">Professional restoration using insurance-approved materials</li>
+                    </ol>
+                    
+                    <a href="/insurance-claims-assistance" class="btn-primary" data-testid="button-insurance-consultation">Free Insurance Consultation</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Clear Home Section -->
+    <section class="about-section" data-testid="section-about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text" data-testid="container-about-text">
+                    <h2 data-testid="heading-about">Building Trust in Greater New Orleans, One Project at a Time</h2>
+                    
+                    <p data-testid="text-company-story">{{company_name}} was founded with a simple mission: help New Orleans area property owners navigate the complex world of storm restoration and insurance claims. After 20+ years in Louisiana, we understand that successful restoration requires both exceptional craftsmanship AND insurance expertise.</p>
+                    
+                    <p data-testid="text-business-model">Our seasonal business model allows us to focus intensively on storm restoration during hurricane season, then provide comprehensive general contracting services during calmer months. This approach ensures we're always available when our community needs us most.</p>
+                    
+                    <div class="owner-info" data-testid="container-owner-info">
+                        <p data-testid="text-owners"><strong>Owners:</strong> John Romano and Hollie Romano</p>
+                        <p data-testid="text-experience"><strong>Experience:</strong> 20+ years serving Greater New Orleans</p>
+                        <p data-testid="text-specialization"><strong>Specialization:</strong> Storm restoration and insurance claim advocacy</p>
+                    </div>
+                    
+                    <a href="/about" data-testid="link-learn-more">Learn More About Our Story</a>
+                </div>
+                
+                <div class="team-photo" data-testid="image-team-photo">
+                    Professional photo of John and Hollie Romano with team
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Location Section -->
+    <section class="contact-location" data-testid="section-contact-location">
+        <div class="container">
+            <div class="contact-content">
+                <div class="contact-info" data-testid="container-contact-info">
+                    <h3 data-testid="heading-contact-info">Contact Information</h3>
+                    <p data-testid="text-company-name"><strong>{{company_name}}</strong></p>
+                    <p data-testid="text-address">{{street_address}}<br>{{city}}, {{state}} {{zip_code}}</p>
+                    <a href="tel:{{company_phone}}" class="contact-phone-large" data-testid="link-contact-phone">{{company_phone}}</a>
+                    <p data-testid="text-email">Email: <a href="mailto:{{email}}" data-testid="link-email">{{email}}</a></p>
+                </div>
+                
+                <div class="business-hours" data-testid="container-business-hours">
+                    <h3 data-testid="heading-business-hours">Business Hours</h3>
+                    <ul class="hours-list" data-testid="list-hours">
+                        <li data-testid="hours-weekday">
+                            <span data-testid="text-weekday-label">Monday-Friday</span>
+                            <span data-testid="text-weekday-hours">7:00 AM - 7:00 PM</span>
+                        </li>
+                        <li data-testid="hours-saturday">
+                            <span data-testid="text-saturday-label">Saturday</span>
+                            <span data-testid="text-saturday-hours">8:00 AM - 5:00 PM</span>
+                        </li>
+                        <li data-testid="hours-sunday">
+                            <span data-testid="text-sunday-label">Sunday</span>
+                            <span data-testid="text-sunday-hours">Emergency calls only</span>
+                        </li>
+                    </ul>
+                    <p data-testid="text-emergency-available"><strong>24/7 Emergency Response Available</strong></p>
+                </div>
+                
+                <div class="location-map" data-testid="container-location-map">
+                    <h3 data-testid="heading-location-map">Our Location</h3>
+                    <div class="map-placeholder" data-testid="placeholder-map">
+                        Interactive Google Map
+                    </div>
+                    <p data-testid="text-map-note">Click map for directions</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="final-cta" data-testid="section-final-cta">
+        <div class="container">
+            <h2 data-testid="heading-final-cta">Don't Wait - Storm Damage Gets Worse Every Day</h2>
+            
+            <div class="final-cta-content" data-testid="container-final-cta-content">
+                <p data-testid="text-final-urgency">Water damage, structural issues, and insurance complications increase dramatically with every day of delay. Get professional assessment and emergency repairs before small problems become major expenses.</p>
+            </div>
+            
+            <div class="cta-buttons" data-testid="container-cta-buttons">
+                <a href="tel:{{company_phone}}" class="cta-emergency" data-testid="button-cta-emergency">Call {{company_phone}}</a>
+                <a href="/contact" class="cta-estimate" data-testid="button-cta-estimate">Schedule Free Estimate</a>
+            </div>
+            
+            <div class="trust-footer" data-testid="text-trust-footer">
+                20+ years of experience • Licensed & insured • A+ BBB rating • Insurance claim specialists
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer data-testid="footer-main">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section" data-testid="section-footer-company">
+                    <h4 data-testid="heading-footer-company">{{company_name}}</h4>
+                    <p data-testid="text-footer-address">{{street_address}}<br>{{city}}, {{state}} {{zip_code}}</p>
+                    <p data-testid="text-footer-phone">{{company_phone}}</p>
+                    <p data-testid="text-footer-email">{{email}}</p>
+                </div>
+                
+                <div class="footer-section" data-testid="section-footer-services">
+                    <h4 data-testid="heading-footer-services">Services</h4>
+                    <ul>
+                        <li><a href="/emergency-roof-repair" data-testid="link-footer-emergency">Emergency Repair</a></li>
+                        <li><a href="/residential-roofing" data-testid="link-footer-residential">Roof Replacement</a></li>
+                        <li><a href="/storm-damage-restoration" data-testid="link-footer-storm">Storm Restoration</a></li>
+                        <li><a href="/insurance-claims-assistance" data-testid="link-footer-insurance">Insurance Claims</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section" data-testid="section-footer-areas">
+                    <h4 data-testid="heading-footer-areas">Service Areas</h4>
+                    <ul>
+                        <li><a href="/new-orleans-roofing" data-testid="link-footer-nola">New Orleans</a></li>
+                        <li><a href="/metairie-roofing" data-testid="link-footer-metairie">Metairie</a></li>
+                        <li><a href="/kenner-roofing" data-testid="link-footer-kenner">Kenner</a></li>
+                        <li><a href="/slidell-roofing" data-testid="link-footer-slidell">Slidell</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section" data-testid="section-footer-company-links">
+                    <h4 data-testid="heading-footer-company-links">Company</h4>
+                    <ul>
+                        <li><a href="/about" data-testid="link-footer-about">About Us</a></li>
+                        <li><a href="/contact" data-testid="link-footer-contact">Contact</a></li>
+                        <li><a href="/financing" data-testid="link-footer-financing">Financing</a></li>
+                        <li><a href="/reviews" data-testid="link-footer-reviews">Reviews</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom" data-testid="container-footer-bottom">
+                <p data-testid="text-copyright">&copy; {{current_year}} {{company_name}}. All rights reserved. Licensed contractor serving Greater New Orleans.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

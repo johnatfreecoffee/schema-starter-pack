@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About {{company_name}} - New Orleans Roofing & Storm Restoration Experts Since 2003</title>
+    <meta name="description" content="Meet John and Hollie Romano, owners of {{company_name}}. 20+ years serving New Orleans with expert roofing, storm restoration, and insurance claims assistance. Licensed & trusted.">
+    <meta name="keywords" content="about {{company_name}}, New Orleans roofing company, storm restoration experts, John Romano, Hollie Romano, licensed contractors">
+    <link rel="canonical" href="https://clearhome.pro/about">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="About {{company_name}} - New Orleans Roofing Experts">
+    <meta property="og:description" content="Meet the Romano family. 20+ years serving New Orleans with expert roofing and storm restoration services.">
+    <meta property="og:url" content="https://clearhome.pro/about">
+    <meta property="og:type" content="website">
+    
+    <!-- LocalBusiness Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "{{company_name}}",
+        "description": "Expert roofing and storm restoration services in New Orleans. Family-owned business serving the community for over 20 years.",
+        "telephone": "{{company_phone}}",
+        "email": "{{email}}",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "{{address}}",
+            "addressLocality": "New Orleans",
+            "addressRegion": "Louisiana",
+            "addressCountry": "United States"
+        },
+        "founder": [
+            {
+                "@type": "Person",
+                "name": "John Romano",
+                "jobTitle": "Co-Owner & Operations Director"
+            },
+            {
+                "@type": "Person", 
+                "name": "Hollie Romano",
+                "jobTitle": "Co-Owner & Client Relations Director"
+            }
+        ],
+        "foundingDate": "2003",
+        "areaServed": ["New Orleans", "Metairie", "Kenner", "Algiers", "Gretna"],
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Roofing and Restoration Services",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Storm Damage Restoration"
+                    }
+                },
+                {
+                    "@type": "Offer", 
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Roofing Services"
+                    }
+                }
+            ]
+        }
+    }
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h2 data-testid="heading-header-logo">{{company_name}}</h2>
+            </div>
+            <div class="nav-links">
+                <a href="/" data-testid="link-home">Home</a>
+                <a href="/about" class="active" data-testid="link-about">About</a>
+                <a href="/services" data-testid="link-services">Services</a>
+                <a href="/contact" data-testid="link-contact">Contact</a>
+            </div>
+            <div class="contact-info">
+                <a href="tel:{{company_phone}}" class="phone-link" data-testid="link-header-phone">{{company_phone}}</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-about">
+            <div class="hero-overlay"></div>
+            <div class="container">
+                <h1 data-testid="heading-hero-main">Building Trust in New Orleans, One Project at a Time</h1>
+                <p class="hero-subtext" data-testid="text-hero-subtext">Meet the Romano Family - Your Trusted Partners in Storm Restoration and General Contracting Since 2003</p>
+                <a href="/contact" class="btn btn-primary" data-testid="button-hero-estimate">Get Your Free Estimate</a>
+            </div>
+        </section>
+
+        <!-- Our Story Section -->
+        <section class="our-story">
+            <div class="container">
+                <div class="story-content">
+                    <div class="story-text">
+                        <h2 data-testid="heading-our-story">Our Story: Two Decades of Serving New Orleans</h2>
+                        <p data-testid="text-company-mission">{{company_name}} was born from a simple mission: to be the contractors New Orleans homeowners and business owners can truly trust when storms strike and when life happens to their properties.</p>
+                        
+                        <p data-testid="text-company-founding">Founded by John and Hollie Romano, our company has grown from humble beginnings into one of the region's most respected restoration and general contracting firms. What started as a commitment to help neighbors recover from storm damage has evolved into a comprehensive service offering that spans the entire lifecycle of property ownership.</p>
+                        
+                        <p data-testid="text-company-journey"><strong>Our journey began over 20 years ago</strong> when we recognized that property owners needed more than just contractors - they needed advocates, partners, and experts who could guide them through the complex world of insurance claims, emergency repairs, and quality restoration work.</p>
+                    </div>
+                    <div class="story-image">
+                        <img src="/images/john-hollie-romano.jpg" alt="John and Hollie Romano, owners of {{company_name}}" data-testid="img-story-owners" />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leadership Profiles Section -->
+        <section class="leadership-profiles">
+            <div class="container">
+                <h2 data-testid="heading-leadership">Meet Our Leadership Team</h2>
+                <div class="profiles-grid">
+                    <div class="profile-card">
+                        <img src="/images/john-romano.jpg" alt="John Romano, Co-Owner & Operations Director" class="profile-image" data-testid="img-john-romano" />
+                        <h3 data-testid="heading-john-title">John Romano - Co-Owner & Operations Director</h3>
+                        <p data-testid="text-john-bio-1">With over two decades in the construction and restoration industry, John brings technical expertise and operational excellence to every {{company_name}} project. His background in automation and systems development has revolutionized how we serve clients, from initial contact through project completion.</p>
+                        <p data-testid="text-john-bio-2">John's passion for innovation extends beyond construction - he's implemented cutting-edge project management systems that ensure every client receives timely updates, accurate estimates, and seamless communication throughout their project journey.</p>
+                        <p data-testid="text-john-specialties"><strong>Specialties:</strong> Insurance claims processing, project automation, technical systems, emergency response coordination</p>
+                    </div>
+                    
+                    <div class="profile-card">
+                        <img src="/images/hollie-romano.jpg" alt="Hollie Romano, Co-Owner & Client Relations Director" class="profile-image" data-testid="img-hollie-romano" />
+                        <h3 data-testid="heading-hollie-title">Hollie Romano - Co-Owner & Client Relations Director</h3>
+                        <p data-testid="text-hollie-bio-1">Hollie is the heart of {{company_name}}'s community connections and client relationships. Her daily engagement with New Orleans neighborhoods through local platforms and community groups has built invaluable trust and rapport with homeowners across our service area.</p>
+                        <p data-testid="text-hollie-bio-2">Her personal touch ensures that every client feels heard, supported, and confident throughout their restoration or improvement project. Hollie's commitment to community service extends far beyond business - she's genuinely invested in the wellbeing of the families and businesses we serve.</p>
+                        <p data-testid="text-hollie-specialties"><strong>Specialties:</strong> Community engagement, client advocacy, customer service excellence, local market expertise</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Mission Section -->
+        <section class="our-mission">
+            <div class="container">
+                <h2 data-testid="heading-mission">Our Mission: More Than Contractors - We're Your Neighbors</h2>
+                <p class="mission-statement" data-testid="text-mission-statement">At {{company_name}}, we believe that every property deserves protection, and every family deserves peace of mind. Our mission extends beyond quality craftsmanship to encompass genuine care for our community.</p>
+                
+                <div class="values-grid">
+                    <div class="value-item" data-testid="card-value-trust">
+                        <div class="value-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-value-trust">Trust & Transparency</h3>
+                        <ul>
+                            <li data-testid="text-trust-communication">Clear communication from estimate to completion</li>
+                            <li data-testid="text-trust-pricing">Honest assessments and fair pricing</li>
+                            <li data-testid="text-trust-fees">No hidden fees or surprise costs</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="value-item" data-testid="card-value-advocacy">
+                        <div class="value-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="m19 8 2 2-2 2"/>
+                                <path d="m21 10-7.5 7.5L9 15l2.5-3.5L21 10z"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-value-advocacy">Expert Advocacy</h3>
+                        <ul>
+                            <li data-testid="text-advocacy-guidance">Insurance claims guidance and support</li>
+                            <li data-testid="text-advocacy-coverage">Fighting for maximum coverage you deserve</li>
+                            <li data-testid="text-advocacy-navigation">Navigating complex processes on your behalf</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="value-item" data-testid="card-value-community">
+                        <div class="value-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                                <polyline points="9,22 9,12 15,12 15,22"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-value-community">Community Commitment</h3>
+                        <ul>
+                            <li data-testid="text-community-local">Local family business with deep roots</li>
+                            <li data-testid="text-community-storm">Storm response and disaster assistance</li>
+                            <li data-testid="text-community-relationships">Building relationships that last for generations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience & Expertise Section -->
+        <section class="experience-expertise">
+            <div class="container">
+                <div class="expertise-content">
+                    <div class="stats-panel">
+                        <h3 data-testid="heading-stats">Two Decades of Excellence</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item" data-testid="stat-experience">
+                                <span class="stat-number" data-testid="stat-number-experience">20+</span>
+                                <span class="stat-label" data-testid="stat-label-experience">Years of Experience</span>
+                            </div>
+                            <div class="stat-item" data-testid="stat-properties">
+                                <span class="stat-number" data-testid="stat-number-properties">1000+</span>
+                                <span class="stat-label" data-testid="stat-label-properties">Properties Restored</span>
+                            </div>
+                            <div class="stat-item" data-testid="stat-claims">
+                                <span class="stat-number" data-testid="stat-number-claims">$2M+</span>
+                                <span class="stat-label" data-testid="stat-label-claims">in Insurance Claims Secured</span>
+                            </div>
+                            <div class="stat-item" data-testid="stat-areas">
+                                <span class="stat-number" data-testid="stat-number-areas">18</span>
+                                <span class="stat-label" data-testid="stat-label-areas">Service Areas Covered</span>
+                            </div>
+                            <div class="stat-item" data-testid="stat-emergency">
+                                <span class="stat-number" data-testid="stat-number-emergency">24/7</span>
+                                <span class="stat-label" data-testid="stat-label-emergency">Emergency Response</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="services-panel">
+                        <h3 data-testid="heading-services-expertise">Comprehensive Restoration & Construction Services</h3>
+                        <ul class="services-list">
+                            <li data-testid="text-service-storm-restoration"><strong>Storm Damage Restoration:</strong> Hurricane, wind, and hail damage recovery</li>
+                            <li data-testid="text-service-claims-management"><strong>Insurance Claims Management:</strong> Complete advocacy from filing to settlement</li>
+                            <li data-testid="text-service-residential-roofing"><strong>Residential Roofing:</strong> All materials and systems, new construction to repair</li>
+                            <li data-testid="text-service-commercial-roofing"><strong>Commercial Roofing:</strong> Flat roof systems, maintenance programs, emergency service</li>
+                            <li data-testid="text-service-general-contracting"><strong>General Contracting:</strong> Full retail services during off-season periods</li>
+                            <li data-testid="text-service-exterior-systems"><strong>Exterior Systems:</strong> Gutters, siding, windows, doors, and weatherproofing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Community Impact Section -->
+        <section class="community-impact">
+            <div class="community-overlay"></div>
+            <div class="container">
+                <h2 data-testid="heading-community">Proud Members of the New Orleans Community</h2>
+                <p data-testid="text-community-intro">{{company_name}} isn't just a business - we're active members of the communities we serve. From Algiers to Ponchatoula, from the French Quarter to Slidell, we've built lasting relationships with homeowners, business owners, and community leaders who trust us with their most important investments.</p>
+                
+                <p data-testid="text-storm-recovery">Our Storm Recovery Initiative has helped hundreds of families get back on their feet after severe weather events. But our commitment goes beyond emergency response - we're here year-round, providing maintenance, improvements, and renovations that help properties thrive in South Louisiana's unique climate.</p>
+                
+                <p class="service-area-highlight" data-testid="text-service-area-highlight"><strong>Proudly serving 18 communities across Greater New Orleans</strong></p>
+                
+                <a href="/areas" class="btn btn-secondary" data-testid="button-service-areas">See Our Service Areas</a>
+            </div>
+        </section>
+
+        <!-- Why Choose Clear Home Section -->
+        <section class="why-choose-us">
+            <div class="container">
+                <h2 data-testid="heading-why-choose">Why Choose {{company_name}}</h2>
+                <div class="benefits-grid">
+                    <div class="benefit-card" data-testid="card-benefit-local">
+                        <div class="benefit-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-benefit-local">Local Expertise</h3>
+                        <p data-testid="text-benefit-local-1">Deep understanding of local building codes and climate challenges</p>
+                        <p data-testid="text-benefit-local-2">Established relationships with local suppliers and inspectors</p>
+                    </div>
+                    
+                    <div class="benefit-card" data-testid="card-benefit-insurance">
+                        <div class="benefit-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-benefit-insurance">Insurance Advocacy</h3>
+                        <p data-testid="text-benefit-insurance-1">Experienced claims professionals on staff</p>
+                        <p data-testid="text-benefit-insurance-2">Fight for maximum coverage and fair settlements</p>
+                    </div>
+                    
+                    <div class="benefit-card" data-testid="card-benefit-quality">
+                        <div class="benefit-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                                <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"/>
+                                <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"/>
+                                <path d="M13 12h3a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1a2 2 0 0 1 2-2h3"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-benefit-quality">Quality Guarantee</h3>
+                        <p data-testid="text-benefit-quality-1">All work backed by comprehensive warranties</p>
+                        <p data-testid="text-benefit-quality-2">Licensed, bonded, and fully insured</p>
+                    </div>
+                    
+                    <div class="benefit-card" data-testid="card-benefit-emergency">
+                        <div class="benefit-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12,6 12,12 16,14"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-benefit-emergency">Emergency Response</h3>
+                        <p data-testid="text-benefit-emergency-1">24/7 availability for storm damage emergencies</p>
+                        <p data-testid="text-benefit-emergency-2">Rapid response team for urgent situations</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Certifications & Credentials Section -->
+        <section class="certifications">
+            <div class="container">
+                <h2 data-testid="heading-certifications">Licensed, Certified, and Trusted</h2>
+                <div class="credentials-grid">
+                    <div class="credential-item" data-testid="credential-license">Louisiana State Contractor License</div>
+                    <div class="credential-item" data-testid="credential-bbb">Better Business Bureau Member</div>
+                    <div class="credential-item" data-testid="credential-gaf">GAF Certified Contractor</div>
+                    <div class="credential-item" data-testid="credential-owens">Owens Corning Preferred Contractor</div>
+                    <div class="credential-item" data-testid="credential-haag">HAAG Certified Inspector</div>
+                    <div class="credential-item" data-testid="credential-insured">Fully Insured & Bonded</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact CTA Section -->
+        <section class="contact-cta">
+            <div class="container">
+                <h2 data-testid="heading-cta">Ready to Get Started?</h2>
+                <p data-testid="text-cta-intro">Contact {{company_name}} today for your free estimate and consultation</p>
+                
+                <div class="contact-options">
+                    <div class="contact-item">
+                        <strong>Phone:</strong> <a href="tel:{{company_phone}}" data-testid="link-cta-phone">{{company_phone}}</a>
+                    </div>
+                    <div class="contact-item">
+                        <strong>Email:</strong> <a href="mailto:{{email}}" data-testid="link-cta-email">{{email}}</a>
+                    </div>
+                    <div class="contact-item">
+                        <strong>Address:</strong> <span data-testid="text-address">{{address}}</span>
+                    </div>
+                </div>
+                
+                <div class="cta-buttons">
+                    <a href="/contact" class="btn btn-large" data-testid="button-final-estimate">Get Your Free Estimate</a>
+                    <a href="tel:{{company_phone}}" class="btn btn-phone" data-testid="button-call-now">Call Now</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-company">
+                    <h3 data-testid="heading-footer-company">{{company_name}}</h3>
+                    <p data-testid="text-footer-description">Expert roofing and storm restoration services serving New Orleans and surrounding areas for over 20 years.</p>
+                    <p data-testid="text-footer-licensed"><strong>Licensed & Insured Contractor</strong></p>
+                </div>
+                
+                <div class="footer-contact">
+                    <h4 data-testid="heading-footer-contact">Contact Information</h4>
+                    <p>Phone: <a href="tel:{{company_phone}}" data-testid="link-footer-phone">{{company_phone}}</a></p>
+                    <p>Email: <a href="mailto:{{email}}" data-testid="link-footer-email">{{email}}</a></p>
+                    <p>Address: <span data-testid="text-footer-address">{{address}}</span></p>
+                </div>
+                
+                <div class="footer-services">
+                    <h4 data-testid="heading-footer-services">Our Services</h4>
+                    <ul>
+                        <li data-testid="text-service-storm">Storm Damage Restoration</li>
+                        <li data-testid="text-service-residential">Residential Roofing</li>
+                        <li data-testid="text-service-commercial">Commercial Roofing</li>
+                        <li data-testid="text-service-insurance">Insurance Claims Assistance</li>
+                        <li data-testid="text-service-emergency">Emergency Repairs</li>
+                        <li data-testid="text-service-general">General Contracting</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-areas">
+                    <h4 data-testid="heading-footer-areas">Service Areas</h4>
+                    <p data-testid="text-service-areas">Proudly serving 18 communities across Greater New Orleans including Metairie, Kenner, Algiers, Gretna, and more.</p>
+                    <a href="/areas" data-testid="link-view-areas">View All Service Areas</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p data-testid="text-footer-copyright">&copy; 2024 {{company_name}}. All rights reserved. Licensed roofing contractor serving New Orleans, Louisiana.</p>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        /* Comprehensive About Page Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 20px; 
+        }
+
+        /* Header Styles */
+        header { 
+            background: #2c3e50; 
+            color: white; 
+            padding: 1rem 0; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+        }
+        
+        nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 20px; 
+        }
+        
+        .logo h2 { color: white; }
+        
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; transition: background 0.3s; }
+        .nav-links a:hover, .nav-links a.active { background: rgba(255,255,255,0.1); }
+        
+        .phone-link { color: #e74c3c; font-weight: bold; text-decoration: none; }
+
+        /* Hero Section */
+        .hero-about { 
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/images/about-hero-bg.jpg');
+            background-size: cover; 
+            background-position: center; 
+            padding: 100px 0; 
+            text-align: center; 
+            color: white; 
+        }
+        
+        .hero-about h1 { 
+            font-size: 3rem; 
+            margin-bottom: 1rem; 
+            font-weight: 700; 
+        }
+        
+        .hero-subtext { 
+            font-size: 1.25rem; 
+            margin-bottom: 2rem; 
+            max-width: 800px; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+
+        /* Button Styles */
+        .btn { 
+            display: inline-block; 
+            padding: 12px 24px; 
+            text-decoration: none; 
+            border-radius: 6px; 
+            font-weight: 600; 
+            transition: all 0.3s; 
+            border: none; 
+            cursor: pointer; 
+        }
+        
+        .btn-primary { background: #e74c3c; color: white; }
+        .btn-primary:hover { background: #c0392b; transform: translateY(-1px); }
+        
+        .btn-secondary { background: transparent; color: white; border: 2px solid white; }
+        .btn-secondary:hover { background: white; color: #333; }
+        
+        .btn-large { padding: 16px 32px; font-size: 1.1rem; }
+        .btn-phone { background: #27ae60; color: white; }
+
+        /* Our Story Section */
+        .our-story { padding: 80px 0; }
+        .story-content { display: grid; grid-template-columns: 2fr 1fr; gap: 4rem; align-items: center; }
+        .story-text h2 { font-size: 2rem; margin-bottom: 1.5rem; color: #2c3e50; }
+        .story-text p { margin-bottom: 1.5rem; font-size: 1.1rem; }
+        .story-image img { width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+
+        /* Leadership Profiles */
+        .leadership-profiles { padding: 80px 0; background: #f8f9fa; }
+        .leadership-profiles h2 { text-align: center; margin-bottom: 3rem; font-size: 2.5rem; color: #2c3e50; }
+        .profiles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+        .profile-card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .profile-image { width: 150px; height: 150px; border-radius: 50%; margin: 0 auto 1.5rem; display: block; object-fit: cover; }
+        .profile-card h3 { color: #2c3e50; margin-bottom: 1rem; font-size: 1.3rem; }
+        .profile-card p { margin-bottom: 1rem; color: #555; }
+
+        /* Mission Section */
+        .our-mission { padding: 80px 0; background: #f7fafc; }
+        .our-mission h2 { text-align: center; margin-bottom: 2rem; font-size: 2.5rem; color: #2c3e50; }
+        .mission-statement { text-align: center; font-size: 1.2rem; margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .value-item { background: white; padding: 2rem; border-radius: 12px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .value-icon { margin-bottom: 1rem; color: #e74c3c; }
+        .value-icon svg { width: 48px; height: 48px; }
+        .value-item h3 { color: #2c3e50; margin-bottom: 1rem; }
+        .value-item ul { text-align: left; }
+        .value-item li { margin-bottom: 0.5rem; }
+
+        /* Experience & Expertise */
+        .experience-expertise { padding: 80px 0; }
+        .expertise-content { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+        .stats-panel h3, .services-panel h3 { color: #2c3e50; margin-bottom: 2rem; font-size: 1.8rem; }
+        .stats-grid { display: grid; gap: 1.5rem; }
+        .stat-item { text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; }
+        .stat-number { display: block; font-size: 2.5rem; font-weight: 700; color: #e74c3c; }
+        .stat-label { font-size: 0.9rem; color: #666; }
+        .services-list { list-style: none; }
+        .services-list li { margin-bottom: 1rem; padding-left: 1rem; border-left: 3px solid #e74c3c; }
+
+        /* Community Impact */
+        .community-impact { 
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/images/community-bg.jpg');
+            background-size: cover; 
+            background-position: center; 
+            padding: 80px 0; 
+            color: white; 
+            text-align: center; 
+        }
+        .community-impact h2 { margin-bottom: 2rem; font-size: 2.5rem; }
+        .community-impact p { font-size: 1.1rem; margin-bottom: 1.5rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .service-area-highlight { font-size: 1.3rem; margin-bottom: 2rem; }
+
+        /* Why Choose Us */
+        .why-choose-us { padding: 80px 0; background: #f8f9fa; }
+        .why-choose-us h2 { text-align: center; margin-bottom: 3rem; font-size: 2.5rem; color: #2c3e50; }
+        .benefits-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+        .benefit-card { background: white; padding: 2rem; border-radius: 12px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .benefit-icon { margin-bottom: 1rem; color: #e74c3c; }
+        .benefit-icon svg { width: 40px; height: 40px; }
+        .benefit-card h3 { color: #2c3e50; margin-bottom: 1rem; }
+
+        /* Certifications */
+        .certifications { padding: 80px 0; background: #f7fafc; }
+        .certifications h2 { text-align: center; margin-bottom: 3rem; font-size: 2.5rem; color: #2c3e50; }
+        .credentials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .credential-item { background: white; padding: 1.5rem; text-align: center; border-radius: 8px; font-weight: 600; color: #2c3e50; box-shadow: 0 3px 10px rgba(0,0,0,0.05); }
+
+        /* Contact CTA */
+        .contact-cta { padding: 80px 0; background: #2c3e50; color: white; text-align: center; }
+        .contact-cta h2 { margin-bottom: 1rem; font-size: 2.5rem; }
+        .contact-cta p { font-size: 1.2rem; margin-bottom: 2rem; }
+        .contact-options { display: flex; justify-content: center; gap: 3rem; margin-bottom: 2rem; }
+        .contact-item { font-size: 1.1rem; }
+        .contact-item a { color: #e74c3c; text-decoration: none; }
+        .cta-buttons { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
+
+        /* Footer */
+        footer { background: #1a252f; color: white; padding: 60px 0 20px; }
+        .footer-content { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-bottom: 2rem; }
+        .footer-content h3, .footer-content h4 { margin-bottom: 1rem; color: #e74c3c; }
+        .footer-content ul { list-style: none; }
+        .footer-content li { margin-bottom: 0.5rem; }
+        .footer-content a { color: #bbb; text-decoration: none; }
+        .footer-content a:hover { color: white; }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid #34495e; color: #bbb; }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-about h1 { font-size: 2rem; }
+            .story-content, .expertise-content { grid-template-columns: 1fr; }
+            .profiles-grid, .values-grid, .benefits-grid, .credentials-grid, .footer-content { grid-template-columns: 1fr; }
+            .contact-options { flex-direction: column; gap: 1rem; }
+            .cta-buttons { flex-direction: column; align-items: center; }
+            .nav-links { display: none; }
+        }
+    </style>
+</body>
+</html>

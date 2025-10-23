@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-testid="page-title">Professional Chimney Repair in {{city_name}} | Clear Home Roofing</title>
+    <meta name="description" content="Expert chimney repair services in {{city_name}}. From leak detection to masonry restoration, we fix chimney problems fast. Licensed contractors. Call {{company_phone}} today!">
+    <meta name="keywords" content="chimney repair {{city_name}}, chimney leak repair, masonry chimney repair, chimney crown repair, flashing repair {{city_name}}">
+    <link rel="canonical" href="{{page_url}}">
+    <meta property="og:title" content="Professional Chimney Repair in {{city_name}} | Clear Home Roofing">
+    <meta property="og:description" content="Expert chimney repair services in {{city_name}}. From leak detection to masonry restoration, we fix chimney problems fast. Licensed contractors.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{page_url}}">
+    
+    <script type="application/ld+json" data-testid="schema-markup">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "Chimney Repair",
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "Clear Home",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "{{city_name}}",
+                "addressRegion": "{{state_abbr}}"
+            },
+            "telephone": "{{company_phone}}",
+            "url": "{{page_url}}"
+        },
+        "areaServed": {
+            "@type": "City",
+            "name": "{{city_name}}"
+        },
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Chimney Repair Services",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Chimney Leak Repair"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Masonry Chimney Restoration"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Chimney Crown Repair"
+                    }
+                }
+            ]
+        }
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-faq">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "How much does chimney repair cost in {{city_name}}?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Chimney repair costs in {{city_name}} typically range from $500-$3,000 depending on the extent of damage. Minor flashing repairs start around $500, while major masonry restoration can reach $3,000+. We provide free inspections and detailed estimates with transparent pricing."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What are signs I need chimney repair?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Common signs include water leaks during rain, white staining on exterior masonry, damaged mortar joints, rust on damper or firebox, and animals or birds entering. If you notice any of these issues, schedule a professional inspection immediately."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-breadcrumb">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.clearhomeroofing.com"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Services",
+                "item": "https://www.clearhomeroofing.com/services/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Chimney Repair",
+                "item": "https://www.clearhomeroofing.com/services/chimney-repair/{{city_slug}}-{{state_abbr}}"
+            }
+        ]
+    }
+    </script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: #1A202C; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        .hero-section { background: linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 100%); padding: 80px 0; }
+        .hero-grid { display: grid; grid-template-columns: 60% 40%; gap: 40px; align-items: center; }
+        .hero-content h1 { font-size: 48px; line-height: 1.2; margin-bottom: 16px; }
+        .hero-subheadline { font-size: 20px; color: #4A5568; margin-bottom: 20px; }
+        .eyebrow { font-size: 14px; color: #2B6CB0; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; }
+        .trust-indicators { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 30px 0; }
+        .trust-item { text-align: center; }
+        .trust-icon { font-size: 24px; color: #2B6CB0; margin-bottom: 8px; }
+        .trust-text { font-size: 14px; color: #2D3748; }
+        
+        .hero-ctas { display: flex; gap: 16px; margin-top: 30px; }
+        .btn-primary { background: #2B6CB0; color: white; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 18px; }
+        .btn-primary:hover { background: #215387; }
+        .btn-outline { border: 2px solid #2B6CB0; color: #2B6CB0; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; background: transparent; }
+        .btn-outline:hover { background: #2B6CB0; color: white; }
+        
+        .hero-form { background: white; padding: 32px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .form-title { font-size: 20px; font-weight: bold; margin-bottom: 24px; text-align: center; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 4px; font-size: 16px; }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .btn-form { width: 100%; background: #2B6CB0; color: white; padding: 16px; border: none; border-radius: 4px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .btn-form:hover { background: #215387; }
+        .trust-badge { text-align: center; margin-top: 16px; font-size: 12px; color: #718096; }
+        
+        .problems-section { background: white; padding: 60px 0; }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header h2 { font-size: 36px; margin-bottom: 16px; }
+        .section-intro { font-size: 18px; color: #4A5568; max-width: 800px; margin: 0 auto; }
+        .problems-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 32px; margin-bottom: 60px; }
+        .problem-card { background: white; border: 1px solid #E2E8F0; padding: 24px; border-radius: 8px; }
+        .problem-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .problem-icon { font-size: 48px; color: #2B6CB0; margin-bottom: 16px; }
+        .problem-title { font-size: 20px; font-weight: bold; margin-bottom: 12px; }
+        .problem-description { color: #4A5568; margin-bottom: 16px; }
+        .problem-signs { list-style: none; margin-bottom: 16px; }
+        .problem-signs li { margin-bottom: 8px; color: #4A5568; }
+        .problem-signs li:before { content: "* "; color: #2B6CB0; font-weight: bold; }
+        .problem-footer { font-weight: 600; color: #2B6CB0; font-size: 14px; }
+        
+        .section-cta { text-align: center; }
+        .section-cta h3 { font-size: 24px; margin-bottom: 20px; }
+        .cta-buttons { display: flex; justify-content: center; gap: 16px; }
+        
+        .process-section { background: #F7FAFC; padding: 80px 0; }
+        .process-container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        .process-steps { margin-top: 60px; }
+        .process-step { display: flex; gap: 40px; margin-bottom: 60px; position: relative; }
+        .process-step:not(:last-child)::after { content: ""; position: absolute; left: 32px; top: 80px; width: 4px; height: 60px; background: #2B6CB0; }
+        .step-icon-wrapper { flex-shrink: 0; }
+        .step-icon { width: 64px; height: 64px; background: #2B6CB0; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .step-content { background: white; padding: 32px; border-radius: 8px; flex-grow: 1; }
+        .step-content:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .step-number { font-size: 48px; color: #E2E8F0; font-weight: bold; float: right; }
+        .step-title { font-size: 24px; font-weight: bold; margin-bottom: 16px; }
+        .step-description { color: #4A5568; margin-bottom: 20px; }
+        .step-features { list-style: none; margin-bottom: 16px; }
+        .step-features li { margin-bottom: 8px; color: #4A5568; }
+        .step-features li:before { content: "* "; color: #2B6CB0; font-weight: bold; }
+        .step-highlight { font-weight: 600; color: #2B6CB0; font-size: 14px; }
+        
+        .service-area { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23cccccc"/></svg>'); background-size: cover; background-position: center; color: white; padding: 60px 0; text-align: center; }
+        .service-area h2 { font-size: 32px; margin-bottom: 20px; }
+        .service-area p { font-size: 18px; margin-bottom: 16px; }
+        .service-areas-list { font-size: 14px; margin: 20px 0; }
+        .service-contact { font-size: 16px; margin-top: 20px; }
+        
+        .why-choose-section { background: white; padding: 80px 0; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .feature-card { text-align: center; }
+        .feature-icon { font-size: 56px; color: #2B6CB0; margin-bottom: 20px; }
+        .feature-title { font-size: 20px; font-weight: bold; margin-bottom: 12px; }
+        .feature-description { color: #4A5568; }
+        
+        .testimonials-section { background: #F7FAFC; padding: 80px 0; }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }
+        .testimonial-card { background: white; padding: 24px; border-radius: 8px; }
+        .stars { color: #FFB800; font-size: 20px; margin-bottom: 16px; }
+        .testimonial-quote { font-style: italic; color: #2D3748; margin-bottom: 16px; }
+        .testimonial-author { font-weight: bold; font-size: 14px; }
+        .testimonial-location { color: #718096; font-size: 14px; }
+        .testimonial-service { color: #718096; font-size: 14px; margin-top: 4px; }
+        
+        .faq-section { background: white; padding: 80px 0; }
+        .faq-container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+        .faq-item { border-bottom: 1px solid #E2E8F0; margin-bottom: 16px; }
+        .faq-question { padding: 20px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 18px; }
+        .faq-question:hover { color: #2B6CB0; }
+        .faq-toggle { font-size: 24px; color: #2B6CB0; }
+        .faq-answer { padding: 0 0 20px 0; color: #4A5568; line-height: 1.6; display: none; }
+        .faq-answer.active { display: block; }
+        
+        .final-cta { background: linear-gradient(135deg, #2B6CB0 0%, #215387 100%); color: white; padding: 60px 0; text-align: center; }
+        .final-cta h2 { font-size: 36px; margin-bottom: 20px; }
+        .final-cta p { font-size: 18px; opacity: 0.9; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .final-cta-buttons { display: flex; justify-content: center; gap: 16px; margin-bottom: 30px; }
+        .btn-white { background: white; color: #2B6CB0; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+        .btn-white:hover { background: #f0f0f0; }
+        .btn-white-outline { border: 2px solid white; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; background: transparent; }
+        .btn-white-outline:hover { background: white; color: #2B6CB0; }
+        .trust-indicators-final { display: flex; justify-content: center; gap: 40px; font-size: 14px; }
+        
+        @media (max-width: 768px) {
+            .hero-grid { grid-template-columns: 1fr; text-align: center; }
+            .hero-content h1 { font-size: 32px; }
+            .hero-subheadline { font-size: 18px; }
+            .trust-indicators { grid-template-columns: 1fr; gap: 12px; }
+            .hero-ctas { flex-direction: column; }
+            .problems-grid { grid-template-columns: 1fr; }
+            .process-step { flex-direction: column; gap: 20px; }
+            .process-step::after { display: none; }
+            .cta-buttons { flex-direction: column; align-items: center; }
+            .final-cta-buttons { flex-direction: column; align-items: center; }
+            .trust-indicators-final { flex-direction: column; gap: 16px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .testimonials-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section" data-testid="section-hero">
+        <div class="container">
+            <div class="hero-grid" data-testid="hero-grid">
+                <div class="hero-content" data-testid="hero-content">
+                    <div class="eyebrow" data-testid="eyebrow-licensed-experts">LICENSED CHIMNEY REPAIR EXPERTS</div>
+                    <h1 data-testid="heading-hero-title"><span data-testid="professional-hero">Professional</span> <span data-testid="chimney-hero">Chimney</span> <span data-testid="repair-hero">Repair</span> <span data-testid="in-hero">in</span> <span data-testid="city-hero">{{city_name}}</span></h1>
+                    <p class="hero-subheadline" data-testid="text-hero-subheadline"><span data-testid="from-leak">From</span> <span data-testid="leak-detection">leak</span> <span data-testid="detection-to">detection</span> <span data-testid="to-complete">to</span> <span data-testid="complete-masonry">complete</span> <span data-testid="masonry-restoration">masonry</span> <span data-testid="restoration-our">restoration,</span> <span data-testid="our-certified">our</span> <span data-testid="certified-technicians">certified</span> <span data-testid="technicians-repair">technicians</span> <span data-testid="repair-chimneys">repair</span> <span data-testid="chimneys-right">chimneys</span> <span data-testid="right-first">right</span> <span data-testid="first-time">the</span> <span data-testid="time-protecting">first</span> <span data-testid="protecting-city">time.</span> <span data-testid="city-homes">Protecting</span> <span data-testid="homes-for">{{city_name}}</span> <span data-testid="for-over">homes</span> <span data-testid="over-20">for</span> <span data-testid="20-years">over</span> <span data-testid="years-period">20</span> <span data-testid="period-hero">years.</span></p>
+                    
+                    <div class="trust-indicators" data-testid="trust-indicators">
+                        <div class="trust-item" data-testid="trust-licensed">
+                            <div class="trust-icon" data-testid="icon-shield">*</div>
+                            <div class="trust-text" data-testid="text-licensed-insured"><span data-testid="licensed-trust">Licensed</span> <span data-testid="ampersand-trust">&</span> <span data-testid="insured-trust">Insured</span></div>
+                        </div>
+                        <div class="trust-item" data-testid="trust-same-day">
+                            <div class="trust-icon" data-testid="icon-clock">O</div>
+                            <div class="trust-text" data-testid="text-same-day-service"><span data-testid="same-day">Same-Day</span> <span data-testid="service-trust">Service</span></div>
+                        </div>
+                        <div class="trust-item" data-testid="trust-experience">
+                            <div class="trust-icon" data-testid="icon-award">*</div>
+                            <div class="trust-text" data-testid="text-20-years-experience"><span data-testid="20-plus">20+</span> <span data-testid="years-trust">Years</span> <span data-testid="experience-trust">Experience</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-ctas" data-testid="hero-ctas">
+                        <a href="tel:{{company_phone}}" class="btn-primary" data-testid="button-call-now"><span data-testid="call-now">Call</span> <span data-testid="now-colon">Now:</span> <span data-testid="phone-cta">{{company_phone}}</span></a>
+                        <a href="#inspection-form" class="btn-outline" data-testid="button-schedule-inspection"><span data-testid="schedule-cta">Schedule</span> <span data-testid="free-cta">Free</span> <span data-testid="inspection-cta">Inspection</span></a>
+                    </div>
+                </div>
+                
+                <div class="hero-form" data-testid="hero-form" id="inspection-form">
+                    <h3 class="form-title" data-testid="heading-form-title"><span data-testid="get-your">Get</span> <span data-testid="your-free">Your</span> <span data-testid="free-chimney">Free</span> <span data-testid="chimney-inspection">Chimney</span> <span data-testid="inspection-form">Inspection</span></h3>
+                    <form data-testid="form-inspection">
+                        <div class="form-group" data-testid="group-first-name">
+                            <label class="form-label" data-testid="label-first-name"><span data-testid="first-label">First</span> <span data-testid="name-label">Name</span> <span data-testid="asterisk-first">*</span></label>
+                            <input type="text" class="form-input" data-testid="input-first-name" required>
+                        </div>
+                        <div class="form-group" data-testid="group-last-name">
+                            <label class="form-label" data-testid="label-last-name"><span data-testid="last-label">Last</span> <span data-testid="name-last">Name</span> <span data-testid="asterisk-last">*</span></label>
+                            <input type="text" class="form-input" data-testid="input-last-name" required>
+                        </div>
+                        <div class="form-group" data-testid="group-phone">
+                            <label class="form-label" data-testid="label-phone">Phone Number *</label>
+                            <input type="tel" class="form-input" data-testid="input-phone" required>
+                        </div>
+                        <div class="form-group" data-testid="group-email">
+                            <label class="form-label" data-testid="label-email"><span data-testid="email-label">Email</span> <span data-testid="address-label">Address</span> <span data-testid="asterisk-email">*</span></label>
+                            <input type="email" class="form-input" data-testid="input-email" required>
+                        </div>
+                        <div class="form-group" data-testid="group-address">
+                            <label class="form-label" data-testid="label-address"><span data-testid="street-label">Street</span> <span data-testid="address-street">Address</span></label>
+                            <input type="text" class="form-input" data-testid="input-address">
+                        </div>
+                        <div class="form-group" data-testid="group-issue">
+                            <label class="form-label" data-testid="label-issue"><span data-testid="issue-label">Issue</span> <span data-testid="description-label">Description</span></label>
+                            <textarea class="form-textarea" data-testid="textarea-issue" placeholder="Describe your chimney concerns..."></textarea>
+                        </div>
+                        <div class="form-group" data-testid="group-contact-time">
+                            <label class="form-label" data-testid="label-contact-time">Preferred Contact Time</label>
+                            <select class="form-select" data-testid="select-contact-time">
+                                <option value="morning" data-testid="option-morning">Morning (8AM-12PM)</option>
+                                <option value="afternoon" data-testid="option-afternoon">Afternoon (12PM-5PM)</option>
+                                <option value="evening" data-testid="option-evening">Evening (5PM-8PM)</option>
+                                <option value="anytime" data-testid="option-anytime">Anytime</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-form" data-testid="button-submit-inspection">Request Free Inspection</button>
+                    </form>
+                    <div class="trust-badge" data-testid="trust-badge">
+                        <span data-testid="icon-lock">[*]</span> Your information is secure and confidential
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Common Problems Section -->
+    <section class="problems-section" data-testid="section-problems">
+        <div class="container">
+            <div class="section-header" data-testid="section-header">
+                <h2 data-testid="heading-common-problems">Common Chimney Problems We Fix in {{city_name}}</h2>
+                <p class="section-intro" data-testid="text-problems-intro">Don't wait until small chimney issues become expensive disasters. Our expert team quickly identifies and repairs these common problems:</p>
+            </div>
+            
+            <div class="problems-grid" data-testid="problems-grid">
+                <div class="problem-card" data-testid="card-chimney-leaks">
+                    <div class="problem-icon" data-testid="icon-leaks">~</div>
+                    <h3 class="problem-title" data-testid="heading-chimney-leaks">Chimney Leaks</h3>
+                    <p class="problem-description" data-testid="text-leaks-description">Water stains on ceiling or walls near chimney? Damaged flashing or chimney crown letting water penetrate your home? We locate the source and provide permanent leak solutions.</p>
+                    <ul class="problem-signs" data-testid="list-leak-signs">
+                        <li data-testid="sign-water-spots">Water spots on interior walls</li>
+                        <li data-testid="sign-rusted-damper">Rusted damper or firebox</li>
+                        <li data-testid="sign-musty-odors">Musty odors from fireplace</li>
+                        <li data-testid="sign-crumbling-mortar">Crumbling mortar joints</li>
+                    </ul>
+                    <div class="problem-footer" data-testid="footer-emergency-leak">Emergency leak repair available 24/7</div>
+                </div>
+                
+                <div class="problem-card" data-testid="card-masonry-damage">
+                    <div class="problem-icon" data-testid="icon-masonry">#</div>
+                    <h3 class="problem-title" data-testid="heading-masonry-damage">Masonry Deterioration</h3>
+                    <p class="problem-description" data-testid="text-masonry-description">Crumbling bricks, spalling mortar, or leaning chimney stack? Weather and age cause serious structural damage. Our masonry experts restore chimney integrity safely.</p>
+                    <ul class="problem-signs" data-testid="list-masonry-signs">
+                        <li data-testid="sign-cracked-bricks">Cracked or missing bricks</li>
+                        <li data-testid="sign-white-staining">White staining (efflorescence)</li>
+                        <li data-testid="sign-gaps-house">Gaps between chimney and house</li>
+                        <li data-testid="sign-loose-mortar">Loose or falling mortar</li>
+                    </ul>
+                    <div class="problem-footer" data-testid="footer-masonry-specialists">Certified masonry restoration specialists</div>
+                </div>
+                
+                <div class="problem-card" data-testid="card-crown-cap">
+                    <div class="problem-icon" data-testid="icon-crown">^</div>
+                    <h3 class="problem-title" data-testid="heading-crown-cap-damage">Crown & Cap Damage</h3>
+                    <p class="problem-description" data-testid="text-crown-description">Cracked chimney crown or missing cap? These protective elements prevent water damage and animal entry. We rebuild crowns and install proper chimney caps.</p>
+                    <ul class="problem-signs" data-testid="list-crown-signs">
+                        <li data-testid="sign-cracked-crown">Large cracks in concrete crown</li>
+                        <li data-testid="sign-missing-cap">Missing or damaged chimney cap</li>
+                        <li data-testid="sign-animal-nesting">Animals nesting in chimney</li>
+                        <li data-testid="sign-draft-problems">Excessive draft problems</li>
+                    </ul>
+                    <div class="problem-footer" data-testid="footer-custom-caps">Custom caps for all chimney types</div>
+                </div>
+                
+                <div class="problem-card" data-testid="card-flashing-failure">
+                    <div class="problem-icon" data-testid="icon-flashing">^</div>
+                    <h3 class="problem-title" data-testid="heading-flashing-problems">Flashing Problems</h3>
+                    <p class="problem-description" data-testid="text-flashing-description">Most chimney leaks start at the flashing. Improper installation or deteriorated sealant creates entry points. We install weathertight flashing systems.</p>
+                    <ul class="problem-signs" data-testid="list-flashing-signs">
+                        <li data-testid="sign-rust-stains">Rust stains on siding</li>
+                        <li data-testid="sign-attic-water">Water in attic near chimney</li>
+                        <li data-testid="sign-loose-flashing">Loose or missing flashing</li>
+                        <li data-testid="sign-patch-failing">Previous patch attempts failing</li>
+                    </ul>
+                    <div class="problem-footer" data-testid="footer-flashing-warranty">Lifetime flashing warranties available</div>
+                </div>
+                
+                <div class="problem-card" data-testid="card-structural-issues">
+                    <div class="problem-icon" data-testid="icon-structural">=</div>
+                    <h3 class="problem-title" data-testid="heading-structural-problems">Structural Problems</h3>
+                    <p class="problem-description" data-testid="text-structural-description">Leaning, settling, or separating chimney? Foundation issues or freeze-thaw damage require immediate attention. We provide structural assessments and solutions.</p>
+                    <ul class="problem-signs" data-testid="list-structural-signs">
+                        <li data-testid="sign-visible-lean">Visible lean or tilt</li>
+                        <li data-testid="sign-roofline-gaps">Gaps at roofline</li>
+                        <li data-testid="sign-cracked-foundation">Cracked foundation</li>
+                        <li data-testid="sign-interior-cracks">Interior cracks following chimney</li>
+                    </ul>
+                    <div class="problem-footer" data-testid="footer-engineering-consultation">Structural engineering consultation included</div>
+                </div>
+                
+                <div class="problem-card" data-testid="card-smoke-draft">
+                    <div class="problem-icon" data-testid="icon-smoke">O</div>
+                    <h3 class="problem-title" data-testid="heading-draft-problems">Draft Problems</h3>
+                    <p class="problem-description" data-testid="text-draft-description">Smoke backing up into your home? Poor draft can indicate blockages, sizing issues, or cap problems. We diagnose and correct draft issues.</p>
+                    <ul class="problem-signs" data-testid="list-draft-signs">
+                        <li data-testid="sign-smoke-entering">Smoke entering living space</li>
+                        <li data-testid="sign-difficulty-fires">Difficulty starting fires</li>
+                        <li data-testid="sign-downdrafts">Downdrafts and cold air</li>
+                        <li data-testid="sign-soot-accumulation">Soot accumulation</li>
+                    </ul>
+                    <div class="problem-footer" data-testid="footer-draft-assessment">Comprehensive draft assessment included</div>
+                </div>
+            </div>
+            
+            <div class="section-cta" data-testid="section-cta-emergency">
+                <h3 data-testid="heading-emergency-repair">Emergency Chimney Repair? We're Available 24/7</h3>
+                <div class="cta-buttons" data-testid="cta-buttons-emergency">
+                    <a href="tel:{{company_phone}}" class="btn-primary" data-testid="button-emergency-call">Call {{company_phone}}</a>
+                    <a href="#inspection-form" class="btn-outline" data-testid="button-emergency-schedule">Schedule Inspection</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Repair Process Section -->
+    <section class="process-section" data-testid="section-process">
+        <div class="process-container">
+            <div class="section-header" data-testid="process-header">
+                <h2 data-testid="heading-repair-process">Our Professional Chimney Repair Process</h2>
+                <p class="section-intro" data-testid="text-process-intro">From initial inspection to final quality check, we follow a proven process that ensures lasting results and your complete satisfaction.</p>
+            </div>
+            
+            <div class="process-steps" data-testid="process-steps">
+                <div class="process-step" data-testid="step-inspection">
+                    <div class="step-icon-wrapper" data-testid="icon-wrapper-inspection">
+                        <div class="step-icon" data-testid="icon-inspection">[INSPECT]</div>
+                    </div>
+                    <div class="step-content" data-testid="content-inspection">
+                        <div class="step-number" data-testid="number-step-1">01</div>
+                        <h3 class="step-title" data-testid="title-comprehensive-inspection"><span data-testid="text-comprehensive-step">Comprehensive</span> <span data-testid="text-inspection-step">Inspection</span></h3>
+                        <p class="step-description" data-testid="description-inspection"><span data-testid="text-our-certified">Our</span> <span data-testid="text-certified-tech">certified</span> <span data-testid="text-technicians">technicians</span> <span data-testid="text-conduct">conduct</span> <span data-testid="text-a-thorough">a</span> <span data-testid="text-thorough-step">thorough</span> <span data-testid="text-chimney-inspection">chimney</span> <span data-testid="text-inspection-from">inspection</span> <span data-testid="text-from">from</span> <span data-testid="text-roof">roof</span> <span data-testid="text-to">to</span> <span data-testid="text-firebox">firebox.</span> <span data-testid="text-we-use">We</span> <span data-testid="text-use">use</span> <span data-testid="text-high-definition">high-definition</span> <span data-testid="text-cameras">cameras</span> <span data-testid="text-to-examine">to</span> <span data-testid="text-examine">examine</span> <span data-testid="text-hard-to-reach">hard-to-reach</span> <span data-testid="text-areas">areas</span> <span data-testid="text-and-identify">and</span> <span data-testid="text-identify-step">identify</span> <span data-testid="text-all-issues">all</span> <span data-testid="text-issues-step">issues.</span></p>
+                        <ul class="step-features" data-testid="features-inspection">
+                            <li data-testid="feature-exterior-assessment"><span data-testid="text-exterior">Exterior</span> <span data-testid="text-masonry-cond">masonry</span> <span data-testid="text-condition">condition</span> <span data-testid="text-assessment-ext">assessment</span></li>
+                            <li data-testid="feature-flashing-check"><span data-testid="text-flashing-feat">Flashing</span> <span data-testid="text-and-crown">and</span> <span data-testid="text-crown-integ">crown</span> <span data-testid="text-integrity">integrity</span> <span data-testid="text-check-feat">check</span></li>
+                            <li data-testid="feature-flue-examination"><span data-testid="text-internal">Internal</span> <span data-testid="text-flue">flue</span> <span data-testid="text-liner">liner</span> <span data-testid="text-examination">examination</span></li>
+                            <li data-testid="feature-stability-evaluation"><span data-testid="text-structural-stab">Structural</span> <span data-testid="text-stability">stability</span> <span data-testid="text-evaluation">evaluation</span></li>
+                            <li data-testid="feature-photo-documentation"><span data-testid="text-detailed-photo">Detailed</span> <span data-testid="text-photo">photo</span> <span data-testid="text-documentation">documentation</span></li>
+                            <li data-testid="feature-written-report"><span data-testid="word-written">Written</span> <span data-testid="word-diagnostic">diagnostic</span> <span data-testid="word-report">report</span></li>
+                        </ul>
+                        <div class="step-highlight" data-testid="highlight-free-inspection"><span data-testid="text-free-insp">Free</span> <span data-testid="text-inspection-free">inspection</span> <span data-testid="text-with-any">with</span> <span data-testid="text-any">any</span> <span data-testid="text-repair-service">repair</span> <span data-testid="text-service-free">service</span></div>
+                    </div>
+                </div>
+                
+                <div class="process-step" data-testid="step-plan">
+                    <div class="step-icon-wrapper" data-testid="icon-wrapper-plan">
+                        <div class="step-icon" data-testid="icon-plan">[PLAN]</div>
+                    </div>
+                    <div class="step-content" data-testid="content-plan">
+                        <div class="step-number" data-testid="number-step-2">02</div>
+                        <h3 class="step-title" data-testid="title-detailed-plan"><span data-testid="text-detailed">Detailed</span> <span data-testid="text-repair-plan">Repair</span> <span data-testid="text-plan">Plan</span></h3>
+                        <p class="step-description" data-testid="description-plan"><span data-testid="text-we-provide">We</span> <span data-testid="text-provide-plan">provide</span> <span data-testid="text-a-clear">a</span> <span data-testid="text-clear">clear,</span> <span data-testid="text-itemized">itemized</span> <span data-testid="text-estimate-plan">estimate</span> <span data-testid="text-with-no">with</span> <span data-testid="text-no-hidden">no</span> <span data-testid="text-hidden-fees">hidden</span> <span data-testid="text-fees-plan">fees.</span> <span data-testid="text-youll">You'll</span> <span data-testid="text-understand">understand</span> <span data-testid="text-exactly">exactly</span> <span data-testid="text-what-needs">what</span> <span data-testid="text-needs">needs</span> <span data-testid="text-repair-plan-desc">repair,</span> <span data-testid="text-why">why</span> <span data-testid="text-its">it's</span> <span data-testid="text-necessary">necessary,</span> <span data-testid="text-and-how">and</span> <span data-testid="text-how">how</span> <span data-testid="text-well">we'll</span> <span data-testid="text-fix-it">fix</span> <span data-testid="text-it-plan">it.</span></p>
+                        <ul class="step-features" data-testid="features-plan">
+                            <li data-testid="feature-issues-identified"><span data-testid="word-specific">Specific</span> <span data-testid="word-issues">issues</span> <span data-testid="word-identified">identified</span></li>
+                            <li data-testid="feature-repair-solutions"><span data-testid="word-recommended">Recommended</span> <span data-testid="word-repair-sol">repair</span> <span data-testid="word-solutions">solutions</span></li>
+                            <li data-testid="feature-material-specs"><span data-testid="word-material">Material</span> <span data-testid="word-specifications">specifications</span></li>
+                            <li data-testid="feature-labor-breakdown"><span data-testid="word-labor">Labor</span> <span data-testid="word-breakdown">breakdown</span></li>
+                            <li data-testid="feature-project-timeline"><span data-testid="word-project">Project</span> <span data-testid="word-timeline">timeline</span></li>
+                            <li data-testid="feature-warranty-info"><span data-testid="word-warranty">Warranty</span> <span data-testid="word-information">information</span></li>
+                        </ul>
+                        <div class="step-highlight" data-testid="highlight-transparent-pricing"><span data-testid="text-transparent-step">Transparent</span> <span data-testid="text-pricing-step">pricing</span> <span data-testid="text-you-can">you</span> <span data-testid="text-can">can</span> <span data-testid="text-trust">trust</span></div>
+                    </div>
+                </div>
+                
+                <div class="process-step" data-testid="step-repairs">
+                    <div class="step-icon-wrapper" data-testid="icon-wrapper-repairs">
+                        <div class="step-icon" data-testid="icon-repairs">+</div>
+                    </div>
+                    <div class="step-content" data-testid="content-repairs">
+                        <div class="step-number" data-testid="number-step-3">03</div>
+                        <h3 class="step-title" data-testid="title-expert-repairs">Expert Repairs</h3>
+                        <p class="step-description" data-testid="description-repairs">Our skilled craftsmen use premium materials and time-tested techniques. We protect your property throughout the repair process and maintain clean work areas.</p>
+                        <ul class="step-features" data-testid="features-repairs">
+                            <li data-testid="feature-quality-materials"><span data-testid="span-quality">Quality</span> <span data-testid="span-masonry">masonry</span> <span data-testid="span-materials">materials</span></li>
+                            <li data-testid="feature-proper-flashing"><span data-testid="span-proper">Proper</span> <span data-testid="span-flashing">flashing</span> <span data-testid="span-installation">installation</span></li>
+                            <li data-testid="feature-weathertight-sealing"><span data-testid="span-weathertight">Weathertight</span> <span data-testid="span-sealing">sealing</span></li>
+                            <li data-testid="feature-code-compliant"><span data-testid="span-code">Code-compliant</span> <span data-testid="span-work">work</span></li>
+                            <li data-testid="feature-minimal-disruption"><span data-testid="span-minimal">Minimal</span> <span data-testid="span-disruption">disruption</span></li>
+                            <li data-testid="feature-progress-updates"><span data-testid="span-daily">Daily</span> <span data-testid="span-progress">progress</span> <span data-testid="span-updates">updates</span></li>
+                        </ul>
+                        <div class="step-highlight" data-testid="highlight-licensed-team"><span data-testid="text-licensed-step">Licensed,</span> <span data-testid="text-insured-step">insured</span> <span data-testid="text-professional-step">professional</span> <span data-testid="text-team-step">team</span></div>
+                    </div>
+                </div>
+                
+                <div class="process-step" data-testid="step-quality">
+                    <div class="step-icon-wrapper" data-testid="icon-wrapper-quality">
+                        <div class="step-icon" data-testid="icon-quality">[CHECK]</div>
+                    </div>
+                    <div class="step-content" data-testid="content-quality">
+                        <div class="step-number" data-testid="number-step-4">04</div>
+                        <h3 class="step-title" data-testid="title-quality-assurance">Quality Assurance</h3>
+                        <p class="step-description" data-testid="description-quality">Before we consider the job complete, we conduct rigorous quality checks. We walk you through all completed work and ensure you're completely satisfied.</p>
+                        <ul class="step-features" data-testid="features-quality">
+                            <li data-testid="feature-leak-test"><span data-testid="span-leak">Leak</span> <span data-testid="span-test">test</span> <span data-testid="span-verification">verification</span></li>
+                            <li data-testid="feature-integrity-check"><span data-testid="span-structural">Structural</span> <span data-testid="span-integrity">integrity</span> <span data-testid="span-check">check</span></li>
+                            <li data-testid="feature-workspace-inspection"><span data-testid="span-clean">Clean</span> <span data-testid="span-workspace">workspace</span> <span data-testid="span-inspection">inspection</span></li>
+                            <li data-testid="feature-photo-documentation-final"><span data-testid="span-photo">Photo</span> <span data-testid="span-documentation">documentation</span></li>
+                            <li data-testid="feature-care-instructions"><span data-testid="span-care">Care</span> <span data-testid="span-instructions">instructions</span> <span data-testid="span-provided">provided</span></li>
+                            <li data-testid="feature-warranty-activation"><span data-testid="span-warranty">Warranty</span> <span data-testid="span-activation">activation</span></li>
+                        </ul>
+                        <div class="step-highlight" data-testid="highlight-satisfaction-guarantee"><span data-testid="text-100-percent">100%</span> <span data-testid="text-satisfaction-guar">satisfaction</span> <span data-testid="text-guaranteed-step">guaranteed</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-cta" data-testid="section-cta-ready">
+                <h3 data-testid="heading-ready-fix"><span data-testid="text-ready">Ready</span> <span data-testid="text-to-fix">to</span> <span data-testid="text-fix">Fix</span> <span data-testid="text-your-chimney">Your</span> <span data-testid="text-chimney-ready">Chimney?</span></h3>
+                <div class="cta-buttons" data-testid="cta-buttons-ready">
+                    <a href="#inspection-form" class="btn-primary" data-testid="button-get-inspection">Get Free Inspection</a>
+                    <a href="tel:{{company_phone}}" class="btn-outline" data-testid="button-call-ready">Call {{company_phone}}</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Areas Highlight -->
+    <section class="service-area" data-testid="section-service-area">
+        <div class="container">
+            <h2 data-testid="heading-serving-areas"><span data-testid="text-serving">Serving</span> <span data-testid="text-city-serving">{{city_name}}</span> <span data-testid="text-and-surrounding">and</span> <span data-testid="text-surrounding">Surrounding</span> <span data-testid="text-communities">Communities</span></h2>
+            <p data-testid="text-proud-serve"><span data-testid="text-were">We're</span> <span data-testid="text-proud">proud</span> <span data-testid="text-to">to</span> <span data-testid="text-serve">serve</span> <span data-testid="text-homeowners">homeowners</span> <span data-testid="text-throughout">throughout</span> <span data-testid="text-city-name">{{city_name}}</span> <span data-testid="text-and">and</span> <span data-testid="text-the">the</span> <span data-testid="text-greater">greater</span> <span data-testid="text-new-orleans">New</span> <span data-testid="text-orleans">Orleans</span> <span data-testid="text-area">area</span> <span data-testid="text-with">with</span> <span data-testid="text-professional">professional</span> <span data-testid="text-chimney">chimney</span> <span data-testid="text-repair">repair</span> <span data-testid="text-services">services.</span> <span data-testid="text-our">Our</span> <span data-testid="text-local">local</span> <span data-testid="text-team">team</span> <span data-testid="text-understands">understands</span> <span data-testid="text-unique">the</span> <span data-testid="text-challenges">unique</span> <span data-testid="text-of">challenges</span> <span data-testid="text-louisiana">of</span> <span data-testid="text-weather">Louisiana</span> <span data-testid="text-on">weather</span> <span data-testid="text-chimney-systems">on</span> <span data-testid="text-systems">chimney</span> <span data-testid="text-period">systems.</span></p>
+            <div class="service-areas-list" data-testid="list-service-areas"><span data-testid="text-service-areas">Service</span> <span data-testid="text-areas">Areas:</span> <span data-testid="area-new-orleans">New</span> <span data-testid="area-orleans">Orleans</span> <span data-testid="separator-1">|</span> <span data-testid="area-metairie">Metairie</span> <span data-testid="separator-2">|</span> <span data-testid="area-kenner">Kenner</span> <span data-testid="separator-3">|</span> <span data-testid="area-slidell">Slidell</span> <span data-testid="separator-4">|</span> <span data-testid="area-mandeville">Mandeville</span> <span data-testid="separator-5">|</span> <span data-testid="area-covington">Covington</span></div>
+            <p data-testid="text-commitment"><span data-testid="text-wherever">Wherever</span> <span data-testid="text-youre">you're</span> <span data-testid="text-located">located</span> <span data-testid="text-in">in</span> <span data-testid="text-our-service">our</span> <span data-testid="text-service">service</span> <span data-testid="text-area-commitment">area,</span> <span data-testid="text-we">we</span> <span data-testid="text-provide">provide</span> <span data-testid="text-fast">fast,</span> <span data-testid="text-reliable">reliable</span> <span data-testid="text-chimney-repair">chimney</span> <span data-testid="text-repair-commitment">repair</span> <span data-testid="text-with-same">with</span> <span data-testid="text-same">the</span> <span data-testid="text-commitment">same</span> <span data-testid="text-to-quality">commitment</span> <span data-testid="text-quality">to</span> <span data-testid="text-and-customer">quality</span> <span data-testid="text-customer">and</span> <span data-testid="text-satisfaction">customer</span> <span data-testid="text-satisfaction-period">satisfaction.</span></p>
+            <div class="service-contact" data-testid="contact-info">
+                <span data-testid="icon-location">[LOCATION]</span> <span data-testid="text-local">Local</span> <span data-testid="text-city-team">{{city_name}}</span> <span data-testid="text-team-contact">Team</span> <span data-testid="separator-pipe-1">|</span> 
+                <span data-testid="icon-truck">[TRUCK]</span> <span data-testid="text-same-day">Same-Day</span> <span data-testid="text-emergency-contact">Emergency</span> <span data-testid="text-service-contact">Service</span> <span data-testid="separator-pipe-2">|</span> 
+                <span data-testid="icon-phone">*</span> <span data-testid="phone-contact">{{company_phone}}</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="why-choose-section" data-testid="section-why-choose">
+        <div class="container">
+            <div class="section-header" data-testid="why-choose-header">
+                <h2 data-testid="heading-why-choose"><span data-testid="text-why">Why</span> <span data-testid="text-city-choose">{{city_name}}</span> <span data-testid="text-homeowners-choose">Homeowners</span> <span data-testid="text-choose">Choose</span> <span data-testid="text-clear">Clear</span> <span data-testid="text-home">Home</span> <span data-testid="text-for">for</span> <span data-testid="text-chimney-repair-heading">Chimney</span> <span data-testid="text-repair-heading">Repair</span></h2>
+            </div>
+            
+            <div class="features-grid" data-testid="features-grid">
+                <div class="feature-card" data-testid="card-20-years">
+                    <div class="feature-icon" data-testid="icon-experience-badge">*</div>
+                    <h3 class="feature-title" data-testid="title-20-years"><span data-testid="text-twenty">20+</span> <span data-testid="text-years">Years</span> <span data-testid="text-experience">Experience</span></h3>
+                    <p class="feature-description" data-testid="description-20-years"><span data-testid="text-two">Two</span> <span data-testid="text-decades">decades</span> <span data-testid="text-of-chimney">of</span> <span data-testid="text-chimney-expertise">chimney</span> <span data-testid="text-repair-expertise">repair</span> <span data-testid="text-expertise">expertise</span> <span data-testid="text-means">means</span> <span data-testid="text-weve">we've</span> <span data-testid="text-seen">seen</span> <span data-testid="text-and-solved">and</span> <span data-testid="text-solved">solved</span> <span data-testid="text-every">every</span> <span data-testid="text-type">type</span> <span data-testid="text-of-problem">of</span> <span data-testid="text-problem">problem.</span> <span data-testid="text-our-proven">Our</span> <span data-testid="text-proven">proven</span> <span data-testid="text-methods">methods</span> <span data-testid="text-ensure">ensure</span> <span data-testid="text-repairs">repairs</span> <span data-testid="text-that">that</span> <span data-testid="text-last">last.</span></p>
+                </div>
+                
+                <div class="feature-card" data-testid="card-licensed-insured">
+                    <div class="feature-icon" data-testid="icon-shield-check">+</div>
+                    <h3 class="feature-title" data-testid="title-licensed-insured"><span data-testid="text-licensed">Licensed</span> <span data-testid="text-ampersand">&</span> <span data-testid="text-insured">Insured</span></h3>
+                    <p class="feature-description" data-testid="description-licensed-insured"><span data-testid="text-fully">Fully</span> <span data-testid="text-licensed-desc">licensed</span> <span data-testid="text-louisiana">Louisiana</span> <span data-testid="text-contractors">contractors</span> <span data-testid="text-with-comprehensive">with</span> <span data-testid="text-comprehensive">comprehensive</span> <span data-testid="text-insurance">insurance.</span> <span data-testid="text-your">Your</span> <span data-testid="text-property-desc">property</span> <span data-testid="text-and-our">and</span> <span data-testid="text-our-team">our</span> <span data-testid="text-team-desc">team</span> <span data-testid="text-are">are</span> <span data-testid="text-protected">protected</span> <span data-testid="text-throughout">throughout</span> <span data-testid="text-the-repair">the</span> <span data-testid="text-repair-process">repair</span> <span data-testid="text-process">process.</span></p>
+                </div>
+                
+                <div class="feature-card" data-testid="card-emergency-service">
+                    <div class="feature-icon" data-testid="icon-24-7-clock">O</div>
+                    <h3 class="feature-title" data-testid="title-emergency-service"><span data-testid="text-emergency">Emergency</span> <span data-testid="text-service-title">Service</span></h3>
+                    <p class="feature-description" data-testid="description-emergency-service"><span data-testid="text-chimney-emergencies">Chimney</span> <span data-testid="text-emergencies">emergencies</span> <span data-testid="text-cant">can't</span> <span data-testid="text-wait">wait.</span> <span data-testid="text-we-offer">We</span> <span data-testid="text-offer">offer</span> <span data-testid="text-247">24/7</span> <span data-testid="text-emergency-response">emergency</span> <span data-testid="text-response">response</span> <span data-testid="text-for-urgent">for</span> <span data-testid="text-urgent">urgent</span> <span data-testid="text-leak">leak</span> <span data-testid="text-repairs-desc">repairs</span> <span data-testid="text-and-safety">and</span> <span data-testid="text-safety">safety</span> <span data-testid="text-hazards">hazards.</span></p>
+                </div>
+                
+                <div class="feature-card" data-testid="card-transparent-pricing">
+                    <div class="feature-icon" data-testid="icon-dollar-circle">$</div>
+                    <h3 class="feature-title" data-testid="title-transparent-pricing"><span data-testid="text-transparent">Transparent</span> <span data-testid="text-pricing">Pricing</span></h3>
+                    <p class="feature-description" data-testid="description-transparent-pricing"><span data-testid="text-no">No</span> <span data-testid="text-hidden">hidden</span> <span data-testid="text-fees">fees</span> <span data-testid="text-or">or</span> <span data-testid="text-surprise">surprise</span> <span data-testid="text-charges">charges.</span> <span data-testid="text-you">You</span> <span data-testid="text-receive">receive</span> <span data-testid="text-a">a</span> <span data-testid="text-detailed">detailed</span> <span data-testid="text-estimate">estimate</span> <span data-testid="text-before">before</span> <span data-testid="text-we-start">we</span> <span data-testid="text-start">start</span> <span data-testid="text-work">work,</span> <span data-testid="text-and-we">and</span> <span data-testid="text-we-stick">we</span> <span data-testid="text-stick">stick</span> <span data-testid="text-to">to</span> <span data-testid="text-the-quoted">the</span> <span data-testid="text-quoted">quoted</span> <span data-testid="text-price">price.</span></p>
+                </div>
+                
+                <div class="feature-card" data-testid="card-comprehensive-inspections">
+                    <div class="feature-icon" data-testid="icon-checklist">[CHECK]</div>
+                    <h3 class="feature-title" data-testid="title-comprehensive-inspections"><span data-testid="text-comprehensive">Comprehensive</span> <span data-testid="text-inspections">Inspections</span></h3>
+                    <p class="feature-description" data-testid="description-comprehensive-inspections"><span data-testid="text-we-dont">We</span> <span data-testid="text-dont">don't</span> <span data-testid="text-just">just</span> <span data-testid="text-fix">fix</span> <span data-testid="text-the-obvious">the</span> <span data-testid="text-obvious">obvious</span> <span data-testid="text-problem-desc">problem.</span> <span data-testid="text-our-thorough">Our</span> <span data-testid="text-thorough">thorough</span> <span data-testid="text-inspections-desc">inspections</span> <span data-testid="text-identify">identify</span> <span data-testid="text-all">all</span> <span data-testid="text-issues">issues</span> <span data-testid="text-so">so</span> <span data-testid="text-you-avoid">you</span> <span data-testid="text-avoid">avoid</span> <span data-testid="text-repeated">repeated</span> <span data-testid="text-repair-costs">repair</span> <span data-testid="text-costs">costs.</span></p>
+                </div>
+                
+                <div class="feature-card" data-testid="card-satisfaction-guaranteed">
+                    <div class="feature-icon" data-testid="icon-handshake">&</div>
+                    <h3 class="feature-title" data-testid="title-satisfaction-guaranteed"><span data-testid="text-satisfaction-title">Satisfaction</span> <span data-testid="text-guaranteed">Guaranteed</span></h3>
+                    <p class="feature-description" data-testid="description-satisfaction-guaranteed"><span data-testid="text-we-stand">We</span> <span data-testid="text-stand">stand</span> <span data-testid="text-behind">behind</span> <span data-testid="text-our-work">our</span> <span data-testid="text-work-desc">work</span> <span data-testid="text-with-solid">with</span> <span data-testid="text-solid">solid</span> <span data-testid="text-warranties">warranties</span> <span data-testid="text-and-100">and</span> <span data-testid="text-100">a</span> <span data-testid="text-percent">100%</span> <span data-testid="text-satisfaction-desc">satisfaction</span> <span data-testid="text-guarantee">guarantee.</span> <span data-testid="text-if">If</span> <span data-testid="text-youre">you're</span> <span data-testid="text-not">not</span> <span data-testid="text-happy">happy,</span> <span data-testid="text-we-make">we</span> <span data-testid="text-make">make</span> <span data-testid="text-it">it</span> <span data-testid="text-right">right.</span></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section" data-testid="section-testimonials">
+        <div class="container">
+            <div class="section-header" data-testid="testimonials-header">
+                <h2 data-testid="heading-testimonials"><span data-testid="text-what">What</span> <span data-testid="text-city-testimonials">{{city_name}}</span> <span data-testid="text-homeowners-testimonials">Homeowners</span> <span data-testid="text-say">Say</span> <span data-testid="text-about">About</span> <span data-testid="text-our-chimney">Our</span> <span data-testid="text-chimney-testimonials">Chimney</span> <span data-testid="text-repair-testimonials">Repair</span></h2>
+            </div>
+            
+            <div class="testimonials-grid" data-testid="testimonials-grid">
+                <div class="testimonial-card" data-testid="testimonial-1">
+                    <div class="stars" data-testid="stars-1"><span data-testid="star-1-1">*</span> <span data-testid="star-1-2">*</span> <span data-testid="star-1-3">*</span> <span data-testid="star-1-4">*</span> <span data-testid="star-1-5">*</span></div>
+                    <p class="testimonial-quote" data-testid="quote-1"><span data-testid="quote-start-1">"</span><span data-testid="text-clear-home-saved">Clear</span> <span data-testid="text-home-saved">Home</span> <span data-testid="text-saved">saved</span> <span data-testid="text-us">us</span> <span data-testid="text-from">from</span> <span data-testid="text-nightmare">a</span> <span data-testid="text-a-nightmare">nightmare!</span> <span data-testid="text-water">Water</span> <span data-testid="text-was">was</span> <span data-testid="text-pouring">pouring</span> <span data-testid="text-into">into</span> <span data-testid="text-our-living">our</span> <span data-testid="text-living">living</span> <span data-testid="text-room">room</span> <span data-testid="text-during">during</span> <span data-testid="text-storms">storms.</span> <span data-testid="text-they">They</span> <span data-testid="text-found">found</span> <span data-testid="text-the-cracked">the</span> <span data-testid="text-cracked">cracked</span> <span data-testid="text-crown">crown</span> <span data-testid="text-and-bad">and</span> <span data-testid="text-bad">bad</span> <span data-testid="text-flashing">flashing,</span> <span data-testid="text-fixed">fixed</span> <span data-testid="text-both">both</span> <span data-testid="text-perfectly">perfectly.</span> <span data-testid="text-no">No</span> <span data-testid="text-more">more</span> <span data-testid="text-leaks">leaks</span> <span data-testid="text-even">even</span> <span data-testid="text-in-heavy">in</span> <span data-testid="text-heavy">heavy</span> <span data-testid="text-rain">rain!</span><span data-testid="quote-end-1">"</span></p>
+                    <div class="testimonial-author" data-testid="author-1"><span data-testid="name-sarah">Sarah</span> <span data-testid="initial-m">M.</span></div>
+                    <div class="testimonial-location" data-testid="location-1"><span data-testid="city-testimonial-1">{{city_name}}</span></div>
+                    <div class="testimonial-service" data-testid="service-1"><span data-testid="service-chimney">Chimney</span> <span data-testid="service-crown">Crown</span> <span data-testid="service-ampersand">&</span> <span data-testid="service-flashing">Flashing</span> <span data-testid="service-repair">Repair</span></div>
+                </div>
+                
+                <div class="testimonial-card" data-testid="testimonial-2">
+                    <div class="stars" data-testid="stars-2"><span data-testid="star-2-1">*</span> <span data-testid="star-2-2">*</span> <span data-testid="star-2-3">*</span> <span data-testid="star-2-4">*</span> <span data-testid="star-2-5">*</span></div>
+                    <p class="testimonial-quote" data-testid="quote-2"><span data-testid="quote-start-2">"</span><span data-testid="text-the-masonry">The</span> <span data-testid="text-masonry">masonry</span> <span data-testid="text-work">work</span> <span data-testid="text-on-our">on</span> <span data-testid="text-our-1920s">our</span> <span data-testid="text-1920s">1920s</span> <span data-testid="text-chimney-was">chimney</span> <span data-testid="text-was-incredible">was</span> <span data-testid="text-incredible">incredible.</span> <span data-testid="text-they-matched">They</span> <span data-testid="text-matched">matched</span> <span data-testid="text-the-original">the</span> <span data-testid="text-original">original</span> <span data-testid="text-bricks">bricks</span> <span data-testid="text-perfectly">perfectly</span> <span data-testid="text-and-structural">and</span> <span data-testid="text-the-structural">the</span> <span data-testid="text-structural">structural</span> <span data-testid="text-repairs-were">repairs</span> <span data-testid="text-were">were</span> <span data-testid="text-done">done</span> <span data-testid="text-with-real">with</span> <span data-testid="text-real">real</span> <span data-testid="text-craftsmanship">craftsmanship.</span> <span data-testid="text-highly">Highly</span> <span data-testid="text-recommend">recommend!</span><span data-testid="quote-end-2">"</span></p>
+                    <div class="testimonial-author" data-testid="author-2"><span data-testid="name-robert">Robert</span> <span data-testid="initial-t">T.</span></div>
+                    <div class="testimonial-location" data-testid="location-2"><span data-testid="city-testimonial-2">{{city_name}}</span></div>
+                    <div class="testimonial-service" data-testid="service-2"><span data-testid="historic-word">Historic</span> <span data-testid="chimney-word">Chimney</span> <span data-testid="restoration-word">Restoration</span></div>
+                </div>
+                
+                <div class="testimonial-card" data-testid="testimonial-3">
+                    <div class="stars" data-testid="stars-3"><span data-testid="star-3-1">*</span> <span data-testid="star-3-2">*</span> <span data-testid="star-3-3">*</span> <span data-testid="star-3-4">*</span> <span data-testid="star-3-5">*</span></div>
+                    <p class="testimonial-quote" data-testid="quote-3"><span data-testid="quote-start-3">"</span><span data-testid="quick-word">Quick</span> <span data-testid="response-word">response</span> <span data-testid="when-word">when</span> <span data-testid="we-word">we</span> <span data-testid="had-word">had</span> <span data-testid="a-word">a</span> <span data-testid="chimney-emergency">chimney</span> <span data-testid="emergency-word">emergency</span> <span data-testid="before-word">before</span> <span data-testid="the-word">the</span> <span data-testid="holidays-word">holidays.</span> <span data-testid="they-word">They</span> <span data-testid="had-word-2">had</span> <span data-testid="our-word">our</span> <span data-testid="fireplace-word">fireplace</span> <span data-testid="safe-word">safe</span> <span data-testid="to-word">to</span> <span data-testid="use-word">use</span> <span data-testid="again-word">again</span> <span data-testid="within-word">within</span> <span data-testid="two-word">two</span> <span data-testid="days-word">days.</span> <span data-testid="professional-word">Professional,</span> <span data-testid="clean-word">clean</span> <span data-testid="work-word">work,</span> <span data-testid="fair-word">fair</span> <span data-testid="pricing-word">pricing.</span><span data-testid="quote-end-3">"</span></p>
+                    <div class="testimonial-author" data-testid="author-3"><span data-testid="name-jennifer">Jennifer</span> <span data-testid="initial-l">L.</span></div>
+                    <div class="testimonial-location" data-testid="location-3">{{city_name}}</div>
+                    <div class="testimonial-service" data-testid="service-3"><span data-testid="emergency-service">Emergency</span> <span data-testid="chimney-service">Chimney</span> <span data-testid="repair-service">Repair</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" data-testid="section-faq">
+        <div class="faq-container">
+            <div class="section-header" data-testid="faq-header">
+                <h2 data-testid="heading-faq"><span data-testid="frequently-word">Frequently</span> <span data-testid="asked-word">Asked</span> <span data-testid="questions-word">Questions</span> <span data-testid="about-word">About</span> <span data-testid="chimney-faq">Chimney</span> <span data-testid="repair-faq">Repair</span></h2>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-cost">
+                <div class="faq-question" data-testid="question-cost">
+                    <span data-testid="how-much">How</span> <span data-testid="much-word">much</span> <span data-testid="does-word">does</span> <span data-testid="chimney-cost">chimney</span> <span data-testid="repair-cost">repair</span> <span data-testid="cost-word">cost</span> <span data-testid="in-word">in</span> <span data-testid="city-cost">{{city_name}}?</span>
+                    <span class="faq-toggle" data-testid="toggle-cost">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-cost">
+                    <span data-testid="chimney-costs">Chimney</span> <span data-testid="repair-costs">repair</span> <span data-testid="costs-vary">costs</span> <span data-testid="vary-based">vary</span> <span data-testid="based-on">based</span> <span data-testid="on-extent">on</span> <span data-testid="extent-damage">the</span> <span data-testid="damage-type">extent</span> <span data-testid="of-damage">of</span> <span data-testid="damage-and">damage</span> <span data-testid="and-type">and</span> <span data-testid="type-repair">type</span> <span data-testid="repair-needed">of</span> <span data-testid="needed-simple">repair</span> <span data-testid="simple-mortar">needed.</span> <span data-testid="mortar-repoint">Simple</span> <span data-testid="repoint-might">mortar</span> <span data-testid="might-cost">repointing</span> <span data-testid="cost-500">might</span> <span data-testid="500-1500">cost</span> <span data-testid="1500-while">$500-$1,500,</span> <span data-testid="while-complete">while</span> <span data-testid="complete-chimney">complete</span> <span data-testid="chimney-rebuilds">chimney</span> <span data-testid="rebuilds-range">rebuilds</span> <span data-testid="range-3000">can</span> <span data-testid="3000-10000">range</span> <span data-testid="10000-plus">$3,000-$10,000+.</span> <span data-testid="plus-provide">We</span> <span data-testid="provide-free">provide</span> <span data-testid="free-inspections">free</span> <span data-testid="inspections-detailed">inspections</span> <span data-testid="detailed-estimates">and</span> <span data-testid="estimates-know">detailed</span> <span data-testid="know-exact">estimates</span> <span data-testid="exact-costs">so</span> <span data-testid="costs-before">you</span> <span data-testid="before-begin">know</span> <span data-testid="begin-work">exact</span> <span data-testid="work-many">costs</span> <span data-testid="many-repairs">before</span> <span data-testid="repairs-covered">we</span> <span data-testid="covered-homeowners">begin</span> <span data-testid="homeowners-insurance">work.</span> <span data-testid="insurance-caused">Many</span> <span data-testid="caused-storms">repairs</span> <span data-testid="storms-sudden">are</span> <span data-testid="sudden-damage">covered</span> <span data-testid="damage-end">by</span> <span data-testid="end-sentence">homeowners</span> <span data-testid="sentence-insurance">insurance</span> <span data-testid="when-caused">when</span> <span data-testid="storms-damage">caused</span> <span data-testid="by-storms">by</span> <span data-testid="or-sudden">storms</span> <span data-testid="sudden-end">or</span> <span data-testid="damage-final">sudden</span> <span data-testid="final-damage">damage.</span>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-signs">
+                <div class="faq-question" data-testid="question-signs">
+                    <span data-testid="how-do">How</span> <span data-testid="do-word">do</span> <span data-testid="i-word">I</span> <span data-testid="know-word">know</span> <span data-testid="if-word">if</span> <span data-testid="my-word">my</span> <span data-testid="chimney-know">chimney</span> <span data-testid="needs-word">needs</span> <span data-testid="repair-know">repair?</span>
+                    <span class="faq-toggle" data-testid="toggle-signs">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-signs">
+                    <span data-testid="common-signs">Common</span> <span data-testid="signs-include">signs</span> <span data-testid="include-water">include:</span> <span data-testid="water-stains">water</span> <span data-testid="stains-near">stains</span> <span data-testid="near-chimney">near</span> <span data-testid="chimney-crumbling">the</span> <span data-testid="crumbling-missing">chimney,</span> <span data-testid="missing-mortar">crumbling</span> <span data-testid="mortar-rusted">or</span> <span data-testid="rusted-damper">missing</span> <span data-testid="damper-white">mortar,</span> <span data-testid="white-staining">rusted</span> <span data-testid="staining-bricks">damper,</span> <span data-testid="bricks-efflorescence">white</span> <span data-testid="efflorescence-smoke">staining</span> <span data-testid="smoke-backing">on</span> <span data-testid="backing-rooms">bricks</span> <span data-testid="rooms-musty">(efflorescence),</span> <span data-testid="musty-odors">smoke</span> <span data-testid="odors-loose">backing</span> <span data-testid="loose-fallen">up</span> <span data-testid="fallen-bricks">into</span> <span data-testid="bricks-cracks">rooms,</span> <span data-testid="cracks-crown">musty</span> <span data-testid="crown-notice">odors,</span> <span data-testid="notice-signs">loose</span> <span data-testid="signs-schedule">or</span> <span data-testid="schedule-professional">fallen</span> <span data-testid="professional-inspection">bricks,</span> <span data-testid="inspection-immediately">and</span> <span data-testid="immediately-prevent">cracks</span> <span data-testid="prevent-further">in</span> <span data-testid="further-damage">the</span> <span data-testid="damage-period">chimney</span> <span data-testid="period-end">crown.</span> <span data-testid="end-if">If</span> <span data-testid="if-you">you</span> <span data-testid="you-notice">notice</span> <span data-testid="notice-any">any</span> <span data-testid="any-these">of</span> <span data-testid="these-signs">these</span> <span data-testid="signs-comma">signs,</span> <span data-testid="comma-schedule">schedule</span> <span data-testid="schedule-a">a</span> <span data-testid="a-professional">professional</span> <span data-testid="professional-insp">inspection</span> <span data-testid="insp-immediately">immediately</span> <span data-testid="immediately-to">to</span> <span data-testid="to-prevent">prevent</span> <span data-testid="prevent-damage">further</span> <span data-testid="damage-final">damage.</span>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-winter">
+                <div class="faq-question" data-testid="question-winter">
+                    Can you repair my chimney in winter?
+                    <span class="faq-toggle" data-testid="toggle-winter">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-winter">
+                    <span data-testid="yes-perform">Yes,</span> <span data-testid="perform-most">we</span> <span data-testid="most-chimney">perform</span> <span data-testid="chimney-repairs">most</span> <span data-testid="repairs-year">chimney</span> <span data-testid="year-round">repairs</span> <span data-testid="round-city">year-round</span> <span data-testid="city-winter">in</span> <span data-testid="winter-some">{{city_name}}.</span> <span data-testid="some-masonry">Some</span> <span data-testid="masonry-work">masonry</span> <span data-testid="work-limited">work</span> <span data-testid="limited-freezing">may</span> <span data-testid="freezing-temps">be</span> <span data-testid="temps-emergency">limited</span> <span data-testid="emergency-repairs">in</span> <span data-testid="repairs-flashing">freezing</span> <span data-testid="flashing-replacement">temperatures,</span> <span data-testid="replacement-structural">but</span> <span data-testid="structural-stabilization">emergency</span> <span data-testid="stabilization-completed">repairs,</span> <span data-testid="completed-weather">flashing</span> <span data-testid="weather-assess">replacement,</span> <span data-testid="assess-specific">and</span> <span data-testid="specific-situation">structural</span> <span data-testid="situation-recommend">stabilization</span> <span data-testid="recommend-best">can</span> <span data-testid="best-timing">be</span> <span data-testid="timing-repairs">completed</span> <span data-testid="repairs-final">in</span> <span data-testid="final-any">any</span> <span data-testid="any-weather">weather.</span> <span data-testid="weather-well">We'll</span> <span data-testid="well-assess">assess</span> <span data-testid="assess-your">your</span> <span data-testid="your-specific">specific</span> <span data-testid="specific-sit">situation</span> <span data-testid="sit-and">and</span> <span data-testid="and-recommend">recommend</span> <span data-testid="recommend-the">the</span> <span data-testid="the-best">best</span> <span data-testid="best-time">timing</span> <span data-testid="time-for">for</span> <span data-testid="for-your">your</span> <span data-testid="your-repairs">repairs.</span>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-longevity">
+                <div class="faq-question" data-testid="question-longevity">
+                    How long do chimney repairs last?
+                    <span class="faq-toggle" data-testid="toggle-longevity">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-longevity">
+                    <span data-testid="when-properly">When</span> <span data-testid="properly-done">properly</span> <span data-testid="done-quality">done</span> <span data-testid="quality-materials">with</span> <span data-testid="materials-chimney">quality</span> <span data-testid="chimney-should">materials,</span> <span data-testid="should-last">chimney</span> <span data-testid="last-10">repairs</span> <span data-testid="10-20">should</span> <span data-testid="20-years">last</span> <span data-testid="years-flashing">10-20+</span> <span data-testid="flashing-typically">years.</span> <span data-testid="typically-lasts">Flashing</span> <span data-testid="lasts-15">typically</span> <span data-testid="15-20">lasts</span> <span data-testid="20-years-mortar">15-20</span> <span data-testid="mortar-repointing">years,</span> <span data-testid="repointing-20">mortar</span> <span data-testid="20-30">repointing</span> <span data-testid="30-years">20-30</span> <span data-testid="years-chimney">years,</span> <span data-testid="chimney-crowns">and</span> <span data-testid="crowns-20">chimney</span> <span data-testid="20-25">crowns</span> <span data-testid="25-years">20-25</span> <span data-testid="years-we">years.</span> <span data-testid="we-warranty">We</span> <span data-testid="warranty-work">warranty</span> <span data-testid="work-use">our</span> <span data-testid="use-premium">work</span> <span data-testid="premium-materials">and</span> <span data-testid="materials-ensure">use</span> <span data-testid="ensure-maximum">premium</span> <span data-testid="maximum-longevity">materials</span> <span data-testid="longevity-regular">to</span> <span data-testid="regular-inspections">ensure</span> <span data-testid="inspections-help">maximum</span> <span data-testid="help-catch">longevity.</span> <span data-testid="catch-small">Regular</span> <span data-testid="small-issues">inspections</span> <span data-testid="issues-before">help</span> <span data-testid="before-become">catch</span> <span data-testid="become-major">small</span> <span data-testid="major-repairs">issues</span> <span data-testid="repairs-end">before</span> <span data-testid="end-they">they</span> <span data-testid="they-become">become</span> <span data-testid="become-repairs">major</span> <span data-testid="final-repairs">repairs.</span>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-insurance">
+                <div class="faq-question" data-testid="question-insurance">
+                    Will you help with insurance claims?
+                    <span class="faq-toggle" data-testid="toggle-insurance">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-insurance">
+                    <span data-testid="absolutely-yes">Absolutely!</span> <span data-testid="yes-we">We</span> <span data-testid="we-have">have</span> <span data-testid="have-extensive">extensive</span> <span data-testid="extensive-experience">experience</span> <span data-testid="experience-working">working</span> <span data-testid="working-insurance">with</span> <span data-testid="insurance-companies">insurance</span> <span data-testid="companies-chimney">companies</span> <span data-testid="chimney-damage">on</span> <span data-testid="damage-claims">chimney</span> <span data-testid="claims-provide">damage</span> <span data-testid="provide-detailed">claims.</span> <span data-testid="detailed-documentation">We</span> <span data-testid="documentation-photos">provide</span> <span data-testid="photos-estimates">detailed</span> <span data-testid="estimates-needed">documentation,</span> <span data-testid="needed-claim">photos,</span> <span data-testid="claim-team">and</span> <span data-testid="team-communicate">estimates</span> <span data-testid="communicate-directly">needed</span> <span data-testid="directly-adjuster">for</span> <span data-testid="adjuster-help">your</span> <span data-testid="help-ensure">claim.</span> <span data-testid="ensure-proper">Our</span> <span data-testid="proper-coverage">team</span> <span data-testid="coverage-necessary">can</span> <span data-testid="necessary-repairs">communicate</span> <span data-testid="repairs-period">directly</span> <span data-testid="period-final">with</span> <span data-testid="final-your">your</span> <span data-testid="your-adjuster">adjuster</span> <span data-testid="adjuster-to">to</span> <span data-testid="to-help">help</span> <span data-testid="help-coverage">ensure</span> <span data-testid="coverage-for">proper</span> <span data-testid="for-repairs">coverage</span> <span data-testid="repairs-necessary">for</span> <span data-testid="necessary-end">necessary</span> <span data-testid="end-repairs">repairs.</span>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-emergency">
+                <div class="faq-question" data-testid="question-emergency">
+                    Do you offer emergency chimney repair?
+                    <span class="faq-toggle" data-testid="toggle-emergency">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-emergency">
+                    Yes, we provide 24/7 emergency chimney repair services for urgent situations like active leaks, structural instability, or fire safety hazards. Call {{company_phone}} anytime for immediate assistance. We'll stabilize the problem quickly and schedule permanent repairs as soon as possible.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-repair-vs-rebuild">
+                <div class="faq-question" data-testid="question-repair-vs-rebuild">
+                    What's the difference between chimney repair and rebuilding?
+                    <span class="faq-toggle" data-testid="toggle-repair-vs-rebuild">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-repair-vs-rebuild">
+                    Repair addresses specific damaged areas like repointing mortar, replacing flashing, or rebuilding the crown. Rebuilding involves dismantling and reconstructing major portions or the entire chimney when damage is extensive or structural integrity is compromised. During our inspection, we'll determine whether repair or rebuild is the most cost-effective and safe solution for your situation.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-timeline">
+                <div class="faq-question" data-testid="question-timeline">
+                    How long does chimney repair take?
+                    <span class="faq-toggle" data-testid="toggle-timeline">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-timeline">
+                    Simple repairs like flashing replacement or crown sealing typically take 1-2 days. More extensive masonry work may require 3-5 days. Complete chimney rebuilds can take 1-2 weeks depending on scope. We provide a specific timeline with your estimate and keep you informed of progress throughout the project.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="final-cta" data-testid="section-final-cta">
+        <div class="container">
+            <h2 data-testid="heading-dont-let-problems">Don't Let Chimney Problems Get Worse</h2>
+            <p data-testid="text-final-cta-description">Small chimney issues quickly become expensive disasters. Get your free professional inspection today and protect your {{city_name}} home from water damage and structural problems.</p>
+            
+            <div class="final-cta-buttons" data-testid="final-cta-buttons">
+                <a href="tel:{{company_phone}}" class="btn-white" data-testid="button-final-call">Call {{company_phone}}</a>
+                <a href="#inspection-form" class="btn-white-outline" data-testid="button-final-schedule">Schedule Free Inspection</a>
+            </div>
+            
+            <div class="trust-indicators-final" data-testid="trust-indicators-final">
+                <div data-testid="indicator-24-7">
+                    <span data-testid="icon-clock-final">[CLOCK]</span> 24/7 Emergency Service Available
+                </div>
+                <div data-testid="indicator-serving-areas">
+                    <span data-testid="icon-location-final">[LOCATION]</span> Serving {{city_name}} and Surrounding Areas
+                </div>
+                <div data-testid="indicator-licensed-final">
+                    <span data-testid="icon-check-final">[CHECK]</span> Licensed & Insured Louisiana Contractors
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // FAQ Accordion functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                const toggle = item.querySelector('.faq-toggle');
+                
+                question.addEventListener('click', function() {
+                    // Close other open items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.querySelector('.faq-answer').classList.remove('active');
+                            otherItem.querySelector('.faq-toggle').textContent = '+';
+                        }
+                    });
+                    
+                    // Toggle current item
+                    answer.classList.toggle('active');
+                    toggle.textContent = answer.classList.contains('active') ? '-' : '+';
+                });
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{city_name}} Storm Damage Restoration | Emergency Recovery Services | Clear Home</title>
+    <meta name="description" content="Expert storm damage restoration in {{city_name}}. 24/7 emergency response for hurricane, wind & hail damage. Insurance claims assistance. Call (504) 460-8131 now.">
+    <meta name="keywords" content="storm damage restoration {{city_name}}, hurricane damage repair, wind damage restoration, hail damage repair, emergency restoration {{city_name}}">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="{{city_name}} Storm Damage Restoration | Emergency Recovery Services | Clear Home">
+    <meta property="og:description" content="Expert storm damage restoration in {{city_name}}. 24/7 emergency response for hurricane, wind & hail damage. Insurance claims assistance.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clearhome.pro/{{city_slug}}/storm-damage-restoration">
+    <meta property="og:image" content="https://clearhome.pro/images/storm-restoration-{{city_slug}}.jpg">
+    
+    <!-- Local Business Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Clear Home Storm Damage Restoration",
+        "description": "Professional storm damage restoration services in {{city_name}}. Emergency response, insurance claims, complete property restoration.",
+        "url": "https://clearhome.pro/{{city_slug}}/storm-damage-restoration",
+        "telephone": "+15044608131",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "900 Camp Street, 3rd Floor",
+            "addressLocality": "New Orleans",
+            "addressRegion": "LA",
+            "postalCode": "70130",
+            "addressCountry": "US"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": {{city_latitude}},
+            "longitude": {{city_longitude}}
+        },
+        "serviceArea": {
+            "@type": "City",
+            "name": "{{city_name}}, Louisiana"
+        },
+        "openingHours": "Mo-Su 00:00-23:59",
+        "availableLanguage": "English",
+        "priceRange": "$$",
+        "specialties": ["Storm Damage Restoration", "Hurricane Recovery", "Insurance Claims", "Emergency Repairs"],
+        "services": [
+            "Storm Damage Assessment",
+            "Emergency Tarping",
+            "Insurance Claims Management",
+            "Complete Property Restoration",
+            "Hurricane Damage Repair",
+            "Wind Damage Restoration",
+            "Hail Damage Repair"
+        ]
+    }
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a202c;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1547036967-23d11aacaee0?ixlib=rb-4.0.3') center/cover;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-align: left;
+        }
+        
+        .hero-content {
+            display: grid;
+            grid-template-columns: 60% 40%;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .hero h2 {
+            font-size: 1.75rem;
+            color: #4A90E2;
+            margin-bottom: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .hero-benefits {
+            margin: 2rem 0;
+        }
+        
+        .hero-benefits p {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .hero-benefits .icon {
+            color: #22C55E;
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-emergency {
+            background: #DC2626;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-emergency:hover {
+            background: #B91C1C;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #2B6CB0;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #2C5282;
+            transform: translateY(-2px);
+        }
+        
+        /* Emergency Form */
+        .emergency-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            color: #1a202c;
+        }
+        
+        .emergency-form h3 {
+            color: #1A202C;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2B6CB0;
+        }
+        
+        .form-group.required label::after {
+            content: " *";
+            color: #DC2626;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            background: #DC2626;
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background: #B91C1C;
+        }
+        
+        /* Trust Indicators */
+        .trust-section {
+            background: #F7FAFC;
+            padding: 5rem 0;
+        }
+        
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+        
+        .trust-item {
+            padding: 2rem 1rem;
+        }
+        
+        .trust-item .icon {
+            font-size: 4rem;
+            color: #2B6CB0;
+            margin-bottom: 1rem;
+        }
+        
+        .trust-item .number {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #2B6CB0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .trust-item .label {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #4A5568;
+            margin-bottom: 0.5rem;
+        }
+        
+        .trust-item .description {
+            color: #718096;
+        }
+        
+        /* Services Section */
+        .services-section {
+            padding: 5rem 0;
+            background: white;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        
+        .section-header p {
+            font-size: 1.25rem;
+            color: #718096;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+        }
+        
+        .service-category {
+            background: #F7FAFC;
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 4px solid #2B6CB0;
+        }
+        
+        .service-category h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .service-category .category-icon {
+            font-size: 1.5rem;
+            color: #DC2626;
+        }
+        
+        .service-category .subtitle {
+            color: #718096;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+        }
+        
+        .service-list {
+            list-style: none;
+        }
+        
+        .service-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            gap: 0.75rem;
+        }
+        
+        .service-list .service-icon {
+            font-size: 1.2rem;
+            margin-top: 0.1rem;
+            min-width: 1.2rem;
+        }
+        
+        .service-list .service-text {
+            flex: 1;
+        }
+        
+        .service-list .service-title {
+            font-weight: 600;
+            color: #1a202c;
+        }
+        
+        .service-list .service-desc {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        
+        /* Process Section */
+        .process-section {
+            background: linear-gradient(135deg, #EBF8FF 0%, #DBEAFE 100%);
+            padding: 5rem 0;
+        }
+        
+        .process-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            position: relative;
+        }
+        
+        .process-step {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            text-align: center;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: #2B6CB0;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .process-step h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+        
+        .process-step .timeframe {
+            color: #DC2626;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .process-step .subtitle {
+            color: #2B6CB0;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .process-list {
+            list-style: none;
+            text-align: left;
+        }
+        
+        .process-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+            gap: 0.5rem;
+        }
+        
+        .process-list .process-icon {
+            color: #22C55E;
+            margin-top: 0.1rem;
+            min-width: 1rem;
+        }
+        
+        /* Benefits Section */
+        .benefits-section {
+            padding: 5rem 0;
+            background: white;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .benefit-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #E2E8F0;
+            transition: all 0.3s ease;
+        }
+        
+        .benefit-card:hover {
+            border-color: #2B6CB0;
+            box-shadow: 0 8px 25px rgba(43, 108, 176, 0.1);
+            transform: translateY(-4px);
+        }
+        
+        .benefit-card .benefit-icon {
+            font-size: 3rem;
+            color: #2B6CB0;
+            margin-bottom: 1rem;
+        }
+        
+        .benefit-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+        
+        .benefit-card .benefit-subtitle {
+            color: #2B6CB0;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .benefit-card p {
+            color: #718096;
+            line-height: 1.6;
+        }
+        
+        /* Before/After Section */
+        .showcase-section {
+            background: #1A202C;
+            color: white;
+            padding: 5rem 0;
+        }
+        
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+        }
+        
+        .case-study {
+            background: #2D3748;
+            padding: 2rem;
+            border-radius: 12px;
+        }
+        
+        .case-study h3 {
+            color: #4A90E2;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .case-details {
+            margin-bottom: 1rem;
+        }
+        
+        .case-details .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .case-details .label {
+            font-weight: 600;
+            color: #A0AEC0;
+        }
+        
+        .case-details .value {
+            color: white;
+        }
+        
+        .case-result {
+            background: #22C55E;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        /* Emergency Contact Section */
+        .emergency-contact {
+            background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .emergency-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .emergency-contact h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .emergency-contact h3 {
+            font-size: 1.5rem;
+            color: #FED7D7;
+            margin-bottom: 2rem;
+        }
+        
+        .emergency-phone {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 2rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .emergency-promise {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+        
+        .promise-list {
+            list-style: none;
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .promise-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            gap: 0.75rem;
+        }
+        
+        .promise-list .promise-icon {
+            color: #FED7D7;
+            font-size: 1.2rem;
+            min-width: 1.2rem;
+        }
+        
+        .emergency-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-white {
+            background: white;
+            color: #DC2626;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-white:hover {
+            background: #F7FAFC;
+            transform: translateY(-2px);
+        }
+        
+        /* FAQ Section */
+        .faq-section {
+            background: #F7FAFC;
+            padding: 5rem 0;
+        }
+        
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+        
+        .faq-category h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #2B6CB0;
+        }
+        
+        .faq-item {
+            background: white;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .faq-question {
+            padding: 1.5rem;
+            font-weight: 600;
+            color: #1a202c;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            color: #718096;
+            line-height: 1.6;
+        }
+        
+        /* Final CTA Section */
+        .final-cta {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3') center/cover;
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .final-cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .final-cta h3 {
+            font-size: 1.5rem;
+            color: #4A90E2;
+            margin-bottom: 2rem;
+        }
+        
+        .final-benefits {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin: 2rem 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .final-benefits p {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .final-benefits .check-icon {
+            color: #22C55E;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-note {
+            margin-top: 2rem;
+            font-style: italic;
+            color: #CBD5E0;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero h2 {
+                font-size: 1.25rem;
+            }
+            
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .emergency-phone {
+                font-size: 2rem;
+            }
+            
+            .section-header h2 {
+                font-size: 2rem;
+            }
+            
+            .final-cta h2 {
+                font-size: 2rem;
+            }
+            
+            .services-grid,
+            .benefits-grid,
+            .process-timeline {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .hero-buttons,
+            .emergency-buttons,
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-emergency,
+            .btn-secondary,
+            .btn-white {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero" data-testid="section-hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text" data-testid="hero-text">
+                    <h1 data-testid="heading-hero-title">{{city_name}} Storm Damage Restoration Experts</h1>
+                    <h2 data-testid="heading-hero-subtitle">Your Trusted Partner in Hurricane & Storm Recovery</h2>
+                    <p data-testid="text-hero-description">When storms strike {{city_name}}, Clear Home responds immediately. With over 20 years of experience in storm damage restoration, we're your local experts for complete property recovery, insurance claims assistance, and emergency repairs.</p>
+                    
+                    <div class="hero-benefits" data-testid="hero-benefits">
+                        <p data-testid="benefit-emergency-response"><span class="icon" data-testid="icon-check">✓</span> 24/7 Emergency Response</p>
+                        <p data-testid="benefit-insurance-specialists"><span class="icon" data-testid="icon-check">✓</span> Insurance Claims Specialists</p>
+                        <p data-testid="benefit-fortified-systems"><span class="icon" data-testid="icon-check">✓</span> FORTIFIED Roofing Systems</p>
+                        <p data-testid="benefit-complete-restoration"><span class="icon" data-testid="icon-check">✓</span> Complete Property Restoration</p>
+                    </div>
+                    
+                    <div class="hero-buttons" data-testid="hero-buttons">
+                        <a href="tel:+15044608131" class="btn-emergency" data-testid="button-emergency-call">
+                            EMERGENCY SERVICE - CALL NOW
+                        </a>
+                        <a href="#assessment-form" class="btn-secondary" data-testid="button-free-assessment">
+                            FREE STORM ASSESSMENT
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="emergency-form" data-testid="emergency-assessment-form" id="assessment-form">
+                    <h3 data-testid="heading-emergency-form">Get Immediate Storm Assessment</h3>
+                    <form data-testid="form-emergency-contact">
+                        <div class="form-group required" data-testid="form-group-first-name">
+                            <label for="firstName" data-testid="label-first-name">First Name</label>
+                            <input type="text" id="firstName" name="firstName" required data-testid="input-first-name">
+                        </div>
+                        
+                        <div class="form-group required" data-testid="form-group-last-name">
+                            <label for="lastName" data-testid="label-last-name">Last Name</label>
+                            <input type="text" id="lastName" name="lastName" required data-testid="input-last-name">
+                        </div>
+                        
+                        <div class="form-group required" data-testid="form-group-phone">
+                            <label for="phone" data-testid="label-phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required data-testid="input-phone">
+                        </div>
+                        
+                        <div class="form-group required" data-testid="form-group-email">
+                            <label for="email" data-testid="label-email">Email Address</label>
+                            <input type="email" id="email" name="email" required data-testid="input-email">
+                        </div>
+                        
+                        <div class="form-group required" data-testid="form-group-address">
+                            <label for="address" data-testid="label-address">Property Address</label>
+                            <input type="text" id="address" name="address" required data-testid="input-address">
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-damage-type">
+                            <label for="damageType" data-testid="label-damage-type">Type of Damage</label>
+                            <select id="damageType" name="damageType" data-testid="select-damage-type">
+                                <option value="" data-testid="option-damage-select">Select damage type...</option>
+                                <option value="roof" data-testid="option-damage-roof">Roof Damage</option>
+                                <option value="siding" data-testid="option-damage-siding">Siding Damage</option>
+                                <option value="windows" data-testid="option-damage-windows">Window Damage</option>
+                                <option value="gutters" data-testid="option-damage-gutters">Gutter Damage</option>
+                                <option value="multiple" data-testid="option-damage-multiple">Multiple Areas</option>
+                                <option value="unsure" data-testid="option-damage-unsure">Unsure</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-urgency">
+                            <label for="urgency" data-testid="label-urgency">Urgency Level</label>
+                            <select id="urgency" name="urgency" data-testid="select-urgency">
+                                <option value="" data-testid="option-urgency-select">Select urgency...</option>
+                                <option value="emergency" data-testid="option-urgency-emergency">Emergency/Urgent</option>
+                                <option value="24hours" data-testid="option-urgency-24hours">Within 24 Hours</option>
+                                <option value="week" data-testid="option-urgency-week">Within a Week</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-insurance">
+                            <label for="insurance" data-testid="label-insurance">Insurance Company (Optional)</label>
+                            <input type="text" id="insurance" name="insurance" data-testid="input-insurance">
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-description">
+                            <label for="description" data-testid="label-description">Brief Description</label>
+                            <textarea id="description" name="description" rows="3" data-testid="textarea-description"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn" data-testid="button-submit-emergency">
+                            SUBMIT EMERGENCY REQUEST - WE'LL CALL WITHIN 30 MINUTES
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Trust Indicators Section -->
+    <section class="trust-section" data-testid="section-trust-indicators">
+        <div class="container">
+            <div class="section-header" data-testid="trust-header">
+                <h2 data-testid="heading-trust-title">{{city_name}}'s Trusted Storm Recovery Partner</h2>
+            </div>
+            <div class="trust-grid" data-testid="trust-grid">
+                <div class="trust-item" data-testid="trust-experience">
+                    <div class="icon" data-testid="icon-experience">🏆</div>
+                    <div class="number" data-testid="number-years">20+</div>
+                    <div class="label" data-testid="label-experience">Years Experience</div>
+                    <div class="description" data-testid="text-experience">Serving {{city_name}} through countless hurricanes and storms</div>
+                </div>
+                <div class="trust-item" data-testid="trust-homes-restored">
+                    <div class="icon" data-testid="icon-homes">🏠</div>
+                    <div class="number" data-testid="number-homes">1,000+</div>
+                    <div class="label" data-testid="label-homes">Homes Restored</div>
+                    <div class="description" data-testid="text-homes">Successfully restored properties throughout the Greater New Orleans area</div>
+                </div>
+                <div class="trust-item" data-testid="trust-insurance">
+                    <div class="icon" data-testid="icon-insurance">📋</div>
+                    <div class="number" data-testid="number-certified">100%</div>
+                    <div class="label" data-testid="label-certified">Insurance Certified</div>
+                    <div class="description" data-testid="text-certified">Certified professionals who work directly with all major insurance companies</div>
+                </div>
+                <div class="trust-item" data-testid="trust-emergency">
+                    <div class="icon" data-testid="icon-emergency">⚡</div>
+                    <div class="number" data-testid="number-response">24/7</div>
+                    <div class="label" data-testid="label-response">Emergency Response</div>
+                    <div class="description" data-testid="text-response">Available during storm events and emergency situations</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Services Overview Section -->
+    <section class="services-section" data-testid="section-services">
+        <div class="container">
+            <div class="section-header" data-testid="services-header">
+                <h2 data-testid="heading-services-title">Complete Storm Damage Restoration Services</h2>
+                <p data-testid="text-services-description">Our {{city_name}} team handles every aspect of storm recovery, from emergency repairs to complete restoration and insurance claim management.</p>
+            </div>
+            <div class="services-grid" data-testid="services-grid">
+                <div class="service-category" data-testid="service-emergency">
+                    <h3 data-testid="heading-emergency-services"><span class="category-icon" data-testid="icon-emergency-services">⚡</span> Emergency Response Services</h3>
+                    <p class="subtitle" data-testid="subtitle-emergency">Immediate action when you need it most</p>
+                    <ul class="service-list" data-testid="list-emergency-services">
+                        <li data-testid="service-tarping">
+                            <span class="service-icon" data-testid="icon-tarping">🛡️</span>
+                            <div class="service-text">
+                                <div class="service-title" data-testid="title-tarping">Emergency Tarping & Board-Up</div>
+                                <div class="service-desc" data-testid="desc-tarping">Prevent further damage with immediate protection</div>
+                            </div>
+                        </li>
+                        <li data-testid="service-leak-repair">
+                            <span class="service-icon" data-testid="icon-leak-repair">🔧</span>
+                            <div class="service-text">
+                                <div class="service-title" data-testid="title-leak-repair">Emergency Leak Repairs</div>
+                                <div class="service-desc" data-testid="desc-leak-repair">Stop water intrusion before it spreads</div>
+                            </div>
+                        </li>
+                        <li data-testid="service-assessment">
+                            <span class="service-icon" data-testid="icon-assessment">✓</span>
+                            <div class="service-text">
+                                <div class="service-title" data-testid="title-assessment">Storm Damage Assessment</div>
+                                <div class="service-desc" data-testid="desc-assessment">Professional evaluation of all property damage</div>
+                            </div>
+                        </li>
+                        <li data-testid="service-hotline">
+                            <span class="service-icon" data-testid="icon-hotline">📱</span>
+                            <div class="service-text">
+                                <div class="service-title" data-testid="title-hotline">24/7 Emergency Hotline</div>
+                                <div class="service-desc" data-testid="desc-hotline">Always available during storm events</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="service-category" data-testid="service-insurance">
+                    <h3 data-testid="heading-insurance-services"><span class="category-icon" data-testid="icon-insurance-services">💼</span> Insurance Claims Management</h3>
+                    <p class="subtitle" data-testid="subtitle-insurance">We handle the paperwork, you focus on recovery</p>
+                    <ul class="service-list" data-testid="list-insurance-services">
+                        <li data-testid="service-claims-processing">
+                            <span class="service-icon" data-testid="icon-claims">✓</span>
+                            <div class="service-text">
+                                <div class="service-title" data-testid="title-claims">Complete Claims Processing</div>
+                                <div class="service-desc" data-testid="desc-claims">From filing to final payment</div>
+                            </div>
+                        </li>
+                        <li data-testid="service-adjuster-meetings">
+                            <span class="service-icon" data-testid="icon-adjuster">👥</span>
+                            <div class="service-text">
+                                <div class="service-title" data-testid="title-adjuster">Insurance Adjuster Meetings</div>
+                                <div class="service-desc" data-testid="desc-adjuster">We represent your interests</div>
+                            </div>
+                        </li>
+                        <li data-testid="service-documentation">
+                            <span class="service-icon" data-testid="icon-documentation">📸</span>
+                            <div class="service-text">
+                                <div class="service-title" data-testid="title-documentation">Damage Documentation</div>
+                                <div class="service-desc" data-testid="desc-documentation">Professional photography and reports</div>
+                            </div>
+                        </li>
+                        <li data-testid="service-maximize-coverage">
+                            <span class="service-icon" data-testid="icon-coverage">💰</span>
+                            <div class="service-text">
+                                <div class="service-title" data-testid="title-coverage">Maximize Your Coverage</div>
+                                <div class="service-desc" data-testid="desc-coverage">Ensure you receive every dollar you're entitled to</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="service-category" data-testid="service-restoration">
+                    <h3 data-testid="heading-restoration-services"><span class="category-icon" data-testid="icon-restoration-services">🏠</span> Complete Restoration Services</h3>
+                    <p class="subtitle" data-testid="subtitle-restoration">Return your property to pre-storm condition</p>
+                    <ul class="service-list" data-testid="list-restoration-services">
+                        <li data-testid="service-roof-restoration">
+                            <span class="service-icon" data-testid="icon-roof">🏠</span>
+                            <div class="service-text">
+                                <div class="service-title" data-testid="title-roof">Roof Restoration</div>
+                                <div class="service-desc" data-testid="desc-roof">Complete roofing systems replacement and repair</div>
+                            </div>
+                        </li>
+                        <li data-testid="service-siding-exterior">
+                            <span class="service-icon" data-testid="icon-siding">🎨</span>
+                            <div class="service-text">
+                                <div class="service-title" data-testid="title-siding">Siding & Exterior</div>
+                                <div class="service-desc" data-testid="desc-siding">Full exterior restoration and upgrades</div>
+                            </div>
+                        </li>
+                        <li data-testid="service-windows-doors">
+                            <span class="service-icon" data-testid="icon-windows">🪟</span>
+                            <div class="service-text">
+                                <div class="service-title" data-testid="title-windows">Windows & Doors</div>
+                                <div class="service-desc" data-testid="desc-windows">Energy-efficient replacements and installations</div>
+                            </div>
+                        </li>
+                        <li data-testid="service-gutter-systems">
+                            <span class="service-icon" data-testid="icon-gutters">💧</span>
+                            <div class="service-text">
+                                <div class="service-title" data-testid="title-gutters">Gutter Systems</div>
+                                <div class="service-desc" data-testid="desc-gutters">Complete water management solutions</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Process Section -->
+    <section class="process-section" data-testid="section-process">
+        <div class="container">
+            <div class="section-header" data-testid="process-header">
+                <h2 data-testid="heading-process-title">How Clear Home Handles Your Storm Recovery</h2>
+            </div>
+            <div class="process-timeline" data-testid="process-timeline">
+                <div class="process-step" data-testid="process-step-1">
+                    <div class="step-number" data-testid="step-number-1">1</div>
+                    <h3 data-testid="heading-step-1">Emergency Response</h3>
+                    <div class="timeframe" data-testid="timeframe-1">(0-24 Hours)</div>
+                    <div class="subtitle" data-testid="subtitle-step-1">Immediate Protection & Assessment</div>
+                    <ul class="process-list" data-testid="list-step-1">
+                        <li data-testid="step1-call"><span class="process-icon" data-testid="icon-step1-call">•</span> Emergency call received and logged</li>
+                        <li data-testid="step1-dispatch"><span class="process-icon" data-testid="icon-step1-dispatch">👨‍🔧</span> Rapid response team dispatched</li>
+                        <li data-testid="step1-protection"><span class="process-icon" data-testid="icon-step1-protection">🛡️</span> Immediate protective measures (tarping, board-up)</li>
+                        <li data-testid="step1-assessment"><span class="process-icon" data-testid="icon-step1-assessment">•</span> Comprehensive damage assessment</li>
+                        <li data-testid="step1-insurance"><span class="process-icon" data-testid="icon-step1-insurance">•</span> Initial insurance company notification</li>
+                    </ul>
+                </div>
+                
+                <div class="process-step" data-testid="process-step-2">
+                    <div class="step-number" data-testid="step-number-2">2</div>
+                    <h3 data-testid="heading-step-2">Documentation & Claims</h3>
+                    <div class="timeframe" data-testid="timeframe-2">(24-72 Hours)</div>
+                    <div class="subtitle" data-testid="subtitle-step-2">Professional Documentation & Filing</div>
+                    <ul class="process-list" data-testid="list-step-2">
+                        <li data-testid="step2-photo"><span class="process-icon" data-testid="icon-step2-photo">📸</span> Detailed photo and video documentation</li>
+                        <li data-testid="step2-reports"><span class="process-icon" data-testid="icon-step2-reports">📝</span> Professional damage reports prepared</li>
+                        <li data-testid="step2-filing"><span class="process-icon" data-testid="icon-step2-filing">•</span> Insurance claim filed with all required paperwork</li>
+                        <li data-testid="step2-adjuster"><span class="process-icon" data-testid="icon-step2-adjuster">🤝</span> Adjuster meeting scheduled and attended</li>
+                        <li data-testid="step2-estimate"><span class="process-icon" data-testid="icon-step2-estimate">💰</span> Initial claim estimate reviewed and negotiated</li>
+                    </ul>
+                </div>
+                
+                <div class="process-step" data-testid="process-step-3">
+                    <div class="step-number" data-testid="step-number-3">3</div>
+                    <h3 data-testid="heading-step-3">Restoration Planning</h3>
+                    <div class="timeframe" data-testid="timeframe-3">(Week 1)</div>
+                    <div class="subtitle" data-testid="subtitle-step-3">Detailed Planning & Material Sourcing</div>
+                    <ul class="process-list" data-testid="list-step-3">
+                        <li data-testid="step3-plans"><span class="process-icon" data-testid="icon-step3-plans">📐</span> Final restoration plans developed</li>
+                        <li data-testid="step3-estimates"><span class="process-icon" data-testid="icon-step3-estimates">🧾</span> Detailed project estimates provided</li>
+                        <li data-testid="step3-materials"><span class="process-icon" data-testid="icon-step3-materials">📦</span> Materials ordered and delivery scheduled</li>
+                        <li data-testid="step3-crew"><span class="process-icon" data-testid="icon-step3-crew">👷</span> Restoration crew assigned and scheduled</li>
+                        <li data-testid="step3-permits"><span class="process-icon" data-testid="icon-step3-permits">✅</span> All permits obtained and inspections scheduled</li>
+                    </ul>
+                </div>
+                
+                <div class="process-step" data-testid="process-step-4">
+                    <div class="step-number" data-testid="step-number-4">4</div>
+                    <h3 data-testid="heading-step-4">Complete Restoration</h3>
+                    <div class="timeframe" data-testid="timeframe-4">(Weeks 2-4)</div>
+                    <div class="subtitle" data-testid="subtitle-step-4">Professional Restoration Execution</div>
+                    <ul class="process-list" data-testid="list-step-4">
+                        <li data-testid="step4-work"><span class="process-icon" data-testid="icon-step4-work">🔨</span> Skilled craftsmen begin restoration work</li>
+                        <li data-testid="step4-updates"><span class="process-icon" data-testid="icon-step4-updates">📱</span> Daily progress updates and photos</li>
+                        <li data-testid="step4-quality"><span class="process-icon" data-testid="icon-step4-quality">🔍</span> Quality control inspections throughout</li>
+                        <li data-testid="step4-walkthrough"><span class="process-icon" data-testid="icon-step4-walkthrough">🏠</span> Final walkthrough and sign-off</li>
+                        <li data-testid="step4-warranties"><span class="process-icon" data-testid="icon-step4-warranties">📜</span> All warranties and documentation provided</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Benefits Section -->
+    <section class="benefits-section" data-testid="section-benefits">
+        <div class="container">
+            <div class="section-header" data-testid="benefits-header">
+                <h2 data-testid="heading-benefits-title">Why {{city_name}} Property Owners Choose Clear Home</h2>
+            </div>
+            <div class="benefits-grid" data-testid="benefits-grid">
+                <div class="benefit-card" data-testid="benefit-local-experts">
+                    <div class="benefit-icon" data-testid="icon-local-experts">🏆</div>
+                    <h3 data-testid="heading-local-experts">Local Storm Experts</h3>
+                    <div class="benefit-subtitle" data-testid="subtitle-local-experts">Deep Understanding of {{city_name}} Weather Patterns</div>
+                    <p data-testid="text-local-experts">We've weathered every major storm in {{city_name}} since 2003. From Hurricane Katrina to recent severe weather events, our team understands exactly what your property faces and how to protect it for the future.</p>
+                </div>
+                
+                <div class="benefit-card" data-testid="benefit-insurance-relationships">
+                    <div class="benefit-icon" data-testid="icon-insurance-relationships">🤝</div>
+                    <h3 data-testid="heading-insurance-relationships">Insurance Company Relationships</h3>
+                    <div class="benefit-subtitle" data-testid="subtitle-insurance-relationships">Trusted by Major Insurance Providers</div>
+                    <p data-testid="text-insurance-relationships">Our established relationships with insurance adjusters and companies mean faster claim processing and better outcomes for you. We speak their language and know how to maximize your coverage.</p>
+                </div>
+                
+                <div class="benefit-card" data-testid="benefit-emergency-network">
+                    <div class="benefit-icon" data-testid="icon-emergency-network">⚡</div>
+                    <h3 data-testid="heading-emergency-network">Emergency Response Network</h3>
+                    <div class="benefit-subtitle" data-testid="subtitle-emergency-network">Fastest Response Times in {{city_name}}</div>
+                    <p data-testid="text-emergency-network">Our emergency response system ensures we can reach any property in {{city_name}} within 2 hours during storm events. Pre-positioned equipment and 24/7 staffing make us the fastest in the area.</p>
+                </div>
+                
+                <div class="benefit-card" data-testid="benefit-complete-restoration">
+                    <div class="benefit-icon" data-testid="icon-complete-restoration">🔧</div>
+                    <h3 data-testid="heading-complete-restoration">Complete Restoration Capabilities</h3>
+                    <div class="benefit-subtitle" data-testid="subtitle-complete-restoration">One Company, Complete Recovery</div>
+                    <p data-testid="text-complete-restoration">From emergency repairs to full property restoration, we handle every aspect of recovery. No need to coordinate multiple contractors - Clear Home manages your entire project from start to finish.</p>
+                </div>
+                
+                <div class="benefit-card" data-testid="benefit-lifetime-warranty">
+                    <div class="benefit-icon" data-testid="icon-lifetime-warranty">📜</div>
+                    <h3 data-testid="heading-lifetime-warranty">Lifetime Workmanship Warranty</h3>
+                    <div class="benefit-subtitle" data-testid="subtitle-lifetime-warranty">Guaranteed Quality That Lasts</div>
+                    <p data-testid="text-lifetime-warranty">All our restoration work comes with comprehensive warranties. We stand behind our work with lifetime craftsmanship warranties and manufacturer guarantees on all materials.</p>
+                </div>
+                
+                <div class="benefit-card" data-testid="benefit-financing">
+                    <div class="benefit-icon" data-testid="icon-financing">💰</div>
+                    <h3 data-testid="heading-financing">In-House Financing Available</h3>
+                    <div class="benefit-subtitle" data-testid="subtitle-financing">Flexible Payment Solutions</div>
+                    <p data-testid="text-financing">Don't wait for insurance payments to begin your restoration. Our in-house financing options let you start recovery immediately while we handle your insurance claim process.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Before/After Showcase Section -->
+    <section class="showcase-section" data-testid="section-showcase">
+        <div class="container">
+            <div class="section-header" data-testid="showcase-header">
+                <h2 data-testid="heading-showcase-title">See Our {{city_name}} Restoration Results</h2>
+            </div>
+            <div class="showcase-grid" data-testid="showcase-grid">
+                <div class="case-study" data-testid="case-study-hurricane">
+                    <h3 data-testid="heading-case-hurricane">Hurricane Ida Recovery - {{city_name}} Home</h3>
+                    <div class="case-details" data-testid="details-case-hurricane">
+                        <div class="detail-row" data-testid="row-before">
+                            <span class="label" data-testid="label-before">Before:</span>
+                            <span class="value" data-testid="value-before">Severe roof damage, siding destruction, gutter failure</span>
+                        </div>
+                        <div class="detail-row" data-testid="row-after">
+                            <span class="label" data-testid="label-after">After:</span>
+                            <span class="value" data-testid="value-after">Complete restoration with upgraded FORTIFIED roofing system</span>
+                        </div>
+                        <div class="detail-row" data-testid="row-timeline">
+                            <span class="label" data-testid="label-timeline">Timeline:</span>
+                            <span class="value" data-testid="value-timeline">3 weeks from claim to completion</span>
+                        </div>
+                    </div>
+                    <div class="case-result" data-testid="result-hurricane">
+                        Result: Increased property value and storm resilience
+                    </div>
+                </div>
+                
+                <div class="case-study" data-testid="case-study-commercial">
+                    <h3 data-testid="heading-case-commercial">Wind Storm Damage - {{city_name}} Commercial Building</h3>
+                    <div class="case-details" data-testid="details-case-commercial">
+                        <div class="detail-row" data-testid="row-before-commercial">
+                            <span class="label" data-testid="label-before-commercial">Before:</span>
+                            <span class="value" data-testid="value-before-commercial">Partial roof collapse, water intrusion, structural concerns</span>
+                        </div>
+                        <div class="detail-row" data-testid="row-after-commercial">
+                            <span class="label" data-testid="label-after-commercial">After:</span>
+                            <span class="value" data-testid="value-after-commercial">Modern commercial roofing system with enhanced warranties</span>
+                        </div>
+                        <div class="detail-row" data-testid="row-timeline-commercial">
+                            <span class="label" data-testid="label-timeline-commercial">Timeline:</span>
+                            <span class="value" data-testid="value-timeline-commercial">2 weeks for emergency repairs, 4 weeks total restoration</span>
+                        </div>
+                    </div>
+                    <div class="case-result" data-testid="result-commercial">
+                        Result: Business reopened quickly with improved building performance
+                    </div>
+                </div>
+                
+                <div class="case-study" data-testid="case-study-neighborhood">
+                    <h3 data-testid="heading-case-neighborhood">Hail Damage Restoration - {{city_name}} Neighborhood</h3>
+                    <div class="case-details" data-testid="details-case-neighborhood">
+                        <div class="detail-row" data-testid="row-before-neighborhood">
+                            <span class="label" data-testid="label-before-neighborhood">Before:</span>
+                            <span class="value" data-testid="value-before-neighborhood">Widespread roof and siding damage from severe hailstorm</span>
+                        </div>
+                        <div class="detail-row" data-testid="row-after-neighborhood">
+                            <span class="label" data-testid="label-after-neighborhood">After:</span>
+                            <span class="value" data-testid="value-after-neighborhood">Complete exterior restoration for 12 homes simultaneously</span>
+                        </div>
+                        <div class="detail-row" data-testid="row-timeline-neighborhood">
+                            <span class="label" data-testid="label-timeline-neighborhood">Timeline:</span>
+                            <span class="value" data-testid="value-timeline-neighborhood">6 weeks coordinated neighborhood restoration</span>
+                        </div>
+                    </div>
+                    <div class="case-result" data-testid="result-neighborhood">
+                        Result: Entire neighborhood upgraded and protected for future storms
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Emergency Contact Section -->
+    <section class="emergency-contact" data-testid="section-emergency-contact">
+        <div class="container">
+            <div class="emergency-content" data-testid="emergency-content">
+                <h2 data-testid="heading-emergency-contact">Don't Wait - Storm Damage Gets Worse Every Hour</h2>
+                <h3 data-testid="heading-immediate-response">IMMEDIATE RESPONSE AVAILABLE</h3>
+                <p data-testid="text-emergency-description">When storm damage strikes your {{city_name}} property, every minute counts. Water intrusion spreads, structural damage worsens, and repair costs increase with every passing hour.</p>
+                
+                <div class="emergency-promise" data-testid="emergency-promise">
+                    <h4 data-testid="heading-promise">Clear Home's Emergency Response Promise:</h4>
+                    <ul class="promise-list" data-testid="promise-list">
+                        <li data-testid="promise-phone"><span class="promise-icon" data-testid="icon-promise-phone">•</span> <strong>Immediate Phone Pickup</strong> - Real person answers, not voicemail</li>
+                        <li data-testid="promise-response"><span class="promise-icon" data-testid="icon-promise-response">🚗</span> <strong>2-Hour Response Time</strong> - We're on-site quickly in {{city_name}}</li>
+                        <li data-testid="promise-protection"><span class="promise-icon" data-testid="icon-promise-protection">🛡️</span> <strong>Immediate Protection</strong> - Emergency tarping and board-up service</li>
+                        <li data-testid="promise-assessment"><span class="promise-icon" data-testid="icon-promise-assessment">•</span> <strong>Same-Day Assessment</strong> - Complete damage evaluation and documentation</li>
+                        <li data-testid="promise-insurance"><span class="promise-icon" data-testid="icon-promise-insurance">📱</span> <strong>Insurance Notification</strong> - We contact your insurance company immediately</li>
+                    </ul>
+                </div>
+                
+                <div class="emergency-phone" data-testid="emergency-phone-number">
+                    EMERGENCY HOTLINE: (504) 460-8131
+                </div>
+                
+                <div class="emergency-buttons" data-testid="emergency-buttons">
+                    <a href="tel:+15044608131" class="btn-white" data-testid="button-call-emergency">
+                        CALL FOR EMERGENCY SERVICE
+                    </a>
+                    <a href="sms:+15044608131" class="btn-white" data-testid="button-text-photos">
+                        TEXT US PHOTOS
+                    </a>
+                </div>
+                
+                <p data-testid="text-form-note">Or complete our emergency form above - we'll call you within 15 minutes</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FAQ Section -->
+    <section class="faq-section" data-testid="section-faq">
+        <div class="container">
+            <div class="section-header" data-testid="faq-header">
+                <h2 data-testid="heading-faq-title">Common Storm Damage Questions from {{city_name}} Property Owners</h2>
+            </div>
+            <div class="faq-grid" data-testid="faq-grid">
+                <div class="faq-category" data-testid="faq-insurance">
+                    <h3 data-testid="heading-faq-insurance">Insurance & Claims Questions</h3>
+                    
+                    <div class="faq-item" data-testid="faq-item-coverage">
+                        <div class="faq-question" data-testid="question-coverage">
+                            Will my insurance cover storm damage restoration?
+                        </div>
+                        <div class="faq-answer" data-testid="answer-coverage">
+                            Most homeowner's insurance policies cover storm damage from wind, hail, and hurricanes. We review your policy and work directly with your insurance company to maximize your coverage and ensure all eligible damage is included in your claim.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-testid="faq-item-timeline">
+                        <div class="faq-question" data-testid="question-timeline">
+                            How long does the insurance claim process take?
+                        </div>
+                        <div class="faq-answer" data-testid="answer-timeline">
+                            With Clear Home managing your claim, most {{city_name}} storm damage claims are resolved within 30-45 days. We expedite the process by providing immediate documentation, managing adjuster meetings, and handling all communications.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-testid="faq-item-denied-claim">
+                        <div class="faq-question" data-testid="question-denied-claim">
+                            What if my insurance company denies or underpays my claim?
+                        </div>
+                        <div class="faq-answer" data-testid="answer-denied-claim">
+                            As experienced insurance claim specialists, we advocate for you throughout the process. We provide detailed documentation, negotiate with adjusters, and ensure you receive every dollar you're entitled to under your policy.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="faq-category" data-testid="faq-emergency">
+                    <h3 data-testid="heading-faq-emergency">Emergency Response Questions</h3>
+                    
+                    <div class="faq-item" data-testid="faq-item-response-time">
+                        <div class="faq-question" data-testid="question-response-time">
+                            How quickly can you respond to emergency storm damage in {{city_name}}?
+                        </div>
+                        <div class="faq-answer" data-testid="answer-response-time">
+                            Our emergency response team can reach any location in {{city_name}} within 2 hours during storm events. We maintain 24/7 staffing and pre-positioned equipment throughout the greater New Orleans area.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-testid="faq-item-emergency-services">
+                        <div class="faq-question" data-testid="question-emergency-services">
+                            What emergency services do you provide immediately after storm damage?
+                        </div>
+                        <div class="faq-answer" data-testid="answer-emergency-services">
+                            We provide emergency tarping, board-up services, temporary leak repairs, and immediate damage assessment. These services prevent further damage while we develop your complete restoration plan.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-testid="faq-item-restoration-timeline">
+                        <div class="faq-question" data-testid="question-restoration-timeline">
+                            How long does complete storm damage restoration take?
+                        </div>
+                        <div class="faq-answer" data-testid="answer-restoration-timeline">
+                            Timeline depends on damage extent, but typical {{city_name}} storm restoration projects take 2-6 weeks. Emergency repairs are completed within 24-48 hours, while complete restoration follows insurance approval and material delivery.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-testid="faq-item-damage-types">
+                        <div class="faq-question" data-testid="question-damage-types">
+                            Do you handle all types of storm damage restoration?
+                        </div>
+                        <div class="faq-answer" data-testid="answer-damage-types">
+                            Yes, we're full-service storm restoration specialists. We handle roof damage, siding repair, window replacement, gutter systems, structural repairs, and complete property restoration from any storm damage.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item" data-testid="faq-item-warranties">
+                        <div class="faq-question" data-testid="question-warranties">
+                            What warranties do you provide on storm damage restoration work?
+                        </div>
+                        <div class="faq-answer" data-testid="answer-warranties">
+                            All restoration work includes our lifetime craftsmanship warranty plus manufacturer warranties on all materials. We guarantee the quality and durability of every aspect of your restoration project.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Final CTA Section -->
+    <section class="final-cta" data-testid="section-final-cta">
+        <div class="container">
+            <h2 data-testid="heading-final-cta">Don't Let Storm Damage Define Your Property's Future</h2>
+            <h3 data-testid="heading-final-subtitle">Clear Home Makes Storm Recovery Simple</h3>
+            
+            <div class="final-benefits" data-testid="final-benefits">
+                <p data-testid="final-benefit-emergency"><span class="check-icon" data-testid="icon-final-emergency">✓</span> Emergency Response Available 24/7</p>
+                <p data-testid="final-benefit-claims"><span class="check-icon" data-testid="icon-final-claims">✓</span> Complete Insurance Claims Management</p>
+                <p data-testid="final-benefit-restoration"><span class="check-icon" data-testid="icon-final-restoration">✓</span> Expert Restoration & Upgrades</p>
+                <p data-testid="final-benefit-warranties"><span class="check-icon" data-testid="icon-final-warranties">✓</span> Lifetime Warranties on All Work</p>
+                <p data-testid="final-benefit-financing"><span class="check-icon" data-testid="icon-final-financing">✓</span> Flexible Financing Options</p>
+            </div>
+            
+            <p data-testid="text-final-urgency">Every day you wait, storm damage costs more to repair and causes more problems for your {{city_name}} property. Take action now with {{city_name}}'s most trusted storm restoration experts.</p>
+            
+            <h3 data-testid="heading-start-recovery">Start Your Recovery Today</h3>
+            
+            <div class="cta-buttons" data-testid="final-cta-buttons">
+                <a href="tel:+15044608131" class="btn-emergency" data-testid="button-final-emergency">
+                    EMERGENCY SERVICE - (504) 460-8131
+                </a>
+                <a href="#assessment-form" class="btn-secondary" data-testid="button-final-assessment">
+                    FREE STORM ASSESSMENT
+                </a>
+                <a href="sms:+15044608131" class="btn-white" data-testid="button-final-text">
+                    TEXT US YOUR DAMAGE PHOTOS
+                </a>
+            </div>
+            
+            <p class="footer-note" data-testid="text-footer-note">
+                <strong>{{city_name}} Property Owners:</strong> <em>We're standing by 24/7 to help you recover from storm damage quickly and completely.</em>
+            </p>
+        </div>
+    </section>
+</body>
+</html>

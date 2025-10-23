@@ -1,0 +1,2187 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Professional General Contractors in {{city_name}} - Clear Home
+        </title>
+        <meta
+            name="description"
+            content="Expert general contracting services for residential and commercial projects in {{city_name}}. 20+ years experience, licensed & insured. Free estimates. Call (504) 460-8131."
+        />
+        <meta
+            name="keywords"
+            content="general contractors {{city_name}}, construction services {{city_name}}, home renovation {{city_name}}, commercial construction {{city_name}}"
+        />
+
+        <!-- Open Graph -->
+        <meta
+            property="og:title"
+            content="Professional General Contractors in {{city_name}} - Clear Home"
+        />
+        <meta
+            property="og:description"
+            content="Expert general contracting services for residential and commercial projects in {{city_name}}. 20+ years experience, licensed & insured. Free estimates. Call (504) 460-8131."
+        />
+        <meta
+            property="og:url"
+            content="{{base_url}}/{{city_slug}}/general-contracting"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="{{company_name}}" />
+
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+            name="twitter:title"
+            content="Professional General Contractors in {{city_name}} - Clear Home"
+        />
+        <meta
+            name="twitter:description"
+            content="Expert general contracting services for residential and commercial projects in {{city_name}}. 20+ years experience, licensed & insured. Free estimates. Call (504) 460-8131."
+        />
+
+        <link rel="canonical" href="{{canonical_url}}" />
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    sans-serif;
+                line-height: 1.6;
+                color: #2d3748;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
+
+            .btn-primary {
+                background: #2b6cb0;
+                color: white;
+                padding: 16px 24px;
+                border: none;
+                border-radius: 8px;
+                font-weight: 700;
+                font-size: 16px;
+                cursor: pointer;
+                text-decoration: none;
+                display: inline-block;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .btn-primary:hover {
+                background: #2553a0;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(43, 108, 176, 0.3);
+            }
+
+            .btn-secondary {
+                background: transparent;
+                color: #2b6cb0;
+                padding: 14px 20px;
+                border: 2px solid #2b6cb0;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 16px;
+                cursor: pointer;
+                text-decoration: none;
+                display: inline-block;
+                transition: all 0.3s ease;
+            }
+
+            .btn-secondary:hover {
+                background: #2b6cb0;
+                color: white;
+                transform: translateY(-1px);
+            }
+
+            /* Header Navigation */
+            .header {
+                background: white;
+                padding: 15px 0;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+
+            .nav-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
+
+            .logo {
+                font-size: 24px;
+                font-weight: bold;
+                color: #2b6cb0;
+            }
+
+            .main-nav ul {
+                display: flex;
+                list-style: none;
+                gap: 30px;
+            }
+
+            .main-nav a {
+                text-decoration: none;
+                color: #4a5568;
+                font-weight: 500;
+                transition: color 0.3s ease;
+            }
+
+            .main-nav a:hover {
+                color: #2b6cb0;
+            }
+
+            .header-phone {
+                background: #2b6cb0;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 6px;
+                text-decoration: none;
+                font-weight: 700;
+                font-size: 16px;
+                transition: all 0.3s ease;
+            }
+
+            .header-phone:hover {
+                background: #2553a0;
+                transform: translateY(-1px);
+            }
+
+            /* Hero Section */
+            .hero {
+                background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+                padding: 80px 0;
+                min-height: 600px;
+                display: flex;
+                align-items: center;
+            }
+
+            .hero-container {
+                display: grid;
+                grid-template-columns: 60% 40%;
+                gap: 60px;
+                align-items: center;
+            }
+
+            .hero-content h1 {
+                font-size: 42px;
+                font-weight: 700;
+                color: #1a202c;
+                margin-bottom: 20px;
+                line-height: 1.2;
+            }
+
+            .hero-subtitle {
+                font-size: 20px;
+                font-weight: 600;
+                color: #2b6cb0;
+                margin-bottom: 20px;
+            }
+
+            .hero-description {
+                font-size: 18px;
+                color: #4a5568;
+                margin-bottom: 30px;
+                line-height: 1.6;
+            }
+
+            .hero-features {
+                margin-bottom: 30px;
+            }
+
+            .feature-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 12px;
+                font-weight: 600;
+                color: #1a202c;
+            }
+
+            .feature-item svg {
+                color: #059669;
+                margin-right: 12px;
+            }
+
+            .hero-cta {
+                display: flex;
+                gap: 20px;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+
+            .hero-phone {
+                font-size: 20px;
+                font-weight: 700;
+                color: #2b6cb0;
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+            .hero-phone:hover {
+                color: #2553a0;
+            }
+
+            .quote-form {
+                background: white;
+                padding: 40px;
+                border-radius: 12px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                border: 1px solid #e2e8f0;
+            }
+
+            .form-title {
+                color: #1a202c;
+                font-size: 24px;
+                font-weight: 700;
+                margin-bottom: 8px;
+            }
+
+            .form-subtitle {
+                color: #4a5568;
+                font-size: 16px;
+                margin-bottom: 25px;
+                font-style: italic;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-group label {
+                display: block;
+                color: #1a202c;
+                font-weight: 600;
+                margin-bottom: 8px;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #e2e8f0;
+                border-radius: 6px;
+                font-size: 16px;
+                background: white;
+                color: #1a202c;
+                transition: border-color 0.3s ease;
+            }
+
+            .form-group input:focus,
+            .form-group select:focus,
+            .form-group textarea:focus {
+                outline: none;
+                border-color: #2b6cb0;
+            }
+
+            .form-group textarea {
+                height: 100px;
+                resize: vertical;
+            }
+
+            .form-submit {
+                width: 100%;
+                background: #2b6cb0;
+                color: white;
+                padding: 16px;
+                border: none;
+                border-radius: 8px;
+                font-weight: 700;
+                font-size: 18px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+                margin-bottom: 25px;
+            }
+
+            .form-submit:hover {
+                background: #2553a0;
+                transform: translateY(-2px);
+            }
+
+            .trust-indicators {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                text-align: center;
+            }
+
+            .trust-item {
+                font-weight: 600;
+                color: #2b6cb0;
+                font-size: 14px;
+            }
+
+            /* Services Section */
+            .services-section {
+                background: white;
+                padding: 80px 0;
+            }
+
+            .section-title {
+                font-size: 36px;
+                font-weight: 700;
+                color: #1a202c;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .section-intro {
+                font-size: 18px;
+                color: #4a5568;
+                text-align: center;
+                max-width: 800px;
+                margin: 0 auto 50px;
+                line-height: 1.6;
+                font-style: italic;
+            }
+
+            .services-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 40px;
+                margin-top: 50px;
+            }
+
+            .service-category {
+                background: #f7fafc;
+                padding: 40px;
+                border-radius: 12px;
+                border-left: 4px solid #2b6cb0;
+            }
+
+            .category-title {
+                font-size: 24px;
+                font-weight: 700;
+                color: #1a202c;
+                margin-bottom: 25px;
+            }
+
+            .service-item {
+                margin-bottom: 25px;
+            }
+
+            .service-name {
+                font-size: 18px;
+                font-weight: 700;
+                color: #2b6cb0;
+                margin-bottom: 8px;
+            }
+
+            .service-description {
+                font-size: 16px;
+                color: #4a5568;
+                line-height: 1.6;
+            }
+
+            /* Process Section */
+            .process-section {
+                background: #edf2f7;
+                padding: 80px 0;
+            }
+
+            .process-timeline {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: 30px;
+                margin-top: 50px;
+                position: relative;
+            }
+
+            .process-timeline::before {
+                content: "";
+                position: absolute;
+                top: 30px;
+                left: 10%;
+                right: 10%;
+                height: 3px;
+                background: #2b6cb0;
+                z-index: 1;
+            }
+
+            .process-step {
+                background: white;
+                padding: 30px 20px;
+                border-radius: 12px;
+                text-align: center;
+                position: relative;
+                z-index: 2;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+
+            .step-number {
+                width: 60px;
+                height: 60px;
+                background: #2b6cb0;
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                font-weight: 700;
+                margin: 0 auto 20px;
+            }
+
+            .step-title {
+                font-size: 18px;
+                font-weight: 700;
+                color: #1a202c;
+                margin-bottom: 15px;
+            }
+
+            .step-description {
+                font-size: 14px;
+                color: #4a5568;
+                line-height: 1.6;
+            }
+
+            /* Project Gallery */
+            .project-gallery {
+                background: white;
+                padding: 80px 0;
+            }
+
+            .gallery-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+                margin-top: 50px;
+            }
+
+            .project-card {
+                background: #f7fafc;
+                border-radius: 12px;
+                padding: 20px;
+                transition: all 0.3s ease;
+                cursor: pointer;
+                border: 1px solid #e2e8f0;
+            }
+
+            .project-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            }
+
+            .project-image {
+                width: 100%;
+                height: 200px;
+                background: #e5e7eb;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #9ca3af;
+                font-size: 14px;
+                margin-bottom: 15px;
+                border: 2px dashed #d1d5db;
+            }
+
+            .project-title {
+                font-size: 16px;
+                font-weight: 700;
+                color: #1a202c;
+                margin-bottom: 8px;
+            }
+
+            .project-description {
+                font-size: 14px;
+                color: #4a5568;
+                line-height: 1.6;
+            }
+
+            .project-type {
+                font-size: 12px;
+                color: #2b6cb0;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 8px;
+            }
+
+            /* Why Choose Section */
+            .why-choose {
+                background: white;
+                padding: 80px 0;
+            }
+
+            .benefits-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 40px;
+                margin-top: 50px;
+            }
+
+            .benefit-item {
+                display: flex;
+                gap: 20px;
+            }
+
+            .benefit-icon {
+                width: 50px;
+                height: 50px;
+                background: #edf8ff;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #2b6cb0;
+                flex-shrink: 0;
+            }
+
+            .benefit-content h3 {
+                font-size: 20px;
+                font-weight: 700;
+                color: #1a202c;
+                margin-bottom: 10px;
+            }
+
+            .benefit-content p {
+                font-size: 16px;
+                color: #4a5568;
+                line-height: 1.6;
+            }
+
+            /* Service Areas */
+            .service-areas {
+                background: #f7fafc;
+                padding: 80px 0;
+            }
+
+            .areas-content {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 60px;
+                align-items: start;
+                margin-top: 50px;
+            }
+
+            .areas-list h3 {
+                font-size: 20px;
+                font-weight: 700;
+                color: #1a202c;
+                margin-bottom: 15px;
+            }
+
+            .area-group {
+                margin-bottom: 25px;
+            }
+
+            .area-cities {
+                font-size: 16px;
+                color: #4a5568;
+                line-height: 1.8;
+            }
+
+            .map-placeholder {
+                width: 100%;
+                height: 350px;
+                background: #e5e7eb;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #9ca3af;
+                font-size: 18px;
+                border: 2px dashed #d1d5db;
+            }
+
+            /* Testimonials */
+            .testimonials {
+                background: white;
+                padding: 80px 0;
+            }
+
+            .testimonials-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 30px;
+                margin-top: 50px;
+            }
+
+            .testimonial-card {
+                background: #f7fafc;
+                padding: 30px;
+                border-radius: 12px;
+                position: relative;
+            }
+
+            .testimonial-card::before {
+                content: '"';
+                position: absolute;
+                top: -10px;
+                left: 20px;
+                font-size: 60px;
+                color: #2b6cb0;
+                line-height: 1;
+            }
+
+            .testimonial-title {
+                font-size: 18px;
+                font-weight: 700;
+                color: #1a202c;
+                margin-bottom: 15px;
+            }
+
+            .testimonial-text {
+                font-size: 16px;
+                color: #4a5568;
+                line-height: 1.6;
+                margin-bottom: 20px;
+                font-style: italic;
+            }
+
+            .testimonial-author {
+                font-weight: 700;
+                color: #2b6cb0;
+                margin-bottom: 5px;
+            }
+
+            .testimonial-role {
+                font-size: 14px;
+                color: #9ca3af;
+            }
+
+            /* Financing Section */
+            .financing-section {
+                background: #edf8ff;
+                padding: 80px 0;
+            }
+
+            .financing-content {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 60px;
+                margin-top: 50px;
+            }
+
+            .financing-block h3 {
+                font-size: 24px;
+                font-weight: 700;
+                color: #1a202c;
+                margin-bottom: 20px;
+            }
+
+            .financing-list {
+                list-style: none;
+            }
+
+            .financing-list li {
+                display: flex;
+                align-items: center;
+                margin-bottom: 12px;
+                font-size: 16px;
+                color: #4a5568;
+            }
+
+            .financing-list li::before {
+                content: "•";
+                color: #2b6cb0;
+                font-weight: bold;
+                margin-right: 12px;
+                font-size: 18px;
+            }
+
+            /* Final CTA */
+            .final-cta {
+                background: linear-gradient(135deg, #2b6cb0 0%, #2553a0 100%);
+                padding: 80px 0;
+                text-align: center;
+                color: white;
+            }
+
+            .cta-content h2 {
+                font-size: 36px;
+                font-weight: 700;
+                margin-bottom: 20px;
+            }
+
+            .cta-description {
+                font-size: 20px;
+                margin-bottom: 30px;
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+                opacity: 0.9;
+            }
+
+            .cta-contact {
+                display: flex;
+                justify-content: center;
+                gap: 40px;
+                flex-wrap: wrap;
+                margin-bottom: 30px;
+            }
+
+            .contact-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+            .contact-item svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .cta-form-link {
+                background: white;
+                color: #2b6cb0;
+                padding: 18px 30px;
+                border-radius: 8px;
+                font-weight: 700;
+                font-size: 18px;
+                text-decoration: none;
+                display: inline-block;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+            }
+
+            .cta-form-link:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+            }
+
+            /* Mobile Responsive */
+            @media (max-width: 768px) {
+                .hero-container {
+                    grid-template-columns: 1fr;
+                    gap: 40px;
+                }
+
+                .hero-content h1 {
+                    font-size: 32px;
+                }
+
+                .services-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .process-timeline {
+                    grid-template-columns: 1fr;
+                    gap: 30px;
+                }
+
+                .process-timeline::before {
+                    display: none;
+                }
+
+                .benefits-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .areas-content {
+                    grid-template-columns: 1fr;
+                    gap: 40px;
+                }
+
+                .testimonials-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .financing-content {
+                    grid-template-columns: 1fr;
+                    gap: 40px;
+                }
+
+                .cta-contact {
+                    flex-direction: column;
+                    gap: 20px;
+                }
+
+                .main-nav {
+                    display: none;
+                }
+
+                .section-title {
+                    font-size: 28px;
+                }
+
+                .trust-indicators {
+                    grid-template-columns: 1fr;
+                    gap: 10px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Header Navigation -->
+        <header class="header" data-testid="header-main">
+            <div class="nav-container">
+                <div class="logo" data-testid="logo-company">
+                    {{company_name}}
+                </div>
+                <nav class="main-nav" data-testid="nav-main">
+                    <ul>
+                        <li>
+                            <a href="/" data-testid="link-nav-home">Home</a>
+                        </li>
+                        <li>
+                            <a href="/services" data-testid="link-nav-services"
+                                >Services</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/about" data-testid="link-nav-about"
+                                >About</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/contact" data-testid="link-nav-contact"
+                                >Contact</a
+                            >
+                        </li>
+                    </ul>
+                </nav>
+                <a
+                    href="tel:{{company_phone}}"
+                    class="header-phone"
+                    data-testid="link-header-phone"
+                    >{{company_phone}}</a
+                >
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero" data-testid="section-hero">
+            <div class="container">
+                <div class="hero-container">
+                    <div class="hero-content">
+                        <h1 data-testid="heading-hero">
+                            Transform Your {{city_name}} Property with Expert
+                            General Contracting
+                        </h1>
+
+                        <p class="hero-subtitle" data-testid="subtitle-hero">
+                            Comprehensive construction and renovation services
+                            from New Orleans' most trusted general contractors
+                        </p>
+
+                        <p
+                            class="hero-description"
+                            data-testid="description-hero"
+                        >
+                            Your property deserves the best, and at Clear Home,
+                            we deliver exceptional general contracting services
+                            throughout {{city_name}} and the greater New Orleans
+                            area. With over 20 years of experience and thousands
+                            of satisfied customers, we're your trusted partner
+                            for residential and commercial construction projects
+                            of any size.
+                        </p>
+
+                        <div
+                            class="hero-features"
+                            data-testid="container-features"
+                        >
+                            <div
+                                class="feature-item"
+                                data-testid="feature-licensed"
+                            >
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M9 12l2 2 4-4" />
+                                </svg>
+                                <span data-testid="text-licensed"
+                                    ><strong>Licensed & Insured</strong> - Full
+                                    Louisiana contractor licensing with
+                                    comprehensive insurance coverage</span
+                                >
+                            </div>
+                            <div
+                                class="feature-item"
+                                data-testid="feature-management"
+                            >
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M9 12l2 2 4-4" />
+                                </svg>
+                                <span data-testid="text-management"
+                                    ><strong
+                                        >Complete Project Management</strong
+                                    >
+                                    - From permits to final inspection, we
+                                    handle every detail</span
+                                >
+                            </div>
+                            <div
+                                class="feature-item"
+                                data-testid="feature-craftsmanship"
+                            >
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M9 12l2 2 4-4" />
+                                </svg>
+                                <span data-testid="text-craftsmanship"
+                                    ><strong>Quality Craftsmanship</strong> -
+                                    Superior materials and skilled tradesmen for
+                                    lasting results</span
+                                >
+                            </div>
+                        </div>
+
+                        <div class="hero-cta" data-testid="container-hero-cta">
+                            <a
+                                href="tel:{{company_phone}}"
+                                class="btn-primary"
+                                data-testid="button-call-consultation"
+                                >Get Free Consultation</a
+                            >
+                            <a
+                                href="tel:{{company_phone}}"
+                                class="hero-phone"
+                                data-testid="link-hero-phone"
+                                >{{company_phone}}</a
+                            >
+                        </div>
+                    </div>
+
+                    <div class="quote-form" data-testid="form-quote">
+                        <h3 class="form-title" data-testid="title-form">
+                            Quick Quote Form
+                        </h3>
+                        <p class="form-subtitle" data-testid="subtitle-form">
+                            Get your free project estimate today
+                        </p>
+
+                        <form data-testid="form-contact">
+                            <div class="form-group">
+                                <label for="name" data-testid="label-name"
+                                    >Full Name *</label
+                                >
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    required
+                                    data-testid="input-name"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="phone" data-testid="label-phone"
+                                    >Phone Number *</label
+                                >
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    required
+                                    data-testid="input-phone"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="email" data-testid="label-email"
+                                    >Email Address *</label
+                                >
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    required
+                                    data-testid="input-email"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    for="project-type"
+                                    data-testid="label-project-type"
+                                    >Project Type</label
+                                >
+                                <select
+                                    id="project-type"
+                                    name="project-type"
+                                    required
+                                    data-testid="select-project-type"
+                                >
+                                    <option
+                                        value=""
+                                        data-testid="option-select"
+                                    >
+                                        Select Project Type
+                                    </option>
+                                    <option
+                                        value="kitchen-remodel"
+                                        data-testid="option-kitchen"
+                                    >
+                                        Kitchen Remodel
+                                    </option>
+                                    <option
+                                        value="bathroom-renovation"
+                                        data-testid="option-bathroom"
+                                    >
+                                        Bathroom Renovation
+                                    </option>
+                                    <option
+                                        value="home-addition"
+                                        data-testid="option-addition"
+                                    >
+                                        Home Addition
+                                    </option>
+                                    <option
+                                        value="siding-exterior"
+                                        data-testid="option-siding"
+                                    >
+                                        Siding/Exterior
+                                    </option>
+                                    <option
+                                        value="roofing-project"
+                                        data-testid="option-roofing"
+                                    >
+                                        Roofing Project
+                                    </option>
+                                    <option
+                                        value="commercial-buildout"
+                                        data-testid="option-commercial"
+                                    >
+                                        Commercial Build-Out
+                                    </option>
+                                    <option
+                                        value="other"
+                                        data-testid="option-other"
+                                    >
+                                        Other
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    for="project-description"
+                                    data-testid="label-description"
+                                    >Project Description</label
+                                >
+                                <textarea
+                                    id="project-description"
+                                    name="project-description"
+                                    placeholder="Tell us about your project..."
+                                    data-testid="textarea-description"
+                                ></textarea>
+                            </div>
+                            <button
+                                type="submit"
+                                class="form-submit"
+                                data-testid="button-form-submit"
+                            >
+                                GET MY FREE ESTIMATE
+                            </button>
+                        </form>
+
+                        <div
+                            class="trust-indicators"
+                            data-testid="container-trust"
+                        >
+                            <div
+                                class="trust-item"
+                                data-testid="trust-experience"
+                            >
+                                20+ Years Experience
+                            </div>
+                            <div
+                                class="trust-item"
+                                data-testid="trust-projects"
+                            >
+                                1000+ Projects Completed
+                            </div>
+                            <div
+                                class="trust-item"
+                                data-testid="trust-licensed"
+                            >
+                                Licensed & Insured
+                            </div>
+                            <div class="trust-item" data-testid="trust-rating">
+                                A+ BBB Rating
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services-section" data-testid="section-services">
+            <div class="container">
+                <h2 class="section-title" data-testid="heading-services">
+                    Comprehensive General Contracting Services
+                </h2>
+                <p class="section-intro" data-testid="intro-services">
+                    Full-service construction solutions for {{city_name}}
+                    residential and commercial properties
+                </p>
+
+                <div class="services-grid">
+                    <div
+                        class="service-category"
+                        data-testid="category-residential"
+                    >
+                        <h3
+                            class="category-title"
+                            data-testid="title-residential"
+                        >
+                            Residential General Contracting
+                        </h3>
+
+                        <div
+                            class="service-item"
+                            data-testid="service-renovations"
+                        >
+                            <div
+                                class="service-name"
+                                data-testid="name-renovations"
+                            >
+                                Home Renovations & Remodeling
+                            </div>
+                            <p
+                                class="service-description"
+                                data-testid="description-renovations"
+                            >
+                                Complete home transformations including
+                                kitchens, bathrooms, living spaces, and
+                                whole-house renovations. We manage every aspect
+                                from design consultation to final walkthrough.
+                            </p>
+                        </div>
+
+                        <div
+                            class="service-item"
+                            data-testid="service-additions"
+                        >
+                            <div
+                                class="service-name"
+                                data-testid="name-additions"
+                            >
+                                Home Additions & Extensions
+                            </div>
+                            <p
+                                class="service-description"
+                                data-testid="description-additions"
+                            >
+                                Expand your living space with expertly designed
+                                and constructed additions. Room additions,
+                                second stories, sunrooms, and garage conversions
+                                built to seamlessly integrate with existing
+                                structures.
+                            </p>
+                        </div>
+
+                        <div
+                            class="service-item"
+                            data-testid="service-exterior"
+                        >
+                            <div
+                                class="service-name"
+                                data-testid="name-exterior"
+                            >
+                                Exterior Improvements
+                            </div>
+                            <p
+                                class="service-description"
+                                data-testid="description-exterior"
+                            >
+                                Enhance your home's curb appeal and protection
+                                with comprehensive exterior services including
+                                siding installation, window replacement, door
+                                installation, and complete exterior makeovers.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="service-category"
+                        data-testid="category-commercial"
+                    >
+                        <h3
+                            class="category-title"
+                            data-testid="title-commercial"
+                        >
+                            Commercial General Contracting
+                        </h3>
+
+                        <div class="service-item" data-testid="service-office">
+                            <div class="service-name" data-testid="name-office">
+                                Office Build-Outs & Renovations
+                            </div>
+                            <p
+                                class="service-description"
+                                data-testid="description-office"
+                            >
+                                Professional commercial spaces designed for
+                                productivity and client impression. Complete
+                                tenant improvements, office renovations, and
+                                workspace optimization.
+                            </p>
+                        </div>
+
+                        <div class="service-item" data-testid="service-retail">
+                            <div class="service-name" data-testid="name-retail">
+                                Retail & Restaurant Construction
+                            </div>
+                            <p
+                                class="service-description"
+                                data-testid="description-retail"
+                            >
+                                Specialized construction for retail spaces,
+                                restaurants, and hospitality venues. Code
+                                compliance, ADA accessibility, and
+                                industry-specific requirements handled expertly.
+                            </p>
+                        </div>
+
+                        <div
+                            class="service-item"
+                            data-testid="service-industrial"
+                        >
+                            <div
+                                class="service-name"
+                                data-testid="name-industrial"
+                            >
+                                Industrial & Warehouse Projects
+                            </div>
+                            <p
+                                class="service-description"
+                                data-testid="description-industrial"
+                            >
+                                Structural improvements, warehouse
+                                modifications, and industrial facility
+                                construction with focus on functionality,
+                                safety, and operational efficiency.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="service-category"
+                        data-testid="category-specialty"
+                    >
+                        <h3
+                            class="category-title"
+                            data-testid="title-specialty"
+                        >
+                            Specialty Services
+                        </h3>
+
+                        <div class="service-item" data-testid="service-storm">
+                            <div class="service-name" data-testid="name-storm">
+                                Storm Damage Reconstruction
+                            </div>
+                            <p
+                                class="service-description"
+                                data-testid="description-storm"
+                            >
+                                Complete property restoration following
+                                hurricane and storm damage. Insurance claim
+                                assistance and comprehensive reconstruction
+                                services to restore your property better than
+                                before.
+                            </p>
+                        </div>
+
+                        <div
+                            class="service-item"
+                            data-testid="service-historic"
+                        >
+                            <div
+                                class="service-name"
+                                data-testid="name-historic"
+                            >
+                                Historic Property Restoration
+                            </div>
+                            <p
+                                class="service-description"
+                                data-testid="description-historic"
+                            >
+                                Specialized expertise in {{city_name}}'s
+                                historic properties. Preservation techniques
+                                combined with modern building standards for
+                                lasting results that honor architectural
+                                heritage.
+                            </p>
+                        </div>
+
+                        <div class="service-item" data-testid="service-green">
+                            <div class="service-name" data-testid="name-green">
+                                Green Building & Energy Efficiency
+                            </div>
+                            <p
+                                class="service-description"
+                                data-testid="description-green"
+                            >
+                                Sustainable construction practices and
+                                energy-efficient improvements. Solar
+                                preparation, insulation upgrades, and
+                                eco-friendly material selection.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Process Section -->
+        <section class="process-section" data-testid="section-process">
+            <div class="container">
+                <h2 class="section-title" data-testid="heading-process">
+                    Our Proven 5-Step Construction Process
+                </h2>
+
+                <div class="process-timeline">
+                    <div class="process-step" data-testid="step-consultation">
+                        <div
+                            class="step-number"
+                            data-testid="number-consultation"
+                        >
+                            1
+                        </div>
+                        <h3 class="step-title" data-testid="title-consultation">
+                            Initial Consultation & Assessment
+                        </h3>
+                        <p
+                            class="step-description"
+                            data-testid="description-consultation"
+                        >
+                            Free on-site evaluation of your project needs. Our
+                            experienced project managers visit your
+                            {{city_name}} property to discuss your vision,
+                            assess existing conditions, and provide expert
+                            recommendations.
+                        </p>
+                    </div>
+
+                    <div class="process-step" data-testid="step-design">
+                        <div class="step-number" data-testid="number-design">
+                            2
+                        </div>
+                        <h3 class="step-title" data-testid="title-design">
+                            Design Development & Planning
+                        </h3>
+                        <p
+                            class="step-description"
+                            data-testid="description-design"
+                        >
+                            Detailed project plans and material specifications.
+                            Working with our network of architects and
+                            designers, we create comprehensive project plans
+                            including material specifications and timeline
+                            development.
+                        </p>
+                    </div>
+
+                    <div class="process-step" data-testid="step-permits">
+                        <div class="step-number" data-testid="number-permits">
+                            3
+                        </div>
+                        <h3 class="step-title" data-testid="title-permits">
+                            Permits & Approvals
+                        </h3>
+                        <p
+                            class="step-description"
+                            data-testid="description-permits"
+                        >
+                            Complete permitting and regulatory compliance. Clear
+                            Home handles all permit applications, inspections
+                            scheduling, and regulatory compliance with
+                            {{city_name}} building departments.
+                        </p>
+                    </div>
+
+                    <div class="process-step" data-testid="step-construction">
+                        <div
+                            class="step-number"
+                            data-testid="number-construction"
+                        >
+                            4
+                        </div>
+                        <h3 class="step-title" data-testid="title-construction">
+                            Professional Construction
+                        </h3>
+                        <p
+                            class="step-description"
+                            data-testid="description-construction"
+                        >
+                            Expert craftsmanship with quality materials. Our
+                            skilled tradesmen execute your project with
+                            precision, daily progress updates, and quality
+                            control inspections.
+                        </p>
+                    </div>
+
+                    <div class="process-step" data-testid="step-inspection">
+                        <div
+                            class="step-number"
+                            data-testid="number-inspection"
+                        >
+                            5
+                        </div>
+                        <h3 class="step-title" data-testid="title-inspection">
+                            Final Inspection & Warranty
+                        </h3>
+                        <p
+                            class="step-description"
+                            data-testid="description-inspection"
+                        >
+                            Complete walkthrough and project guarantee. Final
+                            inspection ensures every detail meets your
+                            expectations and our quality standards with
+                            comprehensive warranty coverage.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Gallery -->
+        <section class="project-gallery" data-testid="section-project-gallery">
+            <div class="container">
+                <h2 class="section-title" data-testid="heading-project-gallery">
+                    Recent General Contracting Projects
+                </h2>
+
+                <div class="gallery-grid">
+                    <div
+                        class="project-card"
+                        data-testid="project-kitchen-renovation"
+                    >
+                        <div class="project-type" data-testid="type-kitchen">
+                            Residential Project
+                        </div>
+                        <div class="project-image" data-testid="image-kitchen">
+                            Kitchen Renovation Photo
+                        </div>
+                        <h3 class="project-title" data-testid="title-kitchen">
+                            {{city_name}} Kitchen Renovation
+                        </h3>
+                        <p
+                            class="project-description"
+                            data-testid="description-kitchen"
+                        >
+                            Complete kitchen transformation with custom
+                            cabinetry, granite countertops, and premium
+                            appliances
+                        </p>
+                    </div>
+
+                    <div
+                        class="project-card"
+                        data-testid="project-historic-addition"
+                    >
+                        <div class="project-type" data-testid="type-historic">
+                            Residential Project
+                        </div>
+                        <div class="project-image" data-testid="image-historic">
+                            Historic Addition Photo
+                        </div>
+                        <h3 class="project-title" data-testid="title-historic">
+                            Historic District Addition
+                        </h3>
+                        <p
+                            class="project-description"
+                            data-testid="description-historic"
+                        >
+                            Seamless second-story addition maintaining historic
+                            character while adding modern amenities
+                        </p>
+                    </div>
+
+                    <div
+                        class="project-card"
+                        data-testid="project-office-buildout"
+                    >
+                        <div class="project-type" data-testid="type-office">
+                            Commercial Project
+                        </div>
+                        <div class="project-image" data-testid="image-office">
+                            Office Build-Out Photo
+                        </div>
+                        <h3 class="project-title" data-testid="title-office">
+                            Professional Office Build-Out
+                        </h3>
+                        <p
+                            class="project-description"
+                            data-testid="description-office"
+                        >
+                            5,000 sq ft office space with modern finishes and
+                            technology integration
+                        </p>
+                    </div>
+
+                    <div class="project-card" data-testid="project-whole-house">
+                        <div
+                            class="project-type"
+                            data-testid="type-whole-house"
+                        >
+                            Residential Project
+                        </div>
+                        <div
+                            class="project-image"
+                            data-testid="image-whole-house"
+                        >
+                            Whole House Renovation Photo
+                        </div>
+                        <h3
+                            class="project-title"
+                            data-testid="title-whole-house"
+                        >
+                            Whole House Renovation
+                        </h3>
+                        <p
+                            class="project-description"
+                            data-testid="description-whole-house"
+                        >
+                            Complete interior and exterior renovation bringing
+                            1950s home into modern era
+                        </p>
+                    </div>
+
+                    <div class="project-card" data-testid="project-restaurant">
+                        <div class="project-type" data-testid="type-restaurant">
+                            Commercial Project
+                        </div>
+                        <div
+                            class="project-image"
+                            data-testid="image-restaurant"
+                        >
+                            Restaurant Renovation Photo
+                        </div>
+                        <h3
+                            class="project-title"
+                            data-testid="title-restaurant"
+                        >
+                            Restaurant Renovation
+                        </h3>
+                        <p
+                            class="project-description"
+                            data-testid="description-restaurant"
+                        >
+                            Complete restaurant makeover with commercial kitchen
+                            upgrade and dining area expansion
+                        </p>
+                    </div>
+
+                    <div
+                        class="project-card"
+                        data-testid="project-retail-space"
+                    >
+                        <div class="project-type" data-testid="type-retail">
+                            Commercial Project
+                        </div>
+                        <div class="project-image" data-testid="image-retail">
+                            Retail Construction Photo
+                        </div>
+                        <h3 class="project-title" data-testid="title-retail">
+                            Retail Space Construction
+                        </h3>
+                        <p
+                            class="project-description"
+                            data-testid="description-retail"
+                        >
+                            Ground-up retail construction with storefront design
+                            and interior build-out
+                        </p>
+                    </div>
+
+                    <div
+                        class="project-card"
+                        data-testid="project-home-addition"
+                    >
+                        <div class="project-type" data-testid="type-addition">
+                            Residential Project
+                        </div>
+                        <div class="project-image" data-testid="image-addition">
+                            Home Addition Photo
+                        </div>
+                        <h3 class="project-title" data-testid="title-addition">
+                            {{city_name}} Home Addition
+                        </h3>
+                        <p
+                            class="project-description"
+                            data-testid="description-addition"
+                        >
+                            Beautiful family room addition with seamless
+                            integration to existing home structure
+                        </p>
+                    </div>
+
+                    <div
+                        class="project-card"
+                        data-testid="project-commercial-warehouse"
+                    >
+                        <div class="project-type" data-testid="type-warehouse">
+                            Commercial Project
+                        </div>
+                        <div
+                            class="project-image"
+                            data-testid="image-warehouse"
+                        >
+                            Warehouse Modification Photo
+                        </div>
+                        <h3 class="project-title" data-testid="title-warehouse">
+                            Warehouse Modification
+                        </h3>
+                        <p
+                            class="project-description"
+                            data-testid="description-warehouse"
+                        >
+                            Industrial facility improvements with enhanced
+                            safety features and operational efficiency
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Choose Section -->
+        <section class="why-choose" data-testid="section-why-choose">
+            <div class="container">
+                <h2 class="section-title" data-testid="heading-why-choose">
+                    Why Choose Clear Home for General Contracting?
+                </h2>
+
+                <div class="benefits-grid">
+                    <div class="benefit-item" data-testid="benefit-experience">
+                        <div class="benefit-icon" data-testid="icon-experience">
+                            <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h3 data-testid="title-experience">
+                                20+ Years of {{city_name}} Experience
+                            </h3>
+                            <p data-testid="description-experience">
+                                Deep understanding of local building codes,
+                                permit requirements, and contractor networks.
+                                Our long-standing relationships ensure smooth
+                                project execution and competitive pricing.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="benefit-item"
+                        data-testid="benefit-project-management"
+                    >
+                        <div
+                            class="benefit-icon"
+                            data-testid="icon-project-management"
+                        >
+                            <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    d="M9 11H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-2M9 11V9a2 2 0 1 1 4 0v2M9 11h6"
+                                />
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h3 data-testid="title-project-management">
+                                Complete Project Management
+                            </h3>
+                            <p data-testid="description-project-management">
+                                Single point of contact for your entire project.
+                                We coordinate all trades, manage timelines,
+                                handle permits, and ensure quality control from
+                                start to finish.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="benefit-item" data-testid="benefit-licensed">
+                        <div class="benefit-icon" data-testid="icon-licensed">
+                            <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+                                />
+                                <path d="M9 12l2 2 4-4" />
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h3 data-testid="title-licensed">
+                                Licensed & Insured Protection
+                            </h3>
+                            <p data-testid="description-licensed">
+                                Full Louisiana contractor licensing with
+                                comprehensive liability and workers'
+                                compensation insurance. Bonded for your complete
+                                protection and peace of mind.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="benefit-item" data-testid="benefit-quality">
+                        <div class="benefit-icon" data-testid="icon-quality">
+                            <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <polygon
+                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                                />
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h3 data-testid="title-quality">
+                                Quality Materials & Craftsmanship
+                            </h3>
+                            <p data-testid="description-quality">
+                                Premium materials from trusted suppliers
+                                combined with skilled tradesmen who take pride
+                                in their work. Every project built to last with
+                                attention to detail.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="benefit-item"
+                        data-testid="benefit-communication"
+                    >
+                        <div
+                            class="benefit-icon"
+                            data-testid="icon-communication"
+                        >
+                            <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                                />
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h3 data-testid="title-communication">
+                                Transparent Communication
+                            </h3>
+                            <p data-testid="description-communication">
+                                Regular project updates, clear timelines, and
+                                honest pricing. No surprises or hidden costs -
+                                just professional service and quality results.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="benefit-item" data-testid="benefit-reputation">
+                        <div class="benefit-icon" data-testid="icon-reputation">
+                            <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+                                />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                        </div>
+                        <div class="benefit-content">
+                            <h3 data-testid="title-reputation">
+                                Local Reputation & References
+                            </h3>
+                            <p data-testid="description-reputation">
+                                Hundreds of satisfied {{city_name}} customers
+                                and strong community relationships. Check our
+                                reviews and see our work throughout your
+                                neighborhood.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Areas -->
+        <section class="service-areas" data-testid="section-service-areas">
+            <div class="container">
+                <h2 class="section-title" data-testid="heading-service-areas">
+                    Service Areas Throughout Southeast Louisiana
+                </h2>
+
+                <div class="areas-content">
+                    <div class="areas-list">
+                        <div class="area-group" data-testid="group-primary">
+                            <h3 data-testid="title-primary">
+                                Primary Service Areas
+                            </h3>
+                            <p class="area-cities" data-testid="cities-primary">
+                                {{city_name}} • New Orleans • Metairie • Kenner
+                                • Slidell
+                            </p>
+                        </div>
+
+                        <div class="area-group" data-testid="group-extended">
+                            <h3 data-testid="title-extended">
+                                Extended Service Areas
+                            </h3>
+                            <p
+                                class="area-cities"
+                                data-testid="cities-extended"
+                            >
+                                Laplace • Arabi • Chalmette • Algiers • Gretna •
+                                Harvey • Terrytown • Belle Chasse • Marrero •
+                                Covington • Mandeville • Madisonville • Hammond
+                                • Ponchatoula
+                            </p>
+                        </div>
+
+                        <p data-testid="note-availability">
+                            <em
+                                >Contact us to confirm service availability in
+                                your specific location</em
+                            >
+                        </p>
+                    </div>
+
+                    <div class="map-placeholder" data-testid="map-service-area">
+                        Interactive Map of {{city_name}} Service Area
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="testimonials" data-testid="section-testimonials">
+            <div class="container">
+                <h2 class="section-title" data-testid="heading-testimonials">
+                    Customer Reviews & Testimonials
+                </h2>
+
+                <div class="testimonials-grid">
+                    <div
+                        class="testimonial-card"
+                        data-testid="testimonial-sarah"
+                    >
+                        <h4 class="testimonial-title" data-testid="title-sarah">
+                            Exceptional Work and Communication
+                        </h4>
+                        <p class="testimonial-text" data-testid="text-sarah">
+                            Clear Home transformed our {{city_name}} home with a
+                            complete renovation. Their project management was
+                            outstanding, and the quality exceeded our
+                            expectations. Highly recommended for any general
+                            contracting needs.
+                        </p>
+                        <div
+                            class="testimonial-author"
+                            data-testid="author-sarah"
+                        >
+                            Sarah M., {{city_name}} Homeowner
+                        </div>
+                        <div class="testimonial-role" data-testid="role-sarah">
+                            Complete Home Renovation
+                        </div>
+                    </div>
+
+                    <div
+                        class="testimonial-card"
+                        data-testid="testimonial-michael"
+                    >
+                        <h4
+                            class="testimonial-title"
+                            data-testid="title-michael"
+                        >
+                            Professional and Reliable
+                        </h4>
+                        <p class="testimonial-text" data-testid="text-michael">
+                            From initial consultation through final walkthrough,
+                            Clear Home demonstrated professionalism and
+                            expertise. Our commercial build-out was completed on
+                            time and within budget.
+                        </p>
+                        <div
+                            class="testimonial-author"
+                            data-testid="author-michael"
+                        >
+                            Michael R., Business Owner
+                        </div>
+                        <div
+                            class="testimonial-role"
+                            data-testid="role-michael"
+                        >
+                            Commercial Build-Out
+                        </div>
+                    </div>
+
+                    <div
+                        class="testimonial-card"
+                        data-testid="testimonial-jennifer"
+                    >
+                        <h4
+                            class="testimonial-title"
+                            data-testid="title-jennifer"
+                        >
+                            Outstanding Customer Service
+                        </h4>
+                        <p class="testimonial-text" data-testid="text-jennifer">
+                            The Clear Home team was responsive, communicative,
+                            and delivered exactly what they promised. Our home
+                            addition is beautiful and the workmanship is
+                            top-notch.
+                        </p>
+                        <div
+                            class="testimonial-author"
+                            data-testid="author-jennifer"
+                        >
+                            Jennifer L., {{city_name}} Resident
+                        </div>
+                        <div
+                            class="testimonial-role"
+                            data-testid="role-jennifer"
+                        >
+                            Home Addition Project
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Financing Section -->
+        <section class="financing-section" data-testid="section-financing">
+            <div class="container">
+                <h2 class="section-title" data-testid="heading-financing">
+                    Financing Options Available
+                </h2>
+
+                <div class="financing-content">
+                    <div class="financing-block" data-testid="block-financing">
+                        <h3 data-testid="title-financing-programs">
+                            In-House Financing Programs
+                        </h3>
+                        <ul class="financing-list">
+                            <li data-testid="financing-no-money-down">
+                                No Money Down options available
+                            </li>
+                            <li data-testid="financing-payment-plans">
+                                Flexible Payment Plans to fit your budget
+                            </li>
+                            <li data-testid="financing-interest-rates">
+                                Competitive Interest Rates with quick approval
+                            </li>
+                            <li data-testid="financing-same-day">
+                                Same-Day Financing decisions for qualified
+                                applicants
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="financing-block" data-testid="block-insurance">
+                        <h3 data-testid="title-insurance-assistance">
+                            Insurance Claim Assistance
+                        </h3>
+                        <p data-testid="description-insurance-assistance">
+                            Expert help navigating insurance claims for storm
+                            damage and covered repairs. We work directly with
+                            insurance adjusters to ensure proper coverage and
+                            timely claim resolution.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section class="final-cta" data-testid="section-final-cta">
+            <div class="container">
+                <div class="cta-content">
+                    <h2 data-testid="heading-final-cta">
+                        Ready to Transform Your {{city_name}} Property?
+                    </h2>
+                    <p
+                        class="cta-description"
+                        data-testid="description-final-cta"
+                    >
+                        Contact Clear Home today for your free consultation and
+                        detailed project estimate. Our experienced team is ready
+                        to bring your vision to life with professional
+                        craftsmanship and exceptional service.
+                    </p>
+
+                    <div
+                        class="cta-contact"
+                        data-testid="container-cta-contact"
+                    >
+                        <div class="contact-item" data-testid="contact-phone">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+                                />
+                            </svg>
+                            <span data-testid="text-phone"
+                                >{{company_phone}}</span
+                            >
+                        </div>
+
+                        <div class="contact-item" data-testid="contact-email">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                                />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                            <span data-testid="text-email"
+                                >admin@clearhome.pro</span
+                            >
+                        </div>
+                    </div>
+
+                    <a
+                        href="#quote-form"
+                        class="cta-form-link"
+                        data-testid="button-request-estimate"
+                        >REQUEST YOUR FREE ESTIMATE</a
+                    >
+                </div>
+            </div>
+        </section>
+
+        <!-- JSON-LD Schema -->
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "LocalBusiness",
+                "name": "Clear Home - {{city_name}} General Contracting",
+                "description": "Professional general contracting services for residential and commercial projects in {{city_name}}",
+                "telephone": "{{company_phone}}",
+                "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": "900 Camp Street, 3rd Floor",
+                    "addressLocality": "New Orleans",
+                    "addressRegion": "LA",
+                    "postalCode": "70130"
+                },
+                "geo": {
+                    "latitude": "{{city_latitude}}",
+                    "longitude": "{{city_longitude}}"
+                },
+                "serviceArea": "{{city_name}}, Louisiana",
+                "services": [
+                    "General Contracting",
+                    "Home Renovation",
+                    "Commercial Construction",
+                    "Storm Damage Reconstruction"
+                ],
+                "hasOfferCatalog": {
+                    "@type": "OfferCatalog",
+                    "name": "General Contracting Services",
+                    "itemListElement": [
+                        {
+                            "@type": "Offer",
+                            "itemOffered": {
+                                "@type": "Service",
+                                "name": "Residential General Contracting",
+                                "description": "Complete home renovations, additions, and remodeling services for {{city_name}} homeowners."
+                            }
+                        },
+                        {
+                            "@type": "Offer",
+                            "itemOffered": {
+                                "@type": "Service",
+                                "name": "Commercial General Contracting",
+                                "description": "Professional commercial construction and build-out services for {{city_name}} businesses."
+                            }
+                        },
+                        {
+                            "@type": "Offer",
+                            "itemOffered": {
+                                "@type": "Service",
+                                "name": "Historic Property Restoration",
+                                "description": "Specialized restoration services for {{city_name}}'s historic properties combining preservation with modern standards."
+                            }
+                        }
+                    ]
+                },
+                "potentialAction": {
+                    "@type": "ReserveAction",
+                    "target": {
+                        "@type": "EntryPoint",
+                        "urlTemplate": "tel:{{company_phone}}",
+                        "inLanguage": "en"
+                    },
+                    "result": {
+                        "@type": "Reservation",
+                        "name": "Free General Contracting Consultation"
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="en" data-testid="html-element">
+<head data-testid="head-element">
+    <meta charset="UTF-8" data-testid="charset-meta">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" data-testid="viewport-meta">
+    <title data-testid="title-element">Skylight Installation {{city_name}} | Clear Home Experts</title>
+    <meta name="description" content="Professional skylight installation in {{city_name}}. Natural light solutions, energy-efficient designs, expert installation. Free quotes. Call (504) 460-8131." data-testid="description-meta">
+    <meta name="keywords" content="skylight installation {{city_name}}, skylight installer {{city_name}}, natural light solutions {{city_name}}, residential skylight installation {{city_name}}" data-testid="keywords-meta">
+    
+    <!-- Schema Markup -->
+    <script type="application/ld+json" data-testid="schema-local-business">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Clear Home Roofing & Restoration",
+        "image": "https://clearhomeroofing.com/images/logo.jpg",
+        "@id": "https://clearhomeroofing.com",
+        "url": "https://clearhomeroofing.com",
+        "telephone": "{{company_phone}}",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "{{company_address}}",
+            "addressLocality": "{{city_name}}",
+            "addressRegion": "LA",
+            "postalCode": "{{zip_code}}",
+            "addressCountry": "US"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "{{latitude}}",
+            "longitude": "{{longitude}}"
+        },
+        "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+                "Monday",
+                "Tuesday", 
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ],
+            "opens": "07:00",
+            "closes": "18:00"
+        },
+        "sameAs": [
+            "{{facebook_url}}",
+            "{{google_business_url}}"
+        ]
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-service">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "Skylight Installation",
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "Clear Home Roofing & Restoration",
+            "areaServed": "{{city_name}}, Louisiana"
+        },
+        "offers": {
+            "@type": "Offer",
+            "availability": "https://schema.org/InStock",
+            "price": "Contact for Quote",
+            "priceCurrency": "USD"
+        },
+        "description": "Professional skylight installation services in {{city_name}}. Natural light solutions, energy-efficient installations, custom designs."
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-breadcrumb">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://clearhomeroofing.com"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Services",
+                "item": "https://clearhomeroofing.com/services"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Skylight Installation",
+                "item": "https://clearhomeroofing.com/services/skylight-installation-{{city_slug}}"
+            }
+        ]
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-faq">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "How long does skylight installation take?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Most residential skylight installations are completed in 1-2 days, depending on the complexity and number of units. We work efficiently to minimize disruption to your home."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Will a skylight cause leaks?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "When properly installed by professionals like Clear Home, skylights are completely weatherproof. We use proven flashing techniques and high-quality materials to ensure leak-free performance."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can skylights be installed in any room?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Most rooms can accommodate skylights, including bathrooms, kitchens, living areas, and bedrooms. Our experts assess your roof structure and recommend the best solutions."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How much does skylight installation cost?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Costs vary based on skylight type, size, and installation complexity. Contact us for a free consultation and detailed quote for your specific project."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Are skylights energy efficient?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Modern skylights with Low-E glass and proper installation can actually improve home energy efficiency by reducing artificial lighting needs and providing natural ventilation."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What's the maintenance requirement?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Skylights require minimal maintenance. We recommend annual inspection and cleaning. Venting skylights may need occasional lubrication of moving parts."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <style data-testid="style-element">
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #1A202C;
+            background-color: #FFFFFF;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI2MDAiIHZpZXdCb3g9IjAgMCAxMjAwIDYwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjAwIiBmaWxsPSIjRjdGQUZDIi8+Cjx0ZXh0IHg9IjYwMCIgeT0iMzAwIiBmaWxsPSIjMkI2Q0IwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjI0Ij5Ta3lsaWdodCBJbnN0YWxsYXRpb24gSGVybzwvdGV4dD4KPHN2Zz4=');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 100px 0;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 60% 40%;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 24px;
+            margin-bottom: 20px;
+            line-height: 1.3;
+            font-weight: 600;
+        }
+
+        .hero-description {
+            font-size: 18px;
+            margin-bottom: 32px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .cta-primary {
+            background: #2B6CB0;
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-primary:hover {
+            background: #1E40AF;
+            transform: translateY(-2px);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: white;
+            padding: 16px 32px;
+            border: 2px solid white;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-secondary:hover {
+            background: white;
+            color: #2B6CB0;
+        }
+
+        /* Hero Form */
+        .hero-form {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            color: #1A202C;
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1A202C;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #2B6CB0;
+        }
+
+        .form-submit {
+            width: 100%;
+            background: #2B6CB0;
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .form-submit:hover {
+            background: #1E40AF;
+            transform: translateY(-2px);
+        }
+
+        /* Trust Indicators */
+        .trust-indicators {
+            padding: 40px 0;
+            background: #F7FAFC;
+        }
+
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            text-align: center;
+        }
+
+        .trust-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .trust-icon {
+            width: 80px;
+            height: 80px;
+            background: #2B6CB0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .trust-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2D3748;
+            margin-bottom: 8px;
+        }
+
+        .trust-text {
+            font-size: 16px;
+            color: #2D3748;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 80px 0;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 70% 30%;
+            gap: 60px;
+        }
+
+        .content-area h2 {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 24px;
+        }
+
+        .content-area p {
+            font-size: 18px;
+            color: #4A5568;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        /* Skylight Types */
+        .skylight-types {
+            padding: 60px 0;
+            background: #F7FAFC;
+        }
+
+        .types-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            margin-top: 40px;
+        }
+
+        .type-card {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            border: 1px solid #EDF2F7;
+            transition: all 0.3s;
+        }
+
+        .type-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .type-icon {
+            width: 80px;
+            height: 80px;
+            background: #2B6CB0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .type-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #2D3748;
+            margin-bottom: 12px;
+        }
+
+        .type-description {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.6;
+        }
+
+        /* Benefits Section */
+        .benefits {
+            padding: 80px 0;
+        }
+
+        .benefit-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-bottom: 80px;
+        }
+
+        .benefit-item:nth-child(even) .benefit-content {
+            order: 2;
+        }
+
+        .benefit-item:nth-child(even) .benefit-image {
+            order: 1;
+        }
+
+        .benefit-image {
+            height: 350px;
+            background: #E5E7EB;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6B7280;
+            font-size: 16px;
+        }
+
+        .benefit-content h3 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2D3748;
+            margin-bottom: 16px;
+        }
+
+        .benefit-content p {
+            font-size: 18px;
+            color: #4A5568;
+            line-height: 1.6;
+        }
+
+        /* Installation Process */
+        .installation-process {
+            padding: 80px 0;
+            background: #F7FAFC;
+        }
+
+        .process-steps {
+            max-width: 1000px;
+            margin: 60px auto 0;
+        }
+
+        .process-step {
+            background: #EDF2F7;
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: #2B6CB0;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #2D3748;
+            margin-bottom: 12px;
+        }
+
+        .step-content p {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.6;
+        }
+
+        /* Technical Specs */
+        .technical-specs {
+            padding: 60px 0;
+        }
+
+        .specs-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            margin-top: 40px;
+        }
+
+        .spec-item {
+            padding: 24px;
+            background: #F7FAFC;
+            border-radius: 8px;
+            border-left: 4px solid #2B6CB0;
+        }
+
+        .spec-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2D3748;
+            margin-bottom: 8px;
+        }
+
+        .spec-description {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.5;
+        }
+
+        /* Local Expertise */
+        .local-expertise {
+            padding: 60px 0;
+            background: #F7FAFC;
+        }
+
+        .expertise-list {
+            list-style: none;
+            margin-top: 24px;
+        }
+
+        .expertise-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 18px;
+            color: #4A5568;
+        }
+
+        .expertise-list li::before {
+            content: "YES";
+            background: #10B981;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* FAQ Section */
+        .faq {
+            padding: 80px 0;
+        }
+
+        .faq-list {
+            max-width: 800px;
+            margin: 60px auto 0;
+        }
+
+        .faq-item {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .faq-question {
+            padding: 24px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1A202C;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .faq-answer {
+            padding: 24px;
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.6;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: sticky;
+            top: 20px;
+        }
+
+        .sidebar-card {
+            background: #2B6CB0;
+            color: white;
+            padding: 32px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .sidebar-card h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-phone {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: block;
+            color: white;
+            text-decoration: none;
+        }
+
+        .sidebar-phone:hover {
+            text-decoration: underline;
+        }
+
+        .sidebar-cta {
+            background: white;
+            color: #2B6CB0;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 16px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .sidebar-cta:hover {
+            background: #F7FAFC;
+        }
+
+        .sidebar-hours {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .service-areas {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .service-areas h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2D3748;
+            margin-bottom: 16px;
+        }
+
+        .areas-list {
+            list-style: none;
+        }
+
+        .areas-list li {
+            padding: 8px 0;
+            font-size: 16px;
+            color: #4A5568;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .areas-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* Final CTA */
+        .final-cta {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #2B6CB0, #1E40AF);
+            color: white;
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 24px;
+        }
+
+        .final-cta-text {
+            font-size: 20px;
+            margin-bottom: 32px;
+            opacity: 0.95;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .final-cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-white {
+            background: white;
+            color: #2B6CB0;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-white:hover {
+            background: #F7FAFC;
+            transform: translateY(-2px);
+        }
+
+        .cta-outline {
+            background: transparent;
+            color: white;
+            padding: 16px 32px;
+            border: 2px solid white;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .cta-outline:hover {
+            background: white;
+            color: #2B6CB0;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 80px 0;
+            background: #F7FAFC;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+            margin: 60px auto 0;
+        }
+
+        .testimonial-quote {
+            font-size: 18px;
+            font-style: italic;
+            color: #4A5568;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .testimonial-author {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2D3748;
+            margin-bottom: 8px;
+        }
+
+        .testimonial-location {
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 16px;
+        }
+
+        .testimonial-stars {
+            color: #F59E0B;
+            font-size: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .hero-content h1 {
+                font-size: 36px;
+            }
+
+            .hero-subtitle {
+                font-size: 20px;
+            }
+
+            .trust-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .types-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .benefit-item {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .benefit-item:nth-child(even) .benefit-content,
+            .benefit-item:nth-child(even) .benefit-image {
+                order: unset;
+            }
+
+            .specs-list {
+                grid-template-columns: 1fr;
+            }
+
+            .process-step {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .final-cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 28px;
+            }
+
+            .trust-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .trust-icon {
+                width: 60px;
+            }
+
+            .sidebar {
+                position: static;
+                margin-top: 40px;
+            }
+        }
+    </style>
+</head>
+<body data-testid="body-element">
+
+    <!-- Hero Section -->
+    <section class="hero" data-testid="section-hero">
+        <div class="container" data-testid="hero-container">
+            <div class="hero-grid" data-testid="hero-grid">
+                <div class="hero-content" data-testid="hero-content">
+                    <h1 data-testid="heading-main">
+                        <span data-testid="text-hero-professional">Professional</span> 
+                        <span data-testid="text-hero-skylight">Skylight</span> 
+                        <span data-testid="text-hero-installation">Installation</span> 
+                        <span data-testid="text-hero-in">in</span> 
+                        <span data-testid="text-hero-city">{{city_name}}</span>
+                    </h1>
+                    
+                    <h2 class="hero-subtitle" data-testid="subtitle-hero">
+                        <span data-testid="text-subtitle-transform">Transform</span> 
+                        <span data-testid="text-subtitle-your">Your</span> 
+                        <span data-testid="text-subtitle-space">Space</span> 
+                        <span data-testid="text-subtitle-with">with</span> 
+                        <span data-testid="text-subtitle-natural">Natural</span> 
+                        <span data-testid="text-subtitle-light">Light</span> 
+                        <span data-testid="text-subtitle-dash">-</span> 
+                        <span data-testid="text-subtitle-expert">Expert</span> 
+                        <span data-testid="text-subtitle-installation">Installation,</span> 
+                        <span data-testid="text-subtitle-energy">Energy-Efficient</span> 
+                        <span data-testid="text-subtitle-solutions">Solutions</span>
+                    </h2>
+                    
+                    <p class="hero-description" data-testid="description-hero-skylight-benefits">
+                        Bring the beauty of natural light into your {{city_name}} home with professional skylight installation from Clear Home. Enhance living spaces while improving energy efficiency.
+                    </p>
+                    
+                    <div class="hero-ctas" data-testid="hero-ctas">
+                        <button class="cta-primary" data-testid="cta-hero-consultation">
+                            Schedule Free Consultation
+                        </button>
+                        <a href="tel:{{company_phone}}" class="cta-secondary" data-testid="cta-hero-phone">
+                            Call {{company_phone}}
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="hero-form" data-testid="hero-form">
+                    <h3 class="form-title" data-testid="form-title-skylight-quote">
+                        Get Your Free Skylight Quote
+                    </h3>
+                    
+                    <form action="/submit-skylight-quote" method="POST" data-testid="quote-form">
+                        <div class="form-group" data-testid="form-group-name">
+                            <label for="name" class="form-label" data-testid="label-name">Name *</label>
+                            <input type="text" id="name" name="name" class="form-input" data-testid="input-name" required>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-phone">
+                            <label for="phone" class="form-label" data-testid="label-phone">Phone *</label>
+                            <input type="tel" id="phone" name="phone" class="form-input" data-testid="input-phone" required>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-email">
+                            <label for="email" class="form-label" data-testid="label-email">Email</label>
+                            <input type="email" id="email" name="email" class="form-input" data-testid="input-email">
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-property">
+                            <label for="property-type" class="form-label" data-testid="label-property">Property Type</label>
+                            <select id="property-type" name="property_type" class="form-select" data-testid="select-property">
+                                <option value="" data-testid="option-select">Select Property Type</option>
+                                <option value="single-family" data-testid="option-single">Single Family Home</option>
+                                <option value="townhouse" data-testid="option-townhouse">Townhouse</option>
+                                <option value="condo" data-testid="option-condo">Condominium</option>
+                                <option value="commercial" data-testid="option-commercial">Commercial</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-time">
+                            <label for="best-time" class="form-label" data-testid="label-time">Best Time to Call</label>
+                            <select id="best-time" name="best_time" class="form-select" data-testid="select-time">
+                                <option value="" data-testid="option-select-time">Select Best Time</option>
+                                <option value="morning" data-testid="option-morning">Morning (8AM-12PM)</option>
+                                <option value="afternoon" data-testid="option-afternoon">Afternoon (12PM-5PM)</option>
+                                <option value="evening" data-testid="option-evening">Evening (5PM-8PM)</option>
+                                <option value="anytime" data-testid="option-anytime">Anytime</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="form-submit" data-testid="submit-skylight-consultation">
+                            Request Consultation
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Indicators -->
+    <section class="trust-indicators" data-testid="section-trust">
+        <div class="container" data-testid="trust-container">
+            <div class="trust-grid" data-testid="trust-grid">
+                <div class="trust-item" data-testid="trust-experience">
+                    <div class="trust-icon" data-testid="icon-experience">AWARD</div>
+                    <div class="trust-number" data-testid="number-twenty-years">
+                        20+
+                    </div>
+                    <div class="trust-text" data-testid="text-years-experience">
+                        Years Experience
+                    </div>
+                </div>
+                
+                <div class="trust-item" data-testid="trust-licensed">
+                    <div class="trust-icon" data-testid="icon-licensed">SHIELD</div>
+                    <div class="trust-number" data-testid="number-license">
+                        LIC
+                    </div>
+                    <div class="trust-text" data-testid="text-licensed-insured">
+                        Licensed &amp; Insured
+                    </div>
+                </div>
+                
+                <div class="trust-item" data-testid="trust-warranty">
+                    <div class="trust-icon" data-testid="icon-warranty">DOC</div>
+                    <div class="trust-number" data-testid="number-protection">
+                        PROT
+                    </div>
+                    <div class="trust-text" data-testid="text-warranty-protection">
+                        Warranty Protected
+                    </div>
+                </div>
+                
+                <div class="trust-item" data-testid="trust-local">
+                    <div class="trust-icon" data-testid="icon-local">LOC</div>
+                    <div class="trust-number" data-testid="number-local-experts">
+                        LOCAL
+                    </div>
+                    <div class="trust-text" data-testid="text-city-experts">
+                        {{city_name}} Experts
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="main-content" data-testid="section-main">
+        <div class="container" data-testid="main-container">
+            <div class="content-grid" data-testid="content-grid">
+                <div class="content-area" data-testid="content-area">
+                    <h2 data-testid="title-skylight-services-city">
+                        Skylight Installation Services in {{city_name}}
+                    </h2>
+                    
+                    <p data-testid="intro-skylight-expertise">
+                        Natural light can transform any room in your {{city_name}} home. Clear Home's professional skylight installation service brings expertise gained over 20+ years to every project. We handle everything from initial consultation to final installation.
+                    </p>
+                </div>
+                
+                <div class="sidebar" data-testid="sidebar">
+                    <div class="sidebar-card" data-testid="sidebar-card">
+                        <h3 data-testid="title-sidebar-ready-light">
+                            Ready for Natural Light?
+                        </h3>
+                        <a href="tel:{{company_phone}}" class="sidebar-phone" data-testid="sidebar-phone">{{company_phone}}</a>
+                        <a href="#contact" class="sidebar-cta" data-testid="cta-sidebar-schedule">
+                            Schedule Consultation
+                        </a>
+                        <div class="sidebar-hours" data-testid="text-availability-hours">
+                            Available 7 Days/Week
+                        </div>
+                    </div>
+                    
+                    <div class="service-areas" data-testid="service-areas">
+                        <h3 data-testid="title-service-areas-city">
+                            Serving {{city_name}} &amp; Surrounding Areas
+                        </h3>
+                        <ul class="areas-list" data-testid="areas-list">
+                            <li data-testid="area-new-orleans">New Orleans Metro</li>
+                            <li data-testid="area-metairie">Metairie</li>
+                            <li data-testid="area-kenner">Kenner</li>
+                            <li data-testid="area-slidell">Slidell</li>
+                            <li data-testid="area-mandeville">Mandeville</li>
+                            <li data-testid="area-covington">Covington</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skylight Types -->
+    <section class="skylight-types" data-testid="section-types">
+        <div class="container" data-testid="types-container">
+            <h2 data-testid="title-skylight-types-offered">
+                Types of Skylights We Install
+            </h2>
+            
+            <div class="types-grid" data-testid="types-grid">
+                <div class="type-card" data-testid="type-fixed">
+                    <div class="type-icon" data-testid="icon-fixed">WIN</div>
+                    <h3 class="type-title" data-testid="title-fixed-skylight-type">
+                        Fixed Skylights
+                    </h3>
+                    <p class="type-description" data-testid="description-fixed">
+                        <span data-testid="non">Non-opening</span> 
+                        <span data-testid="units">units</span> 
+                        <span data-testid="perfect">perfect</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="bringing">bringing</span> 
+                        <span data-testid="natural">natural</span> 
+                        <span data-testid="light">light</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="dark">dark</span> 
+                        <span data-testid="spaces">spaces.</span> 
+                        <span data-testid="energy">Energy-efficient</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="weather">weather-tight</span> 
+                        <span data-testid="installation">installation.</span>
+                    </p>
+                </div>
+                
+                <div class="type-card" data-testid="type-venting">
+                    <div class="type-icon" data-testid="icon-venting">VENT</div>
+                    <h3 class="type-title" data-testid="title-venting-skylight-type">
+                        Venting Skylights
+                    </h3>
+                    <p class="type-description" data-testid="description-venting">
+                        <span data-testid="operable">Operable</span> 
+                        <span data-testid="units">units</span> 
+                        <span data-testid="that">that</span> 
+                        <span data-testid="provide">provide</span> 
+                        <span data-testid="ventilation">ventilation</span> 
+                        <span data-testid="along">along</span> 
+                        <span data-testid="with">with</span> 
+                        <span data-testid="natural">natural</span> 
+                        <span data-testid="light">light.</span> 
+                        <span data-testid="manual">Manual</span> 
+                        <span data-testid="or">or</span> 
+                        <span data-testid="remote">remote-controlled</span> 
+                        <span data-testid="options">options</span> 
+                        <span data-testid="available">available.</span>
+                    </p>
+                </div>
+                
+                <div class="type-card" data-testid="type-tubular">
+                    <div class="type-icon" data-testid="icon-tubular">TUBE</div>
+                    <h3 class="type-title" data-testid="title-tubular-skylight-type">
+                        Tubular Skylights
+                    </h3>
+                    <p class="type-description" data-testid="description-tubular">
+                        <span data-testid="compact">Compact</span> 
+                        <span data-testid="solution">solution</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="smaller">smaller</span> 
+                        <span data-testid="spaces">spaces.</span> 
+                        <span data-testid="reflects">Reflects</span> 
+                        <span data-testid="natural">natural</span> 
+                        <span data-testid="light">light</span> 
+                        <span data-testid="through">through</span> 
+                        <span data-testid="reflective">reflective</span> 
+                        <span data-testid="tubing">tubing</span> 
+                        <span data-testid="into">into</span> 
+                        <span data-testid="interior">interior</span> 
+                        <span data-testid="rooms">rooms.</span>
+                    </p>
+                </div>
+                
+                <div class="type-card" data-testid="type-custom">
+                    <div class="type-icon" data-testid="icon-custom">RULER</div>
+                    <h3 class="type-title" data-testid="title-custom-skylight-type">
+                        Custom Skylights
+                    </h3>
+                    <p class="type-description" data-testid="description-custom">
+                        <span data-testid="specialized">Specialized</span> 
+                        <span data-testid="shapes">shapes</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="sizes">sizes</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="unique">unique</span> 
+                        <span data-testid="architectural">architectural</span> 
+                        <span data-testid="requirements">requirements</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="design">design</span> 
+                        <span data-testid="visions">visions.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits" data-testid="section-benefits">
+        <div class="container" data-testid="benefits-container">
+            <h2 data-testid="title-skylight-benefits-city">
+                Why Install Skylights in Your {{city_name}} Home?
+            </h2>
+            
+            <div class="benefit-item" data-testid="benefit-natural-light">
+                <div class="benefit-content" data-testid="content-natural-light">
+                    <h3 data-testid="title-benefit-natural-light">
+                        Natural Light Enhancement
+                    </h3>
+                    <p data-testid="description-natural-light">
+                        <span data-testid="reduce">Reduce</span> 
+                        <span data-testid="dependence">dependence</span> 
+                        <span data-testid="on">on</span> 
+                        <span data-testid="artificial">artificial</span> 
+                        <span data-testid="lighting">lighting</span> 
+                        <span data-testid="during">during</span> 
+                        <span data-testid="daylight">daylight</span> 
+                        <span data-testid="hours">hours.</span> 
+                        <span data-testid="skylights">Skylights</span> 
+                        <span data-testid="can">can</span> 
+                        <span data-testid="brighten">brighten</span> 
+                        <span data-testid="spaces">spaces</span> 
+                        <span data-testid="by">by</span> 
+                        <span data-testid="up">up</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="thirty">30%,</span> 
+                        <span data-testid="creating">creating</span> 
+                        <span data-testid="healthier">healthier,</span> 
+                        <span data-testid="more">more</span> 
+                        <span data-testid="inviting">inviting</span> 
+                        <span data-testid="living">living</span> 
+                        <span data-testid="environments">environments.</span>
+                    </p>
+                </div>
+                <div class="benefit-image" data-testid="image-natural-light">
+                    <span data-testid="image-text-natural">Room flooded with natural skylight</span>
+                </div>
+            </div>
+            
+            <div class="benefit-item" data-testid="benefit-energy">
+                <div class="benefit-content" data-testid="content-energy">
+                    <h3 data-testid="title-benefit-energy-efficiency">
+                        Energy Efficiency
+                    </h3>
+                    <p data-testid="description-energy">
+                        <span data-testid="modern">Modern</span> 
+                        <span data-testid="skylights">skylights</span> 
+                        <span data-testid="feature">feature</span> 
+                        <span data-testid="low">Low-E</span> 
+                        <span data-testid="glass">glass</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="insulated">insulated</span> 
+                        <span data-testid="frames">frames</span> 
+                        <span data-testid="that">that</span> 
+                        <span data-testid="improve">improve</span> 
+                        <span data-testid="home">home</span> 
+                        <span data-testid="energy">energy</span> 
+                        <span data-testid="efficiency">efficiency.</span> 
+                        <span data-testid="reduce">Reduce</span> 
+                        <span data-testid="heating">heating</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="cooling">cooling</span> 
+                        <span data-testid="costs">costs</span> 
+                        <span data-testid="while">while</span> 
+                        <span data-testid="maximizing">maximizing</span> 
+                        <span data-testid="natural">natural</span> 
+                        <span data-testid="light">light.</span>
+                    </p>
+                </div>
+                <div class="benefit-image" data-testid="image-energy">
+                    <span data-testid="image-text-energy">Energy-efficient skylight cross-section</span>
+                </div>
+            </div>
+            
+            <div class="benefit-item" data-testid="benefit-value">
+                <div class="benefit-content" data-testid="content-value">
+                    <h3 data-testid="title-benefit-property-value">
+                        Property Value
+                    </h3>
+                    <p data-testid="description-value">
+                        <span data-testid="professional">Professional</span> 
+                        <span data-testid="skylight">skylight</span> 
+                        <span data-testid="installation">installation</span> 
+                        <span data-testid="can">can</span> 
+                        <span data-testid="increase">increase</span> 
+                        <span data-testid="your">your</span> 
+                        <span data-testid="home">home's</span> 
+                        <span data-testid="market">market</span> 
+                        <span data-testid="value">value</span> 
+                        <span data-testid="by">by</span> 
+                        <span data-testid="five">5-10%.</span> 
+                        <span data-testid="buyers">Buyers</span> 
+                        <span data-testid="appreciate">appreciate</span> 
+                        <span data-testid="aesthetic">aesthetic</span> 
+                        <span data-testid="appeal">appeal</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="energy">energy-saving</span> 
+                        <span data-testid="benefits">benefits.</span>
+                    </p>
+                </div>
+                <div class="benefit-image" data-testid="image-value">
+                    <span data-testid="image-text-value">Beautiful modern home with skylights</span>
+                </div>
+            </div>
+            
+            <div class="benefit-item" data-testid="benefit-health">
+                <div class="benefit-content" data-testid="content-health">
+                    <h3 data-testid="title-benefit-health-wellbeing">
+                        Health &amp; Wellbeing
+                    </h3>
+                    <p data-testid="description-health">
+                        <span data-testid="natural">Natural</span> 
+                        <span data-testid="light">light</span> 
+                        <span data-testid="exposure">exposure</span> 
+                        <span data-testid="improves">improves</span> 
+                        <span data-testid="mood">mood,</span> 
+                        <span data-testid="productivity">productivity,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="sleep">sleep</span> 
+                        <span data-testid="quality">quality.</span> 
+                        <span data-testid="skylights">Skylights</span> 
+                        <span data-testid="connect">connect</span> 
+                        <span data-testid="your">your</span> 
+                        <span data-testid="indoor">indoor</span> 
+                        <span data-testid="spaces">spaces</span> 
+                        <span data-testid="with">with</span> 
+                        <span data-testid="natural">natural</span> 
+                        <span data-testid="rhythm">rhythm</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="daylight">daylight.</span>
+                    </p>
+                </div>
+                <div class="benefit-image" data-testid="image-health">
+                    <span data-testid="image-text-health">Family enjoying sunlit room</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Process -->
+    <section class="installation-process" data-testid="section-process">
+        <div class="container" data-testid="process-container">
+            <h2 data-testid="title-installation-process">
+                Our Professional Skylight Installation Process
+            </h2>
+            
+            <div class="process-steps" data-testid="process-steps">
+                <div class="process-step" data-testid="step-1">
+                    <div class="step-number" data-testid="number-1">1</div>
+                    <div class="step-content" data-testid="content-1">
+                        <h3 data-testid="title-process-consultation">
+                            Initial Consultation
+                        </h3>
+                        <p data-testid="description-1">
+                            <span data-testid="we">We</span> 
+                            <span data-testid="assess">assess</span> 
+                            <span data-testid="your">your</span> 
+                            <span data-testid="space">space,</span> 
+                            <span data-testid="discuss">discuss</span> 
+                            <span data-testid="your">your</span> 
+                            <span data-testid="goals">goals,</span> 
+                            <span data-testid="and">and</span> 
+                            <span data-testid="recommend">recommend</span> 
+                            <span data-testid="best">best</span> 
+                            <span data-testid="skylight">skylight</span> 
+                            <span data-testid="solutions">solutions</span> 
+                            <span data-testid="for">for</span> 
+                            <span data-testid="your">your</span> 
+                            <span data-testid="needs">needs</span> 
+                            <span data-testid="and">and</span> 
+                            <span data-testid="budget">budget.</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="process-step" data-testid="step-2">
+                    <div class="step-number" data-testid="number-2">2</div>
+                    <div class="step-content" data-testid="content-2">
+                        <h3 data-testid="title-process-design">
+                            Custom Design
+                        </h3>
+                        <p data-testid="description-2">
+                            <span data-testid="our">Our</span> 
+                            <span data-testid="team">team</span> 
+                            <span data-testid="creates">creates</span> 
+                            <span data-testid="detailed">detailed</span> 
+                            <span data-testid="installation">installation</span> 
+                            <span data-testid="plan">plan,</span> 
+                            <span data-testid="considering">considering</span> 
+                            <span data-testid="roof">roof</span> 
+                            <span data-testid="structure">structure,</span> 
+                            <span data-testid="room">room</span> 
+                            <span data-testid="layout">layout,</span> 
+                            <span data-testid="and">and</span> 
+                            <span data-testid="optimal">optimal</span> 
+                            <span data-testid="positioning">positioning</span> 
+                            <span data-testid="for">for</span> 
+                            <span data-testid="light">light.</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="process-step" data-testid="step-3">
+                    <div class="step-number" data-testid="number-3">3</div>
+                    <div class="step-content" data-testid="content-3">
+                        <h3 data-testid="title-process-installation">
+                            Professional Installation
+                        </h3>
+                        <p data-testid="description-3">
+                            <span data-testid="expert">Expert</span> 
+                            <span data-testid="installers">installers</span> 
+                            <span data-testid="ensure">ensure</span> 
+                            <span data-testid="weatherproof">weatherproof,</span> 
+                            <span data-testid="code">code-compliant</span> 
+                            <span data-testid="installation">installation</span> 
+                            <span data-testid="with">with</span> 
+                            <span data-testid="minimal">minimal</span> 
+                            <span data-testid="disruption">disruption</span> 
+                            <span data-testid="to">to</span> 
+                            <span data-testid="your">your</span> 
+                            <span data-testid="daily">daily</span> 
+                            <span data-testid="routine">routine.</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="process-step" data-testid="step-4">
+                    <div class="step-number" data-testid="number-4">4</div>
+                    <div class="step-content" data-testid="content-4">
+                        <h3 data-testid="title-4">
+                            <span data-testid="quality">Quality</span> 
+                            <span data-testid="inspection">Inspection</span>
+                        </h3>
+                        <p data-testid="description-4">
+                            <span data-testid="thorough">Thorough</span> 
+                            <span data-testid="testing">testing</span> 
+                            <span data-testid="and">and</span> 
+                            <span data-testid="inspection">inspection</span> 
+                            <span data-testid="verify">verify</span> 
+                            <span data-testid="proper">proper</span> 
+                            <span data-testid="operation">operation,</span> 
+                            <span data-testid="seal">seal</span> 
+                            <span data-testid="integrity">integrity,</span> 
+                            <span data-testid="and">and</span> 
+                            <span data-testid="flawless">flawless</span> 
+                            <span data-testid="finish">finish</span> 
+                            <span data-testid="work">work.</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="process-step" data-testid="step-5">
+                    <div class="step-number" data-testid="number-5">5</div>
+                    <div class="step-content" data-testid="content-5">
+                        <h3 data-testid="title-5">
+                            <span data-testid="warranty">Warranty</span> 
+                            <span data-testid="and">&amp;</span> 
+                            <span data-testid="support">Support</span>
+                        </h3>
+                        <p data-testid="description-5">
+                            <span data-testid="comprehensive">Comprehensive</span> 
+                            <span data-testid="warranty">warranty</span> 
+                            <span data-testid="coverage">coverage</span> 
+                            <span data-testid="and">and</span> 
+                            <span data-testid="ongoing">ongoing</span> 
+                            <span data-testid="support">support</span> 
+                            <span data-testid="for">for</span> 
+                            <span data-testid="your">your</span> 
+                            <span data-testid="complete">complete</span> 
+                            <span data-testid="peace">peace</span> 
+                            <span data-testid="of">of</span> 
+                            <span data-testid="mind">mind.</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Specifications -->
+    <section class="technical-specs" data-testid="section-specs">
+        <div class="container" data-testid="specs-container">
+            <h2 data-testid="specs-title">
+                <span data-testid="skylight">Skylight</span> 
+                <span data-testid="options">Options</span> 
+                <span data-testid="and">&amp;</span> 
+                <span data-testid="features">Features</span>
+            </h2>
+            
+            <div class="specs-list" data-testid="specs-list">
+                <div class="spec-item" data-testid="spec-glass">
+                    <h3 class="spec-title" data-testid="title-glass">
+                        <span data-testid="glass">Glass</span> 
+                        <span data-testid="types">Types</span>
+                    </h3>
+                    <p class="spec-description" data-testid="description-glass">
+                        <span data-testid="clear">Clear,</span> 
+                        <span data-testid="tinted">tinted,</span> 
+                        <span data-testid="frosted">frosted,</span> 
+                        <span data-testid="low">Low-E</span> 
+                        <span data-testid="options">options</span> 
+                        <span data-testid="available">available</span>
+                    </p>
+                </div>
+                
+                <div class="spec-item" data-testid="spec-frames">
+                    <h3 class="spec-title" data-testid="title-frames">
+                        <span data-testid="frame">Frame</span> 
+                        <span data-testid="materials">Materials</span>
+                    </h3>
+                    <p class="spec-description" data-testid="description-frames">
+                        <span data-testid="vinyl">Vinyl,</span> 
+                        <span data-testid="aluminum">aluminum,</span> 
+                        <span data-testid="wood">wood-clad</span> 
+                        <span data-testid="construction">construction</span>
+                    </p>
+                </div>
+                
+                <div class="spec-item" data-testid="spec-operating">
+                    <h3 class="spec-title" data-testid="title-operating">
+                        <span data-testid="operating">Operating</span> 
+                        <span data-testid="systems">Systems</span>
+                    </h3>
+                    <p class="spec-description" data-testid="description-operating">
+                        <span data-testid="fixed">Fixed,</span> 
+                        <span data-testid="manual">manual</span> 
+                        <span data-testid="crank">crank,</span> 
+                        <span data-testid="electric">electric,</span> 
+                        <span data-testid="solar">solar-powered</span>
+                    </p>
+                </div>
+                
+                <div class="spec-item" data-testid="spec-weather">
+                    <h3 class="spec-title" data-testid="title-weather">
+                        <span data-testid="weather">Weather</span> 
+                        <span data-testid="protection">Protection</span>
+                    </h3>
+                    <p class="spec-description" data-testid="description-weather">
+                        <span data-testid="rain">Rain</span> 
+                        <span data-testid="sensors">sensors,</span> 
+                        <span data-testid="built">built-in</span> 
+                        <span data-testid="shading">shading</span> 
+                        <span data-testid="systems">systems</span>
+                    </p>
+                </div>
+                
+                <div class="spec-item" data-testid="spec-energy">
+                    <h3 class="spec-title" data-testid="title-energy-ratings">
+                        <span data-testid="energy">Energy</span> 
+                        <span data-testid="ratings">Ratings</span>
+                    </h3>
+                    <p class="spec-description" data-testid="description-energy-ratings">
+                        <span data-testid="u">U-factor,</span> 
+                        <span data-testid="solar">Solar</span> 
+                        <span data-testid="heat">Heat</span> 
+                        <span data-testid="gain">Gain</span> 
+                        <span data-testid="coefficient">Coefficient</span>
+                    </p>
+                </div>
+                
+                <div class="spec-item" data-testid="spec-warranty">
+                    <h3 class="spec-title" data-testid="title-warranty-coverage">
+                        <span data-testid="warranty">Warranty</span> 
+                        <span data-testid="coverage">Coverage</span>
+                    </h3>
+                    <p class="spec-description" data-testid="description-warranty-coverage">
+                        <span data-testid="materials">Materials</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="workmanship">workmanship</span> 
+                        <span data-testid="protection">protection</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Local Expertise -->
+    <section class="local-expertise" data-testid="section-expertise">
+        <div class="container" data-testid="expertise-container">
+            <h2 data-testid="expertise-title">
+                <span data-testid="city-expertise">{{city_name}}</span> 
+                <span data-testid="skylight">Skylight</span> 
+                <span data-testid="installation">Installation</span> 
+                <span data-testid="experts">Experts</span>
+            </h2>
+            
+            <p data-testid="expertise-intro">
+                <span data-testid="clear">Clear</span> 
+                <span data-testid="home">Home</span> 
+                <span data-testid="understands">understands</span> 
+                <span data-testid="unique">unique</span> 
+                <span data-testid="considerations">considerations</span> 
+                <span data-testid="for">for</span> 
+                <span data-testid="skylight">skylight</span> 
+                <span data-testid="installation">installation</span> 
+                <span data-testid="in">in</span> 
+                <span data-testid="city-considerations">{{city_name}}.</span> 
+                <span data-testid="our">Our</span> 
+                <span data-testid="local">local</span> 
+                <span data-testid="expertise">expertise</span> 
+                <span data-testid="ensures">ensures</span> 
+                <span data-testid="your">your</span> 
+                <span data-testid="skylight">skylight</span> 
+                <span data-testid="installation">installation</span> 
+                <span data-testid="accounts">accounts</span> 
+                <span data-testid="for">for:</span>
+            </p>
+            
+            <ul class="expertise-list" data-testid="expertise-list">
+                <li data-testid="expertise-climate">Louisiana climate and weather patterns</li>
+                <li data-testid="expertise-codes">Local building codes and permit requirements</li>
+                <li data-testid="expertise-hurricane">Hurricane-resistant installation methods</li>
+                <li data-testid="expertise-energy">Energy efficiency for hot, humid conditions</li>
+                <li data-testid="expertise-historic">Historic home preservation considerations</li>
+                <li data-testid="expertise-ventilation">Proper ventilation for {{city_name}} weather</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq" data-testid="section-faq">
+        <div class="container" data-testid="faq-container">
+            <h2 data-testid="faq-title">
+                <span data-testid="frequently">Frequently</span> 
+                <span data-testid="asked">Asked</span> 
+                <span data-testid="questions">Questions</span> 
+                <span data-testid="about">About</span> 
+                <span data-testid="skylight">Skylight</span> 
+                <span data-testid="installation">Installation</span>
+            </h2>
+            
+            <div class="faq-list" data-testid="faq-list">
+                <div class="faq-item" data-testid="faq-1">
+                    <h3 class="faq-question" data-testid="question-1">
+                        <span data-testid="q1-text">How long does skylight installation take?</span>
+                    </h3>
+                    <p class="faq-answer" data-testid="answer-1">
+                        <span data-testid="a1-text">Most residential skylight installations are completed in 1-2 days, depending on the complexity and number of units. We work efficiently to minimize disruption to your home.</span>
+                    </p>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-2">
+                    <h3 class="faq-question" data-testid="question-2">
+                        <span data-testid="q2-text">Will a skylight cause leaks?</span>
+                    </h3>
+                    <p class="faq-answer" data-testid="answer-2">
+                        <span data-testid="a2-text">When properly installed by professionals like Clear Home, skylights are completely weatherproof. We use proven flashing techniques and high-quality materials to ensure leak-free performance.</span>
+                    </p>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-3">
+                    <h3 class="faq-question" data-testid="question-3">
+                        <span data-testid="q3-text">Can skylights be installed in any room?</span>
+                    </h3>
+                    <p class="faq-answer" data-testid="answer-3">
+                        <span data-testid="a3-text">Most rooms can accommodate skylights, including bathrooms, kitchens, living areas, and bedrooms. Our experts assess your roof structure and recommend the best solutions.</span>
+                    </p>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-4">
+                    <h3 class="faq-question" data-testid="question-4">
+                        <span data-testid="q4-text">What's the maintenance requirement?</span>
+                    </h3>
+                    <p class="faq-answer" data-testid="answer-4">
+                        <span data-testid="a4-text">Skylights require minimal maintenance. We recommend annual inspection and cleaning. Venting skylights may need occasional lubrication of moving parts.</span>
+                    </p>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-5">
+                    <h3 class="faq-question" data-testid="question-5">
+                        <span data-testid="q5-text">How much does skylight installation cost?</span>
+                    </h3>
+                    <p class="faq-answer" data-testid="answer-5">
+                        <span data-testid="a5-text">Costs vary based on skylight type, size, and installation complexity. Contact us for a free consultation and detailed quote for your specific project.</span>
+                    </p>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-6">
+                    <h3 class="faq-question" data-testid="question-6">
+                        <span data-testid="q6-text">Are skylights energy efficient?</span>
+                    </h3>
+                    <p class="faq-answer" data-testid="answer-6">
+                        <span data-testid="a6-text">Modern skylights with Low-E glass and proper installation can actually improve home energy efficiency by reducing artificial lighting needs and providing natural ventilation.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta" data-testid="section-final-cta">
+        <div class="container" data-testid="final-cta-container">
+            <h2 data-testid="final-cta-title">
+                <span data-testid="transform">Transform</span> 
+                <span data-testid="your">Your</span> 
+                <span data-testid="city-final">{{city_name}}</span> 
+                <span data-testid="home">Home</span> 
+                <span data-testid="with">with</span> 
+                <span data-testid="professional">Professional</span> 
+                <span data-testid="skylight">Skylight</span> 
+                <span data-testid="installation">Installation</span>
+            </h2>
+            
+            <p class="final-cta-text" data-testid="final-cta-text">
+                <span data-testid="dont">Don't</span> 
+                <span data-testid="let">let</span> 
+                <span data-testid="dark">dark</span> 
+                <span data-testid="spaces">spaces</span> 
+                <span data-testid="limit">limit</span> 
+                <span data-testid="your">your</span> 
+                <span data-testid="home">home's</span> 
+                <span data-testid="potential">potential.</span> 
+                <span data-testid="clear">Clear</span> 
+                <span data-testid="home">Home's</span> 
+                <span data-testid="expert">expert</span> 
+                <span data-testid="skylight">skylight</span> 
+                <span data-testid="installation">installation</span> 
+                <span data-testid="brings">brings</span> 
+                <span data-testid="natural">natural</span> 
+                <span data-testid="light">light,</span> 
+                <span data-testid="energy">energy</span> 
+                <span data-testid="efficiency">efficiency,</span> 
+                <span data-testid="and">and</span> 
+                <span data-testid="increased">increased</span> 
+                <span data-testid="property">property</span> 
+                <span data-testid="value">value</span> 
+                <span data-testid="to">to</span> 
+                <span data-testid="your">your</span> 
+                <span data-testid="city-property">{{city_name}}</span> 
+                <span data-testid="property">property.</span>
+            </p>
+            
+            <div class="final-cta-buttons" data-testid="final-cta-buttons">
+                <button class="cta-white" data-testid="cta-white">
+                    <span data-testid="get">Get</span> 
+                    <span data-testid="free">Free</span> 
+                    <span data-testid="quote">Quote</span>
+                </button>
+                <a href="tel:{{company_phone}}" class="cta-outline" data-testid="cta-outline">
+                    <span data-testid="call">Call</span> 
+                    <span data-testid="phone">{{company_phone}}</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials" data-testid="section-testimonials">
+        <div class="container" data-testid="testimonials-container">
+            <h2 data-testid="testimonials-title">
+                <span data-testid="what">What</span> 
+                <span data-testid="city-testimonials">{{city_name}}</span> 
+                <span data-testid="homeowners">Homeowners</span> 
+                <span data-testid="say">Say</span>
+            </h2>
+            
+            <div class="testimonial-card" data-testid="testimonial-card">
+                <p class="testimonial-quote" data-testid="testimonial-quote">
+                    <span data-testid="quote-text">"Clear Home transformed our dark hallway into a bright, welcoming space. The skylight installation was professional, clean, and completed on schedule. We couldn't be happier with the results!"</span>
+                </p>
+                <div class="testimonial-author" data-testid="testimonial-author">
+                    <span data-testid="author-name">Sarah M.</span>
+                </div>
+                <div class="testimonial-location" data-testid="testimonial-location">
+                    <span data-testid="location-city">{{city_name}}</span>
+                </div>
+                <div class="testimonial-stars" data-testid="testimonial-stars">
+                    <span data-testid="star-1">STAR</span>
+                    <span data-testid="star-2">STAR</span>
+                    <span data-testid="star-3">STAR</span>
+                    <span data-testid="star-4">STAR</span>
+                    <span data-testid="star-5">STAR</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

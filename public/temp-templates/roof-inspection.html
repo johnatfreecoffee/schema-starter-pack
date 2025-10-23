@@ -1,0 +1,2361 @@
+<!DOCTYPE html>
+<html lang="en" data-testid="html-element">
+<head data-testid="head-element">
+    <meta charset="UTF-8" data-testid="charset-meta">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" data-testid="viewport-meta">
+    <title data-testid="title-element">Professional Roof Inspection Services in {{city_name}} | Clear Home</title>
+    <meta name="description" content="Expert roof inspection services in {{city_name}}. Comprehensive assessment, detailed reports, preventive maintenance. Clear Home - 20+ years experience. Call (504) 460-8131" data-testid="description-meta">
+    <meta name="keywords" content="roof inspection {{city_name}}, roofing inspection services, roof assessment, preventive roof maintenance" data-testid="keywords-meta">
+    
+    <!-- Schema Markup -->
+    <script type="application/ld+json" data-testid="schema-local-business">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Clear Home Roofing & Restoration",
+        "image": "https://clearhomeroofing.com/images/logo.jpg",
+        "@id": "https://clearhomeroofing.com",
+        "url": "https://clearhomeroofing.com",
+        "telephone": "{{company_phone}}",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "{{company_address}}",
+            "addressLocality": "{{city_name}}",
+            "addressRegion": "LA",
+            "postalCode": "{{zip_code}}",
+            "addressCountry": "US"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "{{latitude}}",
+            "longitude": "{{longitude}}"
+        },
+        "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+                "Monday",
+                "Tuesday", 
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ],
+            "opens": "07:00",
+            "closes": "18:00"
+        },
+        "sameAs": [
+            "{{facebook_url}}",
+            "{{google_business_url}}"
+        ]
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-service">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "Roof Inspection Services",
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "Clear Home Roofing & Restoration",
+            "areaServed": "{{city_name}}, Louisiana"
+        },
+        "offers": {
+            "@type": "Offer",
+            "availability": "https://schema.org/InStock",
+            "price": "Contact for Quote",
+            "priceCurrency": "USD"
+        },
+        "description": "Professional roof inspection services in {{city_name}}. Comprehensive 50-point assessment, drone technology, thermal imaging, detailed reports."
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-breadcrumb">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://clearhomeroofing.com"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Services",
+                "item": "https://clearhomeroofing.com/services"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Roof Inspection",
+                "item": "https://clearhomeroofing.com/roof-inspection-{{city_slug}}"
+            }
+        ]
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-faq">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "How often should I have my roof inspected?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "We recommend annual professional inspections for all roofs, with additional inspections after major storms. Roofs over 10 years old may benefit from twice-yearly checks. Regular inspections catch small problems before they become expensive repairs."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What's the difference between an inspection and an estimate?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "A roof inspection is a comprehensive assessment of your roof's condition, documenting all issues whether you repair them or not. An estimate focuses on specific known problems and provides pricing for repairs."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How quickly can you schedule an inspection?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Most non-emergency inspections can be scheduled within 3-5 business days. We offer same-day emergency inspections for urgent situations like storm damage or active leaks (additional fees apply)."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How long does a roof inspection take?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Basic visual inspections take about 1 hour. Comprehensive inspections typically require 2-3 hours. Premium inspections with thermal imaging may take 3-4 hours. Duration depends on roof size, complexity, and condition."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Will inspectors walk on my roof?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "When safely accessible, yes. Our inspectors follow strict safety protocols. For steep, fragile, or dangerous roofs, we use drone technology and ground-level assessment tools to avoid damage or injury risk."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What should I do to prepare for an inspection?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Ensure inspector access to property, clear driveway for parking, secure pets, provide attic access if needed, locate any previous inspection or repair records, and note any specific concerns you want addressed."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <style data-testid="style-element">
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #1A202C;
+            background-color: #FFFFFF;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background-color: #F7FAFC;
+            padding: 80px 0;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 48px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 24px;
+            color: #4A5568;
+            margin-bottom: 32px;
+        }
+
+        .value-points {
+            margin-bottom: 32px;
+        }
+
+        .value-point {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 18px;
+            color: #2D3748;
+        }
+
+        .value-check {
+            color: #2B6CB0;
+            font-weight: bold;
+        }
+
+        .trust-indicators {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .trust-item {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .trust-icon {
+            font-size: 24px;
+            color: #2B6CB0;
+            margin-bottom: 8px;
+        }
+
+        .trust-text {
+            font-size: 14px;
+            color: #4A5568;
+        }
+
+        .hero-ctas {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .cta-primary {
+            background: #2B6CB0;
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cta-primary:hover {
+            background: #215387;
+        }
+
+        .cta-secondary {
+            color: #2B6CB0;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .cta-secondary:hover {
+            text-decoration: underline;
+        }
+
+        /* Hero Form */
+        .hero-form {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #1A202C;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1A202C;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #2B6CB0;
+        }
+
+        .form-submit {
+            width: 100%;
+            background: #2B6CB0;
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .form-submit:hover {
+            background: #1E40AF;
+            transform: translateY(-2px);
+        }
+
+        .privacy-note {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        /* Process Section */
+        .process {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 40px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            font-size: 20px;
+            color: #4A5568;
+        }
+
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 30px;
+            position: relative;
+        }
+
+        .process-steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: #E5E7EB;
+            border-style: dashed;
+        }
+
+        .process-step {
+            background: #EDF2F7;
+            padding: 32px;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: #2B6CB0;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .step-icon {
+            font-size: 32px;
+            color: #2B6CB0;
+            margin-bottom: 16px;
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1A202C;
+            margin-bottom: 12px;
+        }
+
+        .step-description {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.5;
+        }
+
+        /* Inspection Types Section */
+        .inspection-types {
+            padding: 80px 0;
+            background: #F7FAFC;
+        }
+
+        .accordion {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .accordion-item {
+            background: white;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .accordion-header {
+            padding: 24px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1A202C;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .accordion-header:hover {
+            background: #F7FAFC;
+        }
+
+        .accordion-icon {
+            color: #2B6CB0;
+            transition: transform 0.3s;
+        }
+
+        .accordion-content {
+            padding: 0 24px 24px;
+            color: #4A5568;
+            line-height: 1.6;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-top: 16px;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .checklist li::before {
+            content: "YES";
+            color: #10B981;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        /* Service Cards Section */
+        .service-cards {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .service-card {
+            background: white;
+            border: 2px solid #EDF2F7;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            font-size: 48px;
+            color: #2B6CB0;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 12px;
+        }
+
+        .card-description {
+            font-size: 16px;
+            color: #4A5568;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .card-details {
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 20px;
+        }
+
+        .card-cta {
+            background: #2B6CB0;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .card-cta:hover {
+            background: #1E40AF;
+        }
+
+        /* Technology Section */
+        .technology {
+            padding: 80px 0;
+            background: #F7FAFC;
+        }
+
+        .tech-feature {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+
+        .tech-feature:nth-child(even) .tech-content {
+            order: 2;
+        }
+
+        .tech-feature:nth-child(even) .tech-image {
+            order: 1;
+        }
+
+        .tech-image {
+            height: 400px;
+            background: #E5E7EB;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6B7280;
+            font-size: 18px;
+        }
+
+        .tech-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 16px;
+        }
+
+        .tech-description {
+            font-size: 18px;
+            color: #4A5568;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .tech-benefits {
+            list-style: none;
+        }
+
+        .tech-benefits li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .tech-benefits li::before {
+            content: "YES";
+            color: #10B981;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        /* Report Section */
+        .report {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .report-component {
+            background: #F7FAFC;
+            padding: 32px;
+            border-radius: 8px;
+            border-left: 4px solid #2B6CB0;
+        }
+
+        .component-icon {
+            font-size: 32px;
+            color: #2B6CB0;
+            margin-bottom: 16px;
+        }
+
+        .component-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 12px;
+        }
+
+        .component-description {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .component-includes {
+            font-size: 14px;
+            color: #6B7280;
+            font-style: italic;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 80px 0;
+            background: #F7FAFC;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-tier {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            border: 2px solid #EDF2F7;
+            text-align: center;
+            position: relative;
+        }
+
+        .pricing-tier.featured {
+            border-color: #2B6CB0;
+            transform: scale(1.05);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2B6CB0;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .tier-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 12px;
+        }
+
+        .tier-price {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2B6CB0;
+            margin-bottom: 8px;
+        }
+
+        .tier-best-for {
+            color: #6B7280;
+            margin-bottom: 24px;
+        }
+
+        .tier-features {
+            list-style: none;
+            margin-bottom: 32px;
+        }
+
+        .tier-features li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .tier-features li::before {
+            content: "YES";
+            color: #10B981;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .tier-cta {
+            width: 100%;
+            background: #2B6CB0;
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .tier-cta:hover {
+            background: #1E40AF;
+        }
+
+        /* FAQ Section */
+        .faq {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 60px;
+        }
+
+        .faq-categories {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .category-item {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: #F7FAFC;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-item:hover,
+        .category-item.active {
+            background: #2B6CB0;
+            color: white;
+        }
+
+        .faq-content {
+            max-width: 800px;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #E5E7EB;
+            margin-bottom: 24px;
+        }
+
+        .faq-question {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1A202C;
+            margin-bottom: 12px;
+        }
+
+        .faq-answer {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.6;
+            padding-bottom: 24px;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            padding: 80px 0;
+            background-color: #F9FAFB;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .contact-info h3 {
+            font-size: 28px;
+            color: #1A202C;
+            margin-bottom: 24px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            background: #2B6CB0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .contact-details h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1A202C;
+            margin-bottom: 4px;
+        }
+
+        .contact-details p {
+            color: #4A5568;
+            font-size: 16px;
+        }
+
+        .contact-details a {
+            color: #2B6CB0;
+            text-decoration: none;
+        }
+
+        .contact-details a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .hero-content h1 {
+                font-size: 36px;
+            }
+
+            .trust-indicators {
+                grid-template-columns: 1fr;
+            }
+
+            .process-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .process-steps::before {
+                display: none;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tech-feature {
+                grid-template-columns: 1fr;
+            }
+
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 28px;
+            }
+
+            .section-header h2 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body data-testid="body-element">
+
+    <!-- Hero Section -->
+    <section class="hero" data-testid="section-hero">
+        <div class="container" data-testid="hero-container">
+            <div class="hero-grid" data-testid="hero-grid">
+                <div class="hero-content" data-testid="hero-content">
+                    <h1 data-testid="heading-main">
+                        <span data-testid="professional">Professional</span> 
+                        <span data-testid="roof">Roof</span> 
+                        <span data-testid="inspection">Inspection</span> 
+                        <span data-testid="services">Services</span> 
+                        <span data-testid="in">in</span> 
+                        <span data-testid="city">{{city_name}}</span>
+                    </h1>
+                    
+                    <h2 class="hero-subtitle" data-testid="subtitle-hero">
+                        <span data-testid="catch">Catch</span> 
+                        <span data-testid="problems">Problems</span> 
+                        <span data-testid="early">Early,</span> 
+                        <span data-testid="save">Save</span> 
+                        <span data-testid="thousands">Thousands</span> 
+                        <span data-testid="later">Later</span>
+                    </h2>
+                    
+                    <div class="value-points" data-testid="value-points">
+                        <div class="value-point" data-testid="value-point-1">
+                            <span class="value-check" data-testid="check-1">YES</span>
+                            <span data-testid="text-1">Comprehensive 50-Point Inspection Process</span>
+                        </div>
+                        <div class="value-point" data-testid="value-point-2">
+                            <span class="value-check" data-testid="check-2">YES</span>
+                            <span data-testid="text-2">Detailed Photo Documentation & Reports</span>
+                        </div>
+                        <div class="value-point" data-testid="value-point-3">
+                            <span class="value-check" data-testid="check-3">YES</span>
+                            <span data-testid="text-3">Drone Technology for Hard-to-Reach Areas</span>
+                        </div>
+                        <div class="value-point" data-testid="value-point-4">
+                            <span class="value-check" data-testid="check-4">YES</span>
+                            <span data-testid="text-4">Insurance-Ready Assessment Reports</span>
+                        </div>
+                        <div class="value-point" data-testid="value-point-5">
+                            <span class="value-check" data-testid="check-5">YES</span>
+                            <span data-testid="text-5">Same-Day Scheduling Available</span>
+                        </div>
+                    </div>
+                    
+                    <div class="trust-indicators" data-testid="trust-indicators">
+                        <div class="trust-item" data-testid="trust-experience">
+                            <div class="trust-icon" data-testid="icon-experience">YEAR</div>
+                            <div class="trust-text" data-testid="text-experience">
+                                <span data-testid="twenty">20+</span> 
+                                <span data-testid="years">Years</span> 
+                                <span data-testid="experience">Experience</span>
+                            </div>
+                        </div>
+                        <div class="trust-item" data-testid="trust-certified">
+                            <div class="trust-icon" data-testid="icon-certified">CERT</div>
+                            <div class="trust-text" data-testid="text-certified">
+                                <span data-testid="certified">Certified</span> 
+                                <span data-testid="inspectors">Inspectors</span>
+                            </div>
+                        </div>
+                        <div class="trust-item" data-testid="trust-thermal">
+                            <div class="trust-icon" data-testid="icon-thermal">TEMP</div>
+                            <div class="trust-text" data-testid="text-thermal">
+                                <span data-testid="thermal">Thermal</span> 
+                                <span data-testid="imaging">Imaging</span> 
+                                <span data-testid="available">Available</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-ctas" data-testid="hero-ctas">
+                        <button class="cta-primary" data-testid="cta-primary">
+                            <span data-testid="schedule">Schedule</span> 
+                            <span data-testid="free">Free</span> 
+                            <span data-testid="inspection-cta">Inspection</span>
+                        </button>
+                        <a href="tel:{{company_phone}}" class="cta-secondary" data-testid="cta-secondary">
+                            <span data-testid="or">Or</span> 
+                            <span data-testid="call">Call</span> 
+                            <span data-testid="now">Now:</span> 
+                            <span data-testid="phone">{{company_phone}}</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="hero-form" data-testid="hero-form">
+                    <h3 class="form-title" data-testid="form-title">
+                        <span data-testid="get">Get</span> 
+                        <span data-testid="your">Your</span> 
+                        <span data-testid="free-form">Free</span> 
+                        <span data-testid="inspection-form">Inspection</span>
+                    </h3>
+                    
+                    <form action="/submit-inspection" method="POST" data-testid="inspection-form">
+                        <div class="form-group" data-testid="form-group-name">
+                            <label for="name" class="form-label" data-testid="label-name">Full Name *</label>
+                            <input type="text" id="name" name="name" class="form-input" data-testid="input-name" required>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-phone">
+                            <label for="phone" class="form-label" data-testid="label-phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" class="form-input" data-testid="input-phone" required>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-email">
+                            <label for="email" class="form-label" data-testid="label-email">Email Address</label>
+                            <input type="email" id="email" name="email" class="form-input" data-testid="input-email">
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-address">
+                            <label for="address" class="form-label" data-testid="label-address">Property Address *</label>
+                            <input type="text" id="address" name="address" class="form-input" data-testid="input-address" required>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-reason">
+                            <label for="reason" class="form-label" data-testid="label-reason">Inspection Reason *</label>
+                            <select id="reason" name="reason" class="form-select" data-testid="select-reason" required>
+                                <option value="" data-testid="option-default">Select Reason</option>
+                                <option value="routine" data-testid="option-routine">Routine Preventive Inspection</option>
+                                <option value="damage" data-testid="option-damage">Visible Damage or Leak</option>
+                                <option value="pre-sale" data-testid="option-pre-sale">Pre-Sale/Purchase Inspection</option>
+                                <option value="insurance" data-testid="option-insurance">Insurance Claim Assessment</option>
+                                <option value="storm" data-testid="option-storm">Storm Damage Assessment</option>
+                                <option value="age" data-testid="option-age">Age of Roof Concern</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-date">
+                            <label for="date" class="form-label" data-testid="label-date">Preferred Date</label>
+                            <input type="date" id="date" name="date" class="form-input" data-testid="input-date">
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-notes">
+                            <label for="notes" class="form-label" data-testid="label-notes">Additional Notes</label>
+                            <textarea id="notes" name="notes" class="form-textarea" rows="3" placeholder="Any specific concerns or details..." data-testid="textarea-notes"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="form-submit" data-testid="submit-inspection">
+                            <span data-testid="schedule-my">Schedule</span> 
+                            <span data-testid="my">My</span> 
+                            <span data-testid="inspection-submit">Inspection</span>
+                        </button>
+                    </form>
+                    
+                    <p class="privacy-note" data-testid="privacy-note">
+                        <span data-testid="your">Your</span> 
+                        <span data-testid="information">information</span> 
+                        <span data-testid="is">is</span> 
+                        <span data-testid="secure">secure</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="will">will</span> 
+                        <span data-testid="only">only</span> 
+                        <span data-testid="be">be</span> 
+                        <span data-testid="used">used</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="schedule">schedule</span> 
+                        <span data-testid="your-inspection">your</span> 
+                        <span data-testid="inspection-privacy">inspection.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process" data-testid="section-process">
+        <div class="container" data-testid="process-container">
+            <div class="section-header" data-testid="process-header">
+                <h2 data-testid="process-title">
+                    <span data-testid="our">Our</span> 
+                    <span data-testid="comprehensive">Comprehensive</span> 
+                    <span data-testid="roof">Roof</span> 
+                    <span data-testid="inspection">Inspection</span> 
+                    <span data-testid="process">Process</span>
+                </h2>
+                <p class="section-subtitle" data-testid="process-subtitle">
+                    <span data-testid="from">From</span> 
+                    <span data-testid="scheduling">scheduling</span> 
+                    <span data-testid="to">to</span> 
+                    <span data-testid="detailed">detailed</span> 
+                    <span data-testid="reporting">reporting,</span> 
+                    <span data-testid="we">we</span> 
+                    <span data-testid="make">make</span> 
+                    <span data-testid="the">the</span> 
+                    <span data-testid="process-simple">process</span> 
+                    <span data-testid="simple">simple</span> 
+                    <span data-testid="and">and</span> 
+                    <span data-testid="thorough">thorough</span>
+                </p>
+            </div>
+            
+            <div class="process-steps" data-testid="process-steps">
+                <div class="process-step" data-testid="step-1">
+                    <div class="step-number" data-testid="number-1">01</div>
+                    <div class="step-icon" data-testid="icon-schedule">CAL</div>
+                    <h3 class="step-title" data-testid="title-schedule">
+                        <span data-testid="easy">Easy</span> 
+                        <span data-testid="scheduling">Scheduling</span>
+                    </h3>
+                    <p class="step-description" data-testid="description-schedule">
+                        <span data-testid="choose">Choose</span> 
+                        <span data-testid="your">your</span> 
+                        <span data-testid="preferred">preferred</span> 
+                        <span data-testid="date">date</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="time">time.</span> 
+                        <span data-testid="well">We'll</span> 
+                        <span data-testid="confirm">confirm</span> 
+                        <span data-testid="within">within</span> 
+                        <span data-testid="two">2</span> 
+                        <span data-testid="hours">hours</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="send">send</span> 
+                        <span data-testid="reminder">reminder</span> 
+                        <span data-testid="notifications">notifications.</span>
+                    </p>
+                </div>
+                
+                <div class="process-step" data-testid="step-2">
+                    <div class="step-number" data-testid="number-2">02</div>
+                    <div class="step-icon" data-testid="icon-assessment">EYE</div>
+                    <h3 class="step-title" data-testid="title-assessment">
+                        <span data-testid="ground">Ground</span> 
+                        <span data-testid="and">& Roof</span> 
+                        <span data-testid="inspection">Inspection</span>
+                    </h3>
+                    <p class="step-description" data-testid="description-assessment">
+                        <span data-testid="certified">Certified</span> 
+                        <span data-testid="inspectors">inspectors</span> 
+                        <span data-testid="assess">assess</span> 
+                        <span data-testid="from">from</span> 
+                        <span data-testid="ground">ground</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="roof">roof</span> 
+                        <span data-testid="level">level</span> 
+                        <span data-testid="using">using</span> 
+                        <span data-testid="professional">professional</span> 
+                        <span data-testid="equipment">equipment</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="safety">safety</span> 
+                        <span data-testid="protocols">protocols.</span>
+                    </p>
+                </div>
+                
+                <div class="process-step" data-testid="step-3">
+                    <div class="step-number" data-testid="number-3">03</div>
+                    <div class="step-icon" data-testid="icon-documentation">CAM</div>
+                    <h3 class="step-title" data-testid="title-documentation">
+                        <span data-testid="photo">Photo</span> 
+                        <span data-testid="and">& Video</span> 
+                        <span data-testid="evidence">Evidence</span>
+                    </h3>
+                    <p class="step-description" data-testid="description-documentation">
+                        <span data-testid="high">High-resolution</span> 
+                        <span data-testid="photos">photos</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="drone">drone</span> 
+                        <span data-testid="footage">footage</span> 
+                        <span data-testid="document">document</span> 
+                        <span data-testid="every">every</span> 
+                        <span data-testid="inch">inch</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="your">your</span> 
+                        <span data-testid="roof">roof,</span> 
+                        <span data-testid="including">including</span> 
+                        <span data-testid="hard">hard-to-see</span> 
+                        <span data-testid="areas">areas.</span>
+                    </p>
+                </div>
+                
+                <div class="process-step" data-testid="step-4">
+                    <div class="step-number" data-testid="number-4">04</div>
+                    <div class="step-icon" data-testid="icon-analysis">MAG</div>
+                    <h3 class="step-title" data-testid="title-analysis">
+                        <span data-testid="fifty">50-Point</span> 
+                        <span data-testid="assessment">Assessment</span>
+                    </h3>
+                    <p class="step-description" data-testid="description-analysis">
+                        <span data-testid="systematic">Systematic</span> 
+                        <span data-testid="evaluation">evaluation</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="materials">materials,</span> 
+                        <span data-testid="structure">structure,</span> 
+                        <span data-testid="flashing">flashing,</span> 
+                        <span data-testid="ventilation">ventilation,</span> 
+                        <span data-testid="drainage">drainage,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="potential">potential</span> 
+                        <span data-testid="problem">problem</span> 
+                        <span data-testid="areas">areas.</span>
+                    </p>
+                </div>
+                
+                <div class="process-step" data-testid="step-5">
+                    <div class="step-number" data-testid="number-5">05</div>
+                    <div class="step-icon" data-testid="icon-report">DOC</div>
+                    <h3 class="step-title" data-testid="title-report">
+                        <span data-testid="detailed">Detailed</span> 
+                        <span data-testid="report">Report</span> 
+                        <span data-testid="delivery">Delivery</span>
+                    </h3>
+                    <p class="step-description" data-testid="description-report">
+                        <span data-testid="comprehensive">Comprehensive</span> 
+                        <span data-testid="report">report</span> 
+                        <span data-testid="with">with</span> 
+                        <span data-testid="photos">photos,</span> 
+                        <span data-testid="findings">findings,</span> 
+                        <span data-testid="priority">priority</span> 
+                        <span data-testid="ratings">ratings,</span> 
+                        <span data-testid="cost">cost</span> 
+                        <span data-testid="estimates">estimates,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="maintenance">maintenance</span> 
+                        <span data-testid="recommendations">recommendations.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Inspection Types Section -->
+    <section class="inspection-types" data-testid="section-inspection-types">
+        <div class="container" data-testid="inspection-types-container">
+            <div class="section-header" data-testid="inspection-types-header">
+                <h2 data-testid="inspection-types-title">
+                    <span data-testid="our">Our</span> 
+                    <span data-testid="fifty">50-Point</span> 
+                    <span data-testid="comprehensive">Comprehensive</span> 
+                    <span data-testid="roof">Roof</span> 
+                    <span data-testid="assessment">Assessment</span>
+                </h2>
+            </div>
+            
+            <div class="accordion" data-testid="accordion">
+                <div class="accordion-item" data-testid="accordion-materials">
+                    <div class="accordion-header" data-testid="header-materials">
+                        <span data-testid="title-materials">Roofing Materials Assessment</span>
+                        <span class="accordion-icon" data-testid="icon-materials">+</span>
+                    </div>
+                    <div class="accordion-content" data-testid="content-materials">
+                        <ul class="checklist" data-testid="checklist-materials">
+                            <li data-testid="check-shingle">Shingle condition (cracks, curling, missing pieces)</li>
+                            <li data-testid="check-age">Material age and expected lifespan remaining</li>
+                            <li data-testid="check-granule">Granule loss and surface deterioration</li>
+                            <li data-testid="check-color">Color consistency and fading patterns</li>
+                            <li data-testid="check-algae">Algae, moss, or biological growth</li>
+                            <li data-testid="check-defects">Manufacturing defects or installation errors</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="accordion-item" data-testid="accordion-structural">
+                    <div class="accordion-header" data-testid="header-structural">
+                        <span data-testid="title-structural">Structural Integrity</span>
+                        <span class="accordion-icon" data-testid="icon-structural">+</span>
+                    </div>
+                    <div class="accordion-content" data-testid="content-structural">
+                        <ul class="checklist" data-testid="checklist-structural">
+                            <li data-testid="check-decking">Roof decking condition and support</li>
+                            <li data-testid="check-sagging">Sagging or uneven roof planes</li>
+                            <li data-testid="check-ridge">Ridge line straightness</li>
+                            <li data-testid="check-truss">Truss and rafter assessment (interior when accessible)</li>
+                            <li data-testid="check-weight">Weight-bearing capacity evaluation</li>
+                            <li data-testid="check-repairs">Previous repair quality assessment</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="accordion-item" data-testid="accordion-water">
+                    <div class="accordion-header" data-testid="header-water">
+                        <span data-testid="title-water">Water Management Systems</span>
+                        <span class="accordion-icon" data-testid="icon-water">+</span>
+                    </div>
+                    <div class="accordion-content" data-testid="content-water">
+                        <ul class="checklist" data-testid="checklist-water">
+                            <li data-testid="check-gutter">Gutter condition and attachment</li>
+                            <li data-testid="check-downspout">Downspout functionality and drainage</li>
+                            <li data-testid="check-guards">Gutter guards or leaf protection</li>
+                            <li data-testid="check-slope">Proper slope and water flow</li>
+                            <li data-testid="check-pooling">Standing water or pooling issues</li>
+                            <li data-testid="check-overflow">Overflow marks or staining</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="accordion-item" data-testid="accordion-flashing">
+                    <div class="accordion-header" data-testid="header-flashing">
+                        <span data-testid="title-flashing">Flashing & Penetrations</span>
+                        <span class="accordion-icon" data-testid="icon-flashing">+</span>
+                    </div>
+                    <div class="accordion-content" data-testid="content-flashing">
+                        <ul class="checklist" data-testid="checklist-flashing">
+                            <li data-testid="check-chimney">Chimney flashing integrity</li>
+                            <li data-testid="check-vent">Vent pipe boots and seals</li>
+                            <li data-testid="check-skylight">Skylight flashing and condition</li>
+                            <li data-testid="check-valley">Valley flashing and waterproofing</li>
+                            <li data-testid="check-drip">Drip edge installation and condition</li>
+                            <li data-testid="check-step">Step flashing at wall intersections</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="accordion-item" data-testid="accordion-ventilation">
+                    <div class="accordion-header" data-testid="header-ventilation">
+                        <span data-testid="title-ventilation">Ventilation Assessment</span>
+                        <span class="accordion-icon" data-testid="icon-ventilation">+</span>
+                    </div>
+                    <div class="accordion-content" data-testid="content-ventilation">
+                        <ul class="checklist" data-testid="checklist-ventilation">
+                            <li data-testid="check-intake">Intake ventilation (soffit vents)</li>
+                            <li data-testid="check-exhaust">Exhaust ventilation (ridge/gable vents)</li>
+                            <li data-testid="check-airflow">Proper airflow balance</li>
+                            <li data-testid="check-temperature">Attic temperature and moisture levels</li>
+                            <li data-testid="check-insulation">Insulation condition and coverage</li>
+                            <li data-testid="check-vapor">Vapor barrier effectiveness</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="accordion-item" data-testid="accordion-interior">
+                    <div class="accordion-header" data-testid="header-interior">
+                        <span data-testid="title-interior">Interior Indicators</span>
+                        <span class="accordion-icon" data-testid="icon-interior">+</span>
+                    </div>
+                    <div class="accordion-content" data-testid="content-interior">
+                        <ul class="checklist" data-testid="checklist-interior">
+                            <li data-testid="check-attic">Attic inspection for leaks</li>
+                            <li data-testid="check-stains">Water stains on ceilings</li>
+                            <li data-testid="check-moisture">Interior moisture or mold signs</li>
+                            <li data-testid="check-damage">Insulation damage from leaks</li>
+                            <li data-testid="check-daylight">Daylight visibility through roof</li>
+                            <li data-testid="check-attachment">Proper decking attachment</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="accordion-item" data-testid="accordion-storm">
+                    <div class="accordion-header" data-testid="header-storm">
+                        <span data-testid="title-storm">Storm & Wind Damage</span>
+                        <span class="accordion-icon" data-testid="icon-storm">+</span>
+                    </div>
+                    <div class="accordion-content" data-testid="content-storm">
+                        <ul class="checklist" data-testid="checklist-storm">
+                            <li data-testid="check-wind">Wind-lifted or loose shingles</li>
+                            <li data-testid="check-hail">Hail impact damage assessment</li>
+                            <li data-testid="check-debris">Debris damage evaluation</li>
+                            <li data-testid="check-fastener">Fastener exposure or failure</li>
+                            <li data-testid="check-edge">Edge lifting or corner damage</li>
+                            <li data-testid="check-weather">Overall weather exposure effects</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="accordion-item" data-testid="accordion-code">
+                    <div class="accordion-header" data-testid="header-code">
+                        <span data-testid="title-code">Code Compliance & Safety</span>
+                        <span class="accordion-icon" data-testid="icon-code">+</span>
+                    </div>
+                    <div class="accordion-content" data-testid="content-code">
+                        <ul class="checklist" data-testid="checklist-code">
+                            <li data-testid="check-compliance">Current building code compliance</li>
+                            <li data-testid="check-fire">Fire resistance rating verification</li>
+                            <li data-testid="check-fastening">Proper fastening patterns</li>
+                            <li data-testid="check-load">Load distribution assessment</li>
+                            <li data-testid="check-hurricane">Hurricane strap installation (if applicable)</li>
+                            <li data-testid="check-safety">Safety hazard identification</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Cards Section -->
+    <section class="service-cards" data-testid="section-service-cards">
+        <div class="container" data-testid="service-cards-container">
+            <div class="section-header" data-testid="service-cards-header">
+                <h2 data-testid="service-cards-title">
+                    <span data-testid="specialized">Specialized</span> 
+                    <span data-testid="roof">Roof</span> 
+                    <span data-testid="inspection">Inspection</span> 
+                    <span data-testid="services">Services</span>
+                </h2>
+            </div>
+            
+            <div class="cards-grid" data-testid="cards-grid">
+                <div class="service-card" data-testid="card-preventive">
+                    <div class="card-icon" data-testid="icon-preventive">SHIELD</div>
+                    <h3 class="card-title" data-testid="title-preventive">
+                        <span data-testid="annual">Annual</span> 
+                        <span data-testid="maintenance">Maintenance</span> 
+                        <span data-testid="inspection">Inspection</span>
+                    </h3>
+                    <p class="card-description" data-testid="description-preventive">
+                        <span data-testid="proactive">Proactive</span> 
+                        <span data-testid="inspection">inspection</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="catch">catch</span> 
+                        <span data-testid="minor">minor</span> 
+                        <span data-testid="issues">issues</span> 
+                        <span data-testid="before">before</span> 
+                        <span data-testid="they">they</span> 
+                        <span data-testid="become">become</span> 
+                        <span data-testid="major">major</span> 
+                        <span data-testid="problems">problems.</span> 
+                        <span data-testid="recommended">Recommended</span> 
+                        <span data-testid="annually">annually</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="all">all</span> 
+                        <span data-testid="roofs">roofs.</span>
+                    </p>
+                    <div class="card-details" data-testid="details-preventive">
+                        <div data-testid="duration-preventive">Duration: 1-2 hours</div>
+                        <div data-testid="turnaround-preventive">Report: Same day</div>
+                    </div>
+                    <button class="card-cta" data-testid="cta-preventive">
+                        <span data-testid="schedule">Schedule</span> 
+                        <span data-testid="preventive">Preventive</span> 
+                        <span data-testid="check">Check</span>
+                    </button>
+                </div>
+                
+                <div class="service-card" data-testid="card-purchase">
+                    <div class="card-icon" data-testid="icon-purchase">HOME</div>
+                    <h3 class="card-title" data-testid="title-purchase">
+                        <span data-testid="home">Home</span> 
+                        <span data-testid="buyer">Buyer's</span> 
+                        <span data-testid="roof">Roof</span> 
+                        <span data-testid="assessment">Assessment</span>
+                    </h3>
+                    <p class="card-description" data-testid="description-purchase">
+                        <span data-testid="detailed">Detailed</span> 
+                        <span data-testid="evaluation">evaluation</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="homebuyers">homebuyers</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="understand">understand</span> 
+                        <span data-testid="roof">roof</span> 
+                        <span data-testid="condition">condition</span> 
+                        <span data-testid="before">before</span> 
+                        <span data-testid="purchase">purchase.</span> 
+                        <span data-testid="includes">Includes</span> 
+                        <span data-testid="cost">cost</span> 
+                        <span data-testid="estimates">estimates</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="any">any</span> 
+                        <span data-testid="needed">needed</span> 
+                        <span data-testid="repairs">repairs.</span>
+                    </p>
+                    <div class="card-details" data-testid="details-purchase">
+                        <div data-testid="duration-purchase">Duration: 2-3 hours</div>
+                        <div data-testid="turnaround-purchase">Report: 24 hours</div>
+                    </div>
+                    <button class="card-cta" data-testid="cta-purchase">
+                        <span data-testid="get">Get</span> 
+                        <span data-testid="pre">Pre-Purchase</span> 
+                        <span data-testid="report">Report</span>
+                    </button>
+                </div>
+                
+                <div class="service-card" data-testid="card-insurance">
+                    <div class="card-icon" data-testid="icon-insurance">DOC</div>
+                    <h3 class="card-title" data-testid="title-insurance">
+                        <span data-testid="insurance">Insurance</span> 
+                        <span data-testid="claim">Claim</span> 
+                        <span data-testid="documentation">Documentation</span>
+                    </h3>
+                    <p class="card-description" data-testid="description-insurance">
+                        <span data-testid="comprehensive">Comprehensive</span> 
+                        <span data-testid="assessment">assessment</span> 
+                        <span data-testid="with">with</span> 
+                        <span data-testid="detailed">detailed</span> 
+                        <span data-testid="photo">photo</span> 
+                        <span data-testid="evidence">evidence</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="damage">damage</span> 
+                        <span data-testid="documentation">documentation</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="support">support</span> 
+                        <span data-testid="your">your</span> 
+                        <span data-testid="insurance">insurance</span> 
+                        <span data-testid="claim">claim.</span>
+                    </p>
+                    <div class="card-details" data-testid="details-insurance">
+                        <div data-testid="duration-insurance">Duration: 2-4 hours</div>
+                        <div data-testid="turnaround-insurance">Report: 24-48 hours</div>
+                    </div>
+                    <button class="card-cta" data-testid="cta-insurance">
+                        <span data-testid="start">Start</span> 
+                        <span data-testid="claim">Claim</span> 
+                        <span data-testid="assessment">Assessment</span>
+                    </button>
+                </div>
+                
+                <div class="service-card" data-testid="card-storm">
+                    <div class="card-icon" data-testid="icon-storm">CLOUD</div>
+                    <h3 class="card-title" data-testid="title-storm">
+                        <span data-testid="post">Post-Storm</span> 
+                        <span data-testid="emergency">Emergency</span> 
+                        <span data-testid="inspection">Inspection</span>
+                    </h3>
+                    <p class="card-description" data-testid="description-storm">
+                        <span data-testid="rapid">Rapid</span> 
+                        <span data-testid="response">response</span> 
+                        <span data-testid="inspection">inspection</span> 
+                        <span data-testid="after">after</span> 
+                        <span data-testid="severe">severe</span> 
+                        <span data-testid="weather">weather</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="assess">assess</span> 
+                        <span data-testid="damage">damage</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="provide">provide</span> 
+                        <span data-testid="emergency">emergency</span> 
+                        <span data-testid="mitigation">mitigation</span> 
+                        <span data-testid="recommendations">recommendations.</span>
+                    </p>
+                    <div class="card-details" data-testid="details-storm">
+                        <div data-testid="duration-storm">Duration: 1-2 hours</div>
+                        <div data-testid="turnaround-storm">Report: Same day</div>
+                    </div>
+                    <button class="card-cta" data-testid="cta-storm">
+                        <span data-testid="request">Request</span> 
+                        <span data-testid="emergency">Emergency</span> 
+                        <span data-testid="inspection">Inspection</span>
+                    </button>
+                </div>
+                
+                <div class="service-card" data-testid="card-sale">
+                    <div class="card-icon" data-testid="icon-sale">DOLLAR</div>
+                    <h3 class="card-title" data-testid="title-sale">
+                        <span data-testid="seller">Seller's</span> 
+                        <span data-testid="roof">Roof</span> 
+                        <span data-testid="certification">Certification</span>
+                    </h3>
+                    <p class="card-description" data-testid="description-sale">
+                        <span data-testid="professional">Professional</span> 
+                        <span data-testid="certification">certification</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="roof">roof</span> 
+                        <span data-testid="condition">condition</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="strengthen">strengthen</span> 
+                        <span data-testid="your">your</span> 
+                        <span data-testid="home">home</span> 
+                        <span data-testid="sale">sale</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="provide">provide</span> 
+                        <span data-testid="buyer">buyer</span> 
+                        <span data-testid="confidence">confidence.</span>
+                    </p>
+                    <div class="card-details" data-testid="details-sale">
+                        <div data-testid="duration-sale">Duration: 2-3 hours</div>
+                        <div data-testid="turnaround-sale">Report: 24 hours</div>
+                    </div>
+                    <button class="card-cta" data-testid="cta-sale">
+                        <span data-testid="get">Get</span> 
+                        <span data-testid="seller">Seller's</span> 
+                        <span data-testid="certification">Certification</span>
+                    </button>
+                </div>
+                
+                <div class="service-card" data-testid="card-warranty">
+                    <div class="card-icon" data-testid="icon-warranty">STAR</div>
+                    <h3 class="card-title" data-testid="title-warranty">
+                        <span data-testid="warranty">Warranty</span> 
+                        <span data-testid="validation">Validation</span> 
+                        <span data-testid="check">Check</span>
+                    </h3>
+                    <p class="card-description" data-testid="description-warranty">
+                        <span data-testid="inspection">Inspection</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="document">document</span> 
+                        <span data-testid="proper">proper</span> 
+                        <span data-testid="maintenance">maintenance</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="warranty">warranty</span> 
+                        <span data-testid="compliance">compliance</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="identify">identify</span> 
+                        <span data-testid="any">any</span> 
+                        <span data-testid="warranty">warranty-covered</span> 
+                        <span data-testid="issues">issues.</span>
+                    </p>
+                    <div class="card-details" data-testid="details-warranty">
+                        <div data-testid="duration-warranty">Duration: 1-2 hours</div>
+                        <div data-testid="turnaround-warranty">Report: Same day</div>
+                    </div>
+                    <button class="card-cta" data-testid="cta-warranty">
+                        <span data-testid="schedule">Schedule</span> 
+                        <span data-testid="warranty">Warranty</span> 
+                        <span data-testid="check">Check</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section class="technology" data-testid="section-technology">
+        <div class="container" data-testid="technology-container">
+            <div class="section-header" data-testid="technology-header">
+                <h2 data-testid="technology-title">
+                    <span data-testid="advanced">Advanced</span> 
+                    <span data-testid="technology">Technology</span> 
+                    <span data-testid="for">for</span> 
+                    <span data-testid="accurate">Accurate</span> 
+                    <span data-testid="assessments">Assessments</span>
+                </h2>
+                <p class="section-subtitle" data-testid="technology-subtitle">
+                    <span data-testid="we">We</span> 
+                    <span data-testid="invest">invest</span> 
+                    <span data-testid="in">in</span> 
+                    <span data-testid="the">the</span> 
+                    <span data-testid="latest">latest</span> 
+                    <span data-testid="inspection">inspection</span> 
+                    <span data-testid="technology">technology</span> 
+                    <span data-testid="to">to</span> 
+                    <span data-testid="provide">provide</span> 
+                    <span data-testid="the">the</span> 
+                    <span data-testid="most">most</span> 
+                    <span data-testid="thorough">thorough</span> 
+                    <span data-testid="and">and</span> 
+                    <span data-testid="accurate">accurate</span> 
+                    <span data-testid="roof">roof</span> 
+                    <span data-testid="evaluations">evaluations</span>
+                </p>
+            </div>
+            
+            <div class="tech-feature" data-testid="tech-drone">
+                <div class="tech-content" data-testid="drone-content">
+                    <h3 class="tech-title" data-testid="drone-title">
+                        <span data-testid="aerial">Aerial</span> 
+                        <span data-testid="drone">Drone</span> 
+                        <span data-testid="documentation">Documentation</span>
+                    </h3>
+                    <p class="tech-description" data-testid="drone-description">
+                        <span data-testid="our">Our</span> 
+                        <span data-testid="licensed">licensed</span> 
+                        <span data-testid="drone">drone</span> 
+                        <span data-testid="pilots">pilots</span> 
+                        <span data-testid="capture">capture</span> 
+                        <span data-testid="high">high-resolution</span> 
+                        <span data-testid="imagery">imagery</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="your">your</span> 
+                        <span data-testid="entire">entire</span> 
+                        <span data-testid="roof">roof,</span> 
+                        <span data-testid="including">including</span> 
+                        <span data-testid="areas">areas</span> 
+                        <span data-testid="unsafe">unsafe</span> 
+                        <span data-testid="or">or</span> 
+                        <span data-testid="impossible">impossible</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="access">access</span> 
+                        <span data-testid="on">on</span> 
+                        <span data-testid="foot">foot.</span>
+                    </p>
+                    <ul class="tech-benefits" data-testid="drone-benefits">
+                        <li data-testid="benefit-safety">Safety - No need for ladder access to steep areas</li>
+                        <li data-testid="benefit-comprehensive">Comprehensive - Every square foot documented</li>
+                        <li data-testid="benefit-detailed">Detailed - 4K resolution reveals minor issues</li>
+                        <li data-testid="benefit-fast">Fast - Complete roof scan in minutes</li>
+                    </ul>
+                </div>
+                <div class="tech-image" data-testid="drone-image">
+                    <span data-testid="drone-placeholder">Drone Inspection Technology</span>
+                </div>
+            </div>
+            
+            <div class="tech-feature" data-testid="tech-thermal">
+                <div class="tech-content" data-testid="thermal-content">
+                    <h3 class="tech-title" data-testid="thermal-title">
+                        <span data-testid="infrared">Infrared</span> 
+                        <span data-testid="moisture">Moisture</span> 
+                        <span data-testid="detection">Detection</span>
+                    </h3>
+                    <p class="tech-description" data-testid="thermal-description">
+                        <span data-testid="advanced">Advanced</span> 
+                        <span data-testid="thermal">thermal</span> 
+                        <span data-testid="imaging">imaging</span> 
+                        <span data-testid="reveals">reveals</span> 
+                        <span data-testid="hidden">hidden</span> 
+                        <span data-testid="moisture">moisture,</span> 
+                        <span data-testid="insulation">insulation</span> 
+                        <span data-testid="problems">problems,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="energy">energy</span> 
+                        <span data-testid="loss">loss</span> 
+                        <span data-testid="invisible">invisible</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="the">the</span> 
+                        <span data-testid="naked">naked</span> 
+                        <span data-testid="eye">eye.</span>
+                    </p>
+                    <ul class="tech-benefits" data-testid="thermal-benefits">
+                        <li data-testid="benefit-leaks">Hidden leaks detected early</li>
+                        <li data-testid="benefit-gaps">Insulation gaps identified</li>
+                        <li data-testid="benefit-efficiency">Energy efficiency problems revealed</li>
+                        <li data-testid="benefit-mapping">Non-invasive moisture mapping</li>
+                    </ul>
+                </div>
+                <div class="tech-image" data-testid="thermal-image">
+                    <span data-testid="thermal-placeholder">Thermal Imaging Technology</span>
+                </div>
+            </div>
+            
+            <div class="tech-feature" data-testid="tech-reporting">
+                <div class="tech-content" data-testid="reporting-content">
+                    <h3 class="tech-title" data-testid="reporting-title">
+                        <span data-testid="interactive">Interactive</span> 
+                        <span data-testid="digital">Digital</span> 
+                        <span data-testid="reports">Reports</span>
+                    </h3>
+                    <p class="tech-description" data-testid="reporting-description">
+                        <span data-testid="receive">Receive</span> 
+                        <span data-testid="a">a</span> 
+                        <span data-testid="comprehensive">comprehensive</span> 
+                        <span data-testid="digital">digital</span> 
+                        <span data-testid="report">report</span> 
+                        <span data-testid="accessible">accessible</span> 
+                        <span data-testid="from">from</span> 
+                        <span data-testid="any">any</span> 
+                        <span data-testid="device">device</span> 
+                        <span data-testid="with">with</span> 
+                        <span data-testid="photos">photos,</span> 
+                        <span data-testid="videos">videos,</span> 
+                        <span data-testid="detailed">detailed</span> 
+                        <span data-testid="findings">findings,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="repair">repair</span> 
+                        <span data-testid="recommendations">recommendations.</span>
+                    </p>
+                    <ul class="tech-benefits" data-testid="reporting-benefits">
+                        <li data-testid="benefit-ratings">Color-coded priority ratings</li>
+                        <li data-testid="benefit-galleries">Interactive photo galleries</li>
+                        <li data-testid="benefit-estimates">Cost estimates for repairs</li>
+                        <li data-testid="benefit-access">Lifetime access to your report</li>
+                    </ul>
+                </div>
+                <div class="tech-image" data-testid="reporting-image">
+                    <span data-testid="reporting-placeholder">Digital Reporting Platform</span>
+                </div>
+            </div>
+            
+            <div class="tech-feature" data-testid="tech-moisture">
+                <div class="tech-content" data-testid="moisture-content">
+                    <h3 class="tech-title" data-testid="moisture-title">
+                        <span data-testid="scientific">Scientific</span> 
+                        <span data-testid="moisture">Moisture</span> 
+                        <span data-testid="analysis">Analysis</span>
+                    </h3>
+                    <p class="tech-description" data-testid="moisture-description">
+                        <span data-testid="professional">Professional-grade</span> 
+                        <span data-testid="moisture">moisture</span> 
+                        <span data-testid="meters">meters</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="testing">testing</span> 
+                        <span data-testid="equipment">equipment</span> 
+                        <span data-testid="detect">detect</span> 
+                        <span data-testid="water">water</span> 
+                        <span data-testid="intrusion">intrusion</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="determine">determine</span> 
+                        <span data-testid="the">the</span> 
+                        <span data-testid="extent">extent</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="moisture">moisture</span> 
+                        <span data-testid="damage">damage.</span>
+                    </p>
+                    <ul class="tech-benefits" data-testid="moisture-benefits">
+                        <li data-testid="benefit-pinpoint">Pinpoint leak sources</li>
+                        <li data-testid="benefit-measure">Measure moisture depth</li>
+                        <li data-testid="benefit-assess">Assess wood rot extent</li>
+                        <li data-testid="benefit-track">Track moisture remediation</li>
+                    </ul>
+                </div>
+                <div class="tech-image" data-testid="moisture-image">
+                    <span data-testid="moisture-placeholder">Moisture Testing Equipment</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Report Section -->
+    <section class="report" data-testid="section-report">
+        <div class="container" data-testid="report-container">
+            <div class="section-header" data-testid="report-header">
+                <h2 data-testid="report-title">
+                    <span data-testid="your">Your</span> 
+                    <span data-testid="comprehensive">Comprehensive</span> 
+                    <span data-testid="inspection">Inspection</span> 
+                    <span data-testid="report">Report</span>
+                </h2>
+            </div>
+            
+            <div class="report-grid" data-testid="report-grid">
+                <div class="report-component" data-testid="component-summary">
+                    <div class="component-icon" data-testid="icon-summary">DOC</div>
+                    <h3 class="component-title" data-testid="title-summary">
+                        <span data-testid="executive">Executive</span> 
+                        <span data-testid="summary">Summary</span>
+                    </h3>
+                    <p class="component-description" data-testid="description-summary">
+                        <span data-testid="one">One-page</span> 
+                        <span data-testid="overview">overview</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="overall">overall</span> 
+                        <span data-testid="roof">roof</span> 
+                        <span data-testid="condition">condition,</span> 
+                        <span data-testid="critical">critical</span> 
+                        <span data-testid="findings">findings,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="priority">priority</span> 
+                        <span data-testid="recommendations">recommendations.</span> 
+                        <span data-testid="perfect">Perfect</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="quick">quick</span> 
+                        <span data-testid="review">review.</span>
+                    </p>
+                    <p class="component-includes" data-testid="includes-summary">
+                        <span data-testid="includes">Includes:</span> 
+                        <span data-testid="overall">Overall</span> 
+                        <span data-testid="rating">rating,</span> 
+                        <span data-testid="urgent">urgent</span> 
+                        <span data-testid="items">items,</span> 
+                        <span data-testid="estimated">estimated</span> 
+                        <span data-testid="lifespan">lifespan</span>
+                    </p>
+                </div>
+                
+                <div class="report-component" data-testid="component-photos">
+                    <div class="component-icon" data-testid="icon-photos">CAM</div>
+                    <h3 class="component-title" data-testid="title-photos">
+                        <span data-testid="detailed">Detailed</span> 
+                        <span data-testid="photo">Photo</span> 
+                        <span data-testid="gallery">Gallery</span>
+                    </h3>
+                    <p class="component-description" data-testid="description-photos">
+                        <span data-testid="hundreds">Hundreds</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="high">high-resolution</span> 
+                        <span data-testid="photos">photos</span> 
+                        <span data-testid="organized">organized</span> 
+                        <span data-testid="by">by</span> 
+                        <span data-testid="roof">roof</span> 
+                        <span data-testid="section">section</span> 
+                        <span data-testid="with">with</span> 
+                        <span data-testid="annotations">annotations</span> 
+                        <span data-testid="highlighting">highlighting</span> 
+                        <span data-testid="specific">specific</span> 
+                        <span data-testid="issues">issues</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="concerns">concerns.</span>
+                    </p>
+                    <p class="component-includes" data-testid="includes-photos">
+                        <span data-testid="includes">Includes:</span> 
+                        <span data-testid="ground">Ground,</span> 
+                        <span data-testid="roof">roof,</span> 
+                        <span data-testid="aerial">aerial,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="thermal">thermal</span> 
+                        <span data-testid="images">images</span>
+                    </p>
+                </div>
+                
+                <div class="report-component" data-testid="component-findings">
+                    <div class="component-icon" data-testid="icon-findings">LIST</div>
+                    <h3 class="component-title" data-testid="title-findings">
+                        <span data-testid="fifty">50-Point</span> 
+                        <span data-testid="assessment">Assessment</span> 
+                        <span data-testid="results">Results</span>
+                    </h3>
+                    <p class="component-description" data-testid="description-findings">
+                        <span data-testid="complete">Complete</span> 
+                        <span data-testid="inspection">inspection</span> 
+                        <span data-testid="checklist">checklist</span> 
+                        <span data-testid="with">with</span> 
+                        <span data-testid="pass">pass/fail</span> 
+                        <span data-testid="ratings">ratings,</span> 
+                        <span data-testid="condition">condition</span> 
+                        <span data-testid="scores">scores,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="detailed">detailed</span> 
+                        <span data-testid="notes">notes</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="every">every</span> 
+                        <span data-testid="component">component</span> 
+                        <span data-testid="evaluated">evaluated.</span>
+                    </p>
+                    <p class="component-includes" data-testid="includes-findings">
+                        <span data-testid="includes">Includes:</span> 
+                        <span data-testid="priority">Priority</span> 
+                        <span data-testid="ratings">ratings,</span> 
+                        <span data-testid="severity">severity</span> 
+                        <span data-testid="levels">levels</span>
+                    </p>
+                </div>
+                
+                <div class="report-component" data-testid="component-costs">
+                    <div class="component-icon" data-testid="icon-costs">CALC</div>
+                    <h3 class="component-title" data-testid="title-costs">
+                        <span data-testid="repair">Repair</span> 
+                        <span data-testid="cost">Cost</span> 
+                        <span data-testid="projections">Projections</span>
+                    </h3>
+                    <p class="component-description" data-testid="description-costs">
+                        <span data-testid="detailed">Detailed</span> 
+                        <span data-testid="estimates">estimates</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="recommended">recommended</span> 
+                        <span data-testid="repairs">repairs</span> 
+                        <span data-testid="categorized">categorized</span> 
+                        <span data-testid="by">by</span> 
+                        <span data-testid="urgency">urgency:</span> 
+                        <span data-testid="immediate">immediate,</span> 
+                        <span data-testid="short">short-term</span> 
+                        <span data-testid="one">1-2</span> 
+                        <span data-testid="years">years,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="long">long-term</span> 
+                        <span data-testid="maintenance">maintenance.</span>
+                    </p>
+                    <p class="component-includes" data-testid="includes-costs">
+                        <span data-testid="includes">Includes:</span> 
+                        <span data-testid="material">Material</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="labor">labor</span> 
+                        <span data-testid="breakdowns">breakdowns</span>
+                    </p>
+                </div>
+                
+                <div class="report-component" data-testid="component-maintenance">
+                    <div class="component-icon" data-testid="icon-maintenance">SCHED</div>
+                    <h3 class="component-title" data-testid="title-maintenance">
+                        <span data-testid="custom">Custom</span> 
+                        <span data-testid="maintenance">Maintenance</span> 
+                        <span data-testid="schedule">Schedule</span>
+                    </h3>
+                    <p class="component-description" data-testid="description-maintenance">
+                        <span data-testid="personalized">Personalized</span> 
+                        <span data-testid="maintenance">maintenance</span> 
+                        <span data-testid="calendar">calendar</span> 
+                        <span data-testid="with">with</span> 
+                        <span data-testid="recommended">recommended</span> 
+                        <span data-testid="service">service</span> 
+                        <span data-testid="intervals">intervals</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="extend">extend</span> 
+                        <span data-testid="your">your</span> 
+                        <span data-testid="roof">roof's</span> 
+                        <span data-testid="lifespan">lifespan</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="maintain">maintain</span> 
+                        <span data-testid="warranty">warranty</span> 
+                        <span data-testid="compliance">compliance.</span>
+                    </p>
+                    <p class="component-includes" data-testid="includes-maintenance">
+                        <span data-testid="includes">Includes:</span> 
+                        <span data-testid="seasonal">Seasonal</span> 
+                        <span data-testid="checklists">checklists,</span> 
+                        <span data-testid="reminder">reminder</span> 
+                        <span data-testid="system">system</span>
+                    </p>
+                </div>
+                
+                <div class="report-component" data-testid="component-resources">
+                    <div class="component-icon" data-testid="icon-resources">BOOK</div>
+                    <h3 class="component-title" data-testid="title-resources">
+                        <span data-testid="educational">Educational</span> 
+                        <span data-testid="resources">Resources</span>
+                    </h3>
+                    <p class="component-description" data-testid="description-resources">
+                        <span data-testid="helpful">Helpful</span> 
+                        <span data-testid="guides">guides</span> 
+                        <span data-testid="explaining">explaining</span> 
+                        <span data-testid="roofing">roofing</span> 
+                        <span data-testid="terminology">terminology,</span> 
+                        <span data-testid="maintenance">maintenance</span> 
+                        <span data-testid="best">best</span> 
+                        <span data-testid="practices">practices,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="tips">tips</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="monitoring">monitoring</span> 
+                        <span data-testid="your">your</span> 
+                        <span data-testid="roof">roof</span> 
+                        <span data-testid="between">between</span> 
+                        <span data-testid="professional">professional</span> 
+                        <span data-testid="inspections">inspections.</span>
+                    </p>
+                    <p class="component-includes" data-testid="includes-resources">
+                        <span data-testid="includes">Includes:</span> 
+                        <span data-testid="troubleshooting">Troubleshooting</span> 
+                        <span data-testid="guides">guides,</span> 
+                        <span data-testid="warranty">warranty</span> 
+                        <span data-testid="info">info</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" data-testid="section-pricing">
+        <div class="container" data-testid="pricing-container">
+            <div class="section-header" data-testid="pricing-header">
+                <h2 data-testid="pricing-title">
+                    <span data-testid="clear">Clear,</span> 
+                    <span data-testid="upfront">Upfront</span> 
+                    <span data-testid="inspection">Inspection</span> 
+                    <span data-testid="pricing">Pricing</span>
+                </h2>
+                <p class="section-subtitle" data-testid="pricing-subtitle">
+                    <span data-testid="no">No</span> 
+                    <span data-testid="hidden">hidden</span> 
+                    <span data-testid="fees">fees,</span> 
+                    <span data-testid="no">no</span> 
+                    <span data-testid="surprises">surprises.</span> 
+                    <span data-testid="know">Know</span> 
+                    <span data-testid="exactly">exactly</span> 
+                    <span data-testid="what">what</span> 
+                    <span data-testid="youre">you're</span> 
+                    <span data-testid="paying">paying</span> 
+                    <span data-testid="for">for.</span>
+                </p>
+            </div>
+            
+            <div class="pricing-grid" data-testid="pricing-grid">
+                <div class="pricing-tier" data-testid="tier-basic">
+                    <h3 class="tier-title" data-testid="title-basic">
+                        <span data-testid="basic">Basic</span> 
+                        <span data-testid="assessment">Assessment</span>
+                    </h3>
+                    <div class="tier-price" data-testid="price-basic">$199</div>
+                    <p class="tier-best-for" data-testid="best-for-basic">
+                        <span data-testid="quick">Quick</span> 
+                        <span data-testid="damage">damage</span> 
+                        <span data-testid="check">check</span>
+                    </p>
+                    <ul class="tier-features" data-testid="features-basic">
+                        <li data-testid="feature-ground">Ground-level visual inspection</li>
+                        <li data-testid="feature-photos-basic">Basic photo documentation (25-30 photos)</li>
+                        <li data-testid="feature-summary">Summary report with major findings</li>
+                        <li data-testid="feature-priority">Repair priority recommendations</li>
+                        <li data-testid="feature-verbal">Same-day verbal report</li>
+                        <li data-testid="feature-written">Written report within 24 hours</li>
+                    </ul>
+                    <button class="tier-cta" data-testid="cta-basic">
+                        <span data-testid="schedule">Schedule</span> 
+                        <span data-testid="basic">Basic</span> 
+                        <span data-testid="inspection">Inspection</span>
+                    </button>
+                </div>
+                
+                <div class="pricing-tier featured" data-testid="tier-comprehensive">
+                    <div class="popular-badge" data-testid="badge-popular">MOST POPULAR</div>
+                    <h3 class="tier-title" data-testid="title-comprehensive">
+                        <span data-testid="complete">Complete</span> 
+                        <span data-testid="assessment">Assessment</span>
+                    </h3>
+                    <div class="tier-price" data-testid="price-comprehensive">$349</div>
+                    <p class="tier-best-for" data-testid="best-for-comprehensive">
+                        <span data-testid="full">Full</span> 
+                        <span data-testid="roof">roof</span> 
+                        <span data-testid="evaluation">evaluation</span>
+                    </p>
+                    <ul class="tier-features" data-testid="features-comprehensive">
+                        <li data-testid="feature-walk">Roof walk inspection (when safe)</li>
+                        <li data-testid="feature-photos-comp">Extensive photo documentation (100+ photos)</li>
+                        <li data-testid="feature-fifty">Detailed 50-point assessment</li>
+                        <li data-testid="feature-drone-comp">Drone aerial photography</li>
+                        <li data-testid="feature-digital">Interactive digital report</li>
+                        <li data-testid="feature-costs">Cost estimates for repairs</li>
+                        <li data-testid="feature-schedule">Maintenance schedule included</li>
+                        <li data-testid="feature-access">1-year report access online</li>
+                    </ul>
+                    <button class="tier-cta" data-testid="cta-comprehensive">
+                        <span data-testid="schedule">Schedule</span> 
+                        <span data-testid="comprehensive">Comprehensive</span>
+                    </button>
+                </div>
+                
+                <div class="pricing-tier" data-testid="tier-premium">
+                    <h3 class="tier-title" data-testid="title-premium">
+                        <span data-testid="advanced">Advanced</span> 
+                        <span data-testid="inspection">Inspection</span>
+                    </h3>
+                    <div class="tier-price" data-testid="price-premium">$549</div>
+                    <p class="tier-best-for" data-testid="best-for-premium">
+                        <span data-testid="hidden">Hidden</span> 
+                        <span data-testid="problem">problem</span> 
+                        <span data-testid="detection">detection</span>
+                    </p>
+                    <ul class="tier-features" data-testid="features-premium">
+                        <li data-testid="feature-thermal">Infrared thermal imaging</li>
+                        <li data-testid="feature-moisture">Moisture meter testing</li>
+                        <li data-testid="feature-attic">Attic interior inspection</li>
+                        <li data-testid="feature-airflow">Ventilation airflow analysis</li>
+                        <li data-testid="feature-energy">Energy efficiency assessment</li>
+                        <li data-testid="feature-warranty">Extended warranty documentation</li>
+                        <li data-testid="feature-lifetime">Lifetime report access</li>
+                        <li data-testid="feature-priority">Priority scheduling for repairs</li>
+                    </ul>
+                    <button class="tier-cta" data-testid="cta-premium">
+                        <span data-testid="schedule">Schedule</span> 
+                        <span data-testid="premium">Premium</span> 
+                        <span data-testid="inspection">Inspection</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq" data-testid="section-faq">
+        <div class="container" data-testid="faq-container">
+            <div class="section-header" data-testid="faq-header">
+                <h2 data-testid="faq-title">
+                    <span data-testid="roof">Roof</span> 
+                    <span data-testid="inspection">Inspection</span> 
+                    <span data-testid="questions">Questions</span> 
+                    <span data-testid="answered">Answered</span>
+                </h2>
+            </div>
+            
+            <div class="faq-grid" data-testid="faq-grid">
+                <div class="faq-categories" data-testid="faq-categories">
+                    <div class="category-item active" data-testid="category-about">About Inspections</div>
+                    <div class="category-item" data-testid="category-scheduling">Scheduling & Timing</div>
+                    <div class="category-item" data-testid="category-expect">What to Expect</div>
+                    <div class="category-item" data-testid="category-reports">Reports & Results</div>
+                    <div class="category-item" data-testid="category-costs">Costs & Payment</div>
+                    <div class="category-item" data-testid="category-after">After Inspection</div>
+                </div>
+                
+                <div class="faq-content" data-testid="faq-content">
+                    <div class="faq-item" data-testid="faq-1">
+                        <h3 class="faq-question" data-testid="question-1">
+                            <span data-testid="q1-text">How often should I have my roof inspected?</span>
+                        </h3>
+                        <p class="faq-answer" data-testid="answer-1">
+                            <span data-testid="a1-text">We recommend annual professional inspections for all roofs, with additional inspections after major storms. Roofs over 10 years old may benefit from twice-yearly checks. Regular inspections catch small problems before they become expensive repairs.</span>
+                        </p>
+                    </div>
+                    
+                    <div class="faq-item" data-testid="faq-2">
+                        <h3 class="faq-question" data-testid="question-2">
+                            <span data-testid="q2-text">What's the difference between an inspection and an estimate?</span>
+                        </h3>
+                        <p class="faq-answer" data-testid="answer-2">
+                            <span data-testid="a2-text">A roof inspection is a comprehensive assessment of your roof's condition, documenting all issues whether you repair them or not. An estimate focuses on specific known problems and provides pricing for repairs. Our inspections often include repair estimates when issues are found.</span>
+                        </p>
+                    </div>
+                    
+                    <div class="faq-item" data-testid="faq-3">
+                        <h3 class="faq-question" data-testid="question-3">
+                            <span data-testid="q3-text">How quickly can you schedule an inspection?</span>
+                        </h3>
+                        <p class="faq-answer" data-testid="answer-3">
+                            <span data-testid="a3-text">Most non-emergency inspections can be scheduled within 3-5 business days. We offer same-day emergency inspections for urgent situations like storm damage or active leaks (additional fees apply). Post-storm demand may extend wait times.</span>
+                        </p>
+                    </div>
+                    
+                    <div class="faq-item" data-testid="faq-4">
+                        <h3 class="faq-question" data-testid="question-4">
+                            <span data-testid="q4-text">How long does a roof inspection take?</span>
+                        </h3>
+                        <p class="faq-answer" data-testid="answer-4">
+                            <span data-testid="a4-text">Basic visual inspections take about 1 hour. Comprehensive inspections typically require 2-3 hours. Premium inspections with thermal imaging may take 3-4 hours. Duration depends on roof size, complexity, accessibility, and condition.</span>
+                        </p>
+                    </div>
+                    
+                    <div class="faq-item" data-testid="faq-5">
+                        <h3 class="faq-question" data-testid="question-5">
+                            <span data-testid="q5-text">Will inspectors walk on my roof?</span>
+                        </h3>
+                        <p class="faq-answer" data-testid="answer-5">
+                            <span data-testid="a5-text">When safely accessible, yes. Our inspectors follow strict safety protocols and use appropriate equipment. For steep, fragile, or dangerous roofs, we use drone technology and ground-level assessment tools to avoid damage or injury risk.</span>
+                        </p>
+                    </div>
+                    
+                    <div class="faq-item" data-testid="faq-6">
+                        <h3 class="faq-question" data-testid="question-6">
+                            <span data-testid="q6-text">What should I do to prepare for an inspection?</span>
+                        </h3>
+                        <p class="faq-answer" data-testid="answer-6">
+                            <span data-testid="a6-text">Ensure inspector access to property, clear driveway for parking, secure pets, provide attic access if needed, locate any previous inspection or repair records, and note any specific concerns you want addressed.</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" data-testid="section-contact">
+        <div class="container" data-testid="contact-container">
+            <div class="contact-grid" data-testid="contact-grid">
+                <div class="contact-info" data-testid="contact-info">
+                    <h3 data-testid="contact-title">
+                        <span data-testid="contact">Contact</span> 
+                        <span data-testid="us">Us</span> 
+                        <span data-testid="today">Today</span>
+                    </h3>
+
+                    <div class="contact-item" data-testid="contact-phone">
+                        <div class="contact-icon" data-testid="icon-phone">PHONE</div>
+                        <div class="contact-details" data-testid="details-phone">
+                            <h4 data-testid="phone-title">
+                                <span data-testid="call">Call</span> 
+                                <span data-testid="now">Now</span>
+                            </h4>
+                            <p data-testid="phone-number">
+                                <a href="tel:{{company_phone}}" data-testid="phone-link">{{company_phone}}</a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item" data-testid="contact-email">
+                        <div class="contact-icon" data-testid="icon-email">EMAIL</div>
+                        <div class="contact-details" data-testid="details-email">
+                            <h4 data-testid="email-title">
+                                <span data-testid="email">Email</span> 
+                                <span data-testid="us">Us</span>
+                            </h4>
+                            <p data-testid="email-address">
+                                <a href="mailto:{{company_email}}" data-testid="email-link">{{company_email}}</a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item" data-testid="contact-service-area">
+                        <div class="contact-icon" data-testid="icon-location">LOCATION</div>
+                        <div class="contact-details" data-testid="details-location">
+                            <h4 data-testid="service-area-title">
+                                <span data-testid="service">Service</span> 
+                                <span data-testid="area">Area</span>
+                            </h4>
+                            <p data-testid="service-area-text">
+                                <span data-testid="city-service">{{city_name}}</span> 
+                                <span data-testid="and">and</span> 
+                                <span data-testid="surrounding">Surrounding</span> 
+                                <span data-testid="areas">Areas</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item" data-testid="contact-hours">
+                        <div class="contact-icon" data-testid="icon-hours">CLOCK</div>
+                        <div class="contact-details" data-testid="details-hours">
+                            <h4 data-testid="hours-title">
+                                <span data-testid="business">Business</span> 
+                                <span data-testid="hours">Hours</span>
+                            </h4>
+                            <p data-testid="hours-text">
+                                <span data-testid="mon-sat">Mon-Sat:</span> 
+                                <span data-testid="hours-range">7:00 AM - 6:00 PM</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form-container" data-testid="contact-form-container">
+                    <form action="/submit-contact" method="POST" data-testid="contact-form">
+                        <div class="form-group" data-testid="form-group-contact-name">
+                            <label for="contact-name" class="form-label" data-testid="label-contact-name">Name *</label>
+                            <input type="text" id="contact-name" name="name" class="form-input" data-testid="input-contact-name" required>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-contact-phone">
+                            <label for="contact-phone" class="form-label" data-testid="label-contact-phone">Phone *</label>
+                            <input type="tel" id="contact-phone" name="phone" class="form-input" data-testid="input-contact-phone" required>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-contact-email">
+                            <label for="contact-email" class="form-label" data-testid="label-contact-email">Email</label>
+                            <input type="email" id="contact-email" name="email" class="form-input" data-testid="input-contact-email">
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-service-needed">
+                            <label for="service-needed" class="form-label" data-testid="label-service-needed">Service Needed</label>
+                            <select id="service-needed" name="service_needed" class="form-select" data-testid="select-service-needed">
+                                <option value="" data-testid="option-select">Select Service</option>
+                                <option value="routine-inspection" data-testid="option-routine-inspection">Routine Inspection</option>
+                                <option value="pre-purchase" data-testid="option-pre-purchase">Pre-Purchase Inspection</option>
+                                <option value="insurance-claim" data-testid="option-insurance-claim">Insurance Claim Assessment</option>
+                                <option value="storm-damage" data-testid="option-storm-damage">Storm Damage Assessment</option>
+                                <option value="pre-sale" data-testid="option-pre-sale">Pre-Sale Certification</option>
+                                <option value="warranty-check" data-testid="option-warranty-check">Warranty Check</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-contact-details">
+                            <label for="contact-details" class="form-label" data-testid="label-contact-details">Additional Details</label>
+                            <textarea id="contact-details" name="details" class="form-textarea" rows="4" placeholder="Tell us about your inspection needs..." data-testid="textarea-contact-details"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="form-submit" data-testid="submit-contact">
+                            <span data-testid="send">Send</span> 
+                            <span data-testid="message">Message</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Hail Damage Repair {{city_name}} | 24/7 Response | Clear Home</title>
+    <meta name="description" content="Emergency hail damage roof repair in {{city_name}}. Insurance claims assistance, free inspections, 24/7 response. Clear Home - your trusted local roofing experts.">
+    <meta name="keywords" content="hail damage repair {{city_name}}, emergency roof repair, hail storm damage, insurance claims assistance">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Emergency Hail Damage Repair {{city_name}} | 24/7 Response | Clear Home">
+    <meta property="og:description" content="Emergency hail damage roof repair in {{city_name}}. Insurance claims assistance, free inspections, 24/7 response.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clearhome.pro/{{city_slug}}/hail-damage-repair">
+    <meta property="og:image" content="https://clearhome.pro/images/hail-damage-{{city_slug}}.jpg">
+    
+    <!-- Local Business Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Clear Home Hail Damage Repair",
+        "description": "Emergency hail damage roof repair services in {{city_name}}. 24/7 response, insurance claims assistance, free inspections.",
+        "url": "https://clearhome.pro/{{city_slug}}/hail-damage-repair",
+        "telephone": "{{company_phone}}",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "900 Camp Street, 3rd Floor",
+            "addressLocality": "New Orleans",
+            "addressRegion": "LA",
+            "postalCode": "70130",
+            "addressCountry": "US"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": {{city_latitude}},
+            "longitude": {{city_longitude}}
+        },
+        "serviceArea": {
+            "@type": "City",
+            "name": "{{city_name}}, Louisiana"
+        },
+        "openingHours": "Mo-Su 00:00-23:59",
+        "availableLanguage": "English",
+        "priceRange": "$$",
+        "specialties": ["Hail Damage Repair", "Emergency Roof Repair", "Storm Damage Assessment", "Insurance Claims"],
+        "services": [
+            "Emergency Hail Damage Repair",
+            "Storm Damage Assessment", 
+            "Insurance Claims Assistance",
+            "Emergency Roof Protection",
+            "Hail Damage Documentation"
+        ]
+    }
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1a202c;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Emergency Response Bar */
+        .emergency-bar {
+            background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(220, 38, 38, 0.3);
+        }
+        
+        .emergency-bar-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            font-weight: 600;
+        }
+        
+        .emergency-phone {
+            font-size: 1.1rem;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .emergency-phone:hover {
+            text-decoration: underline;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?ixlib=rb-4.0.3') center/cover;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .hero h2 {
+            font-size: 1.5rem;
+            color: #FF6B35;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .hero-description {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-emergency {
+            background: #FF6B35;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-emergency:hover {
+            background: #E55A2B;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            color: #1a202c;
+        }
+        
+        /* Emergency Promise Section */
+        .emergency-promise {
+            background: #F8F9FA;
+            padding: 3rem 0;
+            text-align: center;
+        }
+        
+        .promise-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 4px solid #FF6B35;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .promise-content h3 {
+            color: #DC2626;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .promise-content p {
+            font-size: 1.1rem;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+        
+        /* Damage Signs Section */
+        .damage-signs {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        
+        .section-description {
+            font-size: 1.2rem;
+            color: #718096;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .warning-signs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .warning-card {
+            background: #F7FAFC;
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 4px solid #DC2626;
+            transition: all 0.3s ease;
+        }
+        
+        .warning-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.1);
+        }
+        
+        .warning-card h3 {
+            color: #DC2626;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .warning-card p {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+        
+        .hidden-danger {
+            background: #FED7D7;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            border-left: 4px solid #E53E3E;
+        }
+        
+        .hidden-danger h3 {
+            color: #E53E3E;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .hidden-danger p {
+            color: #742A2A;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        /* Process Section */
+        .process-section {
+            background: linear-gradient(135deg, #EBF8FF 0%, #DBEAFE 100%);
+            padding: 4rem 0;
+        }
+        
+        .process-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .process-phase {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            text-align: center;
+        }
+        
+        .phase-number {
+            width: 60px;
+            height: 60px;
+            background: #FF6B35;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .process-phase h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+        
+        .process-phase .timeframe {
+            color: #DC2626;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .process-list {
+            list-style: none;
+            text-align: left;
+        }
+        
+        .process-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+            gap: 0.5rem;
+        }
+        
+        .process-icon {
+            color: #22C55E;
+            margin-top: 0.1rem;
+            min-width: 1rem;
+        }
+        
+        /* Why Choose Us Section */
+        .why-choose {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .benefit-card {
+            background: #F7FAFC;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .benefit-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(43, 108, 176, 0.1);
+        }
+        
+        .benefit-icon {
+            font-size: 3rem;
+            color: #2B6CB0;
+            margin-bottom: 1rem;
+        }
+        
+        .benefit-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        
+        .benefit-card p {
+            color: #718096;
+            line-height: 1.6;
+        }
+        
+        /* Insurance Claims Section */
+        .insurance-claims {
+            background: #F8F9FA;
+            padding: 4rem 0;
+        }
+        
+        .claims-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+        
+        .claims-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            border-top: 4px solid #2B6CB0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .claims-card h3 {
+            color: #2B6CB0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .claims-card p {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+        
+        /* Prevention Section */
+        .prevention {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .prevention-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .prevention-item {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .prevention-item h3 {
+            color: #2B6CB0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .prevention-item p {
+            color: #718096;
+            line-height: 1.6;
+        }
+        
+        /* Emergency Contact Section */
+        .emergency-contact {
+            background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .emergency-contact h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .urgency-message {
+            font-size: 1.25rem;
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .contact-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .contact-card {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .contact-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #FED7D7;
+        }
+        
+        .contact-card a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .contact-card a:hover {
+            text-decoration: underline;
+        }
+        
+        .service-area {
+            margin-top: 2rem;
+            font-style: italic;
+            color: #FED7D7;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero h2 {
+                font-size: 1.25rem;
+            }
+            
+            .section-header h2 {
+                font-size: 2rem;
+            }
+            
+            .emergency-contact h2 {
+                font-size: 2rem;
+            }
+            
+            .emergency-bar-content {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-emergency,
+            .btn-secondary {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .process-timeline,
+            .benefits-grid,
+            .claims-content,
+            .prevention-grid,
+            .contact-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Emergency Response Bar -->
+    <div class="emergency-bar" data-testid="emergency-response-bar">
+        <div class="container">
+            <div class="emergency-bar-content" data-testid="emergency-bar-content">
+                <span data-testid="text-emergency-message">EMERGENCY HAIL DAMAGE REPAIR</span>
+                <a href="tel:{{company_phone}}" class="emergency-phone" data-testid="link-emergency-phone">
+                    <span data-testid="icon-phone">•</span> CALL NOW: {{company_phone}}
+                </a>
+                <span data-testid="text-response-time">2-HOUR RESPONSE TIME</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hero Section -->
+    <section class="hero" data-testid="section-hero">
+        <div class="container">
+            <div class="hero-content" data-testid="hero-content">
+                <h1 data-testid="heading-hero-title">Emergency Hail Damage Repair in {{city_name}}</h1>
+                <h2 data-testid="heading-hero-subtitle">24/7 Response • Insurance Claims Assistance • Free Storm Damage Inspections</h2>
+                <p class="hero-description" data-testid="text-hero-description">Hail storms can devastate your roof in minutes. Don't wait – immediate action prevents further damage and protects your property investment. Clear Home's emergency response team is standing by to secure your {{city_name}} property and guide you through the insurance claim process.</p>
+                
+                <div class="hero-buttons" data-testid="hero-buttons">
+                    <a href="tel:{{company_phone}}" class="btn-emergency" data-testid="button-call-now">
+                        CALL NOW: {{company_phone}}
+                    </a>
+                    <a href="#emergency-form" class="btn-secondary" data-testid="button-request-inspection">
+                        Request Emergency Inspection
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Emergency Promise Section -->
+    <section class="emergency-promise" data-testid="section-emergency-promise">
+        <div class="container">
+            <div class="promise-content" data-testid="emergency-promise-content">
+                <h3 data-testid="heading-emergency-guarantee">IMMEDIATE RESPONSE GUARANTEE</h3>
+                <p data-testid="text-emergency-guarantee">We respond to hail damage emergencies in {{city_name}} within 2 hours of your call. Our certified storm damage specialists will assess your property, provide emergency protection, and begin your insurance claim process immediately.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Damage Signs Section -->
+    <section class="damage-signs" data-testid="section-damage-signs">
+        <div class="container">
+            <div class="section-header" data-testid="damage-signs-header">
+                <h2 data-testid="heading-damage-signs">Hail Damage Signs Every {{city_name}} Property Owner Should Know</h2>
+                <p class="section-description" data-testid="text-damage-description">Hail damage often appears subtle initially but can lead to catastrophic roof failure if not addressed immediately. Louisiana's severe weather patterns make {{city_name}} properties particularly vulnerable during spring and summer storm seasons.</p>
+            </div>
+            
+            <div class="warning-signs" data-testid="warning-signs-grid">
+                <div class="warning-card" data-testid="warning-granule-loss">
+                    <h3 data-testid="heading-granule-loss">Granule Loss</h3>
+                    <p data-testid="text-granule-loss">Dark spots or streaks on asphalt shingles where protective granules have been stripped away</p>
+                </div>
+                
+                <div class="warning-card" data-testid="warning-exposed-mat">
+                    <h3 data-testid="heading-exposed-mat">Exposed Mat</h3>
+                    <p data-testid="text-exposed-mat">Black substrate visible through damaged shingle surfaces</p>
+                </div>
+                
+                <div class="warning-card" data-testid="warning-dented-gutters">
+                    <h3 data-testid="heading-dented-gutters">Dented Gutters</h3>
+                    <p data-testid="text-dented-gutters">Impact marks on aluminum gutters and downspouts</p>
+                </div>
+                
+                <div class="warning-card" data-testid="warning-cracked-shingles">
+                    <h3 data-testid="heading-cracked-shingles">Cracked Shingles</h3>
+                    <p data-testid="text-cracked-shingles">Split or fractured shingle surfaces that expose underlayment</p>
+                </div>
+                
+                <div class="warning-card" data-testid="warning-damaged-vents">
+                    <h3 data-testid="heading-damaged-vents">Damaged Vents</h3>
+                    <p data-testid="text-damaged-vents">Dents or cracks in roof vents, skylights, or flashing</p>
+                </div>
+                
+                <div class="warning-card" data-testid="warning-interior-evidence">
+                    <h3 data-testid="heading-interior-evidence">Interior Evidence</h3>
+                    <p data-testid="text-interior-evidence">Water stains, drips, or moisture in attic spaces</p>
+                </div>
+            </div>
+            
+            <div class="hidden-danger" data-testid="hidden-danger-warning">
+                <h3 data-testid="heading-hidden-danger">The Hidden Danger</h3>
+                <p data-testid="text-hidden-danger">Even minor hail damage compromises your roof's weather resistance. Small impacts create entry points for water infiltration, leading to structural damage, mold growth, and expensive interior repairs.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Process Section -->
+    <section class="process-section" data-testid="section-process">
+        <div class="container">
+            <div class="section-header" data-testid="process-section-header">
+                <h2 data-testid="heading-restoration-process">From Emergency Call to Complete Restoration</h2>
+            </div>
+            
+            <div class="process-timeline" data-testid="process-timeline">
+                <div class="process-phase" data-testid="process-phase-1">
+                    <div class="phase-number" data-testid="phase-number-1">1</div>
+                    <h3 data-testid="heading-phase-1">Emergency Response</h3>
+                    <div class="timeframe" data-testid="timeframe-1">(0-2 Hours)</div>
+                    <ul class="process-list" data-testid="list-phase-1">
+                        <li data-testid="phase1-dispatch"><span class="process-icon" data-testid="icon-dispatch">•</span> Immediate dispatch to your {{city_name}} property</li>
+                        <li data-testid="phase1-safety"><span class="process-icon" data-testid="icon-safety">•</span> Safety assessment and hazard evaluation</li>
+                        <li data-testid="phase1-protection"><span class="process-icon" data-testid="icon-protection">•</span> Emergency protection to prevent further damage</li>
+                        <li data-testid="phase1-documentation"><span class="process-icon" data-testid="icon-documentation">•</span> Initial damage photography and assessment</li>
+                    </ul>
+                </div>
+                
+                <div class="process-phase" data-testid="process-phase-2">
+                    <div class="phase-number" data-testid="phase-number-2">2</div>
+                    <h3 data-testid="heading-phase-2">Damage Assessment</h3>
+                    <div class="timeframe" data-testid="timeframe-2">(Day 1-2)</div>
+                    <ul class="process-list" data-testid="list-phase-2">
+                        <li data-testid="phase2-inspection"><span class="process-icon" data-testid="icon-inspection">•</span> Detailed inspection using industry protocols</li>
+                        <li data-testid="phase2-drone"><span class="process-icon" data-testid="icon-drone">•</span> Drone technology for comprehensive documentation</li>
+                        <li data-testid="phase2-interior"><span class="process-icon" data-testid="icon-interior">•</span> Interior assessment for hidden damage</li>
+                        <li data-testid="phase2-estimate"><span class="process-icon" data-testid="icon-estimate">•</span> Preliminary repair estimate and timeline</li>
+                    </ul>
+                </div>
+                
+                <div class="process-phase" data-testid="process-phase-3">
+                    <div class="phase-number" data-testid="phase-number-3">3</div>
+                    <h3 data-testid="heading-phase-3">Insurance Claims</h3>
+                    <div class="timeframe" data-testid="timeframe-3">(Day 1-3)</div>
+                    <ul class="process-list" data-testid="list-phase-3">
+                        <li data-testid="phase3-filing"><span class="process-icon" data-testid="icon-filing">•</span> Complete insurance claim submission</li>
+                        <li data-testid="phase3-adjuster"><span class="process-icon" data-testid="icon-adjuster">•</span> Schedule and attend adjuster meetings</li>
+                        <li data-testid="phase3-advocacy"><span class="process-icon" data-testid="icon-advocacy">•</span> Ensure all damage is properly documented</li>
+                        <li data-testid="phase3-alignment"><span class="process-icon" data-testid="icon-alignment">•</span> Work with adjusters for fair assessment</li>
+                    </ul>
+                </div>
+                
+                <div class="process-phase" data-testid="process-phase-4">
+                    <div class="phase-number" data-testid="phase-number-4">4</div>
+                    <h3 data-testid="heading-phase-4">Restoration</h3>
+                    <div class="timeframe" data-testid="timeframe-4">(Timeline varies)</div>
+                    <ul class="process-list" data-testid="list-phase-4">
+                        <li data-testid="phase4-materials"><span class="process-icon" data-testid="icon-materials">•</span> Source high-quality matching materials</li>
+                        <li data-testid="phase4-installation"><span class="process-icon" data-testid="icon-installation">•</span> Expert installation by certified technicians</li>
+                        <li data-testid="phase4-quality"><span class="process-icon" data-testid="icon-quality">•</span> Multi-point quality assurance inspection</li>
+                        <li data-testid="phase4-documentation"><span class="process-icon" data-testid="icon-final-docs">•</span> Complete project records and warranties</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Why Choose Us Section -->
+    <section class="why-choose" data-testid="section-why-choose">
+        <div class="container">
+            <div class="section-header" data-testid="why-choose-section-header">
+                <h2 data-testid="heading-trusted-team">{{city_name}}'s Most Trusted Storm Damage Restoration Team</h2>
+            </div>
+            
+            <div class="benefits-grid" data-testid="benefits-grid">
+                <div class="benefit-card" data-testid="benefit-experience">
+                    <div class="benefit-icon" data-testid="icon-experience">🏆</div>
+                    <h3 data-testid="heading-experience">20+ Years of Storm Response Experience</h3>
+                    <p data-testid="text-experience">Clear Home has been protecting {{city_name}} properties through countless severe weather events. Our experience with Louisiana's unique climate challenges ensures appropriate, long-lasting repairs.</p>
+                </div>
+                
+                <div class="benefit-card" data-testid="benefit-insurance">
+                    <div class="benefit-icon" data-testid="icon-insurance-expertise">📋</div>
+                    <h3 data-testid="heading-insurance">Insurance Claims Expertise</h3>
+                    <p data-testid="text-insurance">We understand Louisiana insurance policies and work directly with adjusters to maximize your claim coverage. Our documentation process streamlines approval and payment.</p>
+                </div>
+                
+                <div class="benefit-card" data-testid="benefit-emergency">
+                    <div class="benefit-icon" data-testid="icon-emergency-response">⚡</div>
+                    <h3 data-testid="heading-emergency">Emergency Response Capability</h3>
+                    <p data-testid="text-emergency">Our emergency response team maintains 24/7 availability during storm seasons. We stock emergency materials and maintain rapid deployment capabilities.</p>
+                </div>
+                
+                <div class="benefit-card" data-testid="benefit-complete">
+                    <div class="benefit-icon" data-testid="icon-complete-service">🔧</div>
+                    <h3 data-testid="heading-complete">Complete Restoration Services</h3>
+                    <p data-testid="text-complete">Beyond roof repair, Clear Home handles all aspects of hail damage restoration including gutters, siding, windows, and exterior components.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Insurance Claims Section -->
+    <section class="insurance-claims" data-testid="section-insurance-claims">
+        <div class="container">
+            <div class="section-header" data-testid="insurance-section-header">
+                <h2 data-testid="heading-insurance-recovery">Maximizing Your Insurance Recovery</h2>
+            </div>
+            
+            <div class="claims-content" data-testid="claims-content">
+                <div class="claims-card" data-testid="claims-management">
+                    <h3 data-testid="heading-claims-management">Complete Claims Management</h3>
+                    <p data-testid="text-claims-management">Clear Home's insurance specialists handle every aspect of your hail damage claim. From initial filing through final payment, we advocate for fair coverage and ensure all damage receives appropriate compensation.</p>
+                </div>
+                
+                <div class="claims-card" data-testid="claims-documentation">
+                    <h3 data-testid="heading-documentation">Documentation Excellence</h3>
+                    <p data-testid="text-documentation">Our comprehensive damage documentation exceeds insurance company requirements. High-resolution photography, detailed assessments, and precise calculations support your claim.</p>
+                </div>
+                
+                <div class="claims-card" data-testid="claims-adjuster">
+                    <h3 data-testid="heading-adjuster-relations">Adjuster Relations</h3>
+                    <p data-testid="text-adjuster-relations">Our established relationships with insurance adjusters throughout Louisiana facilitate smooth claim processing. We speak their language and understand evaluation criteria.</p>
+                </div>
+                
+                <div class="claims-card" data-testid="claims-supplemental">
+                    <h3 data-testid="heading-supplemental">Supplemental Claims Support</h3>
+                    <p data-testid="text-supplemental">When additional damage becomes apparent during repairs, we handle supplemental claim submissions and coordinate with insurance companies for complete coverage.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Prevention Section -->
+    <section class="prevention" data-testid="section-prevention">
+        <div class="container">
+            <div class="section-header" data-testid="prevention-section-header">
+                <h2 data-testid="heading-property-protection">Protecting Your {{city_name}} Property Investment</h2>
+            </div>
+            
+            <div class="prevention-grid" data-testid="prevention-grid">
+                <div class="prevention-item" data-testid="prevention-materials">
+                    <h3 data-testid="heading-materials">Impact-Resistant Materials</h3>
+                    <p data-testid="text-materials">Upgrade to Class 4 impact-resistant shingles designed to withstand severe hail. These materials often qualify for insurance discounts.</p>
+                </div>
+                
+                <div class="prevention-item" data-testid="prevention-fortified">
+                    <h3 data-testid="heading-fortified">FORTIFIED Construction</h3>
+                    <p data-testid="text-fortified">Consider FORTIFIED construction techniques that exceed standard building codes and can significantly reduce storm damage.</p>
+                </div>
+                
+                <div class="prevention-item" data-testid="prevention-maintenance">
+                    <h3 data-testid="heading-maintenance">Regular Maintenance</h3>
+                    <p data-testid="text-maintenance">Clear Home's maintenance programs identify vulnerabilities before severe weather strikes and extend roof life.</p>
+                </div>
+                
+                <div class="prevention-item" data-testid="prevention-preparation">
+                    <h3 data-testid="heading-preparation">Storm Preparation</h3>
+                    <p data-testid="text-preparation">Pre-season inspections and minor repairs ensure your roof can withstand Louisiana's severe weather patterns.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Emergency Contact Section -->
+    <section class="emergency-contact" data-testid="section-emergency-contact">
+        <div class="container">
+            <h2 data-testid="heading-urgent-warning">Don't Wait – Hail Damage Gets Worse Every Day</h2>
+            <p class="urgency-message" data-testid="text-delay-warning">Every hour of delay allows water infiltration, increases damage scope, and complicates insurance claims. Clear Home's emergency response team is ready to protect your {{city_name}} property immediately.</p>
+            
+            <div class="contact-options" data-testid="contact-options">
+                <div class="contact-card" data-testid="contact-hotline">
+                    <h3 data-testid="heading-hotline">Emergency Hotline</h3>
+                    <a href="tel:{{company_phone}}" data-testid="link-hotline">{{company_phone}}</a>
+                </div>
+                
+                <div class="contact-card" data-testid="contact-text">
+                    <h3 data-testid="heading-text">24/7 Text Response</h3>
+                    <a href="sms:{{company_phone}}?body=EMERGENCY" data-testid="link-text">Text "EMERGENCY" to {{company_phone}}</a>
+                </div>
+                
+                <div class="contact-card" data-testid="contact-form">
+                    <h3 data-testid="heading-form">Online Emergency Form</h3>
+                    <a href="#emergency-form" data-testid="link-form">Submit for immediate callback</a>
+                </div>
+                
+                <div class="contact-card" data-testid="contact-email">
+                    <h3 data-testid="heading-email">Email Priority Response</h3>
+                    <a href="mailto:emergency@clearhome.pro" data-testid="link-email">emergency@clearhome.pro</a>
+                </div>
+            </div>
+            
+            <p class="service-area" data-testid="text-coverage-area">Serving {{city_name}} and all surrounding communities with immediate emergency response capability.</p>
+        </div>
+    </section>
+</body>
+</html>

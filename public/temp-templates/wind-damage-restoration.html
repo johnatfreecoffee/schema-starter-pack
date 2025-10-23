@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wind Damage Restoration {{city_name}} | Emergency Roof Repair</title>
+    <meta name="description" content="24/7 emergency wind damage restoration in {{city_name}}. Fast response, insurance claim help included. Licensed experts. Call {{company_phone}} now.">
+    <meta name="keywords" content="wind damage restoration {{city_name}}, hurricane damage repair {{city_name}}, storm damage contractor, roof wind damage, shingle blow-off repair">
+    <link rel="canonical" href="https://clearhome.pro/services/wind-damage-restoration/{{city_slug}}">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Wind Damage Restoration {{city_name}} | Emergency Roof Repair">
+    <meta property="og:description" content="24/7 emergency wind damage restoration in {{city_name}}. Fast response, insurance claim help included.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://clearhome.pro/services/wind-damage-restoration/{{city_slug}}">
+    <meta property="og:image" content="https://clearhome.pro/images/wind-damage-{{city_slug}}.jpg">
+    
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": ["LocalBusiness", "EmergencyService"],
+        "name": "Clear Home Wind Damage Restoration",
+        "description": "24/7 emergency wind damage restoration services in {{city_name}}. Fast response, hurricane damage repair, insurance claim assistance.",
+        "url": "https://clearhome.pro/services/wind-damage-restoration/{{city_slug}}",
+        "telephone": "{{company_phone}}",
+        "serviceType": "Wind Damage Restoration",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "900 Camp Street, 3rd Floor",
+            "addressLocality": "{{city_name}}",
+            "addressRegion": "{{state_abbr}}",
+            "postalCode": "{{zip_code}}",
+            "addressCountry": "US"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": {{city_latitude}},
+            "longitude": {{city_longitude}}
+        },
+        "areaServed": {
+            "@type": "City",
+            "name": "{{city_name}}, {{state_abbr}}"
+        },
+        "availableChannel": {
+            "@type": "ServiceChannel",
+            "servicePhone": "{{company_phone}}",
+            "availableLanguage": "English"
+        },
+        "openingHours": "Mo,Tu,We,Th,Fr,Sa,Su 00:00-23:59",
+        "availableLanguage": "English",
+        "priceRange": "$$",
+        "specialties": ["Wind Damage Restoration", "Hurricane Damage Repair", "Emergency Roof Repair", "Storm Damage Assessment"],
+        "services": [
+            "Emergency Wind Damage Restoration",
+            "Hurricane Damage Repair", 
+            "Storm Damage Assessment",
+            "Insurance Claims Assistance",
+            "Emergency Tarping Services"
+        ]
+    }
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1a202c;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Emergency Badge */
+        .emergency-badge {
+            background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(220, 38, 38, 0.3);
+        }
+        
+        .emergency-badge-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            font-weight: 600;
+        }
+        
+        .emergency-phone {
+            font-size: 1.1rem;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .emergency-phone:hover {
+            text-decoration: underline;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(27, 32, 44, 0.85), rgba(27, 32, 44, 0.6)), url('https://images.unsplash.com/photo-1527482797697-8795b05a13e1?ixlib=rb-4.0.3') center/cover;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            color: white;
+            position: relative;
+        }
+        
+        .hero-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        
+        .hero-main h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .hero-main h2 {
+            font-size: 1.5rem;
+            color: #EDF2F7;
+            margin-bottom: 2rem;
+            line-height: 1.4;
+        }
+        
+        .trust-indicators {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .trust-card {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .trust-icon {
+            font-size: 1.5rem;
+        }
+        
+        .trust-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .hero-ctas {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn-urgent {
+            background: linear-gradient(135deg, #FF6B35 0%, #E55A2B 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+        
+        .btn-urgent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            color: #1a202c;
+        }
+        
+        .hero-sidebar {
+            background: rgba(255,255,255,0.95);
+            color: #1a202c;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .hero-sidebar h3 {
+            color: #DC2626;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .service-message {
+            margin-bottom: 1.5rem;
+            font-style: italic;
+            color: #4a5568;
+        }
+        
+        /* Emergency Context Section */
+        .emergency-context {
+            background: linear-gradient(135deg, #FFF3CD 0%, #FEF9E7 100%);
+            border-left: 4px solid #F59E0B;
+            padding: 2rem 0;
+        }
+        
+        .context-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .context-alert h3 {
+            color: #F59E0B;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .damage-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        
+        .damage-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            gap: 0.5rem;
+        }
+        
+        .warning-text {
+            font-weight: 700;
+            color: #DC2626;
+            margin: 1rem 0;
+        }
+        
+        .btn-warning {
+            background: #F59E0B;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-warning:hover {
+            background: #D97706;
+        }
+        
+        /* Wind Damage Types Section */
+        .damage-types {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        
+        .section-subheading {
+            font-size: 1.2rem;
+            color: #718096;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .damage-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .damage-card {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .damage-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(43, 108, 176, 0.15);
+            border-top: 4px solid #2B6CB0;
+        }
+        
+        .damage-icon {
+            font-size: 4rem;
+            color: #2B6CB0;
+            margin-bottom: 1rem;
+        }
+        
+        .damage-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        
+        .damage-description {
+            color: #4a5568;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .risk-section {
+            background: #FEF2F2;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .risk-section h4 {
+            color: #DC2626;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .risk-list {
+            list-style: none;
+            font-size: 0.9rem;
+            color: #742A2A;
+        }
+        
+        .risk-list li {
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .learn-more {
+            color: #2B6CB0;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .learn-more:hover {
+            text-decoration: underline;
+        }
+        
+        /* Response Process Section */
+        .response-process {
+            background: linear-gradient(135deg, #EBF8FF 0%, #DBEAFE 100%);
+            padding: 4rem 0;
+        }
+        
+        .process-timeline {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-top: 3rem;
+            position: relative;
+        }
+        
+        .process-timeline::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: linear-gradient(to right, #2B6CB0, #215387);
+            z-index: 1;
+            border-radius: 2px;
+        }
+        
+        .process-step {
+            background: white;
+            padding: 2rem 1rem;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .process-step:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(43, 108, 176, 0.2);
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2B6CB0 0%, #215387 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+            border: 4px solid white;
+        }
+        
+        .step-timeline {
+            background: #FF6B35;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        
+        .process-step h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-list {
+            list-style: none;
+            text-align: left;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+        
+        .step-list li {
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .step-icon {
+            color: #22C55E;
+            font-weight: 700;
+        }
+        
+        /* Why Immediate Action Section */
+        .immediate-action {
+            padding: 4rem 0;
+            background: white;
+        }
+        
+        .action-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+        
+        .comparison-column {
+            border-radius: 12px;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .immediate-response {
+            background: linear-gradient(135deg, #F0F9F4 0%, #E6F7E1 100%);
+            border-left: 4px solid #22C55E;
+        }
+        
+        .delayed-response {
+            background: linear-gradient(135deg, #FEF2F2 0%, #FDE8E8 100%);
+            border-left: 4px solid #DC2626;
+        }
+        
+        .comparison-column h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .immediate-response h3 {
+            color: #22C55E;
+        }
+        
+        .delayed-response h3 {
+            color: #DC2626;
+        }
+        
+        .benefit-section {
+            margin-bottom: 2rem;
+        }
+        
+        .benefit-section h4 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #1a202c;
+        }
+        
+        .benefit-list {
+            list-style: none;
+            margin-bottom: 1rem;
+        }
+        
+        .benefit-list li {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            line-height: 1.5;
+        }
+        
+        .immediate-response .benefit-list li {
+            color: #15803D;
+        }
+        
+        .delayed-response .benefit-list li {
+            color: #B91C1C;
+        }
+        
+        /* Insurance Claims Section */
+        .insurance-claims {
+            background: linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 100%);
+            padding: 4rem 0;
+        }
+        
+        .claims-intro {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            text-align: center;
+            font-size: 1.1rem;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+        
+        .claims-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .claim-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .claim-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(43, 108, 176, 0.1);
+        }
+        
+        .claim-icon {
+            font-size: 3rem;
+            color: #2B6CB0;
+            margin-bottom: 1rem;
+        }
+        
+        .claim-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        
+        .claim-features {
+            list-style: none;
+            text-align: left;
+        }
+        
+        .claim-features li {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            color: #4a5568;
+        }
+        
+        .claim-check {
+            color: #22C55E;
+            font-weight: 700;
+        }
+        
+        .success-stats {
+            background: linear-gradient(135deg, #EBF8FF 0%, #DBEAFE 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            border-top: 4px solid #2B6CB0;
+        }
+        
+        .success-stats h3 {
+            color: #2B6CB0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2B6CB0;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #4a5568;
+            line-height: 1.3;
+        }
+        
+        /* Final CTA Section */
+        .final-cta {
+            background: linear-gradient(135deg, #2B6CB0 0%, #215387 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .final-cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .final-cta-text {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .cta-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+        
+        .cta-feature {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-cta-primary {
+            background: white;
+            color: #2B6CB0;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        }
+        
+        .trust-footer {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #CBD5E0;
+            line-height: 1.5;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero-content,
+            .context-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                text-align: center;
+            }
+            
+            .damage-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .process-timeline {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .process-timeline::before {
+                display: none;
+            }
+            
+            .action-comparison,
+            .claims-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-main h1 {
+                font-size: 2rem;
+            }
+            
+            .section-header h2 {
+                font-size: 2rem;
+            }
+            
+            .final-cta h2 {
+                font-size: 2rem;
+            }
+            
+            .emergency-badge-content {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .trust-indicators {
+                grid-template-columns: 1fr;
+            }
+            
+            .damage-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-cta-primary,
+            .btn-secondary {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Emergency Badge -->
+    <div class="emergency-badge" data-testid="emergency-badge">
+        <div class="container">
+            <div class="emergency-badge-content" data-testid="emergency-badge-content">
+                <span data-testid="text-emergency-service">🚨 EMERGENCY SERVICE AVAILABLE</span>
+                <a href="tel:{{company_phone}}" class="emergency-phone" data-testid="link-emergency-phone">
+                    <span data-testid="icon-phone">📞</span> CALL NOW: {{company_phone}}
+                </a>
+                <span data-testid="text-wind-response">24/7 Wind Damage Response</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hero Section -->
+    <section class="hero" data-testid="section-hero">
+        <div class="container">
+            <div class="hero-content" data-testid="hero-content">
+                <div class="hero-main" data-testid="hero-main">
+                    <h1 data-testid="heading-hero-title">Fast Wind Damage Restoration in {{city_name}}</h1>
+                    <h2 data-testid="heading-hero-subtitle">Expert Repairs for Hurricane Damage, Shingle Blow-Offs & Storm-Related Roof Damage</h2>
+                    
+                    <div class="trust-indicators" data-testid="trust-indicators">
+                        <div class="trust-card" data-testid="trust-emergency">
+                            <div class="trust-icon" data-testid="icon-clock">⏰</div>
+                            <div class="trust-text" data-testid="text-emergency-response">24/7 Emergency Response</div>
+                        </div>
+                        <div class="trust-card" data-testid="trust-experience">
+                            <div class="trust-icon" data-testid="icon-shield">🛡️</div>
+                            <div class="trust-text" data-testid="text-experience">20+ Years Experience</div>
+                        </div>
+                        <div class="trust-card" data-testid="trust-insurance">
+                            <div class="trust-icon" data-testid="icon-check">✓</div>
+                            <div class="trust-text" data-testid="text-insurance-experts">Insurance Claim Experts</div>
+                        </div>
+                        <div class="trust-card" data-testid="trust-licensed">
+                            <div class="trust-icon" data-testid="icon-tools">🔧</div>
+                            <div class="trust-text" data-testid="text-licensed">Licensed & Insured</div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-ctas" data-testid="hero-ctas">
+                        <a href="tel:{{company_phone}}" class="btn-urgent" data-testid="button-call-urgent">
+                            📞 Call Now: {{company_phone}}
+                        </a>
+                        <a href="#assessment-form" class="btn-secondary" data-testid="button-emergency-assessment">
+                            Get Emergency Assessment
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="hero-sidebar" data-testid="hero-sidebar">
+                    <h3 data-testid="heading-serving-area">Serving {{city_name}} & Surrounding Areas</h3>
+                    <div class="service-message" data-testid="text-service-message">Same-day emergency response • Insurance claim assistance included</div>
+                    <p data-testid="text-since">Trusted since 2003</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Emergency Context Section -->
+    <section class="emergency-context" data-testid="section-emergency-context">
+        <div class="container">
+            <div class="context-content" data-testid="context-content">
+                <div class="context-alert" data-testid="context-alert">
+                    <h3 data-testid="heading-recent-damage">⚠️ RECENT WIND DAMAGE IN {{city_name}}?</h3>
+                    <p data-testid="text-storm-damage">High winds from recent storms have caused widespread roof damage across the {{city_name}} area. If you've experienced:</p>
+                    
+                    <ul class="damage-list" data-testid="damage-list">
+                        <li data-testid="damage-shingles"><span data-testid="icon-damage-shingles">•</span> Missing or damaged shingles</li>
+                        <li data-testid="damage-debris"><span data-testid="icon-damage-debris">•</span> Visible roof debris</li>
+                        <li data-testid="damage-water"><span data-testid="icon-damage-water">•</span> Interior water damage</li>
+                        <li data-testid="damage-gutters"><span data-testid="icon-damage-gutters">•</span> Lifted flashing or gutters</li>
+                    </ul>
+                    
+                    <p class="warning-text" data-testid="text-warning">DON'T WAIT - Wind damage worsens quickly and can void insurance coverage if not addressed promptly.</p>
+                </div>
+                
+                <div class="context-cta" data-testid="context-cta">
+                    <a href="#inspection-form" class="btn-warning" data-testid="button-free-inspection">Schedule Free Emergency Inspection</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Wind Damage Types Section -->
+    <section class="damage-types" data-testid="section-damage-types">
+        <div class="container">
+            <div class="section-header" data-testid="damage-types-header">
+                <h2 data-testid="heading-damage-types">Types of Wind Damage We Repair in {{city_name}}</h2>
+                <p class="section-subheading" data-testid="text-damage-subheading">From minor shingle damage to complete roof failure, we handle all wind-related roofing emergencies</p>
+            </div>
+            
+            <div class="damage-grid" data-testid="damage-grid">
+                <div class="damage-card" data-testid="card-shingle-blowoff">
+                    <div class="damage-icon" data-testid="icon-shingle-damage">💨</div>
+                    <h3 data-testid="heading-shingle-blowoff">Shingle Blow-Off & Damage</h3>
+                    <p class="damage-description" data-testid="text-shingle-description">Missing, lifted, or torn shingles from high winds. Exposed underlayment creating leak risks. Scattered roofing debris in yard or gutters.</p>
+                    
+                    <div class="risk-section" data-testid="risk-shingle">
+                        <h4 data-testid="heading-immediate-risks">IMMEDIATE RISKS:</h4>
+                        <ul class="risk-list" data-testid="risk-list-shingle">
+                            <li data-testid="risk-water"><span data-testid="icon-risk-water">•</span> Water infiltration within hours</li>
+                            <li data-testid="risk-further-damage"><span data-testid="icon-risk-further">•</span> Further wind damage to exposed areas</li>
+                            <li data-testid="risk-interior"><span data-testid="icon-risk-interior">•</span> Interior ceiling/wall damage</li>
+                        </ul>
+                    </div>
+                    
+                    <a href="#learn-more-shingles" class="learn-more" data-testid="link-learn-more-shingles">Learn More →</a>
+                </div>
+                
+                <div class="damage-card" data-testid="card-structural-damage">
+                    <div class="damage-icon" data-testid="icon-structural">🏠</div>
+                    <h3 data-testid="heading-structural-damage">Structural Wind Damage</h3>
+                    <p class="damage-description" data-testid="text-structural-description">Lifted roof sections or decking. Compromised trusses or rafters. Ridge or hip damage. Chimney or vent damage.</p>
+                    
+                    <div class="risk-section" data-testid="risk-structural">
+                        <h4 data-testid="heading-structural-risks">IMMEDIATE RISKS:</h4>
+                        <ul class="risk-list" data-testid="risk-list-structural">
+                            <li data-testid="risk-integrity"><span data-testid="icon-risk-integrity">•</span> Structural integrity concerns</li>
+                            <li data-testid="risk-deterioration"><span data-testid="icon-risk-deterioration">•</span> Rapid deterioration if exposed</li>
+                            <li data-testid="risk-safety"><span data-testid="icon-risk-safety">•</span> Safety hazards to occupants</li>
+                        </ul>
+                    </div>
+                    
+                    <a href="#learn-more-structural" class="learn-more" data-testid="link-learn-more-structural">Learn More →</a>
+                </div>
+                
+                <div class="damage-card" data-testid="card-flashing-damage">
+                    <div class="damage-icon" data-testid="icon-flashing">🔧</div>
+                    <h3 data-testid="heading-flashing-failures">Flashing & Trim Failures</h3>
+                    <p class="damage-description" data-testid="text-flashing-description">Lifted or missing flashing around chimneys/vents. Damaged drip edge or fascia. Gutter separation or damage. Soffit/overhang damage.</p>
+                    
+                    <div class="risk-section" data-testid="risk-flashing">
+                        <h4 data-testid="heading-flashing-risks">IMMEDIATE RISKS:</h4>
+                        <ul class="risk-list" data-testid="risk-list-flashing">
+                            <li data-testid="risk-penetration">• Water penetration at vulnerable points</li>
+                            <li data-testid="risk-secondary">• Secondary damage to interior</li>
+                            <li data-testid="risk-pests">• Pest entry points</li>
+                        </ul>
+                    </div>
+                    
+                    <a href="#learn-more-flashing" class="learn-more" data-testid="link-learn-more-flashing">Learn More →</a>
+                </div>
+                
+                <div class="damage-card" data-testid="card-debris-impact">
+                    <div class="damage-icon" data-testid="icon-debris">🌳</div>
+                    <h3 data-testid="heading-debris-impact">Debris Impact Damage</h3>
+                    <p class="damage-description" data-testid="text-debris-description">Tree branches or limbs on roof. Punctures or holes in roofing. Damaged or destroyed sections. Torn or crushed materials.</p>
+                    
+                    <div class="risk-section" data-testid="risk-debris">
+                        <h4 data-testid="heading-debris-risks">IMMEDIATE RISKS:</h4>
+                        <ul class="risk-list" data-testid="risk-list-debris">
+                            <li data-testid="risk-immediate-water">• Immediate water exposure</li>
+                            <li data-testid="risk-structural-compromise">• Structural compromise</li>
+                            <li data-testid="risk-emergency-tarping">• Requires emergency tarping</li>
+                        </ul>
+                    </div>
+                    
+                    <a href="#learn-more-debris" class="learn-more" data-testid="link-learn-more-debris">Learn More →</a>
+                </div>
+                
+                <div class="damage-card" data-testid="card-complete-blowoff">
+                    <div class="damage-icon" data-testid="icon-severe">⚡</div>
+                    <h3 data-testid="heading-complete-loss">Severe/Complete Roof Loss</h3>
+                    <p class="damage-description" data-testid="text-complete-description">Large sections completely removed. Multiple roof planes affected. Total system failure. Emergency reconstruction needed.</p>
+                    
+                    <div class="risk-section" data-testid="risk-complete">
+                        <h4 data-testid="heading-complete-risks">IMMEDIATE RISKS:</h4>
+                        <ul class="risk-list" data-testid="risk-list-complete">
+                            <li data-testid="risk-complete-exposure">• Complete exposure to elements</li>
+                            <li data-testid="risk-total-loss">• Interior total loss potential</li>
+                            <li data-testid="risk-immediate-protection">• Requires immediate protection</li>
+                        </ul>
+                    </div>
+                    
+                    <a href="#learn-more-complete" class="learn-more" data-testid="link-learn-more-complete">Learn More →</a>
+                </div>
+                
+                <div class="damage-card" data-testid="card-hidden-damage">
+                    <div class="damage-icon" data-testid="icon-hidden">🔍</div>
+                    <h3 data-testid="heading-hidden-damage">Hidden Wind Damage</h3>
+                    <p class="damage-description" data-testid="text-hidden-description">Seal failures not visible from ground. Underlayment compromise. Fastener withdrawal. Micro-cracks and stress damage.</p>
+                    
+                    <div class="risk-section" data-testid="risk-hidden">
+                        <h4 data-testid="heading-hidden-risks">IMMEDIATE RISKS:</h4>
+                        <ul class="risk-list" data-testid="risk-list-hidden">
+                            <li data-testid="risk-future-leaks">• Future leak development</li>
+                            <li data-testid="risk-reduced-resistance">• Reduced wind resistance</li>
+                            <li data-testid="risk-insurance-complications">• Insurance claim complications</li>
+                        </ul>
+                    </div>
+                    
+                    <a href="#learn-more-hidden" class="learn-more" data-testid="link-learn-more-hidden">Learn More →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Response Process Section -->
+    <section class="response-process" data-testid="section-response-process">
+        <div class="container">
+            <div class="section-header" data-testid="process-header">
+                <h2 data-testid="heading-response-process">Our 24/7 Wind Damage Response Process</h2>
+                <p class="section-subheading" data-testid="text-process-subheading">Fast, professional restoration to protect your {{city_name}} property</p>
+            </div>
+            
+            <div class="process-timeline" data-testid="process-timeline">
+                <div class="process-step" data-testid="process-step-1">
+                    <div class="step-timeline" data-testid="timeline-step-1">0-1 Hour</div>
+                    <div class="step-number" data-testid="step-number-1">1</div>
+                    <h3 data-testid="heading-immediate-response">Immediate Response</h3>
+                    <ul class="step-list" data-testid="step-list-1">
+                        <li data-testid="step1-call"><span class="step-icon" data-testid="icon-step1-call">•</span> Call {{company_phone}} anytime, 24/7</li>
+                        <li data-testid="step1-live"><span class="step-icon" data-testid="icon-step1-live">•</span> Live person answers, no voicemail</li>
+                        <li data-testid="step1-dispatch"><span class="step-icon" data-testid="icon-step1-dispatch">•</span> Dispatch within 60 minutes</li>
+                        <li data-testid="step1-priority"><span class="step-icon" data-testid="icon-step1-priority">•</span> Priority routing for severe damage</li>
+                    </ul>
+                </div>
+                
+                <div class="process-step" data-testid="process-step-2">
+                    <div class="step-timeline" data-testid="timeline-step-2">1-3 Hours</div>
+                    <div class="step-number" data-testid="step-number-2">2</div>
+                    <h3 data-testid="heading-damage-evaluation">Damage Evaluation</h3>
+                    <ul class="step-list" data-testid="step-list-2">
+                        <li data-testid="step2-inspection"><span class="step-icon" data-testid="icon-step2-inspection">•</span> Comprehensive roof inspection</li>
+                        <li data-testid="step2-safety"><span class="step-icon" data-testid="icon-step2-safety">•</span> Safety assessment & documentation</li>
+                        <li data-testid="step2-evidence"><span class="step-icon" data-testid="icon-step2-evidence">•</span> Digital photo/video evidence</li>
+                        <li data-testid="step2-protective"><span class="step-icon" data-testid="icon-step2-protective">•</span> Immediate protective measures</li>
+                    </ul>
+                </div>
+                
+                <div class="process-step" data-testid="process-step-3">
+                    <div class="step-timeline" data-testid="timeline-step-3">3-6 Hours</div>
+                    <div class="step-number" data-testid="step-number-3">3</div>
+                    <h3 data-testid="heading-temporary-stabilization">Temporary Stabilization</h3>
+                    <ul class="step-list" data-testid="step-list-3">
+                        <li data-testid="step3-tarping"><span class="step-icon" data-testid="icon-step3-tarping">•</span> Emergency tarping if needed</li>
+                        <li data-testid="step3-boardup"><span class="step-icon" data-testid="icon-step3-boardup">•</span> Board-up services for openings</li>
+                        <li data-testid="step3-mitigation"><span class="step-icon" data-testid="icon-step3-mitigation">•</span> Water mitigation measures</li>
+                        <li data-testid="step3-debris"><span class="step-icon" data-testid="icon-step3-debris">•</span> Debris removal & site safety</li>
+                    </ul>
+                </div>
+                
+                <div class="process-step" data-testid="process-step-4">
+                    <div class="step-timeline" data-testid="timeline-step-4">24-48 Hours</div>
+                    <div class="step-number" data-testid="step-number-4">4</div>
+                    <h3 data-testid="heading-claims-assistance">Claims Assistance</h3>
+                    <ul class="step-list" data-testid="step-list-4">
+                        <li data-testid="step4-document"><span class="step-icon" data-testid="icon-step4-document">•</span> Document all damage thoroughly</li>
+                        <li data-testid="step4-coordinate"><span class="step-icon" data-testid="icon-step4-coordinate">•</span> Coordinate with insurance adjuster</li>
+                        <li data-testid="step4-scope"><span class="step-icon" data-testid="icon-step4-scope">•</span> Provide detailed scope of work</li>
+                        <li data-testid="step4-advocate"><span class="step-icon" data-testid="icon-step4-advocate">•</span> Advocate for full coverage</li>
+                    </ul>
+                </div>
+                
+                <div class="process-step" data-testid="process-step-5">
+                    <div class="step-timeline" data-testid="timeline-step-5">3-7 Days</div>
+                    <div class="step-number" data-testid="step-number-5">5</div>
+                    <h3 data-testid="heading-professional-restoration">Professional Restoration</h3>
+                    <ul class="step-list" data-testid="step-list-5">
+                        <li data-testid="step5-materials"><span class="step-icon" data-testid="icon-step5-materials">•</span> Quality materials & workmanship</li>
+                        <li data-testid="step5-compliant"><span class="step-icon" data-testid="icon-step5-compliant">•</span> Code-compliant repairs</li>
+                        <li data-testid="step5-warranty"><span class="step-icon" data-testid="icon-step5-warranty">•</span> Warranty on all work</li>
+                        <li data-testid="step5-inspection"><span class="step-icon" data-testid="icon-step5-inspection">•</span> Final inspection & certification</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Why Immediate Action Matters Section -->
+    <section class="immediate-action" data-testid="section-immediate-action">
+        <div class="container">
+            <div class="section-header" data-testid="immediate-action-header">
+                <h2 data-testid="heading-immediate-action">Why Wind Damage Requires Immediate Attention</h2>
+                <p class="section-subheading" data-testid="text-immediate-subheading">Understanding the cascading risks of delayed repairs</p>
+            </div>
+            
+            <div class="action-comparison" data-testid="action-comparison">
+                <div class="comparison-column immediate-response" data-testid="immediate-response">
+                    <h3 data-testid="heading-immediate-benefits">✅ BENEFITS OF FAST ACTION</h3>
+                    
+                    <div class="benefit-section" data-testid="benefit-water-damage">
+                        <h4 data-testid="heading-minimize-water">Minimize Water Damage</h4>
+                        <ul class="benefit-list" data-testid="list-water-benefits">
+                            <li data-testid="water-benefit-1">• Prevent interior moisture penetration</li>
+                            <li data-testid="water-benefit-2">• Stop mold/mildew development</li>
+                            <li data-testid="water-benefit-3">• Protect insulation & structure</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="benefit-section" data-testid="benefit-insurance">
+                        <h4 data-testid="heading-preserve-insurance">Preserve Insurance Coverage</h4>
+                        <ul class="benefit-list" data-testid="list-insurance-benefits">
+                            <li data-testid="insurance-benefit-1">• Document damage in optimal condition</li>
+                            <li data-testid="insurance-benefit-2">• Meet claim filing deadlines</li>
+                            <li data-testid="insurance-benefit-3">• Stronger evidence for full coverage</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="benefit-section" data-testid="benefit-secondary">
+                        <h4 data-testid="heading-prevent-secondary">Prevent Secondary Damage</h4>
+                        <ul class="benefit-list" data-testid="list-secondary-benefits">
+                            <li data-testid="secondary-benefit-1">• Stop wind-lift of additional materials</li>
+                            <li data-testid="secondary-benefit-2">• Avoid further structural stress</li>
+                            <li data-testid="secondary-benefit-3">• Reduce total repair costs</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="benefit-section" data-testid="benefit-cost-savings">
+                        <h4 data-testid="heading-cost-savings">Cost Savings</h4>
+                        <ul class="benefit-list" data-testid="list-cost-benefits">
+                            <li data-testid="cost-benefit-1">• Smaller repair scope = lower costs</li>
+                            <li data-testid="cost-benefit-2">• Avoid emergency multipliers</li>
+                            <li data-testid="cost-benefit-3">• Maximize insurance reimbursement</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="comparison-column delayed-response" data-testid="delayed-response">
+                    <h3 data-testid="heading-delayed-consequences">❌ CONSEQUENCES OF WAITING</h3>
+                    
+                    <div class="benefit-section" data-testid="consequence-water">
+                        <h4 data-testid="heading-exponential-damage">Exponential Water Damage</h4>
+                        <ul class="benefit-list" data-testid="list-water-consequences">
+                            <li data-testid="water-consequence-1">• Widespread interior damage</li>
+                            <li data-testid="water-consequence-2">• Structural rot & deterioration</li>
+                            <li data-testid="water-consequence-3">• Expensive mold remediation</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="benefit-section" data-testid="consequence-insurance">
+                        <h4 data-testid="heading-insurance-complications">Insurance Complications</h4>
+                        <ul class="benefit-list" data-testid="list-insurance-consequences">
+                            <li data-testid="insurance-consequence-1">• Reduced/denied coverage</li>
+                            <li data-testid="insurance-consequence-2">• "Neglect" policy exclusions</li>
+                            <li data-testid="insurance-consequence-3">• Out-of-pocket expenses increase</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="benefit-section" data-testid="consequence-cascading">
+                        <h4 data-testid="heading-cascading-failures">Cascading Failures</h4>
+                        <ul class="benefit-list" data-testid="list-cascading-consequences">
+                            <li data-testid="cascading-consequence-1">• Additional wind events cause more loss</li>
+                            <li data-testid="cascading-consequence-2">• Compromised areas worsen rapidly</li>
+                            <li data-testid="cascading-consequence-3">• Emergency repairs at premium rates</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="benefit-section" data-testid="consequence-financial">
+                        <h4 data-testid="heading-financial-impact">Financial Impact</h4>
+                        <ul class="benefit-list" data-testid="list-financial-consequences">
+                            <li data-testid="financial-consequence-1">• 3-5x higher total costs</li>
+                            <li data-testid="financial-consequence-2">• Potential health/safety expenses</li>
+                            <li data-testid="financial-consequence-3">• Lost property use/rental income</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Insurance Claims Section -->
+    <section class="insurance-claims" data-testid="section-insurance-claims">
+        <div class="container">
+            <div class="section-header" data-testid="claims-section-header">
+                <h2 data-testid="heading-insurance-claims">Complete Insurance Claim Assistance Included</h2>
+                <p class="section-subheading" data-testid="text-claims-subheading">We handle the paperwork so you can focus on recovery</p>
+            </div>
+            
+            <p class="claims-intro" data-testid="text-claims-intro">Wind damage insurance claims can be complex, with adjusters often minimizing damage or denying coverage for related issues. Clear Home provides comprehensive claim support at no additional cost, ensuring you receive the full compensation your policy provides for wind damage restoration in {{city_name}}.</p>
+            
+            <div class="claims-grid" data-testid="claims-grid">
+                <div class="claim-card" data-testid="claim-documentation">
+                    <div class="claim-icon" data-testid="icon-claim-camera">📷</div>
+                    <h3 data-testid="heading-thorough-documentation">Thorough Documentation</h3>
+                    <ul class="claim-features" data-testid="features-documentation">
+                        <li data-testid="doc-feature-1"><span class="claim-check" data-testid="check-doc-1">✓</span> Professional damage photography</li>
+                        <li data-testid="doc-feature-2"><span class="claim-check" data-testid="check-doc-2">✓</span> Detailed written assessments</li>
+                        <li data-testid="doc-feature-3"><span class="claim-check" data-testid="check-doc-3">✓</span> Before/after evidence collection</li>
+                        <li data-testid="doc-feature-4"><span class="claim-check" data-testid="check-doc-4">✓</span> Expert damage analysis reports</li>
+                    </ul>
+                </div>
+                
+                <div class="claim-card" data-testid="claim-coordination">
+                    <div class="claim-icon" data-testid="icon-claim-handshake">🤝</div>
+                    <h3 data-testid="heading-insurance-liaison">Insurance Liaison</h3>
+                    <ul class="claim-features" data-testid="features-coordination">
+                        <li data-testid="coord-feature-1"><span class="claim-check" data-testid="check-coord-1">✓</span> Schedule & attend adjuster meetings</li>
+                        <li data-testid="coord-feature-2"><span class="claim-check" data-testid="check-coord-2">✓</span> Present comprehensive damage scope</li>
+                        <li data-testid="coord-feature-3"><span class="claim-check" data-testid="check-coord-3">✓</span> Address coverage questions</li>
+                        <li data-testid="coord-feature-4"><span class="claim-check" data-testid="check-coord-4">✓</span> Negotiate fair settlements</li>
+                    </ul>
+                </div>
+                
+                <div class="claim-card" data-testid="claim-advocacy">
+                    <div class="claim-icon" data-testid="icon-claim-shield">🛡️</div>
+                    <h3 data-testid="heading-your-advocate">Your Advocate</h3>
+                    <ul class="claim-features" data-testid="features-advocacy">
+                        <li data-testid="adv-feature-1"><span class="claim-check" data-testid="check-adv-1">✓</span> Challenge lowball estimates</li>
+                        <li data-testid="adv-feature-2"><span class="claim-check" data-testid="check-adv-2">✓</span> Identify all covered damage</li>
+                        <li data-testid="adv-feature-3"><span class="claim-check" data-testid="check-adv-3">✓</span> Supplement requests handled</li>
+                        <li data-testid="adv-feature-4"><span class="claim-check" data-testid="check-adv-4">✓</span> Maximize your settlement</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="success-stats" data-testid="success-stats">
+                <h3 data-testid="heading-success-rate">📊 CLEAR HOME CLAIM SUCCESS RATE</h3>
+                
+                <div class="stats-grid" data-testid="stats-grid">
+                    <div class="stat-item" data-testid="stat-approval">
+                        <div class="stat-number" data-testid="number-approval">95%</div>
+                        <div class="stat-label" data-testid="label-approval">Claim Approval Rate</div>
+                    </div>
+                    <div class="stat-item" data-testid="stat-settlements">
+                        <div class="stat-number" data-testid="number-settlements">40%</div>
+                        <div class="stat-label" data-testid="label-settlements">Higher Settlements vs. DIY Claims</div>
+                    </div>
+                    <div class="stat-item" data-testid="stat-secured">
+                        <div class="stat-number" data-testid="number-secured">$2.3M+</div>
+                        <div class="stat-label" data-testid="label-secured">Secured for {{city_name}} Homeowners (2023)</div>
+                    </div>
+                    <div class="stat-item" data-testid="stat-cost">
+                        <div class="stat-number" data-testid="number-cost">$0</div>
+                        <div class="stat-label" data-testid="label-cost">Out-of-Pocket for Documentation Services</div>
+                    </div>
+                </div>
+                
+                <a href="#claim-process-form" class="btn-warning" data-testid="button-learn-claim-process">Learn More About Our Claim Process</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Final CTA Section -->
+    <section class="final-cta" data-testid="section-final-cta">
+        <div class="container">
+            <h2 data-testid="heading-dont-let-worsen">Don't Let Wind Damage Worsen</h2>
+            <p class="final-cta-text" data-testid="text-final-cta">Wind damage creates immediate vulnerability to water infiltration, structural stress, and insurance coverage complications. Clear Home's emergency response team is standing by 24/7 to protect your {{city_name}} property.</p>
+            
+            <div class="cta-features" data-testid="cta-features">
+                <div class="cta-feature" data-testid="feature-dispatch">
+                    <span data-testid="icon-dispatch">⚡</span> 60-Minute Emergency Dispatch
+                </div>
+                <div class="cta-feature" data-testid="feature-assessment">
+                    <span data-testid="icon-assessment">🔍</span> Free Damage Assessment
+                </div>
+                <div class="cta-feature" data-testid="feature-claim-support">
+                    <span data-testid="icon-claim-support">📋</span> Insurance Claim Support Included
+                </div>
+                <div class="cta-feature" data-testid="feature-licensed-professionals">
+                    <span data-testid="icon-licensed">✓</span> Licensed & Insured Professionals
+                </div>
+            </div>
+            
+            <div class="cta-buttons" data-testid="cta-buttons">
+                <a href="tel:{{company_phone}}" class="btn-cta-primary" data-testid="button-emergency-line">
+                    📞 Call Emergency Line: {{company_phone}}
+                </a>
+                <a href="#emergency-assessment-form" class="btn-secondary" data-testid="button-request-assessment">
+                    Request Emergency Assessment →
+                </a>
+            </div>
+            
+            <div class="trust-footer" data-testid="trust-footer">
+                <p data-testid="text-trust-ratings">A+ Rated BBB | 20+ Years Experience | Locally Owned & Operated</p>
+                <p data-testid="text-trust-serving">Serving {{city_name}} and Greater New Orleans Area Since 2003</p>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

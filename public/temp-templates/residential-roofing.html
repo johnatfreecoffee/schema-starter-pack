@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{city_name}} Residential Roofing Contractors | Clear Home</title>
+    <meta name="description" content="Expert residential roofing contractors in {{city_name}}. 20+ years experience in shingle, metal, slate & tile roofing. Insurance claims assistance. Free estimates. Call (504) 460-8131.">
+    <meta name="keywords" content="residential roofing contractors {{city_name}}, roof installation {{city_name}}, home roofing {{city_name}}, roof replacement {{city_name}}">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="{{city_name}} Residential Roofing Contractors | Clear Home">
+    <meta property="og:description" content="Expert residential roofing contractors in {{city_name}}. 20+ years experience in shingle, metal, slate & tile roofing. Insurance claims assistance. Free estimates. Call (504) 460-8131.">
+    <meta property="og:url" content="{{base_url}}/{{city_slug}}/residential-roofing">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{company_name}}">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{city_name}} Residential Roofing Contractors | Clear Home">
+    <meta name="twitter:description" content="Expert residential roofing contractors in {{city_name}}. 20+ years experience in shingle, metal, slate & tile roofing. Insurance claims assistance. Free estimates. Call (504) 460-8131.">
+    
+    <link rel="canonical" href="{{canonical_url}}">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #2D3748;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .btn-primary {
+            background: #FF6B35;
+            color: white;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary:hover {
+            background: #E55A2B;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #2B6CB0;
+            padding: 14px 20px;
+            border: 2px solid #2B6CB0;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #2B6CB0;
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .btn-emergency {
+            background: #DC2626;
+            color: white;
+            padding: 18px 28px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        }
+        
+        .btn-emergency:hover {
+            background: #B91C1C;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+        }
+        
+        /* Header Navigation */
+        .header {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2B6CB0;
+        }
+        
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        .main-nav a {
+            text-decoration: none;
+            color: #4A5568;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .main-nav a:hover {
+            color: #2B6CB0;
+        }
+        
+        .header-phone {
+            background: #2B6CB0;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .header-phone:hover {
+            background: #2553A0;
+            transform: translateY(-1px);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #EDF8FF 0%, #F7FAFC 100%);
+            padding: 80px 0;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        .hero-container {
+            display: grid;
+            grid-template-columns: 60% 40%;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .hero-content h1 {
+            font-size: 42px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero-description {
+            font-size: 18px;
+            color: #4A5568;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .hero-features {
+            margin-bottom: 30px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #1A202C;
+        }
+        
+        .feature-item svg {
+            color: #059669;
+            margin-right: 12px;
+        }
+        
+        .hero-cta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .lead-form {
+            background: #2B6CB0;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(43, 108, 176, 0.2);
+        }
+        
+        .form-title {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            background: white;
+            color: #1A202C;
+        }
+        
+        .form-submit {
+            width: 100%;
+            background: #FF6B35;
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        .form-submit:hover {
+            background: #E55A2B;
+            transform: translateY(-2px);
+        }
+        
+        /* Trust Indicators */
+        .trust-indicators {
+            background: white;
+            padding: 40px 0;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            text-align: center;
+        }
+        
+        .trust-item {
+            font-weight: 700;
+            color: #1A202C;
+            font-size: 16px;
+        }
+        
+        /* Services Overview */
+        .services-overview {
+            background: #F7FAFC;
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1A202C;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-intro {
+            font-size: 18px;
+            color: #4A5568;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 50px;
+            line-height: 1.6;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .service-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            color: #2B6CB0;
+            margin-bottom: 20px;
+        }
+        
+        .service-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 15px;
+        }
+        
+        .service-description {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .service-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        
+        .service-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #4A5568;
+        }
+        
+        .service-features li::before {
+            content: "•";
+            color: #2B6CB0;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        /* Materials Section */
+        .materials-section {
+            background: white;
+            padding: 80px 0;
+        }
+        
+        .materials-showcase {
+            margin-top: 50px;
+        }
+        
+        .material-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-bottom: 80px;
+        }
+        
+        .material-block:nth-child(even) {
+            direction: rtl;
+        }
+        
+        .material-block:nth-child(even) > * {
+            direction: ltr;
+        }
+        
+        .material-content h3 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 15px;
+        }
+        
+        .material-price {
+            background: #EDF8FF;
+            color: #059669;
+            font-size: 20px;
+            font-weight: 700;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .material-description {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        .material-benefits {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        
+        .material-benefits li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #1A202C;
+        }
+        
+        .material-benefits li svg {
+            color: #059669;
+            margin-right: 12px;
+        }
+        
+        .best-for {
+            font-style: italic;
+            color: #4A5568;
+            font-size: 16px;
+        }
+        
+        .material-image {
+            width: 100%;
+            height: 400px;
+            background: #F7FAFC;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9CA3AF;
+            font-size: 18px;
+            border: 2px dashed #E5E7EB;
+        }
+        
+        /* Process Section */
+        .process-section {
+            background: #EDF8FF;
+            padding: 80px 0;
+        }
+        
+        .process-timeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            margin-top: 50px;
+            position: relative;
+        }
+        
+        .process-timeline::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 12.5%;
+            right: 12.5%;
+            height: 3px;
+            background: #2B6CB0;
+            z-index: 1;
+        }
+        
+        .process-step {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: #2B6CB0;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+        
+        .step-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 15px;
+        }
+        
+        .step-description {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.6;
+        }
+        
+        /* Emergency Callout */
+        .emergency-callout {
+            background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+            padding: 60px 0;
+            text-align: center;
+            color: white;
+        }
+        
+        .emergency-content h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .emergency-subtitle {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #FEF2F2;
+        }
+        
+        .emergency-description {
+            font-size: 18px;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .emergency-phone {
+            font-size: 28px;
+            font-weight: 700;
+            color: #FEF2F2;
+            margin-bottom: 25px;
+            display: block;
+        }
+        
+        /* Reviews Section */
+        .reviews-section {
+            background: white;
+            padding: 80px 0;
+        }
+        
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .review-card {
+            background: white;
+            border: 1px solid #E2E8F0;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .review-stars {
+            color: #FBBF24;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .review-text {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        
+        .review-author {
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 5px;
+        }
+        
+        .review-service {
+            font-size: 14px;
+            color: #9CA3AF;
+        }
+        
+        /* Local SEO Section */
+        .local-seo {
+            background: #F7FAFC;
+            padding: 80px 0;
+        }
+        
+        .local-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+        
+        .service-areas {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        
+        .service-areas li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #1A202C;
+        }
+        
+        .service-areas li::before {
+            content: "•";
+            color: #2B6CB0;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .local-benefits {
+            list-style: none;
+        }
+        
+        .local-benefits li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 16px;
+            color: #1A202C;
+        }
+        
+        .local-benefits li svg {
+            color: #059669;
+            margin-right: 12px;
+        }
+        
+        .map-placeholder {
+            width: 100%;
+            height: 400px;
+            background: #E5E7EB;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9CA3AF;
+            font-size: 18px;
+            border: 2px dashed #D1D5DB;
+        }
+        
+        /* Financing Section */
+        .financing-section {
+            background: white;
+            padding: 80px 0;
+        }
+        
+        .financing-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-top: 50px;
+        }
+        
+        .financing-block h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .financing-icon {
+            width: 32px;
+            height: 32px;
+            color: #059669;
+        }
+        
+        .financing-list {
+            list-style: none;
+        }
+        
+        .financing-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 16px;
+            color: #4A5568;
+        }
+        
+        .financing-list li::before {
+            content: "•";
+            color: #2B6CB0;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .final-cta {
+            background: #2B6CB0;
+            color: white;
+            padding: 50px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 50px;
+        }
+        
+        .final-cta h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .final-cta p {
+            font-size: 18px;
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+        
+        .final-cta-phone {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: block;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .hero-content h1 {
+                font-size: 32px;
+            }
+            
+            .trust-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .material-block {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .material-block:nth-child(even) {
+                direction: ltr;
+            }
+            
+            .process-timeline {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .process-timeline::before {
+                display: none;
+            }
+            
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .local-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .financing-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .main-nav {
+                display: none;
+            }
+            
+            .section-title {
+                font-size: 28px;
+            }
+            
+            .hero-cta {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header" data-testid="header-main">
+        <div class="nav-container">
+            <div class="logo" data-testid="logo-company">{{company_name}}</div>
+            <nav class="main-nav" data-testid="nav-main">
+                <ul>
+                    <li><a href="/" data-testid="link-nav-home">Home</a></li>
+                    <li><a href="/services" data-testid="link-nav-services">Services</a></li>
+                    <li><a href="/about" data-testid="link-nav-about">About</a></li>
+                    <li><a href="/contact" data-testid="link-nav-contact">Contact</a></li>
+                </ul>
+            </nav>
+            <a href="tel:{{company_phone}}" class="header-phone" data-testid="link-header-phone">{{company_phone}}</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" data-testid="section-hero">
+        <div class="container">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h1 data-testid="heading-hero">{{city_name}} Residential Roofing Contractors You Can Trust</h1>
+                    
+                    <p class="hero-description" data-testid="description-hero">Protect your home with expert residential roofing from Clear Home. Our certified contractors have been serving {{city_name}} homeowners for over 20 years with premium roof installations, repairs, and replacements.</p>
+                    
+                    <div class="hero-features" data-testid="container-features">
+                        <div class="feature-item" data-testid="feature-materials">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            All Major Roofing Materials
+                        </div>
+                        <div class="feature-item" data-testid="feature-insurance">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            Insurance Claims Assistance
+                        </div>
+                        <div class="feature-item" data-testid="feature-emergency">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            Emergency Repair Services
+                        </div>
+                        <div class="feature-item" data-testid="feature-warranty">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            Lifetime Workmanship Warranty
+                        </div>
+                    </div>
+                    
+                    <div class="hero-cta" data-testid="container-hero-cta">
+                        <a href="tel:{{company_phone}}" class="btn-primary" data-testid="button-call-now">CALL NOW: {{company_phone}}</a>
+                        <a href="#lead-form" class="btn-secondary" data-testid="button-free-estimate">Get Free Estimate</a>
+                    </div>
+                </div>
+                
+                <div class="lead-form" id="lead-form" data-testid="form-lead-capture">
+                    <h3 class="form-title" data-testid="title-form">Get FREE Roof Estimate</h3>
+                    <form data-testid="form-contact">
+                        <div class="form-group">
+                            <label for="name" data-testid="label-name">Full Name</label>
+                            <input type="text" id="name" name="name" required data-testid="input-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone" data-testid="label-phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required data-testid="input-phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="email" data-testid="label-email">Email Address</label>
+                            <input type="email" id="email" name="email" required data-testid="input-email">
+                        </div>
+                        <div class="form-group">
+                            <label for="address" data-testid="label-address">Property Address</label>
+                            <input type="text" id="address" name="address" required data-testid="input-address">
+                        </div>
+                        <div class="form-group">
+                            <label for="service" data-testid="label-service">Service Needed</label>
+                            <select id="service" name="service" required data-testid="select-service">
+                                <option value="">Select Service</option>
+                                <option value="roof-replacement" data-testid="option-replacement">Roof Replacement</option>
+                                <option value="roof-repair" data-testid="option-repair">Roof Repair</option>
+                                <option value="inspection" data-testid="option-inspection">Roof Inspection</option>
+                                <option value="insurance-claim" data-testid="option-insurance">Insurance Claim</option>
+                                <option value="maintenance" data-testid="option-maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="form-submit" data-testid="button-form-submit">GET FREE ROOF ESTIMATE</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Indicators -->
+    <section class="trust-indicators" data-testid="section-trust">
+        <div class="container">
+            <div class="trust-grid">
+                <div class="trust-item" data-testid="trust-experience">20+ Years Experience</div>
+                <div class="trust-item" data-testid="trust-roofs">1000+ Roofs Completed</div>
+                <div class="trust-item" data-testid="trust-rating">A+ BBB Rating</div>
+                <div class="trust-item" data-testid="trust-licensed">Fully Licensed & Insured</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Overview -->
+    <section class="services-overview" data-testid="section-services">
+        <div class="container">
+            <h2 class="section-title" data-testid="heading-services">Complete Residential Roofing Services in {{city_name}}</h2>
+            <p class="section-intro" data-testid="intro-services">From routine maintenance to complete roof replacements, Clear Home provides comprehensive roofing solutions for every {{city_name}} homeowner. Our expert team works with all major roofing materials and specializes in Louisiana's challenging weather conditions.</p>
+            
+            <div class="services-grid">
+                <div class="service-card" data-testid="card-installation">
+                    <div class="service-icon" data-testid="icon-installation">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 21h18"/>
+                            <path d="M5 21V7l8-4v18"/>
+                            <path d="M19 21V11l-6-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-title" data-testid="title-installation">New Roof Installation</h3>
+                    <p class="service-description" data-testid="description-installation">Complete roof replacement with premium materials. We help {{city_name}} homeowners choose the perfect roofing system for their home, budget, and style preferences.</p>
+                    
+                    <ul class="service-features" data-testid="list-installation-features">
+                        <li data-testid="feature-consultation">Material selection consultation</li>
+                        <li data-testid="feature-permits">Permit acquisition and scheduling</li>
+                        <li data-testid="feature-installation">Professional installation by certified roofers</li>
+                        <li data-testid="feature-inspection">Final inspection and cleanup</li>
+                        <li data-testid="feature-warranty">Comprehensive workmanship warranty</li>
+                    </ul>
+                    
+                    <a href="/{{city_slug}}/roof-installation" class="btn-secondary" data-testid="link-installation">Learn More About Installation</a>
+                </div>
+                
+                <div class="service-card" data-testid="card-repair">
+                    <div class="service-icon" data-testid="icon-repair">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-title" data-testid="title-repair">Expert Roof Repairs</h3>
+                    <p class="service-description" data-testid="description-repair">Fast, reliable repair services for {{city_name}} homes. From minor leak fixes to storm damage restoration, our emergency response team is available 24/7.</p>
+                    
+                    <ul class="service-features" data-testid="list-repair-features">
+                        <li data-testid="feature-leak-detection">Leak detection and sealing</li>
+                        <li data-testid="feature-shingle-replacement">Missing or damaged shingle replacement</li>
+                        <li data-testid="feature-flashing-repair">Flashing repair around chimneys and vents</li>
+                        <li data-testid="feature-gutter-maintenance">Gutter and downspout maintenance</li>
+                        <li data-testid="feature-emergency-tarping">Emergency tarping services</li>
+                    </ul>
+                    
+                    <a href="/{{city_slug}}/emergency-roof-repair" class="btn-secondary" data-testid="link-repair">Get Emergency Repair</a>
+                </div>
+                
+                <div class="service-card" data-testid="card-insurance">
+                    <div class="service-icon" data-testid="icon-insurance">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-title" data-testid="title-insurance">Insurance Claims Assistance</h3>
+                    <p class="service-description" data-testid="description-insurance">Let our experts handle your roofing insurance claim from start to finish. We work directly with {{city_name}} insurance adjusters to ensure you receive fair compensation.</p>
+                    
+                    <ul class="service-features" data-testid="list-insurance-features">
+                        <li data-testid="feature-damage-assessment">Free damage assessment and documentation</li>
+                        <li data-testid="feature-insurance-communication">Direct communication with insurance companies</li>
+                        <li data-testid="feature-xactimate-estimates">Detailed repair estimates using Xactimate</li>
+                        <li data-testid="feature-project-management">Project management from approval to completion</li>
+                        <li data-testid="feature-insurance-warranty">Warranty on all insurance work</li>
+                    </ul>
+                    
+                    <a href="/{{city_slug}}/roofing-insurance-claims" class="btn-secondary" data-testid="link-insurance">Start Your Claim</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roofing Materials -->
+    <section class="materials-section" data-testid="section-materials">
+        <div class="container">
+            <h2 class="section-title" data-testid="heading-materials">Premium Roofing Materials for {{city_name}} Homes</h2>
+            <p class="section-intro" data-testid="intro-materials">Choose from the finest roofing materials designed to withstand Louisiana's harsh weather conditions. Our certified installers are experienced with all major roofing systems and help homeowners select the perfect solution for their needs and budget.</p>
+            
+            <div class="materials-showcase">
+                <div class="material-block" data-testid="block-asphalt">
+                    <div class="material-content">
+                        <h3 data-testid="title-asphalt">Asphalt Shingles - Most Popular Choice</h3>
+                        <div class="material-price" data-testid="price-asphalt">Starting at $8,500 for average {{city_name}} home</div>
+                        <p class="material-description" data-testid="description-asphalt">The most cost-effective roofing solution, offering excellent protection with wide style and color selection. Perfect for traditional and contemporary {{city_name}} homes.</p>
+                        
+                        <ul class="material-benefits">
+                            <li data-testid="benefit-asphalt-affordable">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                Affordable initial investment
+                            </li>
+                            <li data-testid="benefit-asphalt-warranty">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                25-30 year manufacturer warranties
+                            </li>
+                            <li data-testid="benefit-asphalt-storm">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                Storm-resistant options available
+                            </li>
+                            <li data-testid="benefit-asphalt-energy">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                Energy-efficient cool roof varieties
+                            </li>
+                            <li data-testid="benefit-asphalt-installation">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                Quick installation process
+                            </li>
+                        </ul>
+                        
+                        <p class="best-for" data-testid="bestfor-asphalt"><strong>Best For:</strong> Budget-conscious homeowners, traditional home styles, first-time roof replacement</p>
+                    </div>
+                    <div class="material-image" data-testid="image-asphalt">
+                        Asphalt Shingle Installation Photo
+                    </div>
+                </div>
+                
+                <div class="material-block" data-testid="block-metal">
+                    <div class="material-content">
+                        <h3 data-testid="title-metal">Metal Roofing - Superior Durability</h3>
+                        <div class="material-price" data-testid="price-metal">Starting at $15,000 for average {{city_name}} home</div>
+                        <p class="material-description" data-testid="description-metal">Long-lasting metal roofing systems provide unmatched durability and energy efficiency. Ideal for {{city_name}}'s hurricane-prone climate.</p>
+                        
+                        <ul class="material-benefits">
+                            <li data-testid="benefit-metal-lifespan">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                40-70 year lifespan
+                            </li>
+                            <li data-testid="benefit-metal-wind">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                Superior wind resistance (up to 140 mph)
+                            </li>
+                            <li data-testid="benefit-metal-energy">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                Energy savings up to 25%
+                            </li>
+                            <li data-testid="benefit-metal-fire">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                Fire resistant and environmentally friendly
+                            </li>
+                            <li data-testid="benefit-metal-maintenance">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                Low maintenance requirements
+                            </li>
+                        </ul>
+                        
+                        <p class="best-for" data-testid="bestfor-metal"><strong>Best For:</strong> Long-term homeowners, historic properties, eco-conscious families</p>
+                    </div>
+                    <div class="material-image" data-testid="image-metal">
+                        Metal Roofing Installation Photo
+                    </div>
+                </div>
+                
+                <div class="material-block" data-testid="block-slate">
+                    <div class="material-content">
+                        <h3 data-testid="title-slate">Slate & Tile - Premium Elegance</h3>
+                        <div class="material-price" data-testid="price-slate">Starting at $25,000 for average {{city_name}} home</div>
+                        <p class="material-description" data-testid="description-slate">Luxury roofing materials that provide unmatched beauty and longevity. Perfect for upscale {{city_name}} neighborhoods and historic properties.</p>
+                        
+                        <ul class="material-benefits">
+                            <li data-testid="benefit-slate-lifespan">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                50-100+ year lifespan
+                            </li>
+                            <li data-testid="benefit-slate-aesthetic">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                Distinctive aesthetic appeal
+                            </li>
+                            <li data-testid="benefit-slate-insulation">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                Excellent insulation properties
+                            </li>
+                            <li data-testid="benefit-slate-value">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                Increases home value significantly
+                            </li>
+                            <li data-testid="benefit-slate-weather">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                                Weather resistant and low maintenance
+                            </li>
+                        </ul>
+                        
+                        <p class="best-for" data-testid="bestfor-slate"><strong>Best For:</strong> Luxury homes, historic properties, architectural statement pieces</p>
+                    </div>
+                    <div class="material-image" data-testid="image-slate">
+                        Slate & Tile Roofing Photo
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process-section" data-testid="section-process">
+        <div class="container">
+            <h2 class="section-title" data-testid="heading-process">Our Proven Roofing Process in {{city_name}}</h2>
+            <p class="section-intro" data-testid="intro-process">Clear Home's systematic approach ensures every {{city_name}} residential roofing project is completed on time, within budget, and to the highest quality standards. Here's what you can expect:</p>
+            
+            <div class="process-timeline">
+                <div class="process-step" data-testid="step-consultation">
+                    <div class="step-number" data-testid="number-consultation">1</div>
+                    <h3 class="step-title" data-testid="title-consultation">Free In-Home Consultation</h3>
+                    <p class="step-description" data-testid="description-consultation">Our roofing expert visits your {{city_name}} home to assess your roof's condition, discuss material options, and provide detailed written estimates with no obligation.</p>
+                </div>
+                
+                <div class="process-step" data-testid="step-planning">
+                    <div class="step-number" data-testid="number-planning">2</div>
+                    <h3 class="step-title" data-testid="title-planning">Planning & Permits</h3>
+                    <p class="step-description" data-testid="description-planning">We handle all permit applications and material ordering. Our team coordinates with {{city_name}} building departments to ensure full compliance with local codes.</p>
+                </div>
+                
+                <div class="process-step" data-testid="step-installation">
+                    <div class="step-number" data-testid="number-installation">3</div>
+                    <h3 class="step-title" data-testid="title-installation">Expert Installation</h3>
+                    <p class="step-description" data-testid="description-installation">Certified roofers complete your project using industry best practices. We protect your property throughout the process and maintain clean, safe work areas.</p>
+                </div>
+                
+                <div class="process-step" data-testid="step-inspection">
+                    <div class="step-number" data-testid="number-inspection">4</div>
+                    <h3 class="step-title" data-testid="title-inspection">Quality Assurance & Cleanup</h3>
+                    <p class="step-description" data-testid="description-inspection">Thorough final inspection ensures perfection. Complete site cleanup and walkthrough with homeowner. All work backed by comprehensive warranties.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emergency Services Callout -->
+    <section class="emergency-callout" data-testid="section-emergency">
+        <div class="container">
+            <div class="emergency-content">
+                <h2 data-testid="heading-emergency">Emergency Roof Repair in {{city_name}} - 24/7 Response</h2>
+                <p class="emergency-subtitle" data-testid="subtitle-emergency">Storm damage? Sudden leak? We're here to help.</p>
+                <p class="emergency-description" data-testid="description-emergency">Our emergency response team provides immediate protection for {{city_name}} homes with professional tarping, temporary repairs, and fast permanent solutions.</p>
+                <a href="tel:{{company_phone}}" class="emergency-phone" data-testid="link-emergency-phone">Emergency Hotline: {{company_phone}}</a>
+                <a href="#emergency-form" class="btn-emergency" data-testid="button-emergency-service">GET EMERGENCY SERVICE NOW</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Reviews -->
+    <section class="reviews-section" data-testid="section-reviews">
+        <div class="container">
+            <h2 class="section-title" data-testid="heading-reviews">What {{city_name}} Homeowners Say About Clear Home</h2>
+            <p class="section-intro" data-testid="intro-reviews">Don't just take our word for it. See why hundreds of {{city_name}} families trust Clear Home for their residential roofing needs.</p>
+            
+            <div class="reviews-grid">
+                <div class="review-card" data-testid="review-sarah">
+                    <div class="review-stars" data-testid="stars-sarah">★★★★★</div>
+                    <p class="review-text" data-testid="text-sarah">"Clear Home replaced our entire roof after Hurricane Ida damage. Their team handled everything - from the insurance claim to the final cleanup. Professional, reliable, and the roof looks amazing!"</p>
+                    <div class="review-author" data-testid="author-sarah">Sarah M., {{city_name}}</div>
+                    <div class="review-service" data-testid="service-sarah">Roof Replacement - August 2023</div>
+                </div>
+                
+                <div class="review-card" data-testid="review-mike">
+                    <div class="review-stars" data-testid="stars-mike">★★★★★</div>
+                    <p class="review-text" data-testid="text-mike">"Fast emergency response when our roof started leaking during a storm. They had tarps up within hours and completed permanent repairs the next week. Saved our home from major water damage."</p>
+                    <div class="review-author" data-testid="author-mike">Mike R., {{city_name}}</div>
+                    <div class="review-service" data-testid="service-mike">Emergency Repair - March 2023</div>
+                </div>
+                
+                <div class="review-card" data-testid="review-jennifer">
+                    <div class="review-stars" data-testid="stars-jennifer">★★★★★</div>
+                    <p class="review-text" data-testid="text-jennifer">"Excellent communication throughout our metal roof installation. The crew was courteous, cleanup was perfect, and the quality exceeded our expectations. Highly recommend!"</p>
+                    <div class="review-author" data-testid="author-jennifer">Jennifer L., {{city_name}}</div>
+                    <div class="review-service" data-testid="service-jennifer">Metal Roof Installation - June 2023</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Local SEO -->
+    <section class="local-seo" data-testid="section-local">
+        <div class="container">
+            <h2 class="section-title" data-testid="heading-local">Proudly Serving {{city_name}} & Surrounding Areas</h2>
+            
+            <div class="local-content">
+                <div>
+                    <p class="section-intro" data-testid="intro-local">As a locally-owned roofing company, Clear Home understands the unique challenges facing {{city_name}} homeowners. From hurricane preparedness to historic home preservation, we provide roofing solutions tailored to our community's specific needs.</p>
+                    
+                    <h3 data-testid="heading-service-areas">Our {{city_name}} Service Areas:</h3>
+                    <ul class="service-areas">
+                        <li data-testid="area-neighborhoods">Residential neighborhoods throughout {{city_name}}</li>
+                        <li data-testid="area-historic">Historic district properties requiring specialized care</li>
+                        <li data-testid="area-new-construction">New construction and development communities</li>
+                        <li data-testid="area-coastal">Coastal properties with enhanced wind resistance needs</li>
+                        <li data-testid="area-multifamily">Multi-family residential complexes</li>
+                    </ul>
+                    
+                    <h3 data-testid="heading-why-local">Why Choose Local:</h3>
+                    <ul class="local-benefits">
+                        <li data-testid="benefit-codes">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            Familiar with {{city_name}} building codes and permit processes
+                        </li>
+                        <li data-testid="benefit-suppliers">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            Established relationships with local suppliers for faster material delivery
+                        </li>
+                        <li data-testid="benefit-weather">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            Understanding of regional weather patterns and roofing challenges
+                        </li>
+                        <li data-testid="benefit-emergency">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            Available for emergency response within {{city_name}} area
+                        </li>
+                        <li data-testid="benefit-community">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                            </svg>
+                            Supporting local economy and community development
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="map-placeholder" data-testid="map-service-area">
+                    Interactive Map of {{city_name}} Service Area
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Financing & Insurance -->
+    <section class="financing-section" data-testid="section-financing">
+        <div class="container">
+            <h2 class="section-title" data-testid="heading-financing">Financing Options & Insurance Assistance in {{city_name}}</h2>
+            <p class="section-intro" data-testid="intro-financing">Don't let budget concerns delay necessary roof repairs or replacement. Clear Home offers flexible financing solutions and expert insurance claim assistance to make quality roofing affordable for every {{city_name}} homeowner.</p>
+            
+            <div class="financing-content">
+                <div class="financing-block" data-testid="block-financing-options">
+                    <h3 data-testid="title-financing-options">
+                        <svg class="financing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                        In-House Financing Available
+                    </h3>
+                    <ul class="financing-list">
+                        <li data-testid="financing-interest">0% Interest options for qualified homeowners</li>
+                        <li data-testid="financing-terms">Flexible payment terms up to 60 months</li>
+                        <li data-testid="financing-approval">Quick approval process with minimal paperwork</li>
+                        <li data-testid="financing-penalties">No prepayment penalties for early payoff</li>
+                    </ul>
+                </div>
+                
+                <div class="financing-block" data-testid="block-insurance-claims">
+                    <h3 data-testid="title-insurance-claims">
+                        <svg class="financing-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                        Insurance Claims Expertise
+                    </h3>
+                    <ul class="financing-list">
+                        <li data-testid="insurance-consultation">Free claim consultation and damage assessment</li>
+                        <li data-testid="insurance-communication">Direct insurance company communication on your behalf</li>
+                        <li data-testid="insurance-estimates">Xactimate estimates matching adjuster requirements</li>
+                        <li data-testid="insurance-supplemental">Supplemental claim assistance if initial settlement is insufficient</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="final-cta" data-testid="container-final-cta">
+                <h3 data-testid="heading-final-cta">Ready to Get Started?</h3>
+                <p data-testid="description-final-cta">Contact Clear Home today for your free roofing consultation. Our {{city_name}} experts will assess your roof, explain your options, and provide transparent pricing with no hidden fees.</p>
+                <a href="tel:{{company_phone}}" class="final-cta-phone" data-testid="link-final-phone">Call Now: {{company_phone}}</a>
+                <a href="#contact-form" class="btn-primary" data-testid="button-final-estimate">SCHEDULE FREE ESTIMATE</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Clear Home - {{city_name}} Residential Roofing",
+        "description": "Expert residential roofing contractors serving {{city_name}}",
+        "telephone": "{{company_phone}}",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "900 Camp Street, 3rd Floor",
+            "addressLocality": "New Orleans",
+            "addressRegion": "LA",
+            "postalCode": "70130"
+        },
+        "geo": {
+            "latitude": "{{city_latitude}}",
+            "longitude": "{{city_longitude}}"
+        },
+        "serviceArea": "{{city_name}}, Louisiana",
+        "services": ["Residential Roofing", "Roof Repair", "Insurance Claims"],
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Residential Roofing Services",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Residential Roof Installation",
+                        "description": "Complete roof replacement with premium materials for {{city_name}} homes."
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Roof Repair Services",
+                        "description": "Emergency and scheduled roof repair services for {{city_name}} residents."
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Insurance Claims Assistance",
+                        "description": "Expert insurance claim assistance for storm-damaged roofs in {{city_name}}."
+                    }
+                }
+            ]
+        },
+        "potentialAction": {
+            "@type": "ReserveAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "tel:{{company_phone}}",
+                "inLanguage": "en"
+            },
+            "result": {
+                "@type": "Reservation",
+                "name": "Free Roofing Consultation"
+            }
+        }
+    }
+    </script>
+</body>
+</html>

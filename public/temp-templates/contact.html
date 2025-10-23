@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>Contact {{company_name}} | New Orleans Roofing & Storm Restoration | {{company_phone}}</title>
+    <meta name="description" content="Contact {{company_name}} for expert roofing, storm damage restoration, and insurance claims in New Orleans. 24/7 emergency service. Free estimates. Call {{company_phone}}.">
+    <meta name="keywords" content="contact roofing contractor New Orleans, storm damage repair contact, roofing emergency contact, insurance claims roofing, free roofing estimate New Orleans">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{base_url}}/contact">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Contact {{company_name}} | 24/7 Roofing & Storm Restoration">
+    <meta property="og:description" content="Contact New Orleans' trusted roofing experts for emergency repairs, storm damage restoration, and free estimates. Available 24/7.">
+    <meta property="og:image" content="{{base_url}}/images/clear-home-contact-og.jpg">
+    <meta property="og:url" content="{{base_url}}/contact">
+    <meta property="og:type" content="business.business">
+    <meta property="og:site_name" content="{{company_name}}">
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Contact {{company_name}} | New Orleans Roofing Experts">
+    <meta name="twitter:description" content="24/7 emergency roofing services, storm damage restoration, and free estimates in New Orleans. Contact us today!">
+    <meta name="twitter:image" content="{{base_url}}/images/clear-home-contact-twitter.jpg">
+    
+    <!-- Structured Data / Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "{{company_name}}",
+        "image": "{{base_url}}/images/clear-home-logo.jpg",
+        "description": "Professional roofing and storm restoration services in New Orleans and surrounding areas.",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "{{address}}",
+            "addressLocality": "New Orleans",
+            "addressRegion": "LA",
+            "postalCode": "70130",
+            "addressCountry": "US"
+        },
+        "telephone": "{{company_phone}}",
+        "email": "{{email}}",
+        "url": "{{base_url}}",
+        "openingHours": [
+            "Mo-Fr 07:00-18:00",
+            "Sa 08:00-16:00"
+        ],
+        "serviceArea": [
+            "New Orleans, LA",
+            "Metairie, LA",
+            "Kenner, LA",
+            "Algiers, LA",
+            "Gretna, LA",
+            "Harvey, LA",
+            "Slidell, LA",
+            "Covington, LA",
+            "Mandeville, LA"
+        ],
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Roofing and Storm Restoration Services",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Emergency Roof Repair",
+                        "description": "24/7 emergency roofing services"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Storm Damage Restoration",
+                        "description": "Complete storm damage assessment and restoration"
+                    }
+                }
+            ]
+        },
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "{{company_phone}}",
+            "contactType": "customer service",
+            "availableLanguage": "English",
+            "areaServed": "New Orleans Metropolitan Area"
+        }
+    }
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h2 data-testid="heading-header-logo">{{company_name}}</h2>
+            </div>
+            <div class="nav-links">
+                <a href="/" data-testid="link-home">Home</a>
+                <a href="/about" data-testid="link-about">About</a>
+                <a href="/services" data-testid="link-services">Services</a>
+                <a href="/contact" class="active" data-testid="link-contact">Contact</a>
+            </div>
+            <div class="contact-info">
+                <a href="tel:{{company_phone}}" class="phone-link" data-testid="link-header-phone">{{company_phone}}</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-contact">
+            <div class="hero-overlay"></div>
+            <div class="container">
+                <h1 data-testid="heading-hero-main">Contact {{company_name}} - Ready to Help 24/7</h1>
+                <p class="hero-subtext" data-testid="text-hero-subtext">New Orleans' most trusted roofing and storm restoration experts. Emergency response available.</p>
+                <a href="#contact-form" class="btn btn-primary" data-testid="button-hero-estimate">Get Free Estimate</a>
+            </div>
+        </section>
+
+        <!-- Emergency Contact Banner -->
+        <section class="emergency-banner">
+            <div class="container">
+                <div class="emergency-content">
+                    <div class="emergency-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                    </div>
+                    <div class="emergency-text">
+                        <span data-testid="text-emergency-message">STORM DAMAGE EMERGENCY?</span>
+                        <span data-testid="text-emergency-availability">24/7 Response Team</span>
+                    </div>
+                    <a href="tel:{{company_phone}}" class="emergency-phone" data-testid="link-emergency-phone">{{company_phone}}</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Contact Section -->
+        <section class="main-contact">
+            <div class="container">
+                <h2 data-testid="heading-contact-main">Get Your Free Consultation Today</h2>
+                <p class="contact-intro" data-testid="text-contact-intro">Whether you're dealing with storm damage, planning a roofing project, or need emergency repairs, {{company_name}} is here to help. Our experienced team provides honest assessments and competitive pricing for all your roofing and exterior needs.</p>
+                
+                <div class="contact-cards">
+                    <div class="contact-card" data-testid="card-contact-phone">
+                        <div class="contact-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-contact-phone">Call Us Direct</h3>
+                        <p class="contact-primary" data-testid="text-phone-number"><strong>{{company_phone}}</strong></p>
+                        <p data-testid="text-phone-availability">Available 24/7 for emergencies</p>
+                        <p data-testid="text-phone-hours">Business hours: Mon-Fri 7AM-6PM, Sat 8AM-4PM</p>
+                        <p class="contact-description" data-testid="text-phone-description">Speak directly with our team for immediate assistance and emergency response.</p>
+                    </div>
+                    
+                    <div class="contact-card" data-testid="card-contact-email">
+                        <div class="contact-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-contact-email">Email Us</h3>
+                        <p class="contact-primary" data-testid="text-email-address"><strong>{{email}}</strong></p>
+                        <p data-testid="text-email-response">Response within 4 hours during business hours</p>
+                        <p class="contact-description" data-testid="text-email-description">Send us your project details and we'll provide a detailed response with next steps.</p>
+                    </div>
+                    
+                    <div class="contact-card" data-testid="card-contact-visit">
+                        <div class="contact-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-contact-visit">Visit Our Office</h3>
+                        <p class="contact-primary" data-testid="text-office-address"><strong>900 Camp Street, 3rd Floor</strong></p>
+                        <p data-testid="text-office-city">New Orleans, LA 70130</p>
+                        <p data-testid="text-office-appointment">By appointment only</p>
+                        <p class="contact-description" data-testid="text-office-description">Schedule a consultation at our headquarters in downtown New Orleans.</p>
+                    </div>
+                    
+                    <div class="contact-card" data-testid="card-contact-quote">
+                        <div class="contact-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10,9 9,9 8,9"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-contact-quote">Request Quote Online</h3>
+                        <p class="contact-primary" data-testid="text-quote-speed"><strong>Free Estimate Form</strong></p>
+                        <p data-testid="text-quote-timing">Get pricing within 24 hours</p>
+                        <p class="contact-description" data-testid="text-quote-description">Fill out our detailed form for accurate project quotes and scheduling.</p>
+                        <a href="#contact-form" class="quote-button" data-testid="button-quote-form">Start Quote Request</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form Section -->
+        <section class="contact-form-section" id="contact-form">
+            <div class="container">
+                <h2 data-testid="heading-contact-form">Request Your Free Estimate</h2>
+                <p data-testid="text-form-intro">Fill out our detailed form for accurate project quotes and scheduling.</p>
+                
+                <form class="contact-form" data-testid="form-contact">
+                    <!-- Form Progress Indicator -->
+                    <div class="form-progress" data-testid="container-form-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" data-testid="bar-progress-fill"></div>
+                        </div>
+                        <span class="progress-text" data-testid="text-progress-percentage">0% Complete</span>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 data-testid="heading-form-personal">Personal Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName" data-testid="label-first-name">First Name *</label>
+                                <input type="text" id="firstName" name="firstName" required data-testid="input-first-name">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName" data-testid="label-last-name">Last Name *</label>
+                                <input type="text" id="lastName" name="lastName" required data-testid="input-last-name">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone" data-testid="label-phone">Phone Number *</label>
+                                <input type="tel" id="phone" name="phone" required data-testid="input-phone">
+                            </div>
+                            <div class="form-group">
+                                <label for="email" data-testid="label-email">Email Address *</label>
+                                <input type="email" id="email" name="email" required data-testid="input-email">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 data-testid="heading-form-project">Project Details</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="serviceNeeded" data-testid="label-service-needed">Service Needed *</label>
+                                <select id="serviceNeeded" name="serviceNeeded" required data-testid="select-service-needed">
+                                    <option value="">Select a service...</option>
+                                    <option value="emergency-repair">Emergency Repair</option>
+                                    <option value="roofing-installation">Roofing Installation</option>
+                                    <option value="insurance-claim">Insurance Claim</option>
+                                    <option value="storm-damage">Storm Damage</option>
+                                    <option value="general-contracting">General Contracting</option>
+                                    <option value="free-inspection">Free Inspection</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="propertyType" data-testid="label-property-type">Property Type</label>
+                                <select id="propertyType" name="propertyType" data-testid="select-property-type">
+                                    <option value="">Select property type...</option>
+                                    <option value="residential">Residential</option>
+                                    <option value="commercial">Commercial</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="serviceArea" data-testid="label-service-area">Service Area *</label>
+                                <select id="serviceArea" name="serviceArea" required data-testid="select-service-area">
+                                    <option value="">Select your city...</option>
+                                    <option value="new-orleans">New Orleans</option>
+                                    <option value="algiers">Algiers</option>
+                                    <option value="metairie">Metairie</option>
+                                    <option value="kenner">Kenner</option>
+                                    <option value="gretna">Gretna</option>
+                                    <option value="harvey">Harvey</option>
+                                    <option value="terrytown">Terrytown</option>
+                                    <option value="belle-chasse">Belle Chasse</option>
+                                    <option value="marrero">Marrero</option>
+                                    <option value="arabi">Arabi</option>
+                                    <option value="chalmette">Chalmette</option>
+                                    <option value="laplace">Laplace</option>
+                                    <option value="slidell">Slidell</option>
+                                    <option value="covington">Covington</option>
+                                    <option value="mandeville">Mandeville</option>
+                                    <option value="madisonville">Madisonville</option>
+                                    <option value="hammond">Hammond</option>
+                                    <option value="ponchatoula">Ponchatoula</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactMethod" data-testid="label-contact-method">Preferred Contact Method</label>
+                                <select id="contactMethod" name="contactMethod" data-testid="select-contact-method">
+                                    <option value="phone">Phone</option>
+                                    <option value="email">Email</option>
+                                    <option value="text">Text</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 data-testid="heading-form-description">Project Description</h3>
+                        <div class="form-group">
+                            <label for="projectDescription" data-testid="label-project-description">Tell us about your project *</label>
+                            <textarea id="projectDescription" name="projectDescription" rows="4" maxlength="500" required placeholder="Describe your roofing or restoration needs..." data-testid="textarea-project-description"></textarea>
+                            <span class="character-count" data-testid="text-character-count">0/500 characters</span>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bestTime" data-testid="label-best-time">Best time to contact you</label>
+                                <input type="text" id="bestTime" name="bestTime" placeholder="e.g., Weekday mornings" data-testid="input-best-time">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-large" data-testid="button-submit-form">Get My Free Estimate</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Service Area Coverage -->
+        <section class="service-areas">
+            <div class="container">
+                <h2 data-testid="heading-service-areas">We Proudly Serve the Greater New Orleans Area</h2>
+                <p class="areas-intro" data-testid="text-areas-intro">{{company_name}} provides expert roofing and storm restoration services throughout Southeast Louisiana. Our local knowledge and community connections ensure fast response times and quality results.</p>
+                
+                <!-- Interactive Service Area Map -->
+                <div class="service-map-container">
+                    <h3 data-testid="heading-service-map">Service Area Map</h3>
+                    <div class="map-wrapper" data-testid="container-service-map">
+                        <div class="map-placeholder">
+                            <div class="map-background">
+                                <!-- Styled map representation with location markers -->
+                                <div class="map-region new-orleans-region" data-testid="region-new-orleans">
+                                    <div class="location-marker" data-testid="marker-new-orleans" data-location="New Orleans">
+                                        <span class="marker-icon"></span>
+                                        <span class="marker-label">New Orleans</span>
+                                    </div>
+                                    <div class="location-marker" data-testid="marker-algiers" data-location="Algiers">
+                                        <span class="marker-icon"></span>
+                                        <span class="marker-label">Algiers</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="map-region jefferson-region" data-testid="region-jefferson">
+                                    <div class="location-marker" data-testid="marker-metairie" data-location="Metairie">
+                                        <span class="marker-icon"></span>
+                                        <span class="marker-label">Metairie</span>
+                                    </div>
+                                    <div class="location-marker" data-testid="marker-kenner" data-location="Kenner">
+                                        <span class="marker-icon"></span>
+                                        <span class="marker-label">Kenner</span>
+                                    </div>
+                                    <div class="location-marker" data-testid="marker-gretna" data-location="Gretna">
+                                        <span class="marker-icon"></span>
+                                        <span class="marker-label">Gretna</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="map-region north-shore-region" data-testid="region-north-shore">
+                                    <div class="location-marker" data-testid="marker-slidell" data-location="Slidell">
+                                        <span class="marker-icon"></span>
+                                        <span class="marker-label">Slidell</span>
+                                    </div>
+                                    <div class="location-marker" data-testid="marker-covington" data-location="Covington">
+                                        <span class="marker-icon"></span>
+                                        <span class="marker-label">Covington</span>
+                                    </div>
+                                    <div class="location-marker" data-testid="marker-mandeville" data-location="Mandeville">
+                                        <span class="marker-icon"></span>
+                                        <span class="marker-label">Mandeville</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="coverage-area" data-testid="coverage-overlay">
+                                    <span class="coverage-label" data-testid="text-coverage-area">{{company_name}} Service Coverage</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="map-note" data-testid="text-map-note">Interactive map showing our 18 service locations across Greater New Orleans. Hover over markers for location details.</p>
+                    </div>
+                </div>
+                
+                <div class="areas-grid">
+                    <div class="parish-group" data-testid="group-orleans-parish">
+                        <h3 data-testid="heading-orleans-parish">Orleans Parish</h3>
+                        <ul>
+                            <li data-testid="area-new-orleans">New Orleans</li>
+                            <li data-testid="area-algiers">Algiers</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="parish-group" data-testid="group-jefferson-parish">
+                        <h3 data-testid="heading-jefferson-parish">Jefferson Parish</h3>
+                        <ul>
+                            <li data-testid="area-metairie">Metairie</li>
+                            <li data-testid="area-kenner">Kenner</li>
+                            <li data-testid="area-gretna">Gretna</li>
+                            <li data-testid="area-harvey">Harvey</li>
+                            <li data-testid="area-terrytown">Terrytown</li>
+                            <li data-testid="area-belle-chasse">Belle Chasse</li>
+                            <li data-testid="area-marrero">Marrero</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="parish-group" data-testid="group-st-bernard-parish">
+                        <h3 data-testid="heading-st-bernard-parish">St. Bernard Parish</h3>
+                        <ul>
+                            <li data-testid="area-arabi">Arabi</li>
+                            <li data-testid="area-chalmette">Chalmette</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="parish-group" data-testid="group-st-john-parish">
+                        <h3 data-testid="heading-st-john-parish">St. John Parish</h3>
+                        <ul>
+                            <li data-testid="area-laplace">Laplace</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="parish-group" data-testid="group-st-tammany-parish">
+                        <h3 data-testid="heading-st-tammany-parish">St. Tammany Parish</h3>
+                        <ul>
+                            <li data-testid="area-slidell">Slidell</li>
+                            <li data-testid="area-covington">Covington</li>
+                            <li data-testid="area-mandeville">Mandeville</li>
+                            <li data-testid="area-madisonville">Madisonville</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="parish-group" data-testid="group-tangipahoa-parish">
+                        <h3 data-testid="heading-tangipahoa-parish">Tangipahoa Parish</h3>
+                        <ul>
+                            <li data-testid="area-hammond">Hammond</li>
+                            <li data-testid="area-ponchatoula">Ponchatoula</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="areas-note" data-testid="text-areas-note">Don't see your area? Contact us - we may still be able to help with your project.</p>
+            </div>
+        </section>
+
+        <!-- Trust Indicators Section -->
+        <section class="trust-indicators">
+            <div class="container">
+                <h2 data-testid="heading-trust-indicators">Why Choose {{company_name}}</h2>
+                <div class="trust-grid">
+                    <div class="trust-card" data-testid="card-trust-experience">
+                        <div class="trust-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-trust-experience">20+ Years Experience</h3>
+                        <p data-testid="text-trust-experience">Local expertise you can trust with thousands of satisfied customers</p>
+                    </div>
+                    
+                    <div class="trust-card" data-testid="card-trust-licensed">
+                        <div class="trust-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-trust-licensed">Licensed & Insured</h3>
+                        <p data-testid="text-trust-licensed">Fully licensed contractors with comprehensive insurance coverage</p>
+                    </div>
+                    
+                    <div class="trust-card" data-testid="card-trust-insurance">
+                        <div class="trust-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10,9 9,9 8,9"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-trust-insurance">Insurance Claim Specialists</h3>
+                        <p data-testid="text-trust-insurance">We handle the paperwork and fight for maximum coverage</p>
+                    </div>
+                    
+                    <div class="trust-card" data-testid="card-trust-emergency">
+                        <div class="trust-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12,6 12,12 16,14"/>
+                            </svg>
+                        </div>
+                        <h3 data-testid="heading-trust-emergency">Emergency Response Team</h3>
+                        <p data-testid="text-trust-emergency">24/7 availability for storm damage and urgent repairs</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Business Hours Section -->
+        <section class="business-hours">
+            <div class="container">
+                <h2 data-testid="heading-business-hours">Business Hours & Emergency Contact</h2>
+                <div class="hours-content">
+                    <div class="hours-regular">
+                        <h3 data-testid="heading-regular-hours">Regular Business Hours</h3>
+                        <div class="hours-list">
+                            <div class="hours-item" data-testid="hours-weekdays">
+                                <span data-testid="text-weekdays">Monday - Friday:</span>
+                                <span data-testid="text-weekday-hours">7:00 AM - 6:00 PM</span>
+                            </div>
+                            <div class="hours-item" data-testid="hours-saturday">
+                                <span data-testid="text-saturday">Saturday:</span>
+                                <span data-testid="text-saturday-hours">8:00 AM - 4:00 PM</span>
+                            </div>
+                            <div class="hours-item" data-testid="hours-sunday">
+                                <span data-testid="text-sunday">Sunday:</span>
+                                <span data-testid="text-sunday-hours">Emergency calls only</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hours-emergency">
+                        <h3 data-testid="heading-emergency-hours">Emergency Services</h3>
+                        <div class="emergency-details">
+                            <p data-testid="text-emergency-availability-full">Available 24/7/365 for storm damage and urgent repairs</p>
+                            <p data-testid="text-emergency-response-time">Response time: 2-4 hours for emergency calls</p>
+                            <p data-testid="text-emergency-service-area">Service area: All 18 locations in greater New Orleans</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA Section -->
+        <section class="final-cta">
+            <div class="container">
+                <h2 data-testid="heading-final-cta">Ready to Get Started?</h2>
+                <p data-testid="text-final-cta">Don't wait for small problems to become major repairs. Contact {{company_name}} today for your free consultation and take the first step toward protecting your most important investment.</p>
+                
+                <div class="cta-buttons">
+                    <a href="tel:{{company_phone}}" class="btn btn-primary btn-large" data-testid="button-final-call">Call {{company_phone}}</a>
+                    <a href="#contact-form" class="btn btn-secondary btn-large" data-testid="button-final-estimate">Get Free Estimate</a>
+                </div>
+                
+                <p class="company-tagline" data-testid="text-company-tagline">{{company_name}} - Building Trust One Project at a Time</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-company">
+                    <h3 data-testid="heading-footer-company">{{company_name}}</h3>
+                    <p data-testid="text-footer-description">Expert roofing and storm restoration services serving New Orleans and surrounding areas for over 20 years.</p>
+                    <p data-testid="text-footer-licensed"><strong>Licensed & Insured Contractor</strong></p>
+                </div>
+                
+                <div class="footer-contact">
+                    <h4 data-testid="heading-footer-contact">Contact Information</h4>
+                    <p>Phone: <a href="tel:{{company_phone}}" data-testid="link-footer-phone">{{company_phone}}</a></p>
+                    <p>Email: <a href="mailto:{{email}}" data-testid="link-footer-email">{{email}}</a></p>
+                    <p>Address: <span data-testid="text-footer-address">{{address}}</span></p>
+                </div>
+                
+                <div class="footer-services">
+                    <h4 data-testid="heading-footer-services">Our Services</h4>
+                    <ul>
+                        <li data-testid="text-service-storm">Storm Damage Restoration</li>
+                        <li data-testid="text-service-residential">Residential Roofing</li>
+                        <li data-testid="text-service-commercial">Commercial Roofing</li>
+                        <li data-testid="text-service-insurance">Insurance Claims Assistance</li>
+                        <li data-testid="text-service-emergency">Emergency Repairs</li>
+                        <li data-testid="text-service-general">General Contracting</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-areas">
+                    <h4 data-testid="heading-footer-areas">Service Areas</h4>
+                    <p data-testid="text-service-areas">Proudly serving 18 communities across Greater New Orleans including Metairie, Kenner, Algiers, Gretna, and more.</p>
+                    <a href="/areas" data-testid="link-view-areas">View All Service Areas</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p data-testid="text-footer-copyright">&copy; 2024 {{company_name}}. All rights reserved. Licensed roofing contractor serving New Orleans, Louisiana.</p>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        /* Reset and base styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #2c3e50; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+        /* Header */
+        header { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .logo h2 { color: #2c3e50; font-size: 1.8rem; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { text-decoration: none; color: #2c3e50; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #e74c3c; }
+        .phone-link { color: #e74c3c; font-weight: bold; text-decoration: none; }
+
+        /* Hero Section */
+        .hero-contact { 
+            background: linear-gradient(rgba(44, 62, 80, 0.85), rgba(44, 62, 80, 0.85)), url('/images/contact-hero-bg.jpg') center/cover; 
+            color: white; 
+            padding: 120px 0; 
+            text-align: center; 
+        }
+        .hero-contact h1 { font-size: 3rem; margin-bottom: 1rem; font-weight: 700; }
+        .hero-subtext { font-size: 1.3rem; margin-bottom: 2rem; opacity: 0.95; }
+
+        /* Emergency Banner */
+        .emergency-banner { 
+            background: linear-gradient(135deg, #e74c3c, #c0392b); 
+            color: white; 
+            padding: 1rem 0; 
+            animation: subtle-pulse 3s infinite; 
+        }
+        .emergency-content { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 1rem; 
+            text-align: center; 
+        }
+        .emergency-icon svg { width: 32px; height: 32px; }
+        .emergency-text { display: flex; flex-direction: column; }
+        .emergency-text span:first-child { font-weight: bold; font-size: 1.1rem; }
+        .emergency-phone { 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+            color: white; 
+            text-decoration: none; 
+            padding: 0.5rem 1rem; 
+            border: 2px solid white; 
+            border-radius: 8px; 
+            transition: all 0.3s; 
+        }
+        .emergency-phone:hover { background: white; color: #e74c3c; }
+
+        @keyframes subtle-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.95; }
+        }
+
+        /* Main Contact Section */
+        .main-contact { padding: 80px 0; background: #f8f9fa; }
+        .main-contact h2 { text-align: center; font-size: 2.5rem; margin-bottom: 1rem; color: #2c3e50; }
+        .contact-intro { text-align: center; font-size: 1.2rem; margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .contact-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-top: 3rem; }
+        .contact-card { background: white; padding: 2rem; border-radius: 12px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: transform 0.3s; }
+        .contact-card:hover { transform: translateY(-5px); }
+        .contact-icon { margin-bottom: 1rem; color: #e74c3c; }
+        .contact-card h3 { color: #2c3e50; margin-bottom: 1rem; font-size: 1.3rem; }
+        .contact-primary { font-size: 1.1rem; color: #e74c3c; margin-bottom: 0.5rem; }
+        .contact-description { font-style: italic; color: #666; margin-top: 1rem; }
+        .quote-button { 
+            display: inline-block; 
+            margin-top: 1rem; 
+            padding: 0.5rem 1rem; 
+            background: #e74c3c; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 6px; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            transition: background 0.3s; 
+        }
+        .quote-button:hover { background: #c0392b; }
+
+        /* Contact Form Section */
+        .contact-form-section { padding: 80px 0; background: white; }
+        .contact-form-section h2 { text-align: center; font-size: 2.5rem; margin-bottom: 1rem; color: #2c3e50; }
+        .contact-form { max-width: 800px; margin: 0 auto; background: #f8f9fa; padding: 3rem; border-radius: 12px; }
+        .form-section { margin-bottom: 2rem; }
+        .form-section h3 { color: #2c3e50; margin-bottom: 1rem; font-size: 1.3rem; border-bottom: 2px solid #e74c3c; padding-bottom: 0.5rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50; }
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; 
+            padding: 0.8rem; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 1rem; 
+            transition: border-color 0.3s; 
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { 
+            outline: none; 
+            border-color: #e74c3c; 
+        }
+        .character-count { font-size: 0.9rem; color: #666; float: right; margin-top: 0.5rem; }
+        
+        /* Form Progress Indicator */
+        .form-progress { margin-bottom: 2rem; }
+        .progress-bar { 
+            width: 100%; 
+            height: 8px; 
+            background: #e0e0e0; 
+            border-radius: 4px; 
+            overflow: hidden; 
+            margin-bottom: 0.5rem; 
+        }
+        .progress-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #e74c3c, #c0392b); 
+            width: 0%; 
+            transition: width 0.3s ease; 
+        }
+        .progress-text { 
+            font-size: 0.9rem; 
+            color: #2c3e50; 
+            font-weight: 600; 
+        }
+
+        /* Service Areas */
+        .service-areas { padding: 80px 0; background: #f8f9fa; }
+        .service-areas h2 { text-align: center; font-size: 2.5rem; margin-bottom: 1rem; color: #2c3e50; }
+        .areas-intro { text-align: center; font-size: 1.2rem; margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .areas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 2rem; }
+        .parish-group { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .parish-group h3 { color: #e74c3c; margin-bottom: 1rem; font-size: 1.2rem; }
+        .parish-group ul { list-style: none; }
+        .parish-group li { padding: 0.3rem 0; color: #2c3e50; border-bottom: 1px solid #eee; }
+        .areas-note { text-align: center; font-style: italic; color: #666; margin-top: 2rem; }
+        
+        /* Service Area Map */
+        .service-map-container { margin: 3rem 0; }
+        .service-map-container h3 { text-align: center; color: #2c3e50; margin-bottom: 2rem; font-size: 1.8rem; }
+        .map-wrapper { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .map-placeholder { position: relative; height: 400px; background: #f0f4f8; border-radius: 8px; overflow: hidden; }
+        .map-background { 
+            position: relative; 
+            width: 100%; 
+            height: 100%; 
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1ecf1 50%, #b8e0e8 100%); 
+        }
+        .map-region { position: absolute; }
+        .new-orleans-region { top: 45%; left: 45%; }
+        .jefferson-region { top: 35%; left: 25%; }
+        .north-shore-region { top: 20%; right: 20%; }
+        .location-marker { 
+            position: relative; 
+            display: inline-block; 
+            margin: 0.5rem; 
+            cursor: pointer; 
+            transition: transform 0.3s; 
+        }
+        .location-marker:hover { transform: scale(1.1); }
+        .marker-icon { 
+            display: inline-block; 
+            width: 12px; 
+            height: 12px; 
+            background: #e74c3c; 
+            border-radius: 50%; 
+            border: 2px solid white; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3); 
+        }
+        .marker-label { 
+            position: absolute; 
+            top: -30px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: rgba(44, 62, 80, 0.9); 
+            color: white; 
+            padding: 0.3rem 0.6rem; 
+            border-radius: 4px; 
+            font-size: 0.8rem; 
+            white-space: nowrap; 
+            opacity: 0; 
+            transition: opacity 0.3s; 
+        }
+        .location-marker:hover .marker-label { opacity: 1; }
+        .coverage-area { 
+            position: absolute; 
+            bottom: 10px; 
+            right: 10px; 
+            background: rgba(44, 62, 80, 0.8); 
+            color: white; 
+            padding: 0.5rem 1rem; 
+            border-radius: 6px; 
+        }
+        .map-note { text-align: center; margin-top: 1rem; color: #666; font-style: italic; }
+
+        /* Trust Indicators */
+        .trust-indicators { padding: 80px 0; background: white; }
+        .trust-indicators h2 { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: #2c3e50; }
+        .trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+        .trust-card { text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 12px; }
+        .trust-icon { margin-bottom: 1rem; color: #e74c3c; }
+        .trust-card h3 { color: #2c3e50; margin-bottom: 1rem; }
+
+        /* Business Hours */
+        .business-hours { padding: 80px 0; background: #f8f9fa; }
+        .business-hours h2 { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: #2c3e50; }
+        .hours-content { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+        .hours-regular, .hours-emergency { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .hours-regular h3, .hours-emergency h3 { color: #e74c3c; margin-bottom: 1rem; font-size: 1.3rem; }
+        .hours-item { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #eee; }
+        .emergency-details p { margin-bottom: 0.5rem; color: #2c3e50; }
+
+        /* Final CTA */
+        .final-cta { 
+            background: linear-gradient(135deg, #2c3e50, #34495e); 
+            color: white; 
+            padding: 80px 0; 
+            text-align: center; 
+        }
+        .final-cta h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .cta-buttons { margin: 2rem 0; display: flex; gap: 1rem; justify-content: center; }
+        .company-tagline { font-size: 1.2rem; font-style: italic; opacity: 0.9; margin-top: 2rem; }
+
+        /* Buttons */
+        .btn { 
+            display: inline-block; 
+            padding: 0.8rem 2rem; 
+            text-decoration: none; 
+            border-radius: 6px; 
+            font-weight: 600; 
+            text-align: center; 
+            transition: all 0.3s; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 1rem; 
+        }
+        .btn-primary { background: #e74c3c; color: white; }
+        .btn-primary:hover { background: #c0392b; transform: translateY(-2px); }
+        .btn-secondary { background: transparent; color: white; border: 2px solid white; }
+        .btn-secondary:hover { background: white; color: #2c3e50; }
+        .btn-large { padding: 1rem 2.5rem; font-size: 1.1rem; }
+
+        /* Footer */
+        footer { background: #2c3e50; color: white; padding: 3rem 0 1rem; }
+        .footer-content { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-bottom: 2rem; }
+        .footer-company h3 { color: #e74c3c; margin-bottom: 1rem; }
+        footer h4 { color: #e74c3c; margin-bottom: 1rem; }
+        footer ul { list-style: none; }
+        footer li { margin-bottom: 0.5rem; }
+        footer a { color: #bdc3c7; text-decoration: none; }
+        footer a:hover { color: white; }
+        .footer-bottom { text-align: center; padding-top: 2rem; border-top: 1px solid #34495e; color: #bdc3c7; }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container { padding: 0 1rem; }
+            nav { flex-direction: column; gap: 1rem; }
+            .nav-links { flex-direction: column; text-align: center; }
+            .hero-contact h1 { font-size: 2rem; }
+            .contact-cards { grid-template-columns: 1fr; }
+            .map-region { position: relative !important; top: auto !important; left: auto !important; right: auto !important; }
+            .map-background { height: 300px; }
+            .form-row { grid-template-columns: 1fr; }
+            .areas-grid { grid-template-columns: 1fr; }
+            .trust-grid { grid-template-columns: repeat(2, 1fr); }
+            .hours-content { grid-template-columns: 1fr; }
+            .cta-buttons { flex-direction: column; align-items: center; }
+            .footer-content { grid-template-columns: 1fr; text-align: center; }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form Progress Indicator Functionality
+            const form = document.querySelector('[data-testid="form-contact"]');
+            const progressBar = document.querySelector('[data-testid="bar-progress-fill"]');
+            const progressText = document.querySelector('[data-testid="text-progress-percentage"]');
+            const characterCount = document.querySelector('[data-testid="text-character-count"]');
+            const projectDescription = document.querySelector('[data-testid="textarea-project-description"]');
+            
+            // Required fields for progress calculation
+            const requiredFields = [
+                'firstName',
+                'lastName', 
+                'phone',
+                'email',
+                'serviceNeeded',
+                'serviceArea',
+                'projectDescription'
+            ];
+            
+            // Function to update progress bar
+            function updateProgress() {
+                let completedFields = 0;
+                const totalFields = requiredFields.length;
+                
+                requiredFields.forEach(fieldName => {
+                    const field = document.getElementById(fieldName);
+                    if (field && field.value.trim() !== '') {
+                        completedFields++;
+                    }
+                });
+                
+                const progressPercentage = Math.round((completedFields / totalFields) * 100);
+                
+                // Update progress bar width and text
+                progressBar.style.width = progressPercentage + '%';
+                progressText.textContent = progressPercentage + '% Complete';
+                
+                // Add visual feedback for completion
+                if (progressPercentage === 100) {
+                    progressBar.style.background = 'linear-gradient(90deg, #27ae60, #2ecc71)';
+                    progressText.style.color = '#27ae60';
+                } else {
+                    progressBar.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+                    progressText.style.color = '#2c3e50';
+                }
+            }
+            
+            // Add event listeners to all form fields
+            const allFormFields = form.querySelectorAll('input, select, textarea');
+            allFormFields.forEach(field => {
+                field.addEventListener('input', updateProgress);
+                field.addEventListener('change', updateProgress);
+            });
+            
+            // Character counter for project description
+            if (projectDescription && characterCount) {
+                projectDescription.addEventListener('input', function() {
+                    const currentLength = this.value.length;
+                    const maxLength = this.maxLength;
+                    characterCount.textContent = currentLength + '/' + maxLength + ' characters';
+                    
+                    if (currentLength > maxLength * 0.9) {
+                        characterCount.style.color = '#e74c3c';
+                    } else if (currentLength > maxLength * 0.7) {
+                        characterCount.style.color = '#f39c12';
+                    } else {
+                        characterCount.style.color = '#666';
+                    }
+                });
+            }
+            
+            // Form validation on submit
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Check if all required fields are completed
+                let allRequiredCompleted = true;
+                const missingFields = [];
+                
+                requiredFields.forEach(fieldName => {
+                    const field = document.getElementById(fieldName);
+                    if (!field || field.value.trim() === '') {
+                        allRequiredCompleted = false;
+                        missingFields.push(fieldName);
+                    }
+                });
+                
+                if (allRequiredCompleted) {
+                    // Here you would typically submit the form to your backend
+                    alert('Thank you! Your estimate request has been submitted. We will contact you within 24 hours.');
+                    
+                    // Reset form and progress
+                    form.reset();
+                    updateProgress();
+                    if (characterCount) characterCount.textContent = '0/500 characters';
+                } else {
+                    alert('Please complete all required fields before submitting.');
+                    
+                    // Highlight first missing field
+                    const firstMissingField = document.getElementById(missingFields[0]);
+                    if (firstMissingField) {
+                        firstMissingField.focus();
+                        firstMissingField.style.borderColor = '#e74c3c';
+                        setTimeout(() => {
+                            firstMissingField.style.borderColor = '';
+                        }, 3000);
+                    }
+                }
+            });
+            
+            // Initialize progress on page load
+            updateProgress();
+            
+            // Service Area Map Hover Effects (Enhanced Interactivity)
+            const locationMarkers = document.querySelectorAll('.location-marker');
+            
+            locationMarkers.forEach(marker => {
+                const location = marker.getAttribute('data-location');
+                
+                marker.addEventListener('mouseenter', function() {
+                    // Show location details tooltip
+                    const tooltip = this.querySelector('.marker-label');
+                    if (tooltip) {
+                        tooltip.style.opacity = '1';
+                        tooltip.style.transform = 'translateX(-50%) translateY(-5px)';
+                    }
+                    
+                    // Add active state styling
+                    const icon = this.querySelector('.marker-icon');
+                    if (icon) {
+                        icon.style.background = '#c0392b';
+                        icon.style.transform = 'scale(1.2)';
+                    }
+                });
+                
+                marker.addEventListener('mouseleave', function() {
+                    // Hide tooltip
+                    const tooltip = this.querySelector('.marker-label');
+                    if (tooltip) {
+                        tooltip.style.opacity = '0';
+                        tooltip.style.transform = 'translateX(-50%) translateY(0)';
+                    }
+                    
+                    // Reset icon styling
+                    const icon = this.querySelector('.marker-icon');
+                    if (icon) {
+                        icon.style.background = '#e74c3c';
+                        icon.style.transform = 'scale(1)';
+                    }
+                });
+                
+                marker.addEventListener('click', function() {
+                    // Show location information
+                    alert('Service Area: ' + location + '\n\nWe provide expert roofing and storm restoration services in ' + location + '. Contact us for a free estimate!');
+                });
+            });
+            
+            // Emergency banner pulse animation
+            const emergencyPhone = document.querySelector('[data-testid="link-emergency-phone"]');
+            if (emergencyPhone) {
+                setInterval(function() {
+                    emergencyPhone.style.transform = 'scale(1.05)';
+                    setTimeout(function() {
+                        emergencyPhone.style.transform = 'scale(1)';
+                    }, 300);
+                }, 3000);
+            }
+            
+            // Smooth scroll for anchor links
+            const anchorLinks = document.querySelectorAll('a[href^="#"]');
+            anchorLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

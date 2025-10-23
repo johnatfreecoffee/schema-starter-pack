@@ -1,0 +1,2197 @@
+<!DOCTYPE html>
+<html lang="en" data-testid="html-element">
+<head data-testid="head-element">
+    <meta charset="UTF-8" data-testid="charset-meta">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" data-testid="viewport-meta">
+    <title data-testid="title-element">Professional Roof Maintenance Services in {{city_name}} | Clear Home</title>
+    <meta name="description" content="Professional roof maintenance in {{city_name}}. Extend roof life, prevent costly repairs. 20+ years experience. Licensed & insured. Call (504) 460-8131." data-testid="description-meta">
+    <meta name="keywords" content="roof maintenance {{city_name}}, roofing maintenance, roof inspection, preventive roof care, maintenance program" data-testid="keywords-meta">
+    
+    <!-- Schema Markup -->
+    <script type="application/ld+json" data-testid="schema-local-business">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Clear Home Roofing & Restoration",
+        "image": "https://clearhomeroofing.com/images/logo.jpg",
+        "@id": "https://clearhomeroofing.com",
+        "url": "https://clearhomeroofing.com",
+        "telephone": "{{company_phone}}",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "{{company_address}}",
+            "addressLocality": "{{city_name}}",
+            "addressRegion": "LA",
+            "postalCode": "{{zip_code}}",
+            "addressCountry": "US"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "{{latitude}}",
+            "longitude": "{{longitude}}"
+        },
+        "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+                "Monday",
+                "Tuesday", 
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ],
+            "opens": "07:00",
+            "closes": "18:00"
+        },
+        "sameAs": [
+            "{{facebook_url}}",
+            "{{google_business_url}}"
+        ]
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-service">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "Roof Maintenance Services",
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "Clear Home Roofing & Restoration",
+            "areaServed": "{{city_name}}, Louisiana"
+        },
+        "offers": {
+            "@type": "Offer",
+            "availability": "https://schema.org/InStock",
+            "price": "Contact for Quote",
+            "priceCurrency": "USD"
+        },
+        "description": "Professional roof maintenance services in {{city_name}}. Regular inspections, preventive care, and comprehensive maintenance programs."
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-breadcrumb">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://clearhomeroofing.com"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Services",
+                "item": "https://clearhomeroofing.com/services"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Routine Maintenance",
+                "item": "https://clearhomeroofing.com/routine-maintenance-{{city_slug}}"
+            }
+        ]
+    }
+    </script>
+
+    <script type="application/ld+json" data-testid="schema-faq">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "How often should I schedule professional roof maintenance?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "For {{city_name}} properties, we recommend maintenance inspections at minimum twice yearly (spring and fall), with quarterly service ideal for optimal protection. Properties with mature trees nearby or flat roofing systems benefit from more frequent service."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What's included in a maintenance inspection?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Our comprehensive service includes visual examination of all roofing components, minor repairs and adjustments, gutter cleaning, debris removal, and detailed photo documentation with prioritized recommendations."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can maintenance really prevent emergency repairs?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Absolutely. Our data shows that properties on regular maintenance programs experience 85% fewer emergency situations. Early detection and minor repairs prevent the escalation that leads to costly emergency calls."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Do you offer maintenance contracts for commercial properties?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, we specialize in commercial maintenance programs with flexible scheduling, multi-location management, and predictable budgeting. Contact us for customized commercial service proposals."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I know if my roof needs maintenance now?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "If it's been more than 6 months since professional inspection, you've experienced recent storms, or you notice any visible damage or debris, schedule service immediately. Waiting only increases repair costs."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What happens if you find major issues during maintenance?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "We provide detailed documentation with photos and prioritized recommendations. Maintenance plan members receive preferred pricing on any necessary repairs, and we can often address minor issues during the same visit."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <style data-testid="style-element">
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #1A202C;
+            background-color: #FFFFFF;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(43, 108, 176, 0.9), rgba(43, 108, 176, 0.7)), url('hero-maintenance.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 0;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            margin-bottom: 32px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cta-primary {
+            background: white;
+            color: #2B6CB0;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cta-primary:hover {
+            background: #F7FAFC;
+            transform: translateY(-2px);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: white;
+            padding: 16px 32px;
+            border: 2px solid white;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .cta-secondary:hover {
+            background: white;
+            color: #2B6CB0;
+        }
+
+        /* Trust Indicators */
+        .trust-indicators {
+            background: #F7FAFC;
+            padding: 40px 0;
+        }
+
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            text-align: center;
+        }
+
+        .trust-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .trust-icon {
+            width: 64px;
+            height: 64px;
+            background: #2B6CB0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .trust-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1A202C;
+        }
+
+        .trust-description {
+            color: #4A5568;
+            font-size: 16px;
+        }
+
+        /* Value Proposition Section */
+        .value-prop {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .value-grid {
+            display: grid;
+            grid-template-columns: 60% 40%;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 36px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 24px;
+        }
+
+        .section-content {
+            font-size: 18px;
+            color: #4A5568;
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .benefit-card {
+            background: #F7FAFC;
+            padding: 32px;
+            border-radius: 12px;
+            border-left: 4px solid #2B6CB0;
+        }
+
+        .benefit-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 12px;
+        }
+
+        .benefit-description {
+            color: #4A5568;
+            line-height: 1.6;
+        }
+
+        /* Maintenance Program Section */
+        .maintenance-program {
+            padding: 80px 0;
+            background: #F7FAFC;
+        }
+
+        .program-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .service-card {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .service-icon {
+            width: 64px;
+            height: 64px;
+            background: #2B6CB0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .service-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 12px;
+        }
+
+        .service-description {
+            color: #4A5568;
+            line-height: 1.6;
+        }
+
+        /* Plans Section */
+        .plans {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .plan-card {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .plan-card.featured {
+            border-color: #2B6CB0;
+            transform: scale(1.05);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2B6CB0;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .plan-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 8px;
+        }
+
+        .plan-subtitle {
+            color: #6B7280;
+            margin-bottom: 24px;
+            font-size: 16px;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .plan-features li::before {
+            content: "YES";
+            color: #10B981;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .plan-cta {
+            width: 100%;
+            background: #2B6CB0;
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .plan-cta:hover {
+            background: #1E40AF;
+        }
+
+        /* Seasonal Section */
+        .seasonal {
+            padding: 80px 0;
+            background: #F7FAFC;
+        }
+
+        .seasonal-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .season-card {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .season-icon {
+            width: 80px;
+            height: 80px;
+            background: #2B6CB0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            margin: 0 auto 20px;
+        }
+
+        .season-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 12px;
+        }
+
+        .season-description {
+            color: #4A5568;
+            line-height: 1.6;
+        }
+
+        /* Warning Signs Section */
+        .warning-signs {
+            padding: 80px 0;
+            background: #FFF5F5;
+        }
+
+        .warning-checklist {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .warning-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #EF4444;
+        }
+
+        .warning-icon {
+            color: #EF4444;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .warning-text {
+            color: #1A202C;
+            font-size: 16px;
+        }
+
+        /* Process Section */
+        .process {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+            position: relative;
+        }
+
+        .process-steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: #E5E7EB;
+            border-style: dashed;
+        }
+
+        .process-step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: #2B6CB0;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            margin: 0 auto 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1A202C;
+            margin-bottom: 12px;
+        }
+
+        .step-description {
+            color: #4A5568;
+            line-height: 1.6;
+        }
+
+        /* Statistics Section */
+        .statistics {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #2B6CB0, #1E40AF);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stat-description {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* FAQ Section */
+        .faq {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .faq-list {
+            max-width: 800px;
+            margin: 60px auto 0;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #E5E7EB;
+            margin-bottom: 24px;
+        }
+
+        .faq-question {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1A202C;
+            margin-bottom: 12px;
+        }
+
+        .faq-answer {
+            font-size: 16px;
+            color: #4A5568;
+            line-height: 1.6;
+            padding-bottom: 24px;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            padding: 80px 0;
+            background: #F7FAFC;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .contact-info h3 {
+            font-size: 28px;
+            color: #1A202C;
+            margin-bottom: 24px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            background: #2B6CB0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .contact-details h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1A202C;
+            margin-bottom: 4px;
+        }
+
+        .contact-details p {
+            color: #4A5568;
+            font-size: 16px;
+        }
+
+        .contact-details a {
+            color: #2B6CB0;
+            text-decoration: none;
+        }
+
+        .contact-details a:hover {
+            text-decoration: underline;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1A202C;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #2B6CB0;
+        }
+
+        .form-submit {
+            width: 100%;
+            background: #2B6CB0;
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .form-submit:hover {
+            background: #1E40AF;
+            transform: translateY(-2px);
+        }
+
+        /* Final CTA Section */
+        .final-cta {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #2B6CB0, #1E40AF);
+            color: white;
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 24px;
+        }
+
+        .final-cta-text {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+
+        .final-cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .cta-white {
+            background: white;
+            color: #2B6CB0;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cta-white:hover {
+            background: #F7FAFC;
+            transform: translateY(-2px);
+        }
+
+        .cta-outline {
+            background: transparent;
+            color: white;
+            padding: 16px 32px;
+            border: 2px solid white;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .cta-outline:hover {
+            background: white;
+            color: #2B6CB0;
+        }
+
+        .trust-line {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .trust-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .value-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .program-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .seasonal-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .warning-checklist {
+                grid-template-columns: 1fr;
+            }
+
+            .process-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .process-steps::before {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .final-cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .section-header h2 {
+                font-size: 28px;
+            }
+
+            .seasonal-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body data-testid="body-element">
+
+    <!-- Hero Section -->
+    <section class="hero" data-testid="section-hero">
+        <div class="container" data-testid="hero-container">
+            <div class="hero-content" data-testid="hero-content">
+                <h1 data-testid="heading-main">
+                    <span data-testid="protect">Protect</span> 
+                    <span data-testid="your">Your</span> 
+                    <span data-testid="investment">Investment</span> 
+                    <span data-testid="with">with</span> 
+                    <span data-testid="professional">Professional</span> 
+                    <span data-testid="roof">Roof</span> 
+                    <span data-testid="maintenance">Maintenance</span> 
+                    <span data-testid="in">in</span> 
+                    <span data-testid="city">{{city_name}}</span>
+                </h1>
+                
+                <p class="hero-subtitle" data-testid="subtitle-hero">
+                    <span data-testid="regular">Regular</span> 
+                    <span data-testid="maintenance">maintenance</span> 
+                    <span data-testid="extends">extends</span> 
+                    <span data-testid="roof">roof</span> 
+                    <span data-testid="lifespan">lifespan</span> 
+                    <span data-testid="by">by</span> 
+                    <span data-testid="up">up</span> 
+                    <span data-testid="to">to</span> 
+                    <span data-testid="fifty">50%</span> 
+                    <span data-testid="and">and</span> 
+                    <span data-testid="prevents">prevents</span> 
+                    <span data-testid="costly">costly</span> 
+                    <span data-testid="emergency">emergency</span> 
+                    <span data-testid="repairs">repairs.</span> 
+                    <span data-testid="trust">Trust</span> 
+                    <span data-testid="city-name">{{city_name}}'s</span> 
+                    <span data-testid="most">most</span> 
+                    <span data-testid="experienced">experienced</span> 
+                    <span data-testid="roofing">roofing</span> 
+                    <span data-testid="professionals">professionals</span> 
+                    <span data-testid="to">to</span> 
+                    <span data-testid="keep">keep</span> 
+                    <span data-testid="your">your</span> 
+                    <span data-testid="property">property</span> 
+                    <span data-testid="protected">protected</span> 
+                    <span data-testid="year">year-round.</span>
+                </p>
+                
+                <div class="hero-ctas" data-testid="hero-ctas">
+                    <button class="cta-primary" data-testid="cta-primary">
+                        <span data-testid="schedule">Schedule</span> 
+                        <span data-testid="maintenance">Maintenance</span> 
+                        <span data-testid="inspection">Inspection</span>
+                    </button>
+                    <a href="tel:{{company_phone}}" class="cta-secondary" data-testid="cta-secondary">
+                        <span data-testid="phone-icon">PHONE</span>
+                        <span data-testid="phone-number">{{company_phone}}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Indicators -->
+    <section class="trust-indicators" data-testid="section-trust">
+        <div class="container" data-testid="trust-container">
+            <div class="trust-grid" data-testid="trust-grid">
+                <div class="trust-item" data-testid="trust-experience">
+                    <div class="trust-icon" data-testid="icon-experience">20+</div>
+                    <div class="trust-title" data-testid="title-experience">
+                        <span data-testid="twenty">20+</span> 
+                        <span data-testid="years">Years</span> 
+                        <span data-testid="experience">Experience</span>
+                    </div>
+                    <div class="trust-description" data-testid="description-experience">
+                        <span data-testid="city-trusted">{{city_name}}'s</span> 
+                        <span data-testid="most">most</span> 
+                        <span data-testid="trusted">trusted</span> 
+                        <span data-testid="roofing">roofing</span> 
+                        <span data-testid="experts">experts</span>
+                    </div>
+                </div>
+                
+                <div class="trust-item" data-testid="trust-plans">
+                    <div class="trust-icon" data-testid="icon-plans">PLAN</div>
+                    <div class="trust-title" data-testid="title-plans">
+                        <span data-testid="preventive">Preventive</span> 
+                        <span data-testid="care">Care</span> 
+                        <span data-testid="plans">Plans</span>
+                    </div>
+                    <div class="trust-description" data-testid="description-plans">
+                        <span data-testid="custom">Custom</span> 
+                        <span data-testid="maintenance">maintenance</span> 
+                        <span data-testid="schedules">schedules</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="every">every</span> 
+                        <span data-testid="property">property</span>
+                    </div>
+                </div>
+                
+                <div class="trust-item" data-testid="trust-licensed">
+                    <div class="trust-icon" data-testid="icon-licensed">LIC</div>
+                    <div class="trust-title" data-testid="title-licensed">
+                        <span data-testid="licensed">Licensed</span> 
+                        <span data-testid="and">&amp;</span> 
+                        <span data-testid="insured">Insured</span>
+                    </div>
+                    <div class="trust-description" data-testid="description-licensed">
+                        <span data-testid="fully">Fully</span> 
+                        <span data-testid="certified">certified</span> 
+                        <span data-testid="roofing">roofing</span> 
+                        <span data-testid="professionals">professionals</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Value Proposition Section -->
+    <section class="value-prop" data-testid="section-value-prop">
+        <div class="container" data-testid="value-prop-container">
+            <div class="value-grid" data-testid="value-grid">
+                <div class="value-content" data-testid="value-content">
+                    <div class="section-header" data-testid="value-header">
+                        <h2 data-testid="value-title">
+                            <span data-testid="why">Why</span> 
+                            <span data-testid="routine">Routine</span> 
+                            <span data-testid="roof">Roof</span> 
+                            <span data-testid="maintenance">Maintenance</span> 
+                            <span data-testid="is">is</span> 
+                            <span data-testid="critical">Critical</span> 
+                            <span data-testid="for">for</span> 
+                            <span data-testid="city-properties">{{city_name}}</span> 
+                            <span data-testid="properties">Properties</span>
+                        </h2>
+                    </div>
+                    
+                    <div class="section-content" data-testid="value-content-text">
+                        <p data-testid="content-paragraph-1">
+                            <span data-testid="in">In</span> 
+                            <span data-testid="city-challenging">{{city_name}}'s</span> 
+                            <span data-testid="challenging">challenging</span> 
+                            <span data-testid="climate">climate,</span> 
+                            <span data-testid="your">your</span> 
+                            <span data-testid="roof">roof</span> 
+                            <span data-testid="faces">faces</span> 
+                            <span data-testid="constant">constant</span> 
+                            <span data-testid="threats">threats</span> 
+                            <span data-testid="from">from</span> 
+                            <span data-testid="intense">intense</span> 
+                            <span data-testid="heat">heat,</span> 
+                            <span data-testid="sudden">sudden</span> 
+                            <span data-testid="storms">storms,</span> 
+                            <span data-testid="and">and</span> 
+                            <span data-testid="heavy">heavy</span> 
+                            <span data-testid="rainfall">rainfall.</span>
+                        </p>
+                        
+                        <p data-testid="content-paragraph-2">
+                            <span data-testid="without">Without</span> 
+                            <span data-testid="regular">regular</span> 
+                            <span data-testid="professional">professional</span> 
+                            <span data-testid="maintenance">maintenance,</span> 
+                            <span data-testid="minor">minor</span> 
+                            <span data-testid="issues">issues</span> 
+                            <span data-testid="quickly">quickly</span> 
+                            <span data-testid="escalate">escalate</span> 
+                            <span data-testid="into">into</span> 
+                            <span data-testid="expensive">expensive</span> 
+                            <span data-testid="emergency">emergency</span> 
+                            <span data-testid="repairs">repairs</span> 
+                            <span data-testid="or">or</span> 
+                            <span data-testid="premature">premature</span> 
+                            <span data-testid="roof">roof</span> 
+                            <span data-testid="replacement">replacement.</span>
+                        </p>
+                        
+                        <p data-testid="content-paragraph-3">
+                            <span data-testid="our">Our</span> 
+                            <span data-testid="comprehensive">comprehensive</span> 
+                            <span data-testid="maintenance">maintenance</span> 
+                            <span data-testid="program">program</span> 
+                            <span data-testid="identifies">identifies</span> 
+                            <span data-testid="and">and</span> 
+                            <span data-testid="addresses">addresses</span> 
+                            <span data-testid="problems">problems</span> 
+                            <span data-testid="before">before</span> 
+                            <span data-testid="they">they</span> 
+                            <span data-testid="become">become</span> 
+                            <span data-testid="disasters">disasters,</span> 
+                            <span data-testid="protecting">protecting</span> 
+                            <span data-testid="your">your</span> 
+                            <span data-testid="property">property</span> 
+                            <span data-testid="investment">investment</span> 
+                            <span data-testid="and">and</span> 
+                            <span data-testid="giving">giving</span> 
+                            <span data-testid="you">you</span> 
+                            <span data-testid="complete">complete</span> 
+                            <span data-testid="peace">peace</span> 
+                            <span data-testid="of">of</span> 
+                            <span data-testid="mind">mind.</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="value-image" data-testid="value-image">
+                    <div style="height: 400px; background: #E5E7EB; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #6B7280; font-size: 18px;" data-testid="image-placeholder">
+                        <span data-testid="image-text">Professional Maintenance Inspection</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="benefits-grid" data-testid="benefits-grid">
+                <div class="benefit-card" data-testid="benefit-lifespan">
+                    <h3 class="benefit-title" data-testid="title-lifespan">
+                        <span data-testid="extend">Extend</span> 
+                        <span data-testid="roof">Roof</span> 
+                        <span data-testid="lifespan">Lifespan</span>
+                    </h3>
+                    <p class="benefit-description" data-testid="description-lifespan">
+                        <span data-testid="regular">Regular</span> 
+                        <span data-testid="inspections">inspections</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="minor">minor</span> 
+                        <span data-testid="repairs">repairs</span> 
+                        <span data-testid="can">can</span> 
+                        <span data-testid="add">add</span> 
+                        <span data-testid="ten">10-15</span> 
+                        <span data-testid="years">years</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="your">your</span> 
+                        <span data-testid="roof">roof's</span> 
+                        <span data-testid="life">life,</span> 
+                        <span data-testid="maximizing">maximizing</span> 
+                        <span data-testid="your">your</span> 
+                        <span data-testid="investment">investment</span> 
+                        <span data-testid="return">return.</span>
+                    </p>
+                </div>
+                
+                <div class="benefit-card" data-testid="benefit-damage">
+                    <h3 class="benefit-title" data-testid="title-damage">
+                        <span data-testid="prevent">Prevent</span> 
+                        <span data-testid="costly">Costly</span> 
+                        <span data-testid="damage">Damage</span>
+                    </h3>
+                    <p class="benefit-description" data-testid="description-damage">
+                        <span data-testid="catching">Catching</span> 
+                        <span data-testid="small">small</span> 
+                        <span data-testid="issues">issues</span> 
+                        <span data-testid="early">early</span> 
+                        <span data-testid="prevents">prevents</span> 
+                        <span data-testid="expensive">expensive</span> 
+                        <span data-testid="emergency">emergency</span> 
+                        <span data-testid="repairs">repairs</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="interior">interior</span> 
+                        <span data-testid="water">water</span> 
+                        <span data-testid="damage">damage</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="your">your</span> 
+                        <span data-testid="property">property.</span>
+                    </p>
+                </div>
+                
+                <div class="benefit-card" data-testid="benefit-warranty">
+                    <h3 class="benefit-title" data-testid="title-warranty">
+                        <span data-testid="maintain">Maintain</span> 
+                        <span data-testid="warranty">Warranty</span> 
+                        <span data-testid="coverage">Coverage</span>
+                    </h3>
+                    <p class="benefit-description" data-testid="description-warranty">
+                        <span data-testid="many">Many</span> 
+                        <span data-testid="roofing">roofing</span> 
+                        <span data-testid="warranties">warranties</span> 
+                        <span data-testid="require">require</span> 
+                        <span data-testid="documented">documented</span> 
+                        <span data-testid="regular">regular</span> 
+                        <span data-testid="maintenance">maintenance.</span> 
+                        <span data-testid="our">Our</span> 
+                        <span data-testid="service">service</span> 
+                        <span data-testid="keeps">keeps</span> 
+                        <span data-testid="you">you</span> 
+                        <span data-testid="compliant">compliant.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Maintenance Program Section -->
+    <section class="maintenance-program" data-testid="section-maintenance-program">
+        <div class="container" data-testid="program-container">
+            <div class="section-header" data-testid="program-header">
+                <h2 data-testid="program-title">
+                    <span data-testid="complete">Complete</span> 
+                    <span data-testid="roof">Roof</span> 
+                    <span data-testid="care">Care</span> 
+                    <span data-testid="from">from</span> 
+                    <span data-testid="city-maintenance">{{city_name}}'s</span> 
+                    <span data-testid="maintenance">Maintenance</span> 
+                    <span data-testid="experts">Experts</span>
+                </h2>
+            </div>
+            
+            <div class="program-grid" data-testid="program-grid">
+                <div class="service-card" data-testid="service-inspection">
+                    <div class="service-icon" data-testid="icon-inspection">EYE</div>
+                    <h3 class="service-title" data-testid="title-inspection">
+                        <span data-testid="detailed">Detailed</span> 
+                        <span data-testid="visual">Visual</span> 
+                        <span data-testid="inspection">Inspection</span>
+                    </h3>
+                    <p class="service-description" data-testid="description-inspection">
+                        <span data-testid="thorough">Thorough</span> 
+                        <span data-testid="examination">examination</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="all">all</span> 
+                        <span data-testid="roofing">roofing</span> 
+                        <span data-testid="components">components,</span> 
+                        <span data-testid="identifying">identifying</span> 
+                        <span data-testid="wear">wear</span> 
+                        <span data-testid="patterns">patterns,</span> 
+                        <span data-testid="damage">damage,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="potential">potential</span> 
+                        <span data-testid="problem">problem</span> 
+                        <span data-testid="areas">areas</span> 
+                        <span data-testid="before">before</span> 
+                        <span data-testid="they">they</span> 
+                        <span data-testid="require">require</span> 
+                        <span data-testid="emergency">emergency</span> 
+                        <span data-testid="attention">attention.</span>
+                    </p>
+                </div>
+                
+                <div class="service-card" data-testid="service-repairs">
+                    <div class="service-icon" data-testid="icon-repairs">TOOL</div>
+                    <h3 class="service-title" data-testid="title-repairs">
+                        <span data-testid="minor">Minor</span> 
+                        <span data-testid="repairs">Repairs</span> 
+                        <span data-testid="and">&amp;</span> 
+                        <span data-testid="adjustments">Adjustments</span>
+                    </h3>
+                    <p class="service-description" data-testid="description-repairs">
+                        <span data-testid="immediate">Immediate</span> 
+                        <span data-testid="correction">correction</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="small">small</span> 
+                        <span data-testid="issues">issues</span> 
+                        <span data-testid="like">like</span> 
+                        <span data-testid="loose">loose</span> 
+                        <span data-testid="shingles">shingles,</span> 
+                        <span data-testid="minor">minor</span> 
+                        <span data-testid="flashing">flashing</span> 
+                        <span data-testid="problems">problems,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="sealant">sealant</span> 
+                        <span data-testid="deterioration">deterioration</span> 
+                        <span data-testid="that">that</span> 
+                        <span data-testid="could">could</span> 
+                        <span data-testid="lead">lead</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="major">major</span> 
+                        <span data-testid="damage">damage.</span>
+                    </p>
+                </div>
+                
+                <div class="service-card" data-testid="service-gutter">
+                    <div class="service-icon" data-testid="icon-gutter">WATER</div>
+                    <h3 class="service-title" data-testid="title-gutter">
+                        <span data-testid="gutter">Gutter</span> 
+                        <span data-testid="and">&amp;</span> 
+                        <span data-testid="drainage">Drainage</span> 
+                        <span data-testid="cleaning">Cleaning</span>
+                    </h3>
+                    <p class="service-description" data-testid="description-gutter">
+                        <span data-testid="complete">Complete</span> 
+                        <span data-testid="clearing">clearing</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="gutters">gutters,</span> 
+                        <span data-testid="downspouts">downspouts,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="drainage">drainage</span> 
+                        <span data-testid="systems">systems</span> 
+                        <span data-testid="to">to</span> 
+                        <span data-testid="prevent">prevent</span> 
+                        <span data-testid="water">water</span> 
+                        <span data-testid="backup">backup</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="foundation">foundation</span> 
+                        <span data-testid="damage">damage</span> 
+                        <span data-testid="during">during</span> 
+                        <span data-testid="heavy">heavy</span> 
+                        <span data-testid="rainfall">rainfall.</span>
+                    </p>
+                </div>
+                
+                <div class="service-card" data-testid="service-debris">
+                    <div class="service-icon" data-testid="icon-debris">LEAF</div>
+                    <h3 class="service-title" data-testid="title-debris">
+                        <span data-testid="debris">Debris</span> 
+                        <span data-testid="and">&amp;</span> 
+                        <span data-testid="vegetation">Vegetation</span> 
+                        <span data-testid="removal">Removal</span>
+                    </h3>
+                    <p class="service-description" data-testid="description-debris">
+                        <span data-testid="professional">Professional</span> 
+                        <span data-testid="clearing">clearing</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="leaves">leaves,</span> 
+                        <span data-testid="branches">branches,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="organic">organic</span> 
+                        <span data-testid="buildup">buildup</span> 
+                        <span data-testid="that">that</span> 
+                        <span data-testid="traps">traps</span> 
+                        <span data-testid="moisture">moisture</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="accelerates">accelerates</span> 
+                        <span data-testid="roof">roof</span> 
+                        <span data-testid="deterioration">deterioration.</span>
+                    </p>
+                </div>
+                
+                <div class="service-card" data-testid="service-reporting">
+                    <div class="service-icon" data-testid="icon-reporting">DOC</div>
+                    <h3 class="service-title" data-testid="title-reporting">
+                        <span data-testid="detailed">Detailed</span> 
+                        <span data-testid="reporting">Reporting</span>
+                    </h3>
+                    <p class="service-description" data-testid="description-reporting">
+                        <span data-testid="comprehensive">Comprehensive</span> 
+                        <span data-testid="documentation">documentation</span> 
+                        <span data-testid="with">with</span> 
+                        <span data-testid="photos">photos,</span> 
+                        <span data-testid="condition">condition</span> 
+                        <span data-testid="assessment">assessment,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="prioritized">prioritized</span> 
+                        <span data-testid="recommendations">recommendations</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="any">any</span> 
+                        <span data-testid="necessary">necessary</span> 
+                        <span data-testid="future">future</span> 
+                        <span data-testid="work">work.</span>
+                    </p>
+                </div>
+                
+                <div class="service-card" data-testid="service-followup">
+                    <div class="service-icon" data-testid="icon-followup">TIME</div>
+                    <h3 class="service-title" data-testid="title-followup">
+                        <span data-testid="scheduled">Scheduled</span> 
+                        <span data-testid="follow">Follow-ups</span>
+                    </h3>
+                    <p class="service-description" data-testid="description-followup">
+                        <span data-testid="customized">Customized</span> 
+                        <span data-testid="maintenance">maintenance</span> 
+                        <span data-testid="calendar">calendar</span> 
+                        <span data-testid="based">based</span> 
+                        <span data-testid="on">on</span> 
+                        <span data-testid="your">your</span> 
+                        <span data-testid="roof">roof</span> 
+                        <span data-testid="type">type,</span> 
+                        <span data-testid="age">age,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="city-seasonal">{{city_name}}</span> 
+                        <span data-testid="seasonal">seasonal</span> 
+                        <span data-testid="weather">weather</span> 
+                        <span data-testid="patterns">patterns.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Plans Section -->
+    <section class="plans" data-testid="section-plans">
+        <div class="container" data-testid="plans-container">
+            <div class="section-header" data-testid="plans-header">
+                <h2 data-testid="plans-title">
+                    <span data-testid="flexible">Flexible</span> 
+                    <span data-testid="maintenance">Maintenance</span> 
+                    <span data-testid="plans">Plans</span> 
+                    <span data-testid="for">for</span> 
+                    <span data-testid="every">Every</span> 
+                    <span data-testid="city-property">{{city_name}}</span> 
+                    <span data-testid="property">Property</span>
+                </h2>
+            </div>
+            
+            <div class="plans-grid" data-testid="plans-grid">
+                <div class="plan-card" data-testid="plan-basic">
+                    <h3 class="plan-title" data-testid="title-basic">
+                        <span data-testid="basic">Basic</span> 
+                        <span data-testid="plan">Plan</span>
+                    </h3>
+                    <p class="plan-subtitle" data-testid="subtitle-basic">
+                        <span data-testid="twice">Twice-Annual</span> 
+                        <span data-testid="service">Service</span>
+                    </p>
+                    <ul class="plan-features" data-testid="features-basic">
+                        <li data-testid="feature-spring">Spring & fall inspections</li>
+                        <li data-testid="feature-visual">Visual damage assessment</li>
+                        <li data-testid="feature-gutter">Gutter cleaning included</li>
+                        <li data-testid="feature-repair">Minor repair identification</li>
+                        <li data-testid="feature-annual">Annual summary report</li>
+                    </ul>
+                    <button class="plan-cta" data-testid="cta-basic">
+                        <span data-testid="get">Get</span> 
+                        <span data-testid="started">Started</span>
+                    </button>
+                </div>
+                
+                <div class="plan-card featured" data-testid="plan-complete">
+                    <div class="popular-badge" data-testid="badge-popular">MOST POPULAR</div>
+                    <h3 class="plan-title" data-testid="title-complete">
+                        <span data-testid="complete">Complete</span> 
+                        <span data-testid="plan">Plan</span>
+                    </h3>
+                    <p class="plan-subtitle" data-testid="subtitle-complete">
+                        <span data-testid="quarterly">Quarterly</span> 
+                        <span data-testid="service">Service</span>
+                    </p>
+                    <ul class="plan-features" data-testid="features-complete">
+                        <li data-testid="feature-seasonal">Seasonal inspections (4x yearly)</li>
+                        <li data-testid="feature-priority">Priority emergency response</li>
+                        <li data-testid="feature-repairs">All minor repairs included</li>
+                        <li data-testid="feature-gutter-maintenance">Gutter & drainage maintenance</li>
+                        <li data-testid="feature-photo">Detailed photo documentation</li>
+                        <li data-testid="feature-warranty">Warranty compliance tracking</li>
+                    </ul>
+                    <button class="plan-cta" data-testid="cta-complete">
+                        <span data-testid="get">Get</span> 
+                        <span data-testid="started">Started</span>
+                    </button>
+                </div>
+                
+                <div class="plan-card" data-testid="plan-premium">
+                    <h3 class="plan-title" data-testid="title-premium">
+                        <span data-testid="premium">Premium</span> 
+                        <span data-testid="plan">Plan</span>
+                    </h3>
+                    <p class="plan-subtitle" data-testid="subtitle-premium">
+                        <span data-testid="comprehensive">Comprehensive</span> 
+                        <span data-testid="care">Care</span>
+                    </p>
+                    <ul class="plan-features" data-testid="features-premium">
+                        <li data-testid="feature-monthly">Monthly visual inspections</li>
+                        <li data-testid="feature-emergency">24/7 emergency priority</li>
+                        <li data-testid="feature-repairs-included">All repairs up to $500 included</li>
+                        <li data-testid="feature-full-gutter">Full gutter system maintenance</li>
+                        <li data-testid="feature-vegetation">Vegetation management</li>
+                        <li data-testid="feature-quarterly">Detailed quarterly reports</li>
+                        <li data-testid="feature-guarantee">5-year service guarantee</li>
+                    </ul>
+                    <button class="plan-cta" data-testid="cta-premium">
+                        <span data-testid="get">Get</span> 
+                        <span data-testid="started">Started</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seasonal Maintenance Section -->
+    <section class="seasonal" data-testid="section-seasonal">
+        <div class="container" data-testid="seasonal-container">
+            <div class="section-header" data-testid="seasonal-header">
+                <h2 data-testid="seasonal-title">
+                    <span data-testid="year">Year-Round</span> 
+                    <span data-testid="protection">Protection</span> 
+                    <span data-testid="for">for</span> 
+                    <span data-testid="city-properties">{{city_name}}</span> 
+                    <span data-testid="properties">Properties</span>
+                </h2>
+            </div>
+            
+            <div class="seasonal-grid" data-testid="seasonal-grid">
+                <div class="season-card" data-testid="season-spring">
+                    <div class="season-icon" data-testid="icon-spring">SPR</div>
+                    <h3 class="season-title" data-testid="title-spring">
+                        <span data-testid="spring">Spring</span> 
+                        <span data-testid="maintenance">Maintenance</span>
+                    </h3>
+                    <p class="season-description" data-testid="description-spring">
+                        <span data-testid="post">Post-winter</span> 
+                        <span data-testid="inspection">inspection</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="preparation">preparation</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="summer">summer</span> 
+                        <span data-testid="heat">heat</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="hurricane">hurricane</span> 
+                        <span data-testid="season">season.</span> 
+                        <span data-testid="focus">Focus</span> 
+                        <span data-testid="on">on</span> 
+                        <span data-testid="water">water</span> 
+                        <span data-testid="drainage">drainage</span> 
+                        <span data-testid="systems">systems</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="storm">storm</span> 
+                        <span data-testid="damage">damage</span> 
+                        <span data-testid="assessment">assessment.</span>
+                    </p>
+                </div>
+                
+                <div class="season-card" data-testid="season-summer">
+                    <div class="season-icon" data-testid="icon-summer">SUM</div>
+                    <h3 class="season-title" data-testid="title-summer">
+                        <span data-testid="summer">Summer</span> 
+                        <span data-testid="maintenance">Maintenance</span>
+                    </h3>
+                    <p class="season-description" data-testid="description-summer">
+                        <span data-testid="heat">Heat</span> 
+                        <span data-testid="damage">damage</span> 
+                        <span data-testid="inspection">inspection,</span> 
+                        <span data-testid="shingle">shingle</span> 
+                        <span data-testid="condition">condition</span> 
+                        <span data-testid="assessment">assessment,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="hurricane">hurricane</span> 
+                        <span data-testid="preparation">preparation</span> 
+                        <span data-testid="as">as</span> 
+                        <span data-testid="storm">storm</span> 
+                        <span data-testid="season">season</span> 
+                        <span data-testid="intensifies">intensifies.</span>
+                    </p>
+                </div>
+                
+                <div class="season-card" data-testid="season-fall">
+                    <div class="season-icon" data-testid="icon-fall">FAL</div>
+                    <h3 class="season-title" data-testid="title-fall">
+                        <span data-testid="fall">Fall</span> 
+                        <span data-testid="maintenance">Maintenance</span>
+                    </h3>
+                    <p class="season-description" data-testid="description-fall">
+                        <span data-testid="pre">Pre-winter</span> 
+                        <span data-testid="preparation">preparation,</span> 
+                        <span data-testid="debris">debris</span> 
+                        <span data-testid="clearing">clearing,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="structural">structural</span> 
+                        <span data-testid="integrity">integrity</span> 
+                        <span data-testid="verification">verification</span> 
+                        <span data-testid="after">after</span> 
+                        <span data-testid="hurricane">hurricane</span> 
+                        <span data-testid="season">season.</span>
+                    </p>
+                </div>
+                
+                <div class="season-card" data-testid="season-winter">
+                    <div class="season-icon" data-testid="icon-winter">WIN</div>
+                    <h3 class="season-title" data-testid="title-winter">
+                        <span data-testid="winter">Winter</span> 
+                        <span data-testid="maintenance">Maintenance</span>
+                    </h3>
+                    <p class="season-description" data-testid="description-winter">
+                        <span data-testid="cold">Cold</span> 
+                        <span data-testid="weather">weather</span> 
+                        <span data-testid="damage">damage</span> 
+                        <span data-testid="inspection">inspection,</span> 
+                        <span data-testid="ventilation">ventilation</span> 
+                        <span data-testid="assessment">assessment,</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="preparation">preparation</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="spring">spring</span> 
+                        <span data-testid="weather">weather</span> 
+                        <span data-testid="changes">changes.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Warning Signs Section -->
+    <section class="warning-signs" data-testid="section-warning">
+        <div class="container" data-testid="warning-container">
+            <div class="section-header" data-testid="warning-header">
+                <h2 data-testid="warning-title">
+                    <span data-testid="when">When</span> 
+                    <span data-testid="was">Was</span> 
+                    <span data-testid="your">Your</span> 
+                    <span data-testid="last">Last</span> 
+                    <span data-testid="professional">Professional</span> 
+                    <span data-testid="roof">Roof</span> 
+                    <span data-testid="inspection">Inspection?</span>
+                </h2>
+            </div>
+            
+            <div class="warning-checklist" data-testid="warning-checklist">
+                <div class="warning-item" data-testid="warning-1">
+                    <div class="warning-icon" data-testid="icon-warning-1">WARN</div>
+                    <div class="warning-text" data-testid="text-warning-1">
+                        <span data-testid="more">More</span> 
+                        <span data-testid="than">than</span> 
+                        <span data-testid="six">6</span> 
+                        <span data-testid="months">months</span> 
+                        <span data-testid="since">since</span> 
+                        <span data-testid="last">last</span> 
+                        <span data-testid="professional">professional</span> 
+                        <span data-testid="inspection">inspection</span>
+                    </div>
+                </div>
+                
+                <div class="warning-item" data-testid="warning-2">
+                    <div class="warning-icon" data-testid="icon-warning-2">WARN</div>
+                    <div class="warning-text" data-testid="text-warning-2">
+                        <span data-testid="visible">Visible</span> 
+                        <span data-testid="debris">debris</span> 
+                        <span data-testid="or">or</span> 
+                        <span data-testid="vegetation">vegetation</span> 
+                        <span data-testid="growth">growth</span> 
+                        <span data-testid="on">on</span> 
+                        <span data-testid="roof">roof</span> 
+                        <span data-testid="surface">surface</span>
+                    </div>
+                </div>
+                
+                <div class="warning-item" data-testid="warning-3">
+                    <div class="warning-icon" data-testid="icon-warning-3">WARN</div>
+                    <div class="warning-text" data-testid="text-warning-3">
+                        <span data-testid="clogged">Clogged</span> 
+                        <span data-testid="gutters">gutters</span> 
+                        <span data-testid="or">or</span> 
+                        <span data-testid="water">water</span> 
+                        <span data-testid="overflow">overflow</span> 
+                        <span data-testid="during">during</span> 
+                        <span data-testid="rainfall">rainfall</span>
+                    </div>
+                </div>
+                
+                <div class="warning-item" data-testid="warning-4">
+                    <div class="warning-icon" data-testid="icon-warning-4">WARN</div>
+                    <div class="warning-text" data-testid="text-warning-4">
+                        <span data-testid="recent">Recent</span> 
+                        <span data-testid="severe">severe</span> 
+                        <span data-testid="weather">weather</span> 
+                        <span data-testid="or">or</span> 
+                        <span data-testid="storm">storm</span> 
+                        <span data-testid="activity">activity</span> 
+                        <span data-testid="in">in</span> 
+                        <span data-testid="city-weather">{{city_name}}</span>
+                    </div>
+                </div>
+                
+                <div class="warning-item" data-testid="warning-5">
+                    <div class="warning-icon" data-testid="icon-warning-5">WARN</div>
+                    <div class="warning-text" data-testid="text-warning-5">
+                        <span data-testid="age">Age</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="roof">roof</span> 
+                        <span data-testid="approaching">approaching</span> 
+                        <span data-testid="or">or</span> 
+                        <span data-testid="exceeding">exceeding</span> 
+                        <span data-testid="ten">10</span> 
+                        <span data-testid="years">years</span>
+                    </div>
+                </div>
+                
+                <div class="warning-item" data-testid="warning-6">
+                    <div class="warning-icon" data-testid="icon-warning-6">WARN</div>
+                    <div class="warning-text" data-testid="text-warning-6">
+                        <span data-testid="visible">Visible</span> 
+                        <span data-testid="shingle">shingle</span> 
+                        <span data-testid="damage">damage,</span> 
+                        <span data-testid="curling">curling,</span> 
+                        <span data-testid="or">or</span> 
+                        <span data-testid="granule">granule</span> 
+                        <span data-testid="loss">loss</span>
+                    </div>
+                </div>
+                
+                <div class="warning-item" data-testid="warning-7">
+                    <div class="warning-icon" data-testid="icon-warning-7">WARN</div>
+                    <div class="warning-text" data-testid="text-warning-7">
+                        <span data-testid="water">Water</span> 
+                        <span data-testid="stains">stains</span> 
+                        <span data-testid="on">on</span> 
+                        <span data-testid="interior">interior</span> 
+                        <span data-testid="ceilings">ceilings</span> 
+                        <span data-testid="or">or</span> 
+                        <span data-testid="walls">walls</span>
+                    </div>
+                </div>
+                
+                <div class="warning-item" data-testid="warning-8">
+                    <div class="warning-icon" data-testid="icon-warning-8">WARN</div>
+                    <div class="warning-text" data-testid="text-warning-8">
+                        <span data-testid="previous">Previous</span> 
+                        <span data-testid="repairs">repairs</span> 
+                        <span data-testid="showing">showing</span> 
+                        <span data-testid="signs">signs</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="failure">failure</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;" data-testid="warning-cta-section">
+                <p style="font-size: 18px; color: #1A202C; margin-bottom: 24px;" data-testid="warning-cta-text">
+                    <span data-testid="if">If</span> 
+                    <span data-testid="youve">you've</span> 
+                    <span data-testid="noticed">noticed</span> 
+                    <span data-testid="any">any</span> 
+                    <span data-testid="of">of</span> 
+                    <span data-testid="these">these</span> 
+                    <span data-testid="signs">signs,</span> 
+                    <span data-testid="dont">don't</span> 
+                    <span data-testid="wait">wait</span> 
+                    <span data-testid="for">for</span> 
+                    <span data-testid="emergency">emergency</span> 
+                    <span data-testid="repairs">repairs.</span> 
+                    <span data-testid="schedule">Schedule</span> 
+                    <span data-testid="your">your</span> 
+                    <span data-testid="maintenance">maintenance</span> 
+                    <span data-testid="inspection">inspection</span> 
+                    <span data-testid="today">today.</span>
+                </p>
+                <button class="cta-primary" data-testid="warning-cta">
+                    <span data-testid="schedule">Schedule</span> 
+                    <span data-testid="free">Free</span> 
+                    <span data-testid="assessment">Assessment</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process" data-testid="section-process">
+        <div class="container" data-testid="process-container">
+            <div class="section-header" data-testid="process-header">
+                <h2 data-testid="process-title">
+                    <span data-testid="our">Our</span> 
+                    <span data-testid="proven">Proven</span> 
+                    <span data-testid="maintenance">Maintenance</span> 
+                    <span data-testid="process">Process</span>
+                </h2>
+            </div>
+            
+            <div class="process-steps" data-testid="process-steps">
+                <div class="process-step" data-testid="step-1">
+                    <div class="step-number" data-testid="number-1">1</div>
+                    <h3 class="step-title" data-testid="title-1">
+                        <span data-testid="schedule">Schedule</span> 
+                        <span data-testid="your">Your</span> 
+                        <span data-testid="service">Service</span>
+                    </h3>
+                    <p class="step-description" data-testid="description-1">
+                        <span data-testid="choose">Choose</span> 
+                        <span data-testid="convenient">convenient</span> 
+                        <span data-testid="appointment">appointment</span> 
+                        <span data-testid="time">time</span> 
+                        <span data-testid="for">for</span> 
+                        <span data-testid="thorough">thorough</span> 
+                        <span data-testid="property">property</span> 
+                        <span data-testid="inspection">inspection</span>
+                    </p>
+                </div>
+                
+                <div class="process-step" data-testid="step-2">
+                    <div class="step-number" data-testid="number-2">2</div>
+                    <h3 class="step-title" data-testid="title-2">
+                        <span data-testid="comprehensive">Comprehensive</span> 
+                        <span data-testid="assessment">Assessment</span>
+                    </h3>
+                    <p class="step-description" data-testid="description-2">
+                        <span data-testid="detailed">Detailed</span> 
+                        <span data-testid="examination">examination</span> 
+                        <span data-testid="of">of</span> 
+                        <span data-testid="all">all</span> 
+                        <span data-testid="roofing">roofing</span> 
+                        <span data-testid="components">components</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="systems">systems</span>
+                    </p>
+                </div>
+                
+                <div class="process-step" data-testid="step-3">
+                    <div class="step-number" data-testid="number-3">3</div>
+                    <h3 class="step-title" data-testid="title-3">
+                        <span data-testid="immediate">Immediate</span> 
+                        <span data-testid="attention">Attention</span>
+                    </h3>
+                    <p class="step-description" data-testid="description-3">
+                        <span data-testid="minor">Minor</span> 
+                        <span data-testid="repairs">repairs</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="adjustments">adjustments</span> 
+                        <span data-testid="completed">completed</span> 
+                        <span data-testid="during">during</span> 
+                        <span data-testid="visit">visit</span> 
+                        <span data-testid="when">when</span> 
+                        <span data-testid="possible">possible</span>
+                    </p>
+                </div>
+                
+                <div class="process-step" data-testid="step-4">
+                    <div class="step-number" data-testid="number-4">4</div>
+                    <h3 class="step-title" data-testid="title-4">
+                        <span data-testid="detailed">Detailed</span> 
+                        <span data-testid="reporting">Reporting</span>
+                    </h3>
+                    <p class="step-description" data-testid="description-4">
+                        <span data-testid="comprehensive">Comprehensive</span> 
+                        <span data-testid="documentation">documentation</span> 
+                        <span data-testid="with">with</span> 
+                        <span data-testid="photos">photos</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="prioritized">prioritized</span> 
+                        <span data-testid="recommendations">recommendations</span>
+                    </p>
+                </div>
+                
+                <div class="process-step" data-testid="step-5">
+                    <div class="step-number" data-testid="number-5">5</div>
+                    <h3 class="step-title" data-testid="title-5">
+                        <span data-testid="ongoing">Ongoing</span> 
+                        <span data-testid="protection">Protection</span>
+                    </h3>
+                    <p class="step-description" data-testid="description-5">
+                        <span data-testid="scheduled">Scheduled</span> 
+                        <span data-testid="follow">follow-up</span> 
+                        <span data-testid="service">service</span> 
+                        <span data-testid="and">and</span> 
+                        <span data-testid="proactive">proactive</span> 
+                        <span data-testid="maintenance">maintenance</span> 
+                        <span data-testid="calendar">calendar</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="statistics" data-testid="section-statistics">
+        <div class="container" data-testid="statistics-container">
+            <div class="section-header" data-testid="statistics-header">
+                <h2 data-testid="statistics-title">
+                    <span data-testid="prevention">Prevention</span> 
+                    <span data-testid="saves">Saves</span> 
+                    <span data-testid="money">Money:</span> 
+                    <span data-testid="the">The</span> 
+                    <span data-testid="numbers">Numbers</span> 
+                    <span data-testid="dont">Don't</span> 
+                    <span data-testid="lie">Lie</span>
+                </h2>
+            </div>
+            
+            <div class="stats-grid" data-testid="stats-grid">
+                <div class="stat-item" data-testid="stat-1">
+                    <div class="stat-number" data-testid="number-85">85%</div>
+                    <div class="stat-label" data-testid="label-prevented">Emergency Repairs Prevented</div>
+                    <div class="stat-description" data-testid="description-prevented">With regular maintenance program</div>
+                </div>
+                
+                <div class="stat-item" data-testid="stat-2">
+                    <div class="stat-number" data-testid="number-5000">$5,000+</div>
+                    <div class="stat-label" data-testid="label-cost">Average Emergency Repair Cost</div>
+                    <div class="stat-description" data-testid="description-cost">That maintenance could have prevented</div>
+                </div>
+                
+                <div class="stat-item" data-testid="stat-3">
+                    <div class="stat-number" data-testid="number-50">50%</div>
+                    <div class="stat-label" data-testid="label-longer">Longer Roof Lifespan</div>
+                    <div class="stat-description" data-testid="description-longer">With consistent professional care</div>
+                </div>
+                
+                <div class="stat-item" data-testid="stat-4">
+                    <div class="stat-number" data-testid="number-24">24 Hours</div>
+                    <div class="stat-label" data-testid="label-response">Average Emergency Response</div>
+                    <div class="stat-description" data-testid="description-response">For maintenance plan members</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq" data-testid="section-faq">
+        <div class="container" data-testid="faq-container">
+            <div class="section-header" data-testid="faq-header">
+                <h2 data-testid="faq-title">
+                    <span data-testid="common">Common</span> 
+                    <span data-testid="questions">Questions</span> 
+                    <span data-testid="about">About</span> 
+                    <span data-testid="roof">Roof</span> 
+                    <span data-testid="maintenance">Maintenance</span> 
+                    <span data-testid="in">in</span> 
+                    <span data-testid="city-faq">{{city_name}}</span>
+                </h2>
+            </div>
+            
+            <div class="faq-list" data-testid="faq-list">
+                <div class="faq-item" data-testid="faq-1">
+                    <h3 class="faq-question" data-testid="question-1">
+                        <span data-testid="q1-text">How often should I schedule professional roof maintenance?</span>
+                    </h3>
+                    <p class="faq-answer" data-testid="answer-1">
+                        <span data-testid="a1-text">For {{city_name}} properties, we recommend maintenance inspections at minimum twice yearly (spring and fall), with quarterly service ideal for optimal protection. Properties with mature trees nearby or flat roofing systems benefit from more frequent service.</span>
+                    </p>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-2">
+                    <h3 class="faq-question" data-testid="question-2">
+                        <span data-testid="q2-text">What's included in a maintenance inspection?</span>
+                    </h3>
+                    <p class="faq-answer" data-testid="answer-2">
+                        <span data-testid="a2-text">Our comprehensive service includes visual examination of all roofing components, minor repairs and adjustments, gutter cleaning, debris removal, and detailed photo documentation with prioritized recommendations.</span>
+                    </p>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-3">
+                    <h3 class="faq-question" data-testid="question-3">
+                        <span data-testid="q3-text">Can maintenance really prevent emergency repairs?</span>
+                    </h3>
+                    <p class="faq-answer" data-testid="answer-3">
+                        <span data-testid="a3-text">Absolutely. Our data shows that properties on regular maintenance programs experience 85% fewer emergency situations. Early detection and minor repairs prevent the escalation that leads to costly emergency calls.</span>
+                    </p>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-4">
+                    <h3 class="faq-question" data-testid="question-4">
+                        <span data-testid="q4-text">Do you offer maintenance contracts for commercial properties?</span>
+                    </h3>
+                    <p class="faq-answer" data-testid="answer-4">
+                        <span data-testid="a4-text">Yes, we specialize in commercial maintenance programs with flexible scheduling, multi-location management, and predictable budgeting. Contact us for customized commercial service proposals.</span>
+                    </p>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-5">
+                    <h3 class="faq-question" data-testid="question-5">
+                        <span data-testid="q5-text">How do I know if my roof needs maintenance now?</span>
+                    </h3>
+                    <p class="faq-answer" data-testid="answer-5">
+                        <span data-testid="a5-text">If it's been more than 6 months since professional inspection, you've experienced recent storms, or you notice any visible damage or debris, schedule service immediately. Waiting only increases repair costs.</span>
+                    </p>
+                </div>
+                
+                <div class="faq-item" data-testid="faq-6">
+                    <h3 class="faq-question" data-testid="question-6">
+                        <span data-testid="q6-text">What happens if you find major issues during maintenance?</span>
+                    </h3>
+                    <p class="faq-answer" data-testid="answer-6">
+                        <span data-testid="a6-text">We provide detailed documentation with photos and prioritized recommendations. Maintenance plan members receive preferred pricing on any necessary repairs, and we can often address minor issues during the same visit.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" data-testid="section-contact">
+        <div class="container" data-testid="contact-container">
+            <div class="contact-grid" data-testid="contact-grid">
+                <div class="contact-info" data-testid="contact-info">
+                    <h3 data-testid="contact-title">
+                        <span data-testid="contact">Contact</span> 
+                        <span data-testid="us">Us</span> 
+                        <span data-testid="today">Today</span>
+                    </h3>
+
+                    <div class="contact-item" data-testid="contact-phone">
+                        <div class="contact-icon" data-testid="icon-phone">PHONE</div>
+                        <div class="contact-details" data-testid="details-phone">
+                            <h4 data-testid="phone-title">
+                                <span data-testid="call">Call</span> 
+                                <span data-testid="now">Now</span>
+                            </h4>
+                            <p data-testid="phone-number">
+                                <a href="tel:{{company_phone}}" data-testid="phone-link">{{company_phone}}</a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item" data-testid="contact-email">
+                        <div class="contact-icon" data-testid="icon-email">EMAIL</div>
+                        <div class="contact-details" data-testid="details-email">
+                            <h4 data-testid="email-title">
+                                <span data-testid="email">Email</span> 
+                                <span data-testid="us">Us</span>
+                            </h4>
+                            <p data-testid="email-address">
+                                <a href="mailto:{{company_email}}" data-testid="email-link">{{company_email}}</a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item" data-testid="contact-service-area">
+                        <div class="contact-icon" data-testid="icon-location">LOCATION</div>
+                        <div class="contact-details" data-testid="details-location">
+                            <h4 data-testid="service-area-title">
+                                <span data-testid="service">Service</span> 
+                                <span data-testid="area">Area</span>
+                            </h4>
+                            <p data-testid="service-area-text">
+                                <span data-testid="city-service">{{city_name}}</span> 
+                                <span data-testid="and">and</span> 
+                                <span data-testid="surrounding">Surrounding</span> 
+                                <span data-testid="areas">Areas</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item" data-testid="contact-hours">
+                        <div class="contact-icon" data-testid="icon-hours">CLOCK</div>
+                        <div class="contact-details" data-testid="details-hours">
+                            <h4 data-testid="hours-title">
+                                <span data-testid="business">Business</span> 
+                                <span data-testid="hours">Hours</span>
+                            </h4>
+                            <p data-testid="hours-text">
+                                <span data-testid="mon-sat">Mon-Sat:</span> 
+                                <span data-testid="hours-range">7:00 AM - 6:00 PM</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form-container" data-testid="contact-form-container">
+                    <form action="/submit-maintenance" method="POST" data-testid="contact-form">
+                        <div class="form-group" data-testid="form-group-contact-name">
+                            <label for="contact-name" class="form-label" data-testid="label-contact-name">Name *</label>
+                            <input type="text" id="contact-name" name="name" class="form-input" data-testid="input-contact-name" required>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-contact-phone">
+                            <label for="contact-phone" class="form-label" data-testid="label-contact-phone">Phone *</label>
+                            <input type="tel" id="contact-phone" name="phone" class="form-input" data-testid="input-contact-phone" required>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-contact-email">
+                            <label for="contact-email" class="form-label" data-testid="label-contact-email">Email</label>
+                            <input type="email" id="contact-email" name="email" class="form-input" data-testid="input-contact-email">
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-property-type">
+                            <label for="property-type" class="form-label" data-testid="label-property-type">Property Type</label>
+                            <select id="property-type" name="property_type" class="form-select" data-testid="select-property-type">
+                                <option value="" data-testid="option-select">Select Property Type</option>
+                                <option value="residential" data-testid="option-residential">Residential</option>
+                                <option value="commercial" data-testid="option-commercial">Commercial</option>
+                                <option value="multi-unit" data-testid="option-multi-unit">Multi-Unit Building</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-plan-interest">
+                            <label for="plan-interest" class="form-label" data-testid="label-plan-interest">Plan Interest</label>
+                            <select id="plan-interest" name="plan_interest" class="form-select" data-testid="select-plan-interest">
+                                <option value="" data-testid="option-select-plan">Select Plan</option>
+                                <option value="basic" data-testid="option-basic">Basic Plan (Twice-Annual)</option>
+                                <option value="complete" data-testid="option-complete">Complete Plan (Quarterly)</option>
+                                <option value="premium" data-testid="option-premium">Premium Plan (Comprehensive)</option>
+                                <option value="custom" data-testid="option-custom">Custom Commercial Plan</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" data-testid="form-group-contact-details">
+                            <label for="contact-details" class="form-label" data-testid="label-contact-details">Additional Details</label>
+                            <textarea id="contact-details" name="details" class="form-textarea" rows="4" placeholder="Tell us about your maintenance needs..." data-testid="textarea-contact-details"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="form-submit" data-testid="submit-contact">
+                            <span data-testid="get">Get</span> 
+                            <span data-testid="maintenance">Maintenance</span> 
+                            <span data-testid="quote">Quote</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="final-cta" data-testid="section-final-cta">
+        <div class="container" data-testid="final-cta-container">
+            <h2 data-testid="final-cta-title">
+                <span data-testid="dont">Don't</span> 
+                <span data-testid="wait">Wait</span> 
+                <span data-testid="for">for</span> 
+                <span data-testid="emergency">Emergency</span> 
+                <span data-testid="repairs">Repairs—Schedule</span> 
+                <span data-testid="maintenance">Maintenance</span> 
+                <span data-testid="today">Today</span>
+            </h2>
+            
+            <p class="final-cta-text" data-testid="final-cta-text">
+                <span data-testid="protect">Protect</span> 
+                <span data-testid="your">your</span> 
+                <span data-testid="city-property">{{city_name}}</span> 
+                <span data-testid="property">property</span> 
+                <span data-testid="investment">investment</span> 
+                <span data-testid="with">with</span> 
+                <span data-testid="professional">professional</span> 
+                <span data-testid="roof">roof</span> 
+                <span data-testid="maintenance">maintenance</span> 
+                <span data-testid="from">from</span> 
+                <span data-testid="clear">Clear</span> 
+                <span data-testid="home">Home.</span> 
+                <span data-testid="our">Our</span> 
+                <span data-testid="experienced">experienced</span> 
+                <span data-testid="team">team</span> 
+                <span data-testid="provides">provides</span> 
+                <span data-testid="comprehensive">comprehensive</span> 
+                <span data-testid="care">care</span> 
+                <span data-testid="that">that</span> 
+                <span data-testid="extends">extends</span> 
+                <span data-testid="roof">roof</span> 
+                <span data-testid="lifespan">lifespan,</span> 
+                <span data-testid="prevents">prevents</span> 
+                <span data-testid="costly">costly</span> 
+                <span data-testid="damage">damage,</span> 
+                <span data-testid="and">and</span> 
+                <span data-testid="gives">gives</span> 
+                <span data-testid="you">you</span> 
+                <span data-testid="complete">complete</span> 
+                <span data-testid="peace">peace</span> 
+                <span data-testid="of">of</span> 
+                <span data-testid="mind">mind.</span>
+            </p>
+            
+            <div class="final-cta-buttons" data-testid="final-cta-buttons">
+                <button class="cta-white" data-testid="cta-white">
+                    <span data-testid="schedule">Schedule</span> 
+                    <span data-testid="maintenance">Maintenance</span> 
+                    <span data-testid="service">Service</span>
+                </button>
+                <a href="tel:{{company_phone}}" class="cta-outline" data-testid="cta-outline">
+                    <span data-testid="call">Call</span> 
+                    <span data-testid="phone">{{company_phone}}</span>
+                </a>
+            </div>
+            
+            <p class="trust-line" data-testid="trust-line">
+                <span data-testid="twenty">20+</span> 
+                <span data-testid="years">years</span> 
+                <span data-testid="serving">serving</span> 
+                <span data-testid="city-serving">{{city_name}}</span> 
+                <span data-testid="pipe">|</span> 
+                <span data-testid="licensed">Licensed</span> 
+                <span data-testid="and">&amp;</span> 
+                <span data-testid="insured">insured</span> 
+                <span data-testid="pipe">|</span> 
+                <span data-testid="satisfaction">Satisfaction</span> 
+                <span data-testid="guaranteed">guaranteed</span>
+            </p>
+        </div>
+    </section>
+
+</body>
+</html>

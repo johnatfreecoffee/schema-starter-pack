@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-testid="page-title">Gutter Installation {{city_name}} | Seamless Gutters & Guards | Clear Home</title>
+    <meta name="description" content="Professional gutter installation in {{city_name}}. Custom seamless gutters, gutter guards, and complete drainage solutions. Licensed, insured, lifetime warranty. Call {{company_phone}}.">
+    <meta name="keywords" content="gutter installation {{city_name}}, seamless gutters {{city_name}}, gutter replacement {{city_name}}, professional gutter installers {{city_name}}">
+    <link rel="canonical" href="{{page_url}}">
+    <meta property="og:title" content="Gutter Installation {{city_name}} | Seamless Gutters & Guards | Clear Home">
+    <meta property="og:description" content="Professional gutter installation in {{city_name}}. Custom seamless gutters, gutter guards, and complete drainage solutions.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{page_url}}">
+    
+    <script type="application/ld+json" data-testid="schema-markup">
+    [
+        {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "Clear Home",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "{{city_name}}",
+                "addressRegion": "{{state_abbr}}"
+            },
+            "telephone": "{{company_phone}}",
+            "url": "{{page_url}}",
+            "description": "Professional gutter installation in {{city_name}}. Custom seamless gutters, gutter guards, and complete drainage solutions."
+        },
+        {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            "serviceType": "Gutter Installation",
+            "provider": {
+                "@type": "LocalBusiness",
+                "name": "Clear Home"
+            },
+            "areaServed": {
+                "@type": "City",
+                "name": "{{city_name}}"
+            },
+            "hasOfferCatalog": {
+                "@type": "OfferCatalog",
+                "name": "Gutter Services",
+                "itemListElement": [
+                    {
+                        "@type": "Offer",
+                        "itemOffered": {
+                            "@type": "Service",
+                            "name": "Seamless Gutter Installation"
+                        }
+                    },
+                    {
+                        "@type": "Offer",
+                        "itemOffered": {
+                            "@type": "Service",
+                            "name": "Gutter Guard Installation"
+                        }
+                    },
+                    {
+                        "@type": "Offer",
+                        "itemOffered": {
+                            "@type": "Service",
+                            "name": "Downspout Installation"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": "How long does gutter installation take?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Most residential installations are completed in 1-2 days. Larger homes or complex projects may take 2-3 days."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Should I install gutter guards with new gutters?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Installing guards during initial installation saves money versus adding them later. For heavy tree coverage, guards are essential to prevent constant maintenance."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "What size gutters do I need?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "We calculate this based on your roof square footage, pitch, and local rainfall data. Most homes need 5-inch or 6-inch gutters depending on water volume."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Do I really need professional installation?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Professional installation ensures proper pitch, secure mounting, correct downspout placement, and weathertight sealing for long-term performance."
+                    }
+                }
+            ]
+        },
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Home",
+                    "item": "{{base_url}}"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Services",
+                    "item": "{{base_url}}/services"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": "Gutter Installation",
+                    "item": "{{page_url}}"
+                }
+            ]
+        }
+    ]
+    </script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: #1A202C; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        .hero-section { 
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23cccccc"/></svg>'); 
+            background-size: cover; 
+            background-position: center; 
+            color: white; 
+            padding: 80px 0; 
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+        }
+        .hero-grid { display: grid; grid-template-columns: 60% 40%; gap: 40px; align-items: center; }
+        .hero-content h1 { font-size: 48px; font-weight: 700; line-height: 1.2; margin-bottom: 20px; }
+        .hero-subheadline { font-size: 20px; line-height: 1.5; margin-bottom: 30px; }
+        .trust-indicators { display: flex; gap: 24px; margin: 30px 0; flex-wrap: wrap; }
+        .trust-indicator { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .trust-indicator::before { content: "* "; color: #68D391; font-weight: bold; }
+        .cta-buttons { display: flex; gap: 16px; margin-top: 30px; flex-wrap: wrap; }
+        
+        .btn-primary { background: #2B6CB0; color: white; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; }
+        .btn-primary:hover { background: #2C5282; }
+        .btn-secondary { background: transparent; color: white; border: 2px solid white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; }
+        .btn-secondary:hover { background: white; color: #2B6CB0; }
+        
+        .hero-form { background: rgba(255,255,255,0.95); padding: 32px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); color: #1A202C; }
+        .form-title { font-size: 24px; font-weight: bold; margin-bottom: 24px; text-align: center; color: #2B6CB0; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 4px; font-size: 16px; }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .btn-form { width: 100%; background: #2B6CB0; color: white; padding: 16px; border: none; border-radius: 4px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .btn-form:hover { background: #2C5282; }
+        
+        .problem-section { background: #F7FAFC; padding: 80px 0; }
+        .problem-header h2 { font-size: 36px; margin-bottom: 48px; color: #1A202C; text-align: center; }
+        .problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-bottom: 40px; }
+        .problem-item { text-align: center; padding: 24px; }
+        .problem-icon { font-size: 48px; color: #E53E3E; margin-bottom: 16px; }
+        .problem-title { font-size: 18px; font-weight: bold; margin-bottom: 12px; color: #1A202C; }
+        .problem-description { color: #4A5568; }
+        .urgency-callout { background: #FFF9E6; border: 2px solid #D69E2E; padding: 24px; border-radius: 8px; text-align: center; color: #1A202C; }
+        
+        .solution-section { background: white; padding: 80px 0; }
+        .solution-header h2 { font-size: 36px; margin-bottom: 56px; color: #1A202C; text-align: center; }
+        .solution-row { display: grid; grid-template-columns: 50% 50%; gap: 60px; align-items: center; margin-bottom: 80px; }
+        .solution-row:nth-child(even) .solution-content { order: 2; }
+        .solution-row:nth-child(even) .solution-image { order: 1; }
+        .solution-image { background: #F7FAFC; height: 300px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #2B6CB0; font-size: 18px; }
+        .solution-title { font-size: 28px; font-weight: bold; margin-bottom: 20px; color: #1A202C; }
+        .solution-description { color: #4A5568; margin-bottom: 20px; line-height: 1.7; }
+        .feature-list { list-style: none; }
+        .feature-list li { margin-bottom: 8px; color: #4A5568; }
+        .feature-list li:before { content: "* "; color: #68D391; font-weight: bold; }
+        
+        .process-section { background: #F7FAFC; padding: 80px 0; }
+        .process-header { text-align: center; margin-bottom: 56px; }
+        .process-header h2 { font-size: 36px; margin-bottom: 16px; color: #1A202C; }
+        .process-subheading { color: #4A5568; font-size: 18px; }
+        .process-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+        .process-step { background: white; padding: 32px 20px; border-radius: 8px; border: 1px solid #E2E8F0; text-align: center; position: relative; }
+        .process-step:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-4px); transition: all 0.3s ease; }
+        .step-badge { width: 60px; height: 60px; border-radius: 50%; background: #2B6CB0; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin: 0 auto 16px; }
+        .step-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; color: #1A202C; }
+        .step-description { font-size: 14px; color: #4A5568; line-height: 1.5; }
+        .timeline-callout { background: #EBF8FF; padding: 20px; border-radius: 8px; text-align: center; margin-top: 40px; color: #2B6CB0; font-size: 18px; font-weight: 600; }
+        
+        .materials-section { background: white; padding: 80px 0; }
+        .materials-header { text-align: center; margin-bottom: 56px; }
+        .materials-header h2 { font-size: 36px; margin-bottom: 16px; color: #1A202C; }
+        .materials-subheading { color: #4A5568; font-size: 18px; }
+        .materials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-bottom: 60px; }
+        .material-card { background: white; padding: 32px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); border: 1px solid #E5E7EB; position: relative; }
+        .material-badge { position: absolute; top: -10px; right: 20px; background: #68D391; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .material-badge.premium { background: #D69E2E; }
+        .material-icon { font-size: 48px; color: #2B6CB0; margin-bottom: 20px; text-align: center; }
+        .material-title { font-size: 24px; font-weight: bold; margin-bottom: 12px; color: #1A202C; text-align: center; }
+        .material-price { text-align: center; margin-bottom: 20px; font-size: 18px; color: #4A5568; }
+        .material-benefits { list-style: none; margin-bottom: 20px; }
+        .material-benefits li { margin-bottom: 8px; color: #4A5568; }
+        .material-benefits li:before { content: "* "; color: #68D391; font-weight: bold; }
+        .size-section { background: #F7FAFC; padding: 40px; border-radius: 12px; }
+        .size-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
+        .size-option { background: white; padding: 24px; border-radius: 8px; }
+        .size-title { font-size: 20px; font-weight: bold; margin-bottom: 12px; color: #1A202C; }
+        
+        .guards-section { background: #F7FAFC; padding: 80px 0; }
+        .guards-header { text-align: center; margin-bottom: 48px; }
+        .guards-header h2 { font-size: 36px; margin-bottom: 16px; color: #1A202C; }
+        .guards-subheading { color: #4A5568; font-size: 18px; }
+        .guards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 40px; }
+        .guard-option { background: white; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .guard-image { background: #F7FAFC; height: 120px; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; color: #2B6CB0; font-size: 14px; }
+        .guard-title { font-size: 18px; font-weight: bold; margin-bottom: 12px; color: #1A202C; }
+        .guard-description { font-size: 14px; color: #4A5568; line-height: 1.5; margin-bottom: 12px; }
+        .guard-price { font-weight: bold; color: #2B6CB0; margin-bottom: 8px; }
+        .guard-warranty { font-size: 12px; color: #4A5568; }
+        .recommendation-box { background: #EBF8FF; border: 2px solid #2B6CB0; padding: 24px; border-radius: 8px; color: #1A202C; }
+        
+        .local-section { background: white; padding: 80px 0; }
+        .local-grid { display: grid; grid-template-columns: 50% 50%; gap: 60px; }
+        .local-header h2 { font-size: 36px; margin-bottom: 16px; color: #1A202C; }
+        .local-subheading { color: #4A5568; font-size: 18px; margin-bottom: 32px; }
+        .challenge-cards { display: flex; flex-direction: column; gap: 20px; }
+        .challenge-card { display: flex; align-items: flex-start; gap: 16px; padding: 20px; background: #F7FAFC; border-radius: 8px; }
+        .challenge-icon { font-size: 24px; color: #2B6CB0; margin-top: 4px; }
+        .challenge-title { font-weight: bold; margin-bottom: 8px; color: #1A202C; }
+        .challenge-description { color: #4A5568; font-size: 14px; }
+        .solution-points { list-style: none; margin-bottom: 24px; }
+        .solution-points li { margin-bottom: 8px; color: #4A5568; }
+        .solution-points li:before { content: "* "; color: #68D391; font-weight: bold; }
+        .knowledge-box { background: #FFF9E6; padding: 24px; border-radius: 8px; color: #1A202C; }
+        
+        .benefits-section { background: #F7FAFC; padding: 80px 0; }
+        .benefits-header { text-align: center; margin-bottom: 56px; }
+        .benefits-header h2 { font-size: 36px; margin-bottom: 16px; color: #1A202C; }
+        .benefits-subheading { color: #4A5568; font-size: 18px; }
+        .benefits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+        .benefit-card { background: white; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
+        .benefit-icon { font-size: 48px; color: #2B6CB0; margin-bottom: 20px; }
+        .benefit-title { font-size: 20px; font-weight: bold; margin-bottom: 12px; color: #1A202C; }
+        .benefit-description { color: #4A5568; line-height: 1.6; }
+        
+        .pricing-section { background: white; padding: 80px 0; }
+        .pricing-header { text-align: center; margin-bottom: 40px; }
+        .pricing-header h2 { font-size: 36px; margin-bottom: 16px; color: #1A202C; }
+        .pricing-subheading { color: #4A5568; font-size: 18px; }
+        .investment-overview { background: #EBF8FF; padding: 32px; border-radius: 8px; text-align: center; margin-bottom: 60px; color: #1A202C; font-size: 18px; }
+        .pricing-grid { display: grid; grid-template-columns: 50% 50%; gap: 60px; margin-bottom: 40px; }
+        .pricing-column h3 { font-size: 24px; margin-bottom: 24px; color: #1A202C; }
+        .factor-list, .tips-list { list-style: none; }
+        .factor-list li, .tips-list li { margin-bottom: 12px; color: #4A5568; display: flex; align-items: center; gap: 8px; }
+        .tips-list li:before { content: "* "; color: #68D391; font-weight: bold; }
+        .financing-box { background: #2B6CB0; color: white; padding: 32px; border-radius: 8px; text-align: center; }
+        .financing-title { font-size: 24px; font-weight: bold; margin-bottom: 12px; }
+        .financing-text { margin-bottom: 20px; }
+        .btn-financing { background: white; color: #2B6CB0; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold; }
+        
+        .warranty-section { background: #F7FAFC; padding: 80px 0; }
+        .warranty-header { text-align: center; margin-bottom: 56px; }
+        .warranty-header h2 { font-size: 36px; margin-bottom: 16px; color: #1A202C; }
+        .warranty-subheading { color: #4A5568; font-size: 18px; }
+        .warranty-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-bottom: 40px; }
+        .warranty-card { background: white; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
+        .warranty-icon { font-size: 48px; color: #2B6CB0; margin-bottom: 16px; }
+        .warranty-duration { font-size: 32px; font-weight: bold; color: #2B6CB0; margin-bottom: 12px; }
+        .warranty-title { font-size: 20px; font-weight: bold; margin-bottom: 16px; color: #1A202C; }
+        .warranty-coverage { list-style: none; margin-bottom: 16px; }
+        .warranty-coverage li { margin-bottom: 8px; color: #4A5568; }
+        .warranty-coverage li:before { content: "* "; color: #68D391; font-weight: bold; }
+        .warranty-note { font-size: 12px; color: #4A5568; }
+        .coverage-box { background: white; padding: 32px; border-radius: 8px; }
+        .coverage-list { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .coverage-list li { color: #4A5568; }
+        .coverage-list li:before { content: "* "; color: #68D391; font-weight: bold; }
+        
+        .faq-section { background: white; padding: 80px 0; }
+        .faq-container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        .faq-header { text-align: center; margin-bottom: 48px; }
+        .faq-header h2 { font-size: 36px; margin-bottom: 16px; color: #1A202C; }
+        .faq-subheading { color: #4A5568; font-size: 18px; }
+        .faq-item { background: #F7FAFC; margin-bottom: 16px; border-radius: 8px; overflow: hidden; }
+        .faq-question { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 16px; color: #1A202C; }
+        .faq-question:hover { background: #EDF2F7; }
+        .faq-toggle { font-size: 24px; color: #2B6CB0; }
+        .faq-answer { padding: 0 20px 20px 20px; color: #4A5568; line-height: 1.6; display: none; }
+        .faq-answer.active { display: block; }
+        .faq-cta-box { background: #EBF8FF; padding: 24px; border-radius: 8px; text-align: center; margin-top: 40px; }
+        
+        .emergency-section { background: linear-gradient(135deg, #C53030 0%, #9B2C2C 100%); color: white; padding: 80px 0; text-align: center; }
+        .emergency-icon { font-size: 64px; margin-bottom: 20px; }
+        .emergency-title { font-size: 36px; font-weight: bold; margin-bottom: 16px; }
+        .emergency-list { list-style: none; margin: 32px 0; }
+        .emergency-list li { font-size: 18px; font-weight: bold; margin-bottom: 12px; }
+        .emergency-phone { font-size: 48px; font-weight: bold; margin: 32px 0; }
+        .emergency-promise { font-size: 20px; }
+        
+        .trust-section { background: white; padding: 80px 0; }
+        .trust-header { text-align: center; margin-bottom: 56px; }
+        .trust-header h2 { font-size: 36px; color: #1A202C; }
+        .trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-bottom: 40px; }
+        .trust-item { text-align: center; }
+        .trust-rating { font-size: 32px; color: #D69E2E; margin-bottom: 8px; }
+        .trust-number { font-size: 36px; font-weight: bold; color: #2B6CB0; margin-bottom: 8px; }
+        .trust-label { color: #4A5568; }
+        .certifications { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+        .cert-badge { background: #F7FAFC; padding: 16px 24px; border-radius: 8px; text-align: center; font-size: 14px; font-weight: 500; color: #2B6CB0; }
+        
+        .testimonials-section { background: #F7FAFC; padding: 80px 0; }
+        .testimonials-header { text-align: center; margin-bottom: 56px; }
+        .testimonials-header h2 { font-size: 36px; color: #1A202C; }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+        .testimonial-card { background: white; padding: 32px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .testimonial-stars { color: #D69E2E; font-size: 18px; margin-bottom: 16px; }
+        .testimonial-text { font-style: italic; color: #4A5568; line-height: 1.7; margin-bottom: 16px; }
+        .testimonial-author { font-weight: bold; color: #1A202C; }
+        .testimonial-location { color: #4A5568; font-size: 14px; }
+        .testimonial-date { color: #4A5568; font-size: 12px; }
+        
+        .final-cta { background: #1A365D; color: white; padding: 80px 0; }
+        .final-cta-grid { display: grid; grid-template-columns: 50% 50%; gap: 60px; }
+        .cta-form h2 { font-size: 32px; margin-bottom: 16px; }
+        .cta-form .form-subtitle { margin-bottom: 32px; }
+        .form-simplified { display: flex; flex-direction: column; gap: 16px; }
+        .form-simplified input { padding: 16px; border: none; border-radius: 4px; font-size: 16px; }
+        .form-simplified .btn-submit { background: #D69E2E; color: #1A202C; font-weight: bold; }
+        .security-note { font-size: 14px; margin-top: 16px; opacity: 0.8; }
+        .call-cta { text-align: center; }
+        .call-icon { font-size: 64px; margin-bottom: 20px; }
+        .call-title { font-size: 32px; margin-bottom: 20px; }
+        .call-phone { font-size: 42px; font-weight: bold; margin: 32px 0; }
+        .call-hours { margin-bottom: 16px; }
+        .call-promise { font-size: 18px; }
+        .trust-bar { background: rgba(255,255,255,0.1); padding: 20px; text-align: center; margin-top: 40px; font-size: 14px; }
+        
+        @media (max-width: 768px) {
+            .hero-grid { grid-template-columns: 1fr; }
+            .hero-content h1 { font-size: 32px; }
+            .hero-subheadline { font-size: 18px; }
+            .problem-grid { grid-template-columns: 1fr; }
+            .solution-row { grid-template-columns: 1fr; text-align: center; }
+            .solution-row:nth-child(even) .solution-content { order: 1; }
+            .solution-row:nth-child(even) .solution-image { order: 2; }
+            .process-grid { grid-template-columns: 1fr; }
+            .materials-grid { grid-template-columns: 1fr; }
+            .guards-grid { grid-template-columns: repeat(2, 1fr); }
+            .local-grid { grid-template-columns: 1fr; }
+            .benefits-grid { grid-template-columns: 1fr; }
+            .pricing-grid { grid-template-columns: 1fr; }
+            .warranty-grid { grid-template-columns: 1fr; }
+            .trust-grid { grid-template-columns: repeat(2, 1fr); }
+            .testimonials-grid { grid-template-columns: 1fr; }
+            .final-cta-grid { grid-template-columns: 1fr; }
+            .size-grid { grid-template-columns: 1fr; }
+            .coverage-list { grid-template-columns: 1fr; }
+            .cta-buttons { flex-direction: column; }
+            .trust-indicators { justify-content: center; }
+            .certifications { justify-content: center; }
+        }
+        
+        @media (max-width: 480px) {
+            .guards-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section" data-testid="section-hero">
+        <div class="container">
+            <div class="hero-grid" data-testid="hero-grid">
+                <div class="hero-content" data-testid="hero-content">
+                    <h1 data-testid="heading-hero-title">Professional Gutter Installation in {{city_name}}</h1>
+                    <h2 class="hero-subheadline" data-testid="heading-hero-subtitle">Protect Your Home with Custom-Fitted Seamless Gutters | 20+ Years of Excellence</h2>
+                    
+                    <div class="trust-indicators" data-testid="trust-indicators">
+                        <span class="trust-indicator" data-testid="indicator-licensed">Licensed & Insured</span>
+                        <span class="trust-indicator" data-testid="indicator-seamless">Seamless Gutters</span>
+                        <span class="trust-indicator" data-testid="indicator-warranty">Lifetime Warranty</span>
+                    </div>
+                    
+                    <div class="cta-buttons" data-testid="cta-buttons">
+                        <a href="#estimate-form" class="btn-primary" data-testid="button-free-estimate">Get Free Estimate</a>
+                        <a href="tel:{{company_phone}}" class="btn-secondary" data-testid="button-call-now">Call {{company_phone}}</a>
+                    </div>
+                </div>
+                
+                <div class="hero-form" data-testid="hero-form" id="estimate-form">
+                    <h3 class="form-title" data-testid="heading-form-title">Get Your Free Gutter Estimate</h3>
+                    <form data-testid="form-estimate">
+                        <div class="form-group" data-testid="group-name">
+                            <label class="form-label" data-testid="label-name">Name *</label>
+                            <input type="text" class="form-input" data-testid="input-name" required>
+                        </div>
+                        <div class="form-group" data-testid="group-phone">
+                            <label class="form-label" data-testid="label-phone">Phone Number *</label>
+                            <input type="tel" class="form-input" data-testid="input-phone" required>
+                        </div>
+                        <div class="form-group" data-testid="group-email">
+                            <label class="form-label" data-testid="label-email">Email Address *</label>
+                            <input type="email" class="form-input" data-testid="input-email" required>
+                        </div>
+                        <div class="form-group" data-testid="group-property-type">
+                            <label class="form-label" data-testid="label-property-type">Property Type</label>
+                            <select class="form-select" data-testid="select-property-type">
+                                <option value="residential" data-testid="option-residential">Residential</option>
+                                <option value="commercial" data-testid="option-commercial">Commercial</option>
+                            </select>
+                        </div>
+                        <div class="form-group" data-testid="group-service-needed">
+                            <label class="form-label" data-testid="label-service-needed">Service Needed</label>
+                            <textarea class="form-textarea" data-testid="textarea-service-needed" placeholder="Describe your gutter needs..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-form" data-testid="button-submit-estimate">Get Free Estimate</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem-section" data-testid="section-problem">
+        <div class="container">
+            <div class="problem-header" data-testid="problem-header">
+                <h2 data-testid="heading-why-critical">Why Your Gutters Are Critical to Home Protection</h2>
+            </div>
+            
+            <div class="problem-grid" data-testid="problem-grid">
+                <div class="problem-item" data-testid="problem-foundation">
+                    <div class="problem-icon" data-testid="icon-foundation">HOME</div>
+                    <h3 class="problem-title" data-testid="title-foundation-damage">Foundation Damage</h3>
+                    <p class="problem-description" data-testid="description-foundation">Clogged or damaged gutters cause water to pool around your foundation, leading to $15,000+ in structural repairs</p>
+                </div>
+                
+                <div class="problem-item" data-testid="problem-roof">
+                    <div class="problem-icon" data-testid="icon-roof">ROOF</div>
+                    <h3 class="problem-title" data-testid="title-roof-rot">Roof & Fascia Rot</h3>
+                    <p class="problem-description" data-testid="description-roof">Overflowing gutters accelerate wood rot on roof edges, requiring costly roof and trim replacement</p>
+                </div>
+                
+                <div class="problem-item" data-testid="problem-landscape">
+                    <div class="problem-icon" data-testid="icon-landscape">YARD</div>
+                    <h3 class="problem-title" data-testid="title-landscape-erosion">Landscape Erosion</h3>
+                    <p class="problem-description" data-testid="description-landscape">Improper drainage washes away landscaping and creates muddy trenches around your home</p>
+                </div>
+            </div>
+            
+            <div class="urgency-callout" data-testid="urgency-callout">
+                <p data-testid="text-urgency">Don't wait for costly damage. Professional gutter installation pays for itself by preventing expensive repairs.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution-section" data-testid="section-solution">
+        <div class="container">
+            <div class="solution-header" data-testid="solution-header">
+                <h2 data-testid="heading-complete-solutions">Complete Gutter Installation Solutions</h2>
+            </div>
+            
+            <div class="solution-row" data-testid="solution-seamless">
+                <div class="solution-image" data-testid="image-seamless">Professional Seamless Gutter Installation</div>
+                <div class="solution-content" data-testid="content-seamless">
+                    <h3 class="solution-title" data-testid="title-custom-seamless">Custom Seamless Gutters</h3>
+                    <p class="solution-description" data-testid="description-seamless">Machine-formed on-site for perfect fit and maximum performance. Our seamless gutters eliminate leak points and provide superior protection for your {{city_name}} home.</p>
+                    <ul class="feature-list" data-testid="features-seamless">
+                        <li data-testid="feature-measurements">Machine-formed on-site to exact measurements</li>
+                        <li data-testid="feature-no-joints">No joints or seams to leak or separate</li>
+                        <li data-testid="feature-colors">20+ color options to match your home</li>
+                        <li data-testid="feature-materials">Aluminum, copper, or steel materials</li>
+                        <li data-testid="feature-hangers">Hidden hanger system for clean appearance</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="solution-row" data-testid="solution-guards">
+                <div class="solution-content" data-testid="content-guards">
+                    <h3 class="solution-title" data-testid="title-gutter-protection">Premium Gutter Protection Systems</h3>
+                    <p class="solution-description" data-testid="description-guards">Never clean gutters again with our professional-grade gutter guard systems. Specially designed for {{city_name}}'s heavy tree coverage and seasonal debris.</p>
+                    <ul class="feature-list" data-testid="features-guards">
+                        <li data-testid="feature-prevents-debris">Prevents debris accumulation</li>
+                        <li data-testid="feature-reduces-maintenance">Reduces maintenance to near-zero</li>
+                        <li data-testid="feature-extends-lifespan">Extends gutter system lifespan</li>
+                        <li data-testid="feature-guard-styles">Multiple guard style options</li>
+                        <li data-testid="feature-clog-free-warranty">Lifetime clog-free warranty available</li>
+                    </ul>
+                </div>
+                <div class="solution-image" data-testid="image-guards">Gutter Guard Installation Close-up</div>
+            </div>
+            
+            <div class="solution-row" data-testid="solution-drainage">
+                <div class="solution-image" data-testid="image-drainage">Downspout with Drainage Extension</div>
+                <div class="solution-content" data-testid="content-drainage">
+                    <h3 class="solution-title" data-testid="title-drainage-management">Complete Drainage Management</h3>
+                    <p class="solution-description" data-testid="description-drainage">Comprehensive water management solutions that direct water safely away from your foundation, preventing costly damage and flooding issues.</p>
+                    <ul class="feature-list" data-testid="features-drainage">
+                        <li data-testid="feature-downspout-sizing">Proper downspout sizing and placement</li>
+                        <li data-testid="feature-underground-drainage">Underground drainage installation</li>
+                        <li data-testid="feature-french-drains">French drain connections</li>
+                        <li data-testid="feature-rainwater-collection">Rainwater collection systems</li>
+                        <li data-testid="feature-splash-blocks">Splash blocks and extensions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process-section" data-testid="section-process">
+        <div class="container">
+            <div class="process-header" data-testid="process-header">
+                <h2 data-testid="heading-installation-process">Our Professional Installation Process</h2>
+                <p class="process-subheading" data-testid="subheading-process">From Initial Assessment to Final Inspection</p>
+            </div>
+            
+            <div class="process-grid" data-testid="process-grid">
+                <div class="process-step" data-testid="step-assessment">
+                    <div class="step-badge" data-testid="badge-assessment">1</div>
+                    <h3 class="step-title" data-testid="title-assessment">Free Property Assessment</h3>
+                    <p class="step-description" data-testid="description-assessment">Measure roof edges, evaluate current system, assess drainage needs</p>
+                </div>
+                
+                <div class="process-step" data-testid="step-design">
+                    <div class="step-badge" data-testid="badge-design">2</div>
+                    <h3 class="step-title" data-testid="title-design">Custom Solution Design</h3>
+                    <p class="step-description" data-testid="description-design">Calculate water flow, select optimal materials, plan downspout placement</p>
+                </div>
+                
+                <div class="process-step" data-testid="step-installation">
+                    <div class="step-badge" data-testid="badge-installation">3</div>
+                    <h3 class="step-title" data-testid="title-installation">Professional Installation</h3>
+                    <p class="step-description" data-testid="description-installation">Remove old gutters, install seamless system, secure hidden hangers</p>
+                </div>
+                
+                <div class="process-step" data-testid="step-optimization">
+                    <div class="step-badge" data-testid="badge-optimization">4</div>
+                    <h3 class="step-title" data-testid="title-optimization">Drainage Optimization</h3>
+                    <p class="step-description" data-testid="description-optimization">Connect downspouts, install extensions, test water flow</p>
+                </div>
+                
+                <div class="process-step" data-testid="step-inspection">
+                    <div class="step-badge" data-testid="badge-inspection">5</div>
+                    <h3 class="step-title" data-testid="title-inspection">Quality Inspection</h3>
+                    <p class="step-description" data-testid="description-inspection">Verify proper pitch, check all connections, demonstrate system operation</p>
+                </div>
+            </div>
+            
+            <div class="timeline-callout" data-testid="timeline-callout">
+                <p data-testid="text-timeline">Most residential installations completed in 1-2 days</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Materials Section -->
+    <section class="materials-section" data-testid="section-materials">
+        <div class="container">
+            <div class="materials-header" data-testid="materials-header">
+                <h2 data-testid="heading-materials-styles">Gutter Materials & Styles</h2>
+                <p class="materials-subheading" data-testid="subheading-materials">Professional-Grade Options for Every Budget</p>
+            </div>
+            
+            <div class="materials-grid" data-testid="materials-grid">
+                <div class="material-card" data-testid="card-aluminum">
+                    <div class="material-badge" data-testid="badge-most-popular">Most Popular</div>
+                    <div class="material-icon" data-testid="icon-aluminum">AL</div>
+                    <h3 class="material-title" data-testid="title-aluminum">Seamless Aluminum</h3>
+                    <div class="material-price" data-testid="price-aluminum">$$</div>
+                    <ul class="material-benefits" data-testid="benefits-aluminum">
+                        <li data-testid="benefit-lightweight">Lightweight yet durable</li>
+                        <li data-testid="benefit-no-rust">Won't rust or corrode</li>
+                        <li data-testid="benefit-20-colors">Available in 20+ colors</li>
+                        <li data-testid="benefit-20-30-years">20-30 year lifespan</li>
+                    </ul>
+                    <a href="#estimate-form" class="btn-secondary" data-testid="button-learn-aluminum">Learn More</a>
+                </div>
+                
+                <div class="material-card" data-testid="card-copper">
+                    <div class="material-badge premium" data-testid="badge-premium">Premium</div>
+                    <div class="material-icon" data-testid="icon-copper">CU</div>
+                    <h3 class="material-title" data-testid="title-copper">Seamless Copper</h3>
+                    <div class="material-price" data-testid="price-copper">$$$$</div>
+                    <ul class="material-benefits" data-testid="benefits-copper">
+                        <li data-testid="benefit-patina">Distinctive aged patina</li>
+                        <li data-testid="benefit-50-years">50+ year lifespan</li>
+                        <li data-testid="benefit-home-value">Increases home value</li>
+                        <li data-testid="benefit-antimicrobial">Antimicrobial properties</li>
+                    </ul>
+                    <a href="#estimate-form" class="btn-secondary" data-testid="button-learn-copper">Learn More</a>
+                </div>
+                
+                <div class="material-card" data-testid="card-steel">
+                    <div class="material-icon" data-testid="icon-steel">FE</div>
+                    <h3 class="material-title" data-testid="title-steel">Galvanized Steel</h3>
+                    <div class="material-price" data-testid="price-steel">$$$</div>
+                    <ul class="material-benefits" data-testid="benefits-steel">
+                        <li data-testid="benefit-maximum-strength">Maximum strength</li>
+                        <li data-testid="benefit-heavy-water-flow">Handles heavy water flow</li>
+                        <li data-testid="benefit-commercial">Ideal for commercial</li>
+                        <li data-testid="benefit-15-20-years">15-20 year lifespan</li>
+                    </ul>
+                    <a href="#estimate-form" class="btn-secondary" data-testid="button-learn-steel">Learn More</a>
+                </div>
+            </div>
+            
+            <div class="size-section" data-testid="size-section">
+                <h3 data-testid="heading-standard-sizes">Standard Gutter Sizes</h3>
+                <div class="size-grid" data-testid="size-grid">
+                    <div class="size-option" data-testid="option-5-inch">
+                        <h4 class="size-title" data-testid="title-5-inch">5-inch Gutters (Residential)</h4>
+                        <ul data-testid="features-5-inch">
+                            <li data-testid="feature-moderate-rainfall">Handles moderate rainfall</li>
+                            <li data-testid="feature-most-homes">Suitable for most homes</li>
+                            <li data-testid="feature-lower-cost">Lower cost option</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="size-option" data-testid="option-6-inch">
+                        <h4 class="size-title" data-testid="title-6-inch">6-inch Gutters (Heavy-Duty)</h4>
+                        <ul data-testid="features-6-inch">
+                            <li data-testid="feature-heavy-rain">Recommended for {{city_name}}'s heavy rain</li>
+                            <li data-testid="feature-steep-roofs">Required for steep roofs</li>
+                            <li data-testid="feature-large-roof-areas">Better for large roof areas</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gutter Guards Section -->
+    <section class="guards-section" data-testid="section-guards">
+        <div class="container">
+            <div class="guards-header" data-testid="guards-header">
+                <h2 data-testid="heading-protection-systems">Gutter Protection Systems</h2>
+                <p class="guards-subheading" data-testid="subheading-guards">Never Clean Gutters Again</p>
+            </div>
+            
+            <div class="guards-grid" data-testid="guards-grid">
+                <div class="guard-option" data-testid="option-micro-mesh">
+                    <div class="guard-image" data-testid="image-micro-mesh">Micro-Mesh Close-up</div>
+                    <h4 class="guard-title" data-testid="title-micro-mesh">Micro-Mesh Technology</h4>
+                    <p class="guard-description" data-testid="description-micro-mesh">Hospital-grade stainless steel mesh filters debris while allowing maximum water flow</p>
+                    <div class="guard-price" data-testid="price-micro-mesh">Price: $$$$</div>
+                    <div class="guard-warranty" data-testid="warranty-micro-mesh">Warranty: Lifetime clog-free guarantee</div>
+                </div>
+                
+                <div class="guard-option" data-testid="option-reverse-curve">
+                    <div class="guard-image" data-testid="image-reverse-curve">Reverse Curve Profile</div>
+                    <h4 class="guard-title" data-testid="title-reverse-curve">Surface Tension System</h4>
+                    <p class="guard-description" data-testid="description-reverse-curve">Water adheres to curved surface while debris falls away</p>
+                    <div class="guard-price" data-testid="price-reverse-curve">Price: $$$</div>
+                    <div class="guard-warranty" data-testid="warranty-reverse-curve">Warranty: 25-year performance</div>
+                </div>
+                
+                <div class="guard-option" data-testid="option-foam-inserts">
+                    <div class="guard-image" data-testid="image-foam-inserts">Foam in Gutter</div>
+                    <h4 class="guard-title" data-testid="title-foam-inserts">Foam Filter Inserts</h4>
+                    <p class="guard-description" data-testid="description-foam-inserts">Porous foam blocks debris while allowing water through</p>
+                    <div class="guard-price" data-testid="price-foam-inserts">Price: $</div>
+                    <div class="guard-warranty" data-testid="warranty-foam-inserts">Warranty: 5-year guarantee</div>
+                </div>
+                
+                <div class="guard-option" data-testid="option-screen-guards">
+                    <div class="guard-image" data-testid="image-screen-guards">Screen Guard</div>
+                    <h4 class="guard-title" data-testid="title-screen-guards">Heavy-Duty Screens</h4>
+                    <p class="guard-description" data-testid="description-screen-guards">Durable aluminum screens prevent large debris entry</p>
+                    <div class="guard-price" data-testid="price-screen-guards">Price: $$</div>
+                    <div class="guard-warranty" data-testid="warranty-screen-guards">Warranty: 10-year coverage</div>
+                </div>
+            </div>
+            
+            <div class="recommendation-box" data-testid="recommendation-box">
+                <p data-testid="text-recommendation">For {{city_name}}'s heavy rainfall and tree coverage, we recommend micro-mesh or reverse curve systems for best performance.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Local Expertise Section -->
+    <section class="local-section" data-testid="section-local">
+        <div class="container">
+            <div class="local-grid" data-testid="local-grid">
+                <div class="local-challenges" data-testid="local-challenges">
+                    <h2 class="local-header" data-testid="heading-local-expertise">Gutter Installation Expertise in {{city_name}}</h2>
+                    <p class="local-subheading" data-testid="subheading-local">Understanding Our Local Climate & Challenges</p>
+                    
+                    <h3 data-testid="heading-local-challenges">Why {{city_name}} Homes Need Professional Gutters</h3>
+                    
+                    <div class="challenge-cards" data-testid="challenge-cards">
+                        <div class="challenge-card" data-testid="card-rainfall">
+                            <div class="challenge-icon" data-testid="icon-rainfall">RAIN</div>
+                            <div>
+                                <div class="challenge-title" data-testid="title-rainfall">Heavy Seasonal Rainfall</div>
+                                <div class="challenge-description" data-testid="description-rainfall">60+ inches annually requires high-capacity systems</div>
+                            </div>
+                        </div>
+                        
+                        <div class="challenge-card" data-testid="card-storms">
+                            <div class="challenge-icon" data-testid="icon-storms">WIND</div>
+                            <div>
+                                <div class="challenge-title" data-testid="title-storms">Hurricane & Storm Season</div>
+                                <div class="challenge-description" data-testid="description-storms">Secure installations withstand 100+ mph winds</div>
+                            </div>
+                        </div>
+                        
+                        <div class="challenge-card" data-testid="card-trees">
+                            <div class="challenge-icon" data-testid="icon-trees">TREE</div>
+                            <div>
+                                <div class="challenge-title" data-testid="title-trees">Oak Trees & Debris</div>
+                                <div class="challenge-description" data-testid="description-trees">Leaves, moss, and branches demand protection systems</div>
+                            </div>
+                        </div>
+                        
+                        <div class="challenge-card" data-testid="card-historic">
+                            <div class="challenge-icon" data-testid="icon-historic">HIST</div>
+                            <div>
+                                <div class="challenge-title" data-testid="title-historic">Historic Home Requirements</div>
+                                <div class="challenge-description" data-testid="description-historic">Custom solutions preserve architectural integrity</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="local-solutions" data-testid="local-solutions">
+                    <h3 data-testid="heading-local-solutions">How We Address {{city_name}} Conditions</h3>
+                    
+                    <ul class="solution-points" data-testid="solution-points">
+                        <li data-testid="point-oversized">Oversized 6-inch gutters for heavy rain capacity</li>
+                        <li data-testid="point-hurricane-rated">Hurricane-rated hidden hanger systems</li>
+                        <li data-testid="point-mandatory-guards">Mandatory gutter guards for tree coverage areas</li>
+                        <li data-testid="point-custom-colors">Custom color matching for historic districts</li>
+                        <li data-testid="point-underground-drainage">Underground drainage for high water tables</li>
+                        <li data-testid="point-copper-patina">Copper patina options for period homes</li>
+                    </ul>
+                    
+                    <div class="knowledge-box" data-testid="knowledge-box">
+                        <p data-testid="text-knowledge">After 20+ years serving {{city_name}}, we understand exactly what gutter systems work best for our unique climate and architecture.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits-section" data-testid="section-benefits">
+        <div class="container">
+            <div class="benefits-header" data-testid="benefits-header">
+                <h2 data-testid="heading-why-choose">Why Choose Clear Home for Gutter Installation</h2>
+                <p class="benefits-subheading" data-testid="subheading-benefits">Professional Service, Lasting Results</p>
+            </div>
+            
+            <div class="benefits-grid" data-testid="benefits-grid">
+                <div class="benefit-card" data-testid="card-experience">
+                    <div class="benefit-icon" data-testid="icon-experience">AWARD</div>
+                    <h4 class="benefit-title" data-testid="title-experience">20+ Years Experience</h4>
+                    <p class="benefit-description" data-testid="description-experience">Two decades of perfecting gutter installation techniques specific to Louisiana's climate</p>
+                </div>
+                
+                <div class="benefit-card" data-testid="card-warranty">
+                    <div class="benefit-icon" data-testid="icon-warranty">SHIELD</div>
+                    <h4 class="benefit-title" data-testid="title-warranty">Lifetime Workmanship Warranty</h4>
+                    <p class="benefit-description" data-testid="description-warranty">We stand behind our installation quality with comprehensive coverage</p>
+                </div>
+                
+                <div class="benefit-card" data-testid="card-licensed">
+                    <div class="benefit-icon" data-testid="icon-licensed">CERT</div>
+                    <h4 class="benefit-title" data-testid="title-licensed">Licensed & Insured</h4>
+                    <p class="benefit-description" data-testid="description-licensed">Fully licensed, bonded, and insured for your protection and peace of mind</p>
+                </div>
+                
+                <div class="benefit-card" data-testid="card-custom">
+                    <div class="benefit-icon" data-testid="icon-custom">TOOL</div>
+                    <h4 class="benefit-title" data-testid="title-custom">Seamless Custom Fabrication</h4>
+                    <p class="benefit-description" data-testid="description-custom">Machine-formed on-site to your exact measurements for perfect fit</p>
+                </div>
+                
+                <div class="benefit-card" data-testid="card-free-estimates">
+                    <div class="benefit-icon" data-testid="icon-free-estimates">CALC</div>
+                    <h4 class="benefit-title" data-testid="title-free-estimates">Free Estimates & Consultations</h4>
+                    <p class="benefit-description" data-testid="description-free-estimates">No-obligation assessments with detailed written proposals</p>
+                </div>
+                
+                <div class="benefit-card" data-testid="card-emergency">
+                    <div class="benefit-icon" data-testid="icon-emergency">CLOCK</div>
+                    <h4 class="benefit-title" data-testid="title-emergency">Same-Day Emergency Service</h4>
+                    <p class="benefit-description" data-testid="description-emergency">Available for urgent repairs and storm damage response</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section" data-testid="section-pricing">
+        <div class="container">
+            <div class="pricing-header" data-testid="pricing-header">
+                <h2 data-testid="heading-transparent-pricing">Transparent Pricing Information</h2>
+                <p class="pricing-subheading" data-testid="subheading-pricing">Know What to Expect Before We Start</p>
+            </div>
+            
+            <div class="investment-overview" data-testid="investment-overview">
+                <p data-testid="text-average-cost">Average residential gutter installation: $1,200 - $3,500 based on home size and materials</p>
+            </div>
+            
+            <div class="pricing-grid" data-testid="pricing-grid">
+                <div class="pricing-column" data-testid="column-factors">
+                    <h3 data-testid="heading-investment-factors">Investment Factors</h3>
+                    <ul class="factor-list" data-testid="factor-list">
+                        <li data-testid="factor-footage">Linear Footage (Roof perimeter)</li>
+                        <li data-testid="factor-stories">Home Stories (Single vs. Multi-story)</li>
+                        <li data-testid="factor-material">Material Selection (Aluminum, copper, steel)</li>
+                        <li data-testid="factor-guard-system">Guard System (Protection system choice)</li>
+                        <li data-testid="factor-drainage">Drainage Needs (Downspouts, extensions)</li>
+                        <li data-testid="factor-custom">Custom Features (Colors, styles)</li>
+                    </ul>
+                </div>
+                
+                <div class="pricing-column" data-testid="column-tips">
+                    <h3 data-testid="heading-maximize-investment">Maximize Your Investment</h3>
+                    <ul class="tips-list" data-testid="tips-list">
+                        <li data-testid="tip-off-season">Install during off-season for better rates</li>
+                        <li data-testid="tip-bundle">Bundle with other exterior projects</li>
+                        <li data-testid="tip-aluminum">Choose aluminum for best value</li>
+                        <li data-testid="tip-guards-now">Add guards now to prevent future costs</li>
+                        <li data-testid="tip-financing">Ask about financing options</li>
+                        <li data-testid="tip-drainage-start">Invest in proper drainage from start</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="financing-box" data-testid="financing-box">
+                <h3 class="financing-title" data-testid="heading-financing">Flexible Financing Available</h3>
+                <p class="financing-text" data-testid="text-financing">12-month 0% APR | 24/36/60-month payment plans | Quick approval process</p>
+                <a href="#estimate-form" class="btn-financing" data-testid="button-apply-financing">Apply Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Warranty Section -->
+    <section class="warranty-section" data-testid="section-warranty">
+        <div class="container">
+            <div class="warranty-header" data-testid="warranty-header">
+                <h2 data-testid="heading-warranty-protection">Comprehensive Warranty Protection</h2>
+                <p class="warranty-subheading" data-testid="subheading-warranty">Your Investment is Protected</p>
+            </div>
+            
+            <div class="warranty-grid" data-testid="warranty-grid">
+                <div class="warranty-card" data-testid="card-workmanship">
+                    <div class="warranty-icon" data-testid="icon-workmanship">HAND</div>
+                    <div class="warranty-duration" data-testid="duration-workmanship">LIFETIME</div>
+                    <h4 class="warranty-title" data-testid="title-workmanship">Installation Workmanship</h4>
+                    <ul class="warranty-coverage" data-testid="coverage-workmanship">
+                        <li data-testid="coverage-labor">All labor and installation</li>
+                        <li data-testid="coverage-hangers">Hanger system integrity</li>
+                        <li data-testid="coverage-pitch">Proper pitch and flow</li>
+                        <li data-testid="coverage-mounting">Secure mounting</li>
+                    </ul>
+                    <div class="warranty-note" data-testid="note-workmanship">Transferable to new homeowner</div>
+                </div>
+                
+                <div class="warranty-card" data-testid="card-material">
+                    <div class="warranty-icon" data-testid="icon-material">MAT</div>
+                    <div class="warranty-duration" data-testid="duration-material">UP TO 30 YEARS</div>
+                    <h4 class="warranty-title" data-testid="title-material">Material Performance</h4>
+                    <ul class="warranty-coverage" data-testid="coverage-material">
+                        <li data-testid="coverage-defects">Gutter material defects</li>
+                        <li data-testid="coverage-paint">Paint and finish</li>
+                        <li data-testid="coverage-structural">Structural integrity</li>
+                        <li data-testid="coverage-corrosion">Corrosion resistance</li>
+                    </ul>
+                    <div class="warranty-note" data-testid="note-material">Manufacturer backed</div>
+                </div>
+                
+                <div class="warranty-card" data-testid="card-guard-warranty">
+                    <div class="warranty-icon" data-testid="icon-guard-warranty">GUARD</div>
+                    <div class="warranty-duration" data-testid="duration-guard-warranty">LIFETIME</div>
+                    <h4 class="warranty-title" data-testid="title-guard-warranty">Clog-Free Guarantee</h4>
+                    <ul class="warranty-coverage" data-testid="coverage-guard-warranty">
+                        <li data-testid="coverage-no-clog">No clog performance</li>
+                        <li data-testid="coverage-free-cleaning">Free cleaning if clogs occur</li>
+                        <li data-testid="coverage-guard-defects">Guard material defects</li>
+                        <li data-testid="coverage-installation-quality">Installation quality</li>
+                    </ul>
+                    <div class="warranty-note" data-testid="note-guard-warranty">On qualified systems</div>
+                </div>
+            </div>
+            
+            <div class="coverage-box" data-testid="coverage-box">
+                <h3 data-testid="heading-whats-covered">What's Covered</h3>
+                <ul class="coverage-list" data-testid="coverage-list">
+                    <li data-testid="covered-repair">Free repair or replacement of defective materials</li>
+                    <li data-testid="covered-labor">Labor costs for warranty work at no charge</li>
+                    <li data-testid="covered-inspection">Annual inspection and maintenance included</li>
+                    <li data-testid="covered-priority">Priority scheduling for warranty service</li>
+                    <li data-testid="covered-transferable">Transferable coverage increases home value</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" data-testid="section-faq">
+        <div class="faq-container">
+            <div class="faq-header" data-testid="faq-header">
+                <h2 data-testid="heading-faq">Gutter Installation Questions Answered</h2>
+                <p class="faq-subheading" data-testid="subheading-faq">Everything You Need to Know</p>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-how-long">
+                <div class="faq-question" data-testid="question-how-long">
+                    How long does gutter installation take?
+                    <span class="faq-toggle" data-testid="toggle-how-long">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-how-long">
+                    Most residential installations are completed in 1-2 days. Larger homes or complex projects may take 2-3 days. We'll provide an exact timeline during your free estimate.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-best-time">
+                <div class="faq-question" data-testid="question-best-time">
+                    When is the best time to install gutters?
+                    <span class="faq-toggle" data-testid="toggle-best-time">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-best-time">
+                    Fall and spring offer ideal weather conditions, but we install year-round. {{city_name}}'s mild winters make it possible to install gutters even in cooler months, often with better availability and pricing.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-guards">
+                <div class="faq-question" data-testid="question-guards">
+                    Should I install gutter guards with new gutters?
+                    <span class="faq-toggle" data-testid="toggle-guards">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-guards">
+                    Absolutely. Installing guards during initial installation saves money versus adding them later. For {{city_name}}'s heavy tree coverage, guards are essential to prevent constant maintenance and extend gutter life.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-size">
+                <div class="faq-question" data-testid="question-size">
+                    How do I know what size gutters I need?
+                    <span class="faq-toggle" data-testid="toggle-size">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-size">
+                    We calculate this during your free assessment based on your roof square footage, pitch, and {{city_name}}'s rainfall data. Most homes need 5-inch or 6-inch gutters depending on water volume.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-roof-types">
+                <div class="faq-question" data-testid="question-roof-types">
+                    Can gutters be installed on any type of roof?
+                    <span class="faq-toggle" data-testid="toggle-roof-types">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-roof-types">
+                    Yes. We install gutters on all roof types: asphalt shingle, metal, tile, slate, and flat roofs. Each requires specific techniques and mounting systems, which our experienced team provides.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-removal">
+                <div class="faq-question" data-testid="question-removal">
+                    Will you remove my old gutters?
+                    <span class="faq-toggle" data-testid="toggle-removal">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-removal">
+                    Yes. Complete removal and disposal of existing gutters is included in our installation service. We ensure all old materials are properly removed and your property is left clean.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-professional">
+                <div class="faq-question" data-testid="question-professional">
+                    Do I really need professional installation?
+                    <span class="faq-toggle" data-testid="toggle-professional">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-professional">
+                    Professional installation ensures proper pitch (critical for drainage), secure mounting, correct downspout placement, and weathertight sealing. DIY installations often fail within 1-2 years due to these technical requirements.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-maintenance">
+                <div class="faq-question" data-testid="question-maintenance">
+                    What maintenance will my new gutters need?
+                    <span class="faq-toggle" data-testid="toggle-maintenance">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-maintenance">
+                    With gutter guards: minimal to none. Without guards: cleaning 2-4 times yearly. We offer annual maintenance plans to keep your system functioning perfectly with no effort on your part.
+                </div>
+            </div>
+            
+            <div class="faq-cta-box" data-testid="faq-cta-box">
+                <p data-testid="text-more-questions">Have more questions? Call us at {{company_phone}} for expert answers specific to your home.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emergency Service Section -->
+    <section class="emergency-section" data-testid="section-emergency">
+        <div class="container">
+            <div class="emergency-icon" data-testid="icon-emergency-large">ALERT</div>
+            <h2 class="emergency-title" data-testid="heading-emergency">Emergency Gutter Services Available</h2>
+            
+            <ul class="emergency-list" data-testid="emergency-list">
+                <li data-testid="emergency-detached">Gutters detached during storm</li>
+                <li data-testid="emergency-pouring">Water pouring over sides causing foundation risk</li>
+                <li data-testid="emergency-broken">Broken downspouts directing water toward home</li>
+                <li data-testid="emergency-ice-dam">Ice dam damage requiring immediate repair</li>
+            </ul>
+            
+            <div class="emergency-phone" data-testid="emergency-phone">{{company_phone}}</div>
+            <p class="emergency-promise" data-testid="emergency-promise">Same-day service available | Licensed emergency contractors | Insurance claim assistance</p>
+        </div>
+    </section>
+
+    <!-- Trust Signals Section -->
+    <section class="trust-section" data-testid="section-trust">
+        <div class="container">
+            <div class="trust-header" data-testid="trust-header">
+                <h2 data-testid="heading-trusted">Trusted by {{city_name}} Homeowners for 20+ Years</h2>
+            </div>
+            
+            <div class="trust-grid" data-testid="trust-grid">
+                <div class="trust-item" data-testid="trust-reviews">
+                    <div class="trust-rating" data-testid="rating-stars">***** 4.9/5.0</div>
+                    <div class="trust-label" data-testid="label-reviews">Based on 247 Reviews<br>Google + Facebook</div>
+                </div>
+                
+                <div class="trust-item" data-testid="trust-projects">
+                    <div class="trust-number" data-testid="number-projects">2,000+</div>
+                    <div class="trust-label" data-testid="label-projects">Gutters Installed<br>In {{city_name}} Area</div>
+                </div>
+                
+                <div class="trust-item" data-testid="trust-warranty-trust">
+                    <div class="trust-number" data-testid="number-warranty">LIFETIME</div>
+                    <div class="trust-label" data-testid="label-warranty-trust">Workmanship<br>30-Year Materials</div>
+                </div>
+                
+                <div class="trust-item" data-testid="trust-response">
+                    <div class="trust-number" data-testid="number-response">SAME-DAY</div>
+                    <div class="trust-label" data-testid="label-response">Service<br>Emergency Available</div>
+                </div>
+            </div>
+            
+            <div class="certifications" data-testid="certifications">
+                <div class="cert-badge" data-testid="cert-gaf">GAF Certified</div>
+                <div class="cert-badge" data-testid="cert-owens-corning">Owens Corning Preferred</div>
+                <div class="cert-badge" data-testid="cert-bbb">BBB A+ Rating</div>
+                <div class="cert-badge" data-testid="cert-louisiana">Louisiana Licensed</div>
+                <div class="cert-badge" data-testid="cert-insured">Fully Insured</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section" data-testid="section-testimonials">
+        <div class="container">
+            <div class="testimonials-header" data-testid="testimonials-header">
+                <h2 data-testid="heading-testimonials">What {{city_name}} Homeowners Say</h2>
+            </div>
+            
+            <div class="testimonials-grid" data-testid="testimonials-grid">
+                <div class="testimonial-card" data-testid="testimonial-1">
+                    <div class="testimonial-stars" data-testid="stars-1">*****</div>
+                    <p class="testimonial-text" data-testid="text-1">"Clear Home installed seamless gutters on our historic home in the Garden District. They perfectly matched our copper downspouts and the craftsmanship is impeccable. No more water damage issues!"</p>
+                    <div class="testimonial-author" data-testid="author-1">Margaret S.</div>
+                    <div class="testimonial-location" data-testid="location-1">Garden District</div>
+                    <div class="testimonial-date" data-testid="date-1">September 2024</div>
+                </div>
+                
+                <div class="testimonial-card" data-testid="testimonial-2">
+                    <div class="testimonial-stars" data-testid="stars-2">*****</div>
+                    <p class="testimonial-text" data-testid="text-2">"After Hurricane Ida, our gutters were destroyed. Clear Home responded immediately, helped with our insurance claim, and installed a new system with guards in two days. Outstanding service!"</p>
+                    <div class="testimonial-author" data-testid="author-2">Robert & Linda M.</div>
+                    <div class="testimonial-location" data-testid="location-2">Metairie</div>
+                    <div class="testimonial-date" data-testid="date-2">August 2024</div>
+                </div>
+                
+                <div class="testimonial-card" data-testid="testimonial-3">
+                    <div class="testimonial-stars" data-testid="stars-3">*****</div>
+                    <p class="testimonial-text" data-testid="text-3">"Best investment we've made in our home. The 6-inch gutters handle our heavy Louisiana rain perfectly, and the micro-mesh guards mean we never have to clean them. Worth every penny."</p>
+                    <div class="testimonial-author" data-testid="author-3">David K.</div>
+                    <div class="testimonial-location" data-testid="location-3">Kenner</div>
+                    <div class="testimonial-date" data-testid="date-3">July 2024</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="final-cta" data-testid="section-final-cta">
+        <div class="container">
+            <div class="final-cta-grid" data-testid="final-cta-grid">
+                <div class="cta-form" data-testid="cta-form">
+                    <h2 data-testid="heading-free-estimate">Get Your Free Gutter Installation Estimate</h2>
+                    <p class="form-subtitle" data-testid="subtitle-estimate">No obligation | Expert assessment | Detailed written proposal</p>
+                    
+                    <form class="form-simplified" data-testid="form-simplified">
+                        <input type="text" placeholder="Name" class="form-input" data-testid="input-final-name">
+                        <input type="tel" placeholder="Phone" class="form-input" data-testid="input-final-phone">
+                        <input type="email" placeholder="Email" class="form-input" data-testid="input-final-email">
+                        <button type="submit" class="btn-submit" data-testid="button-submit-final">Get Free Estimate</button>
+                    </form>
+                    
+                    <p class="security-note" data-testid="note-security">Your information is secure and never shared</p>
+                </div>
+                
+                <div class="call-cta" data-testid="call-cta">
+                    <div class="call-icon" data-testid="icon-call">PHONE</div>
+                    <h2 class="call-title" data-testid="heading-call">Or Call for Immediate Service</h2>
+                    <div class="call-phone" data-testid="phone-final">{{company_phone}}</div>
+                    <div class="call-hours" data-testid="hours-final">
+                        Mon-Fri: 7am-6pm<br>
+                        Sat: 8am-4pm<br>
+                        Emergency: 24/7
+                    </div>
+                    <p class="call-promise" data-testid="promise-final">Most estimates scheduled within 24 hours</p>
+                </div>
+            </div>
+            
+            <div class="trust-bar" data-testid="trust-bar">
+                Licensed & Insured | 20+ Years Experience | Lifetime Warranty | Same-Day Service Available
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // FAQ Accordion functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                const toggle = item.querySelector('.faq-toggle');
+                
+                question.addEventListener('click', function() {
+                    // Close other open items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.querySelector('.faq-answer').classList.remove('active');
+                            otherItem.querySelector('.faq-toggle').textContent = '+';
+                        }
+                    });
+                    
+                    // Toggle current item
+                    answer.classList.toggle('active');
+                    toggle.textContent = answer.classList.contains('active') ? '-' : '+';
+                });
+            });
+            
+            // Open first 3 FAQ items by default
+            for (let i = 0; i < 3 && i < faqItems.length; i++) {
+                faqItems[i].querySelector('.faq-answer').classList.add('active');
+                faqItems[i].querySelector('.faq-toggle').textContent = '-';
+            }
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

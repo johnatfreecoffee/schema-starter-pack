@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-testid="page-title">Professional Flat Roof Installation & Repair in {{city_name}} | Clear Home</title>
+    <meta name="description" content="Expert flat roof systems in {{city_name}}. TPO, EPDM, modified bitumen & more. 20+ years experience. Insurance claims assistance. Call {{company_phone}} for free estimate.">
+    <meta name="keywords" content="flat roof installation {{city_name}}, flat roof repair {{city_name}}, commercial flat roofing {{city_name}}, TPO roofing {{city_name}}, EPDM roofing {{city_name}}">
+    <link rel="canonical" href="{{page_url}}">
+    <meta property="og:title" content="Professional Flat Roof Installation & Repair in {{city_name}} | Clear Home">
+    <meta property="og:description" content="Expert flat roof systems in {{city_name}}. TPO, EPDM, modified bitumen & more. 20+ years experience. Insurance claims assistance.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{page_url}}">
+    
+    <script type="application/ld+json" data-testid="schema-markup">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "Flat Roof Systems",
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "Clear Home",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "{{city_name}}",
+                "addressRegion": "{{state_abbr}}"
+            },
+            "telephone": "{{company_phone}}",
+            "url": "{{page_url}}"
+        },
+        "areaServed": {
+            "@type": "City",
+            "name": "{{city_name}}"
+        },
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Flat Roof Services",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "TPO Roof Installation"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "EPDM Roof Installation"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Modified Bitumen Roofing"
+                    }
+                }
+            ]
+        }
+    }
+    </script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { font-family: 'Open Sans', sans-serif; line-height: 1.6; color: #1A202C; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        .hero-section { 
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23cccccc"/></svg>'); 
+            background-size: cover; 
+            background-position: center; 
+            color: white; 
+            padding: 80px 0; 
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+        }
+        .hero-grid { display: grid; grid-template-columns: 60% 40%; gap: 40px; align-items: center; }
+        .hero-content h1 { font-size: 48px; font-weight: 700; line-height: 1.2; margin-bottom: 20px; }
+        .hero-subheadline { font-size: 20px; line-height: 1.5; margin-bottom: 30px; }
+        .trust-indicators { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 30px 0; }
+        .trust-item { text-align: center; font-size: 16px; font-weight: 500; }
+        .trust-icon { margin-bottom: 8px; }
+        .contact-strip { background: rgba(255,255,255,0.1); padding: 12px; text-align: center; font-size: 14px; margin-top: 20px; }
+        
+        .btn-primary { background: #2B6CB0; color: white; padding: 16px 32px; border-radius: 4px; text-decoration: none; font-weight: 600; display: inline-block; }
+        .btn-primary:hover { background: #215387; }
+        .btn-secondary { background: #EDF2F7; color: #2B6CB0; border: 2px solid #2B6CB0; padding: 14px 32px; border-radius: 4px; text-decoration: none; font-weight: 600; display: inline-block; }
+        .btn-secondary:hover { background: #2B6CB0; color: white; }
+        
+        .hero-form { background: white; padding: 32px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); color: #1A202C; }
+        .form-title { font-size: 24px; font-weight: bold; margin-bottom: 24px; text-align: center; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 12px; border: 1px solid #E2E8F0; border-radius: 4px; font-size: 16px; }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .btn-form { width: 100%; background: #2B6CB0; color: white; padding: 16px; border: none; border-radius: 4px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .btn-form:hover { background: #215387; }
+        
+        .intro-section { background: white; padding: 80px 0; }
+        .intro-content { max-width: 900px; margin: 0 auto; text-align: center; }
+        .section-header { margin-bottom: 60px; }
+        .section-header h2 { font-size: 36px; margin-bottom: 24px; }
+        .intro-text { font-size: 18px; line-height: 1.8; color: #2D3748; margin-bottom: 40px; }
+        .stats-bar { background: #F7FAFC; padding: 40px; border-radius: 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; text-align: center; }
+        .stat-number { font-size: 48px; font-weight: 700; color: #2B6CB0; }
+        .stat-label { font-size: 14px; color: #4A5568; margin-top: 8px; }
+        
+        .systems-section { background: #F7FAFC; padding: 80px 0; }
+        .systems-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 48px; }
+        .system-card { background: white; padding: 32px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: relative; }
+        .price-badge { position: absolute; top: 20px; right: 20px; background: #2B6CB0; color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .system-icon { font-size: 48px; color: #2B6CB0; margin-bottom: 20px; }
+        .system-title { font-size: 24px; font-weight: bold; margin-bottom: 16px; }
+        .system-subtitle { font-size: 14px; color: #4A5568; margin-bottom: 20px; }
+        .system-features { list-style: none; margin-bottom: 20px; }
+        .system-features li { margin-bottom: 8px; color: #4A5568; }
+        .system-features li:before { content: "* "; color: #2B6CB0; font-weight: bold; }
+        .system-description { color: #2B6CB0; font-weight: 600; }
+        
+        .services-section { background: white; padding: 80px 0; }
+        .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; margin-top: 48px; }
+        .service-card { background: #F7FAFC; padding: 32px; border-radius: 8px; border-left: 4px solid #2B6CB0; }
+        .service-icon { font-size: 48px; color: #2B6CB0; margin-bottom: 20px; }
+        .service-title { font-size: 20px; font-weight: bold; margin-bottom: 16px; }
+        .service-description { color: #4A5568; margin-bottom: 16px; }
+        .service-features { list-style: none; }
+        .service-features li { margin-bottom: 8px; color: #4A5568; }
+        .service-features li:before { content: "* "; color: #2B6CB0; font-weight: bold; }
+        
+        .problems-section { background: linear-gradient(to bottom, #F7FAFC 0%, #FFFFFF 100%); padding: 80px 0; }
+        .problems-container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        .problem-card { background: white; margin-bottom: 16px; border-radius: 8px; border-left: 4px solid #2B6CB0; overflow: hidden; }
+        .problem-header { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .problem-header:hover { background: #F7FAFC; }
+        .problem-title { font-size: 20px; font-weight: bold; }
+        .problem-toggle { font-size: 24px; color: #2B6CB0; }
+        .problem-content { padding: 0 20px 20px 20px; display: none; }
+        .problem-content.active { display: block; }
+        .problem-challenge { margin-bottom: 20px; }
+        .problem-solution { margin-bottom: 20px; }
+        .problem-solution h4 { font-weight: bold; margin-bottom: 12px; }
+        .problem-signs { color: #4A5568; font-style: italic; }
+        
+        .process-section { background: white; padding: 80px 0; }
+        .process-timeline { display: flex; justify-content: space-between; position: relative; margin-top: 64px; }
+        .process-timeline::before { content: ""; position: absolute; top: 50px; left: 50px; right: 50px; height: 4px; background: #E2E8F0; z-index: 1; }
+        .process-step { flex: 1; text-align: center; position: relative; z-index: 2; max-width: 180px; }
+        .step-circle { width: 100px; height: 100px; border-radius: 50%; background: #2B6CB0; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin: 0 auto 20px; }
+        .step-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; }
+        .step-description { font-size: 14px; color: #4A5568; line-height: 1.5; }
+        .step-timeline { font-size: 12px; color: #2B6CB0; font-weight: 600; }
+        
+        .materials-section { background: #F7FAFC; padding: 80px 0; }
+        .materials-grid { display: grid; grid-template-columns: 50% 50%; gap: 40px; margin-top: 48px; }
+        .materials-list { background: white; padding: 32px; border-radius: 8px; }
+        .materials-category { margin-bottom: 24px; }
+        .materials-category h4 { font-weight: bold; margin-bottom: 12px; color: #2B6CB0; }
+        .materials-category ul { list-style: none; }
+        .materials-category li { margin-bottom: 8px; color: #4A5568; }
+        .materials-category li:before { content: "* "; color: #2B6CB0; font-weight: bold; }
+        
+        .comparison-section { background: white; padding: 80px 0; }
+        .comparison-grid { display: grid; grid-template-columns: 50% 50%; gap: 40px; margin-top: 48px; }
+        .comparison-card { background: #F7FAFC; padding: 40px; border-radius: 8px; }
+        .comparison-title { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        .comparison-list { list-style: none; }
+        .comparison-list li { margin-bottom: 8px; color: #4A5568; }
+        .comparison-list li:before { content: "* "; color: #2B6CB0; font-weight: bold; }
+        
+        .faq-section { background: #F7FAFC; padding: 80px 0; }
+        .faq-container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+        .faq-item { background: white; margin-bottom: 16px; border-radius: 8px; overflow: hidden; }
+        .faq-question { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 18px; }
+        .faq-question:hover { background: #F7FAFC; }
+        .faq-toggle { font-size: 24px; color: #2B6CB0; }
+        .faq-answer { padding: 0 20px 20px 20px; color: #4A5568; line-height: 1.6; display: none; }
+        .faq-answer.active { display: block; }
+        
+        .final-cta { background: linear-gradient(135deg, #2B6CB0 0%, #215387 100%); color: white; padding: 80px 0; text-align: center; }
+        .final-cta h2 { font-size: 36px; margin-bottom: 20px; }
+        .final-cta p { font-size: 18px; opacity: 0.9; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .cta-buttons { display: flex; justify-content: center; gap: 16px; margin-bottom: 30px; }
+        .btn-white { background: white; color: #2B6CB0; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+        .btn-white:hover { background: #f0f0f0; }
+        .btn-white-outline { border: 2px solid white; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; background: transparent; }
+        .btn-white-outline:hover { background: white; color: #2B6CB0; }
+        
+        @media (max-width: 768px) {
+            .hero-grid { grid-template-columns: 1fr; }
+            .hero-content h1 { font-size: 32px; }
+            .hero-subheadline { font-size: 18px; }
+            .trust-indicators { grid-template-columns: 1fr; gap: 12px; }
+            .systems-grid { grid-template-columns: 1fr; }
+            .services-grid { grid-template-columns: 1fr; }
+            .materials-grid { grid-template-columns: 1fr; }
+            .comparison-grid { grid-template-columns: 1fr; }
+            .process-timeline { flex-direction: column; align-items: center; }
+            .process-timeline::before { display: none; }
+            .process-step { margin-bottom: 40px; max-width: 300px; }
+            .stats-bar { grid-template-columns: 1fr; }
+            .cta-buttons { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section" data-testid="section-hero">
+        <div class="container">
+            <div class="hero-grid" data-testid="hero-grid">
+                <div class="hero-content" data-testid="hero-content">
+                    <h1 data-testid="heading-hero-title">Professional Flat Roof Systems in {{city_name}}</h1>
+                    <p class="hero-subheadline" data-testid="text-hero-subheadline">Expert Installation & Repair of TPO, EPDM & Modified Bitumen Flat Roofing Systems. 20+ Years of {{city_name}} Experience. Insurance Claims Assistance Available.</p>
+                    
+                    <div class="trust-indicators" data-testid="trust-indicators">
+                        <div class="trust-item" data-testid="trust-experience">
+                            <div class="trust-icon" data-testid="icon-experience">*</div>
+                            <div data-testid="text-20-years">20+ Years Experience</div>
+                        </div>
+                        <div class="trust-item" data-testid="trust-licensed">
+                            <div class="trust-icon" data-testid="icon-licensed">*</div>
+                            <div data-testid="text-licensed-insured">Licensed & Insured</div>
+                        </div>
+                        <div class="trust-item" data-testid="trust-insurance">
+                            <div class="trust-icon" data-testid="icon-insurance">*</div>
+                            <div data-testid="text-insurance-experts">Insurance Claims Experts</div>
+                        </div>
+                    </div>
+                    
+                    <a href="#estimate-form" class="btn-primary" data-testid="button-free-inspection">GET FREE INSPECTION</a>
+                    
+                    <div class="contact-strip" data-testid="contact-strip">
+                        <span data-testid="phone-number">{{company_phone}}</span> | 
+                        <span data-testid="text-emergency-service">Emergency Service Available</span> | 
+                        <span data-testid="text-free-estimates">Free Estimates</span>
+                    </div>
+                </div>
+                
+                <div class="hero-form" data-testid="hero-form" id="estimate-form">
+                    <h3 class="form-title" data-testid="heading-form-title">Request Free Estimate</h3>
+                    <form data-testid="form-estimate">
+                        <div class="form-group" data-testid="group-first-name">
+                            <label class="form-label" data-testid="label-first-name">First Name *</label>
+                            <input type="text" class="form-input" data-testid="input-first-name" required>
+                        </div>
+                        <div class="form-group" data-testid="group-last-name">
+                            <label class="form-label" data-testid="label-last-name">Last Name *</label>
+                            <input type="text" class="form-input" data-testid="input-last-name" required>
+                        </div>
+                        <div class="form-group" data-testid="group-phone">
+                            <label class="form-label" data-testid="label-phone">Phone Number *</label>
+                            <input type="tel" class="form-input" data-testid="input-phone" required>
+                        </div>
+                        <div class="form-group" data-testid="group-email">
+                            <label class="form-label" data-testid="label-email">Email Address *</label>
+                            <input type="email" class="form-input" data-testid="input-email" required>
+                        </div>
+                        <div class="form-group" data-testid="group-property-type">
+                            <label class="form-label" data-testid="label-property-type">Property Type</label>
+                            <select class="form-select" data-testid="select-property-type">
+                                <option value="residential" data-testid="option-residential">Residential</option>
+                                <option value="commercial" data-testid="option-commercial">Commercial</option>
+                            </select>
+                        </div>
+                        <div class="form-group" data-testid="group-service-needed">
+                            <label class="form-label" data-testid="label-service-needed">Service Needed</label>
+                            <select class="form-select" data-testid="select-service-needed">
+                                <option value="new-installation" data-testid="option-new-installation">New Installation</option>
+                                <option value="repair" data-testid="option-repair">Repair</option>
+                                <option value="inspection" data-testid="option-inspection">Inspection</option>
+                            </select>
+                        </div>
+                        <div class="form-group" data-testid="group-message">
+                            <label class="form-label" data-testid="label-message">Message (Optional)</label>
+                            <textarea class="form-textarea" data-testid="textarea-message" placeholder="Tell us about your project..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-form" data-testid="button-submit-estimate">Request Free Estimate</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Introduction Section -->
+    <section class="intro-section" data-testid="section-intro">
+        <div class="container">
+            <div class="intro-content" data-testid="intro-content">
+                <div class="section-header" data-testid="intro-header">
+                    <h2 data-testid="heading-trusted-specialists">{{city_name}}'s Trusted Flat Roofing Specialists</h2>
+                </div>
+                
+                <div class="intro-text" data-testid="intro-text">
+                    <p data-testid="paragraph-expertise">When it comes to flat roofing systems in {{city_name}}, Clear Home stands as the region's most trusted specialist with over two decades of proven expertise. Flat roofs present unique challenges in Louisiana's humid subtropical climate - from standing water concerns to UV degradation and storm vulnerability. Our comprehensive flat roofing services address these challenges head-on with advanced materials, expert installation techniques, and meticulous attention to detail.</p>
+                    
+                    <p data-testid="paragraph-services">Whether you need a new flat roof installation for a commercial building, emergency repair of a leaking membrane, or routine maintenance to extend your roof's lifespan, our certified technicians deliver solutions engineered for Louisiana's demanding weather conditions. We specialize in all major flat roofing systems including TPO, EPDM, modified bitumen, and built-up roofing, ensuring we can match the perfect system to your building's specific needs and budget.</p>
+                    
+                    <p data-testid="paragraph-insurance">As {{city_name}}'s insurance claims specialists, we also help property owners navigate the complex process of storm damage claims, ensuring you receive the coverage you deserve for necessary repairs or replacement. Our team works directly with adjusters, provides detailed documentation, and advocates for your interests throughout the entire claims process.</p>
+                </div>
+                
+                <div class="stats-bar" data-testid="stats-bar">
+                    <div class="stat-item" data-testid="stat-installed">
+                        <div class="stat-number" data-testid="number-500">500+</div>
+                        <div class="stat-label" data-testid="label-installed">Flat Roofs Installed</div>
+                    </div>
+                    <div class="stat-item" data-testid="stat-experience">
+                        <div class="stat-number" data-testid="number-20">20+</div>
+                        <div class="stat-label" data-testid="label-years">Years Experience</div>
+                    </div>
+                    <div class="stat-item" data-testid="stat-emergency">
+                        <div class="stat-number" data-testid="number-24-7">24/7</div>
+                        <div class="stat-label" data-testid="label-emergency">Emergency Service</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Flat Roof Systems Comparison Section -->
+    <section class="systems-section" data-testid="section-systems">
+        <div class="container">
+            <div class="section-header" data-testid="systems-header">
+                <h2 data-testid="heading-roofing-systems">Flat Roofing Systems We Install in {{city_name}}</h2>
+                <p data-testid="text-systems-intro">Choosing the right flat roofing system depends on your building type, budget, and performance requirements. We offer expert guidance and professional installation for all major systems.</p>
+            </div>
+            
+            <div class="systems-grid" data-testid="systems-grid">
+                <div class="system-card" data-testid="card-tpo">
+                    <div class="price-badge" data-testid="badge-tpo-price">$$-$$$</div>
+                    <div class="system-icon" data-testid="icon-tpo">TPO</div>
+                    <h3 class="system-title" data-testid="title-tpo">TPO (Thermoplastic Polyolefin)</h3>
+                    <p class="system-subtitle" data-testid="subtitle-tpo">Best For: Commercial buildings, modern construction<br>Lifespan: 20-30 years with proper maintenance</p>
+                    
+                    <ul class="system-features" data-testid="features-tpo">
+                        <li data-testid="feature-tpo-energy">Energy-efficient white membrane reflects heat</li>
+                        <li data-testid="feature-tpo-seams">Heat-welded seams prevent leaks</li>
+                        <li data-testid="feature-tpo-resistant">Resistant to UV, ozone, and chemical exposure</li>
+                        <li data-testid="feature-tpo-friendly">Environmentally friendly, recyclable</li>
+                        <li data-testid="feature-tpo-cost">Cost-effective for large commercial projects</li>
+                    </ul>
+                    
+                    <p class="system-description" data-testid="description-tpo">Perfect for {{city_name}} commercial properties seeking energy savings and long-term durability.</p>
+                </div>
+                
+                <div class="system-card" data-testid="card-epdm">
+                    <div class="price-badge" data-testid="badge-epdm-price">$$</div>
+                    <div class="system-icon" data-testid="icon-epdm">EPDM</div>
+                    <h3 class="system-title" data-testid="title-epdm">EPDM (Rubber Membrane)</h3>
+                    <p class="system-subtitle" data-testid="subtitle-epdm">Best For: Low-slope residential and commercial<br>Lifespan: 25-30+ years</p>
+                    
+                    <ul class="system-features" data-testid="features-epdm">
+                        <li data-testid="feature-epdm-durability">Proven durability in extreme weather</li>
+                        <li data-testid="feature-epdm-uv">Excellent resistance to UV and ozone</li>
+                        <li data-testid="feature-epdm-flexible">Flexible in temperature extremes</li>
+                        <li data-testid="feature-epdm-maintenance">Low maintenance requirements</li>
+                        <li data-testid="feature-epdm-installation">Quick installation reduces labor costs</li>
+                    </ul>
+                    
+                    <p class="system-description" data-testid="description-epdm">Ideal for {{city_name}} properties prioritizing proven performance and longevity.</p>
+                </div>
+                
+                <div class="system-card" data-testid="card-modified">
+                    <div class="price-badge" data-testid="badge-modified-price">$$-$$$</div>
+                    <div class="system-icon" data-testid="icon-modified">MB</div>
+                    <h3 class="system-title" data-testid="title-modified">Modified Bitumen</h3>
+                    <p class="system-subtitle" data-testid="subtitle-modified">Best For: Industrial buildings, high-traffic roofs<br>Lifespan: 20-25 years</p>
+                    
+                    <ul class="system-features" data-testid="features-modified">
+                        <li data-testid="feature-modified-layers">Multiple layers provide superior protection</li>
+                        <li data-testid="feature-modified-healing">Self-healing properties seal minor punctures</li>
+                        <li data-testid="feature-modified-waterproof">Excellent waterproofing capabilities</li>
+                        <li data-testid="feature-modified-traffic">Withstands foot traffic and equipment</li>
+                        <li data-testid="feature-modified-climate">Proven performance in Gulf Coast climate</li>
+                    </ul>
+                    
+                    <p class="system-description" data-testid="description-modified">Best choice for {{city_name}} industrial facilities and buildings with rooftop equipment.</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;" data-testid="systems-cta">
+                <p data-testid="text-not-sure">Not sure which system is right for your property?</p>
+                <a href="#estimate-form" class="btn-secondary" data-testid="button-consultation">SCHEDULE FREE CONSULTATION</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Offered Section -->
+    <section class="services-section" data-testid="section-services">
+        <div class="container">
+            <div class="section-header" data-testid="services-header">
+                <h2 data-testid="heading-complete-services">Complete Flat Roof Services in {{city_name}}</h2>
+            </div>
+            
+            <div class="services-grid" data-testid="services-grid">
+                <div class="service-card" data-testid="card-installation">
+                    <div class="service-icon" data-testid="icon-installation">+</div>
+                    <h3 class="service-title" data-testid="title-installation">New Flat Roof Installation</h3>
+                    <p class="service-description" data-testid="description-installation">Professional installation of all flat roofing systems for new construction and complete replacements. We follow manufacturer specifications precisely to ensure warranty coverage and optimal performance in {{city_name}}'s climate.</p>
+                    <ul class="service-features" data-testid="features-installation">
+                        <li data-testid="feature-material-consultation">Material selection consultation</li>
+                        <li data-testid="feature-drainage-planning">Proper drainage planning</li>
+                        <li data-testid="feature-warranty-activation">Warranty activation and registration</li>
+                        <li data-testid="feature-post-inspection">Post-installation inspection</li>
+                    </ul>
+                </div>
+                
+                <div class="service-card" data-testid="card-repairs">
+                    <div class="service-icon" data-testid="icon-repairs">🔧</div>
+                    <h3 class="service-title" data-testid="title-repairs">Flat Roof Repair Services</h3>
+                    <p class="service-description" data-testid="description-repairs">Expert diagnosis and repair of leaks, punctures, blistering, and membrane damage. We repair all flat roofing systems and provide emergency services for {{city_name}} properties.</p>
+                    <ul class="service-features" data-testid="features-repairs">
+                        <li data-testid="feature-leak-detection">Leak detection and repair</li>
+                        <li data-testid="feature-membrane-patching">Membrane patching and replacement</li>
+                        <li data-testid="feature-drainage-repairs">Drainage system repairs</li>
+                        <li data-testid="feature-emergency-repairs">Emergency temporary repairs</li>
+                    </ul>
+                </div>
+                
+                <div class="service-card" data-testid="card-maintenance">
+                    <div class="service-icon" data-testid="icon-maintenance">📅</div>
+                    <h3 class="service-title" data-testid="title-maintenance">Preventive Maintenance Plans</h3>
+                    <p class="service-description" data-testid="description-maintenance">Regular maintenance extends flat roof lifespan by years and prevents costly emergency repairs. Our programs include seasonal inspections and proactive maintenance for {{city_name}} commercial properties.</p>
+                    <ul class="service-features" data-testid="features-maintenance">
+                        <li data-testid="feature-inspections">Quarterly or bi-annual inspections</li>
+                        <li data-testid="feature-drain-cleaning">Drain cleaning and debris removal</li>
+                        <li data-testid="feature-minor-repairs">Minor repair identification</li>
+                        <li data-testid="feature-maintenance-reports">Detailed maintenance reports</li>
+                    </ul>
+                </div>
+                
+                <div class="service-card" data-testid="card-coating">
+                    <div class="service-icon" data-testid="icon-coating">🖌</div>
+                    <h3 class="service-title" data-testid="title-coating">Roof Coating & Restoration</h3>
+                    <p class="service-description" data-testid="description-coating">Restore aging flat roofs with advanced coating systems that extend lifespan 10-15 years. Cost-effective alternative to full replacement for many {{city_name}} properties.</p>
+                    <ul class="service-features" data-testid="features-coating">
+                        <li data-testid="feature-silicone-coatings">Silicone and acrylic coatings</li>
+                        <li data-testid="feature-surface-prep">Surface preparation and repair</li>
+                        <li data-testid="feature-reflective-coatings">Energy-efficient reflective coatings</li>
+                        <li data-testid="feature-warranty-application">Warranty-backed application</li>
+                    </ul>
+                </div>
+                
+                <div class="service-card" data-testid="card-insurance">
+                    <div class="service-icon" data-testid="icon-insurance">📋</div>
+                    <h3 class="service-title" data-testid="title-insurance">Storm Damage Claims Assistance</h3>
+                    <p class="service-description" data-testid="description-insurance">Navigate insurance claims with confidence. We document damage, meet with adjusters, and advocate for proper compensation for {{city_name}} storm damage repairs.</p>
+                    <ul class="service-features" data-testid="features-insurance">
+                        <li data-testid="feature-damage-assessment">Comprehensive damage assessment</li>
+                        <li data-testid="feature-adjuster-coordination">Adjuster meeting coordination</li>
+                        <li data-testid="feature-repair-estimates">Detailed repair estimates</li>
+                        <li data-testid="feature-claims-support">Claims documentation support</li>
+                    </ul>
+                </div>
+                
+                <div class="service-card" data-testid="card-emergency">
+                    <div class="service-icon" data-testid="icon-emergency">⏰</div>
+                    <h3 class="service-title" data-testid="title-emergency">24/7 Emergency Repairs</h3>
+                    <p class="service-description" data-testid="description-emergency">Flat roof emergencies can't wait. Our rapid response team provides temporary repairs and emergency leak mitigation for {{city_name}} properties day or night.</p>
+                    <ul class="service-features" data-testid="features-emergency">
+                        <li data-testid="feature-immediate-response">Immediate response available</li>
+                        <li data-testid="feature-temporary-patching">Temporary leak patching</li>
+                        <li data-testid="feature-tarp-installation">Tarp installation services</li>
+                        <li data-testid="feature-storm-assessment">Storm damage assessment</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Common Problems Section -->
+    <section class="problems-section" data-testid="section-problems">
+        <div class="problems-container">
+            <div class="section-header" data-testid="problems-header">
+                <h2 data-testid="heading-common-problems">Common Flat Roof Problems in {{city_name}}</h2>
+                <p data-testid="text-problems-intro">Louisiana's climate presents unique challenges for flat roofing systems. Here's how we address the most common issues {{city_name}} property owners face.</p>
+            </div>
+            
+            <div class="problem-card" data-testid="card-standing-water">
+                <div class="problem-header" data-testid="header-standing-water">
+                    <h3 class="problem-title" data-testid="title-standing-water">Standing Water & Ponding</h3>
+                    <span class="problem-toggle" data-testid="toggle-standing-water">+</span>
+                </div>
+                <div class="problem-content" data-testid="content-standing-water">
+                    <div class="problem-challenge" data-testid="challenge-standing-water">
+                        <h4 data-testid="heading-challenge-water">The Challenge:</h4>
+                        <p data-testid="text-challenge-water">Flat roofs in {{city_name}} are particularly vulnerable to standing water after Louisiana's heavy rainstorms. Water that remains more than 48 hours can deteriorate roofing membranes, promote algae growth, and lead to structural damage.</p>
+                    </div>
+                    <div class="problem-solution" data-testid="solution-standing-water">
+                        <h4 data-testid="heading-solution-water">Our Solution:</h4>
+                        <ul data-testid="list-solution-water">
+                            <li data-testid="solution-drainage-assessment">Professional drainage assessment and correction</li>
+                            <li data-testid="solution-tapered-insulation">Strategic tapered insulation installation</li>
+                            <li data-testid="solution-drain-upgrades">Drain system upgrades and scupper additions</li>
+                            <li data-testid="solution-maintenance-prevention">Regular maintenance to prevent blockages</li>
+                        </ul>
+                    </div>
+                    <div class="problem-signs" data-testid="signs-standing-water">
+                        <strong data-testid="label-signs-water">Signs to Watch For:</strong> Water pooling after rain, sagging areas, algae or moss growth
+                    </div>
+                </div>
+            </div>
+            
+            <div class="problem-card" data-testid="card-uv-damage">
+                <div class="problem-header" data-testid="header-uv-damage">
+                    <h3 class="problem-title" data-testid="title-uv-damage">UV & Heat Damage</h3>
+                    <span class="problem-toggle" data-testid="toggle-uv-damage">+</span>
+                </div>
+                <div class="problem-content" data-testid="content-uv-damage">
+                    <div class="problem-challenge" data-testid="challenge-uv-damage">
+                        <h4 data-testid="heading-challenge-uv">The Challenge:</h4>
+                        <p data-testid="text-challenge-uv">Louisiana's intense UV exposure and summer heat can cause flat roof membranes to crack, blister, and deteriorate prematurely. This is especially problematic for dark-colored roofing materials.</p>
+                    </div>
+                    <div class="problem-solution" data-testid="solution-uv-damage">
+                        <h4 data-testid="heading-solution-uv">Our Solution:</h4>
+                        <ul data-testid="list-solution-uv">
+                            <li data-testid="solution-uv-resistant">UV-resistant membrane selection</li>
+                            <li data-testid="solution-reflective-coating">Reflective coating applications</li>
+                            <li data-testid="solution-regular-inspection">Regular inspection programs</li>
+                            <li data-testid="solution-timely-replacement">Timely replacement of deteriorated sections</li>
+                        </ul>
+                    </div>
+                    <div class="problem-signs" data-testid="signs-uv-damage">
+                        <strong data-testid="label-signs-uv">Signs to Watch For:</strong> Cracking or blistering surfaces, fading membrane color, increased cooling costs
+                    </div>
+                </div>
+            </div>
+            
+            <div class="problem-card" data-testid="card-storm-damage">
+                <div class="problem-header" data-testid="header-storm-damage">
+                    <h3 class="problem-title" data-testid="title-storm-damage">Storm Damage</h3>
+                    <span class="problem-toggle" data-testid="toggle-storm-damage">+</span>
+                </div>
+                <div class="problem-content" data-testid="content-storm-damage">
+                    <div class="problem-challenge" data-testid="challenge-storm-damage">
+                        <h4 data-testid="heading-challenge-storm">The Challenge:</h4>
+                        <p data-testid="text-challenge-storm">Hurricanes, tropical storms, and severe thunderstorms can tear membranes, dislodge flashing, and cause significant water infiltration in {{city_name}} flat roofs.</p>
+                    </div>
+                    <div class="problem-solution" data-testid="solution-storm-damage">
+                        <h4 data-testid="heading-solution-storm">Our Solution:</h4>
+                        <ul data-testid="list-solution-storm">
+                            <li data-testid="solution-impact-resistant">Impact-resistant membrane systems</li>
+                            <li data-testid="solution-reinforced-edge">Reinforced edge and perimeter details</li>
+                            <li data-testid="solution-emergency-repair">Emergency repair services</li>
+                            <li data-testid="solution-insurance-assistance">Insurance claims assistance</li>
+                        </ul>
+                    </div>
+                    <div class="problem-signs" data-testid="signs-storm-damage">
+                        <strong data-testid="label-signs-storm">Signs to Watch For:</strong> Lifted or torn membrane, displaced gravel, interior water stains
+                    </div>
+                </div>
+            </div>
+            
+            <div class="problem-card" data-testid="card-leak-detection">
+                <div class="problem-header" data-testid="header-leak-detection">
+                    <h3 class="problem-title" data-testid="title-leak-detection">Leak Detection</h3>
+                    <span class="problem-toggle" data-testid="toggle-leak-detection">+</span>
+                </div>
+                <div class="problem-content" data-testid="content-leak-detection">
+                    <div class="problem-challenge" data-testid="challenge-leak-detection">
+                        <h4 data-testid="heading-challenge-leak">The Challenge:</h4>
+                        <p data-testid="text-challenge-leak">Flat roof leaks can be difficult to locate as water often travels before entering the building. {{city_name}} property owners may notice interior damage far from the actual roof breach.</p>
+                    </div>
+                    <div class="problem-solution" data-testid="solution-leak-detection">
+                        <h4 data-testid="heading-solution-leak">Our Solution:</h4>
+                        <ul data-testid="list-solution-leak">
+                            <li data-testid="solution-infrared-scanning">Infrared thermographic scanning</li>
+                            <li data-testid="solution-electronic-detection">Electronic leak detection equipment</li>
+                            <li data-testid="solution-comprehensive-inspection">Comprehensive roof inspections</li>
+                            <li data-testid="solution-elimination-testing">Systematic elimination testing</li>
+                        </ul>
+                    </div>
+                    <div class="problem-signs" data-testid="signs-leak-detection">
+                        <strong data-testid="label-signs-leak">Signs to Watch For:</strong> Interior water stains, musty odors, visible drips, increased humidity
+                    </div>
+                </div>
+            </div>
+            
+            <div class="problem-card" data-testid="card-seam-failures">
+                <div class="problem-header" data-testid="header-seam-failures">
+                    <h3 class="problem-title" data-testid="title-seam-failures">Seam & Flashing Failures</h3>
+                    <span class="problem-toggle" data-testid="toggle-seam-failures">+</span>
+                </div>
+                <div class="problem-content" data-testid="content-seam-failures">
+                    <div class="problem-challenge" data-testid="challenge-seam-failures">
+                        <h4 data-testid="heading-challenge-seam">The Challenge:</h4>
+                        <p data-testid="text-challenge-seam">Seams and flashing are the most vulnerable points in flat roofing systems. Temperature cycling and building movement can cause separation and gaps in {{city_name}}'s climate.</p>
+                    </div>
+                    <div class="problem-solution" data-testid="solution-seam-failures">
+                        <h4 data-testid="heading-solution-seam">Our Solution:</h4>
+                        <ul data-testid="list-solution-seam">
+                            <li data-testid="solution-heat-welded">Heat-welded seam installation</li>
+                            <li data-testid="solution-advanced-flashing">Advanced flashing techniques</li>
+                            <li data-testid="solution-expansion-joints">Expansion joint detailing</li>
+                            <li data-testid="solution-seam-inspection">Regular seam inspection and maintenance</li>
+                        </ul>
+                    </div>
+                    <div class="problem-signs" data-testid="signs-seam-failures">
+                        <strong data-testid="label-signs-seam">Signs to Watch For:</strong> Visible gaps at seams, loose flashing, rust stains, edge lifting
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process-section" data-testid="section-process">
+        <div class="container">
+            <div class="section-header" data-testid="process-header">
+                <h2 data-testid="heading-installation-process">Our Flat Roof Installation & Repair Process</h2>
+                <p data-testid="text-process-intro">From initial consultation to final inspection, we ensure every {{city_name}} flat roofing project meets the highest standards of quality and craftsmanship.</p>
+            </div>
+            
+            <div class="process-timeline" data-testid="process-timeline">
+                <div class="process-step" data-testid="step-consultation">
+                    <div class="step-circle" data-testid="circle-consultation">1</div>
+                    <h3 class="step-title" data-testid="title-consultation">Free Consultation & Inspection</h3>
+                    <p class="step-description" data-testid="description-consultation">We begin with a thorough roof inspection, assess your specific needs, and discuss your options. Our experts evaluate drainage, existing damage, and recommend the optimal flat roofing system for your {{city_name}} property and budget.</p>
+                    <p class="step-timeline" data-testid="timeline-consultation">Timeline: 1-2 hours on-site</p>
+                </div>
+                
+                <div class="process-step" data-testid="step-proposal">
+                    <div class="step-circle" data-testid="circle-proposal">2</div>
+                    <h3 class="step-title" data-testid="title-proposal">Detailed Proposal & Design</h3>
+                    <p class="step-description" data-testid="description-proposal">Receive a comprehensive written proposal including material specifications, warranty information, project timeline, and detailed pricing. We explain all options clearly so you can make an informed decision.</p>
+                    <p class="step-timeline" data-testid="timeline-proposal">Timeline: 2-3 business days</p>
+                </div>
+                
+                <div class="process-step" data-testid="step-ordering">
+                    <div class="step-circle" data-testid="circle-ordering">3</div>
+                    <h3 class="step-title" data-testid="title-ordering">Material Ordering & Scheduling</h3>
+                    <p class="step-description" data-testid="description-ordering">Once approved, we order premium materials directly from manufacturers and schedule your installation around your {{city_name}} property's operational needs. We coordinate all permits and requirements.</p>
+                    <p class="step-timeline" data-testid="timeline-ordering">Timeline: 5-10 business days</p>
+                </div>
+                
+                <div class="process-step" data-testid="step-preparation">
+                    <div class="step-circle" data-testid="circle-preparation">4</div>
+                    <h3 class="step-title" data-testid="title-preparation">Roof Preparation</h3>
+                    <p class="step-description" data-testid="description-preparation">Our crew prepares the roof surface, removes damaged materials if needed, ensures proper substrate conditions, and stages all equipment. We protect your property and minimize disruption throughout the process.</p>
+                    <p class="step-timeline" data-testid="timeline-preparation">Timeline: 1-2 days</p>
+                </div>
+                
+                <div class="process-step" data-testid="step-installation">
+                    <div class="step-circle" data-testid="circle-installation">5</div>
+                    <h3 class="step-title" data-testid="title-installation">Professional Installation</h3>
+                    <p class="step-description" data-testid="description-installation">Expert installers apply your new flat roofing system following strict manufacturer guidelines. We pay special attention to drainage, seams, flashing, and penetrations to ensure decades of reliable performance.</p>
+                    <p class="step-timeline" data-testid="timeline-installation">Timeline: 2-5 days (varies by size)</p>
+                </div>
+                
+                <div class="process-step" data-testid="step-inspection">
+                    <div class="step-circle" data-testid="circle-inspection">6</div>
+                    <h3 class="step-title" data-testid="title-inspection">Quality Inspection & Warranty</h3>
+                    <p class="step-description" data-testid="description-inspection">Final inspection ensures every detail meets our standards and manufacturer requirements. We activate your warranty, provide maintenance guidelines, and schedule your first routine inspection.</p>
+                    <p class="step-timeline" data-testid="timeline-inspection">Timeline: Final day of installation</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 60px;" data-testid="process-cta">
+                <p data-testid="text-ready-start">Ready to get started on your flat roof project?</p>
+                <a href="#estimate-form" class="btn-primary" data-testid="button-request-inspection">REQUEST FREE INSPECTION</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Materials & Warranty Section -->
+    <section class="materials-section" data-testid="section-materials">
+        <div class="container">
+            <div class="section-header" data-testid="materials-header">
+                <h2 data-testid="heading-materials-warranties">Premium Materials & Industry-Leading Warranties</h2>
+            </div>
+            
+            <div class="materials-grid" data-testid="materials-grid">
+                <div class="materials-list" data-testid="materials-list">
+                    <h3 data-testid="heading-manufacturer-partners">Manufacturer Partners We Trust</h3>
+                    <p data-testid="text-materials-intro">We install only the highest-quality flat roofing materials from industry-leading manufacturers, ensuring {{city_name}} property owners receive reliable, long-lasting roof systems:</p>
+                    
+                    <div class="materials-category" data-testid="category-tpo">
+                        <h4 data-testid="heading-tpo-systems">TPO Systems:</h4>
+                        <ul data-testid="list-tpo-systems">
+                            <li data-testid="material-carlisle-tpo">Carlisle SynTec Sure-Weld TPO</li>
+                            <li data-testid="material-gaf-tpo">GAF EverGuard TPO</li>
+                            <li data-testid="material-firestone-tpo">Firestone UltraPly TPO</li>
+                            <li data-testid="material-jm-tpo">Johns Manville JM TPO</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="materials-category" data-testid="category-epdm">
+                        <h4 data-testid="heading-epdm-systems">EPDM Systems:</h4>
+                        <ul data-testid="list-epdm-systems">
+                            <li data-testid="material-firestone-epdm">Firestone RubberGard EPDM</li>
+                            <li data-testid="material-carlisle-epdm">Carlisle Sure-Seal EPDM</li>
+                            <li data-testid="material-gaf-epdm">GAF Ruberoid EPDM</li>
+                            <li data-testid="material-genflex-epdm">GenFlex EPDM</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="materials-category" data-testid="category-modified">
+                        <h4 data-testid="heading-modified-bitumen">Modified Bitumen:</h4>
+                        <ul data-testid="list-modified-systems">
+                            <li data-testid="material-gaf-modified">GAF Liberty Modified Bitumen</li>
+                            <li data-testid="material-jm-modified">Johns Manville APOC Modified</li>
+                            <li data-testid="material-carlisle-modified">Carlisle Modified Bitumen Systems</li>
+                            <li data-testid="material-soprema-modified">Soprema Modified Bitumen</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="materials-category" data-testid="category-coatings">
+                        <h4 data-testid="heading-coating-systems">Coating Systems:</h4>
+                        <ul data-testid="list-coating-systems">
+                            <li data-testid="material-gaco-coatings">Gaco Silicone Roof Coatings</li>
+                            <li data-testid="material-henry-coatings">Henry Elastomeric Coatings</li>
+                            <li data-testid="material-karnak-coatings">Karnak Reflective Coatings</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="materials-list" data-testid="warranty-list">
+                    <h3 data-testid="heading-warranty-protection">Comprehensive Warranty Protection</h3>
+                    <p data-testid="text-warranty-intro">Every flat roof installation comes with robust warranty coverage:</p>
+                    
+                    <div class="materials-category" data-testid="category-manufacturer">
+                        <h4 data-testid="heading-manufacturer-warranty">Manufacturer Material Warranties:</h4>
+                        <ul data-testid="list-manufacturer-warranty">
+                            <li data-testid="warranty-15-30-years">15-30 year material warranties</li>
+                            <li data-testid="warranty-transferable">Transferable to new property owners</li>
+                            <li data-testid="warranty-manufacturing">Covers manufacturing defects</li>
+                            <li data-testid="warranty-performance">System-specific performance guarantees</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="materials-category" data-testid="category-workmanship">
+                        <h4 data-testid="heading-workmanship-warranty">Clear Home Workmanship Warranty:</h4>
+                        <ul data-testid="list-workmanship-warranty">
+                            <li data-testid="warranty-installation">5-10 year installation warranty</li>
+                            <li data-testid="warranty-labor">Covers all labor and installation</li>
+                            <li data-testid="warranty-leak-repairs">Includes leak repairs at no charge</li>
+                            <li data-testid="warranty-priority">Priority service for warranty holders</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="materials-category" data-testid="category-extended">
+                        <h4 data-testid="heading-extended-warranty">Extended Warranty Options:</h4>
+                        <ul data-testid="list-extended-warranty">
+                            <li data-testid="warranty-enhanced">Enhanced coverage programs available</li>
+                            <li data-testid="warranty-ndl">No Dollar Limit (NDL) warranties</li>
+                            <li data-testid="warranty-maintenance">Extended maintenance plans</li>
+                            <li data-testid="warranty-weather">Weather guarantee programs</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;" data-testid="warranty-cta">
+                <p data-testid="text-protect-investment">Protect Your {{city_name}} Property Investment</p>
+                <a href="#estimate-form" class="btn-secondary" data-testid="button-learn-warranties">LEARN ABOUT WARRANTIES</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commercial vs Residential Section -->
+    <section class="comparison-section" data-testid="section-comparison">
+        <div class="container">
+            <div class="section-header" data-testid="comparison-header">
+                <h2 data-testid="heading-commercial-residential">Commercial & Residential Flat Roofing in {{city_name}}</h2>
+            </div>
+            
+            <div class="comparison-grid" data-testid="comparison-grid">
+                <div class="comparison-card" data-testid="card-commercial">
+                    <h3 class="comparison-title" data-testid="title-commercial">Commercial Properties</h3>
+                    <p data-testid="text-commercial-intro">Our commercial flat roofing solutions serve {{city_name}} businesses with:</p>
+                    
+                    <h4 data-testid="heading-building-types">Building Types:</h4>
+                    <ul class="comparison-list" data-testid="list-building-types">
+                        <li data-testid="type-office-buildings">Office buildings and complexes</li>
+                        <li data-testid="type-retail-centers">Retail centers and strip malls</li>
+                        <li data-testid="type-warehouses">Warehouses and distribution centers</li>
+                        <li data-testid="type-manufacturing">Manufacturing facilities</li>
+                        <li data-testid="type-apartments">Multi-family apartment buildings</li>
+                        <li data-testid="type-medical">Medical facilities and hospitals</li>
+                    </ul>
+                    
+                    <h4 data-testid="heading-common-systems">Common Systems:</h4>
+                    <ul class="comparison-list" data-testid="list-common-systems">
+                        <li data-testid="system-tpo-popular">TPO (most popular for energy efficiency)</li>
+                        <li data-testid="system-epdm-reliable">EPDM (proven reliability)</li>
+                        <li data-testid="system-modified-traffic">Modified bitumen (high-traffic areas)</li>
+                        <li data-testid="system-bur">Built-up roofing (BUR)</li>
+                    </ul>
+                    
+                    <h4 data-testid="heading-special-considerations">Special Considerations:</h4>
+                    <ul class="comparison-list" data-testid="list-special-considerations">
+                        <li data-testid="consideration-minimal-disruption">Minimal business disruption</li>
+                        <li data-testid="consideration-after-hours">After-hours installation available</li>
+                        <li data-testid="consideration-ada">ADA compliance coordination</li>
+                        <li data-testid="consideration-building-codes">Building code requirements</li>
+                        <li data-testid="consideration-rooftop-equipment">Rooftop equipment accommodation</li>
+                        <li data-testid="consideration-high-traffic">High-traffic areas reinforcement</li>
+                        <li data-testid="consideration-energy-code">Energy code compliance</li>
+                    </ul>
+                    
+                    <p data-testid="text-commercial-project-size"><strong>Typical Project Size:</strong> 10,000 - 100,000+ sq ft</p>
+                    <p data-testid="text-commercial-timeline"><strong>Average Timeline:</strong> 1-4 weeks</p>
+                </div>
+                
+                <div class="comparison-card" data-testid="card-residential">
+                    <h3 class="comparison-title" data-testid="title-residential">Residential Properties</h3>
+                    <p data-testid="text-residential-intro">Our residential flat roofing expertise covers {{city_name}} homes:</p>
+                    
+                    <h4 data-testid="heading-property-types">Property Types:</h4>
+                    <ul class="comparison-list" data-testid="list-property-types">
+                        <li data-testid="type-modern-homes">Modern architectural homes</li>
+                        <li data-testid="type-porch-covers">Porch and patio covers</li>
+                        <li data-testid="type-garage-workshop">Garage and workshop roofs</li>
+                        <li data-testid="type-home-additions">Home additions and extensions</li>
+                        <li data-testid="type-pool-houses">Pool houses and cabanas</li>
+                        <li data-testid="type-historic-homes">Historic home flat sections</li>
+                    </ul>
+                    
+                    <h4 data-testid="heading-residential-systems">Common Systems:</h4>
+                    <ul class="comparison-list" data-testid="list-residential-systems">
+                        <li data-testid="system-epdm-cost">EPDM (cost-effective reliability)</li>
+                        <li data-testid="system-tpo-efficient">TPO (energy-efficient option)</li>
+                        <li data-testid="system-modified-durable">Modified bitumen (durability)</li>
+                        <li data-testid="system-torch-down">Torch-down roofing</li>
+                    </ul>
+                    
+                    <h4 data-testid="heading-residential-considerations">Special Considerations:</h4>
+                    <ul class="comparison-list" data-testid="list-residential-considerations">
+                        <li data-testid="consideration-hoa">HOA requirement compliance</li>
+                        <li data-testid="consideration-architectural">Architectural design matching</li>
+                        <li data-testid="consideration-living-space">Living space protection</li>
+                        <li data-testid="consideration-homeowner-disruption">Minimal homeowner disruption</li>
+                        <li data-testid="consideration-property-value">Property value enhancement</li>
+                        <li data-testid="consideration-energy-efficiency">Energy efficiency optimization</li>
+                    </ul>
+                    
+                    <p data-testid="text-residential-project-size"><strong>Typical Project Size:</strong> 500 - 5,000 sq ft</p>
+                    <p data-testid="text-residential-timeline"><strong>Average Timeline:</strong> 2-5 days</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 40px;" data-testid="comparison-cta">
+                <p data-testid="text-not-sure-solution">Not sure which solution fits your property? Our experts provide free consultations for both commercial and residential projects in {{city_name}}.</p>
+                <div class="cta-buttons" data-testid="comparison-buttons">
+                    <a href="#estimate-form" class="btn-primary" data-testid="button-commercial-consultation">COMMERCIAL CONSULTATION</a>
+                    <a href="#estimate-form" class="btn-secondary" data-testid="button-residential-consultation">RESIDENTIAL CONSULTATION</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" data-testid="section-faq">
+        <div class="faq-container">
+            <div class="section-header" data-testid="faq-header">
+                <h2 data-testid="heading-faq">Frequently Asked Questions About Flat Roofing</h2>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-cost">
+                <div class="faq-question" data-testid="question-cost">
+                    How much does flat roof installation cost in {{city_name}}?
+                    <span class="faq-toggle" data-testid="toggle-cost">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-cost">
+                    Flat roof installation costs vary based on system type, building size, and complexity. EPDM typically ranges $5.50-$8.50 per square foot, TPO $6.50-$9.50, and modified bitumen $6.00-$10.00. We provide detailed written estimates after our free inspection, including all materials, labor, and permits. Many commercial projects qualify for financing options.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-lifespan">
+                <div class="faq-question" data-testid="question-lifespan">
+                    How long do flat roofs last in Louisiana's climate?
+                    <span class="faq-toggle" data-testid="toggle-lifespan">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-lifespan">
+                    With proper installation and maintenance, EPDM roofs last 25-30+ years, TPO 20-30 years, and modified bitumen 20-25 years in Louisiana. Our preventive maintenance programs help maximize lifespan by addressing minor issues before they become major problems. Regular inspections and prompt repairs are key to achieving full expected lifespan.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-drainage">
+                <div class="faq-question" data-testid="question-drainage">
+                    How do you prevent ponding water on flat roofs?
+                    <span class="faq-toggle" data-testid="toggle-drainage">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-drainage">
+                    Proper drainage is critical for flat roof performance. We use tapered insulation systems to create positive drainage slopes, install adequate drain systems, and ensure scuppers are properly sized and positioned. During installation, we also add cricket systems around penetrations and use specialized drainage details to eliminate ponding water areas.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-maintenance">
+                <div class="faq-question" data-testid="question-maintenance">
+                    What maintenance do flat roofs require?
+                    <span class="faq-toggle" data-testid="toggle-maintenance">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-maintenance">
+                    Flat roofs require bi-annual inspections, regular drain cleaning, debris removal, and prompt repair of minor issues. Our maintenance programs include spring and fall inspections, drain clearing, seam checks, and detailed reports. Commercial properties benefit from quarterly inspections due to higher usage and equipment loads.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-systems">
+                <div class="faq-question" data-testid="question-systems">
+                    Which flat roofing system is best for my building?
+                    <span class="faq-toggle" data-testid="toggle-systems">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-systems">
+                    System selection depends on building type, budget, and performance requirements. TPO offers excellent energy efficiency for commercial buildings, EPDM provides proven durability at lower cost, and modified bitumen handles high-traffic areas well. We evaluate your specific needs during our free consultation to recommend the optimal system.
+                </div>
+            </div>
+            
+            <div class="faq-item" data-testid="faq-emergency">
+                <div class="faq-question" data-testid="question-emergency">
+                    Do you provide emergency flat roof repairs?
+                    <span class="faq-toggle" data-testid="toggle-emergency">+</span>
+                </div>
+                <div class="faq-answer" data-testid="answer-emergency">
+                    Yes, we provide 24/7 emergency flat roof repair services throughout {{city_name}}. Our rapid response team can perform temporary leak repairs, tarp installations, and emergency stabilization to prevent further damage. We then schedule permanent repairs as quickly as possible and assist with insurance claims if storm-related.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="final-cta" data-testid="section-final-cta">
+        <div class="container">
+            <h2 data-testid="heading-protect-property">Protect Your {{city_name}} Property with Professional Flat Roofing</h2>
+            <p data-testid="text-final-description">Don't let flat roof problems compromise your property value or operations. Get expert installation, repair, and maintenance services from {{city_name}}'s most trusted flat roofing specialists.</p>
+            
+            <div class="cta-buttons" data-testid="final-cta-buttons">
+                <a href="#estimate-form" class="btn-white" data-testid="button-free-estimate">Get Free Estimate</a>
+                <a href="tel:{{company_phone}}" class="btn-white-outline" data-testid="button-call-now">Call {{company_phone}}</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // FAQ Accordion functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.faq-item');
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                const toggle = item.querySelector('.faq-toggle');
+                
+                question.addEventListener('click', function() {
+                    // Close other open items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.querySelector('.faq-answer').classList.remove('active');
+                            otherItem.querySelector('.faq-toggle').textContent = '+';
+                        }
+                    });
+                    
+                    // Toggle current item
+                    answer.classList.toggle('active');
+                    toggle.textContent = answer.classList.contains('active') ? '-' : '+';
+                });
+            });
+        });
+        
+        // Problem Cards Accordion functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const problemCards = document.querySelectorAll('.problem-card');
+            
+            problemCards.forEach(card => {
+                const header = card.querySelector('.problem-header');
+                const content = card.querySelector('.problem-content');
+                const toggle = card.querySelector('.problem-toggle');
+                
+                header.addEventListener('click', function() {
+                    // Close other open cards
+                    problemCards.forEach(otherCard => {
+                        if (otherCard !== card) {
+                            otherCard.querySelector('.problem-content').classList.remove('active');
+                            otherCard.querySelector('.problem-toggle').textContent = '+';
+                        }
+                    });
+                    
+                    // Toggle current card
+                    content.classList.toggle('active');
+                    toggle.textContent = content.classList.contains('active') ? '-' : '+';
+                });
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
