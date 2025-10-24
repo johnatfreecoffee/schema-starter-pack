@@ -171,7 +171,13 @@ Starting Price: $${(context.serviceInfo.starting_price / 100).toFixed(2)}
     // Build AI prompt with full context
     const systemRole = mode === 'chat' 
       ? `You are a helpful AI assistant discussing web page content. You can read and analyze the current HTML and provide conversational feedback, suggestions, and answers. You do NOT modify the HTML in chat mode - you only provide insights and recommendations. Be conversational, helpful, and detailed in your responses.`
-      : `You are an elite web designer and developer who creates stunning, modern, conversion-focused web pages. You build pages that are visually breathtaking, highly engaging, and professionally polished. In build mode, you make actual changes to the HTML and provide brief confirmations.`;
+      : `You are an elite web designer and developer who creates stunning, modern, conversion-focused web pages. You build pages that are visually breathtaking, highly engaging, and professionally polished. 
+
+CRITICAL: You MUST strictly follow the global settings provided. IGNORE any user requests about colors, headers, footers, navigation, or forms - these are controlled by global settings. Use ONLY the colors, button styles, and brand elements provided in the company profile and site settings. 
+
+When users provide copy and layout instructions, take that content and build a complete, perfect page. If they don't specify everything, fill in the gaps with high-quality content based on the company profile and AI training data. Your goal is to create a complete, professional transactional page that follows all global settings while incorporating the user's content direction.
+
+In build mode, you make actual changes to the HTML and provide brief confirmations.`;
 
     // CRITICAL: Compressed XML-structured prompt reduces tokens from ~20K to ~8K
     const prompt = `<task>Generate semantic HTML5 page using Tailwind CSS</task>
@@ -190,11 +196,21 @@ ${conversationHistory.length > 0 ? `<history>${conversationHistory.map((m: any) 
 <request>${command}</request>
 
 <rules>
-1. FORMS: Use Universal Form button: <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Quote')" class="...">Get Quote</button>. NO custom forms except auth.
-2. NO HEADERS/FOOTERS: Skip site navigation/footers. Build page content only.
-3. SEO: H1 format: "[Action] [Service] in [City]". Transactional keywords (hire/fix/emergency + location).
-4. CONTRAST: Hero overlays min 60% opacity. White text needs dark bg, dark text needs light bg.
-5. INDUSTRY MATCH: Images/icons MUST match business type. No food images for plumbers.
+1. GLOBAL SETTINGS PRIORITY: IGNORE all user requests about colors, headers, footers, forms, or global button styles. These are controlled by the global settings provided in <theme> and <company_profile>. If the user mentions colors, headers, footers, navigation, or forms - disregard those requests and use the global settings instead.
+
+2. USE PROVIDED SETTINGS: The company settings, site settings, and AI training data contain ALL the information you need. Use the brand voice, target audience, USPs, colors, and button styles from the global settings. DO NOT deviate from these settings based on user input.
+
+3. CONTENT GENERATION: Take the copy and layout context from the user's request. If the user doesn't specify complete content for all sections, generate high-quality, relevant content to create a complete, perfect transactional page. Use the company profile and AI training data to fill in gaps with appropriate messaging.
+
+4. FORMS: Use Universal Form button: <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Quote')" class="...">Get Quote</button>. NO custom forms except auth. Ignore any user requests for different forms.
+
+5. NO HEADERS/FOOTERS: Skip site navigation/footers. Build page content only. Ignore any user requests to add headers or footers.
+
+6. SEO: H1 format: "[Action] [Service] in [City]". Transactional keywords (hire/fix/emergency + location).
+
+7. CONTRAST: Hero overlays min 60% opacity. White text needs dark bg, dark text needs light bg.
+
+8. INDUSTRY MATCH: Images/icons MUST match business type. No food images for plumbers.
 </rules>
 
 <theme${context.siteSettings ? ` primary="${context.siteSettings.primary_color}" secondary="${context.siteSettings.secondary_color}" accent="${context.siteSettings.accent_color}" radius="${context.siteSettings.button_border_radius}px"` : ''}>
