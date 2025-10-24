@@ -915,7 +915,7 @@ const UnifiedPageEditor = ({
           </div>
 
           {/* Right Panel - Preview/Code */}
-          <div className="w-3/5 flex flex-col">
+          <div className="w-3/5 flex flex-col min-h-0">
             <div className="p-4 border-b">
               {/* Preview/Code/Debug Tabs */}
               <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'preview' | 'code' | 'debug')}>
@@ -964,7 +964,7 @@ const UnifiedPageEditor = ({
                 />
               ) : (
                 <div className="flex-1 min-h-0 flex flex-col max-w-full">
-                  <div className="flex-1 min-h-0 overflow-y-auto">
+                  <div className="flex-1 min-h-0 h-full overflow-y-auto">
                     <div className="p-6 bg-muted/20 max-w-full">
                       {!debugData ? (
                         <div className="text-center text-muted-foreground py-12">
