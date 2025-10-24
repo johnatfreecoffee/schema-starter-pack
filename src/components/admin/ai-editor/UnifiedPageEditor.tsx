@@ -412,7 +412,6 @@ const UnifiedPageEditor = ({
           setGrokHtml(data.updatedHtml);
         }
         setIsShowingPrevious(false);
-        setTemplateHtml(data.updatedHtml);
       }
       
       const assistantMessage: ChatMessage = {
@@ -727,11 +726,6 @@ const UnifiedPageEditor = ({
             {/* Model Selector - Wide Tabs with Icons */}
             <Tabs value={selectedModel} onValueChange={(v) => {
               setSelectedModel(v as 'claude' | 'grok');
-              if (v === 'claude') {
-                setTemplateHtml(claudeHtml);
-              } else {
-                setTemplateHtml(grokHtml);
-              }
             }} className="flex-1 max-w-md">
               <TabsList className="grid w-full grid-cols-2 h-12">
                 <TabsTrigger value="claude" className="gap-2 text-base">
@@ -885,7 +879,6 @@ const UnifiedPageEditor = ({
                 } else {
                   setGrokHtml(value);
                 }
-                setTemplateHtml(value);
                 if (pageType === 'static' || pageType === 'generated') {
                   setRenderedPreview(value);
                 }
