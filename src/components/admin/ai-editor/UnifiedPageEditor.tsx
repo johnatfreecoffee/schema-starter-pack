@@ -45,8 +45,10 @@ const UnifiedPageEditor = ({
 }: UnifiedPageEditorProps) => {
   const [templateHtml, setTemplateHtml] = useState('');
   const [originalHtml, setOriginalHtml] = useState('');
-  const [aiPrompt, setAiPrompt] = useState('');
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [claudePrompt, setClaudePrompt] = useState('');
+  const [grokPrompt, setGrokPrompt] = useState('');
+  const [claudeChatMessages, setClaudeChatMessages] = useState<ChatMessage[]>([]);
+  const [grokChatMessages, setGrokChatMessages] = useState<ChatMessage[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
   const [renderedPreview, setRenderedPreview] = useState('');
@@ -61,7 +63,16 @@ const UnifiedPageEditor = ({
     return saved !== null ? saved === 'true' : true;
   });
   const [isPublishing, setIsPublishing] = useState(false);
-  const [currentHtml, setCurrentHtml] = useState('');
+  const [showPublishConfirm, setShowPublishConfirm] = useState(false);
+  const [publishModel, setPublishModel] = useState<'claude' | 'grok' | null>(null);
+  
+  // Dual model support
+  const [selectedModel, setSelectedModel] = useState<'claude' | 'grok'>('claude');
+  const [grokModel, setGrokModel] = useState<'grok-code-fast-1' | 'grok-4-fast-reasoning' | 'grok-4-fast-non-reasoning'>('grok-4-fast-reasoning');
+  const [claudeHtml, setClaudeHtml] = useState('');
+  const [grokHtml, setGrokHtml] = useState('');
+  const [previousClaudeHtml, setPreviousClaudeHtml] = useState('');
+  const [previousGrokHtml, setPreviousGrokHtml] = useState('');
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -233,21 +244,28 @@ const UnifiedPageEditor = ({
       setTemplateHtml(template.template_html);
       setOriginalHtml(template.template_html);
       setPreviousHtml(template.template_html);
-      setCurrentHtml(template.template_html);
+      // Initialize both models with the same HTML
+      setClaudeHtml(template.template_html);
+      setGrokHtml(template.template_html);
+      setPreviousClaudeHtml(template.template_html);
+      setPreviousGrokHtml(template.template_html);
     }
   }, [template, pageType]);
 
   // Reset chat when dialog opens
   useEffect(() => {
     if (open) {
-      setChatMessages([]);
+      setClaudeChatMessages([]);
+      setGrokChatMessages([]);
       setTokenCount(0);
       setIsShowingPrevious(false);
     }
   }, [open]);
 
-  // Compute displayed HTML based on version toggle
-  const displayedHtml = isShowingPrevious ? previousHtml : currentHtml;
+  // Compute displayed HTML based on version toggle and selected model
+  const displayedHtml = isShowingPrevious 
+    ? (selectedModel === 'claude' ? previousClaudeHtml : previousGrokHtml)
+    : (selectedModel === 'claude' ? claudeHtml : grokHtml);
 
   // Update preview when template changes
   useEffect(() => {
@@ -298,9 +316,10 @@ const UnifiedPageEditor = ({
       // Fallback: show raw template without substitution so preview never stays blank
       setRenderedPreview(htmlToRender);
     }
-  }, [displayedHtml, serviceAreas, companySettings, service, pageType, isShowingPrevious]);
+  }, [displayedHtml, serviceAreas, companySettings, service, pageType, selectedModel, isShowingPrevious]);
   const sendToAi = async () => {
-    if (!aiPrompt.trim()) return;
+    const currentPrompt = selectedModel === 'claude' ? claudePrompt : grokPrompt;
+    if (!currentPrompt.trim()) return;
 
     // Check if user is authenticated
     const { data: { session } } = await supabase.auth.getSession();
@@ -325,15 +344,24 @@ const UnifiedPageEditor = ({
     
     const userMessage: ChatMessage = {
       role: 'user',
-      content: aiPrompt
+      content: currentPrompt
     };
     
-    setChatMessages(prev => [...prev, userMessage]);
-    setAiPrompt('');
+    // Add to the appropriate chat history
+    if (selectedModel === 'claude') {
+      setClaudeChatMessages(prev => [...prev, userMessage]);
+      setClaudePrompt(''); // Clear Claude's input
+    } else {
+      setGrokChatMessages(prev => [...prev, userMessage]);
+      setGrokPrompt(''); // Clear Grok's input
+    }
     
     setIsAiLoading(true);
     
     try {
+      // Only call the selected model
+      const currentHtml = selectedModel === 'claude' ? claudeHtml : grokHtml;
+      const currentChatHistory = selectedModel === 'claude' ? claudeChatMessages : grokChatMessages;
       
       // Add timeout to the edge function call (180 seconds)
       const timeoutPromise = new Promise((_, reject) => 
@@ -342,9 +370,11 @@ const UnifiedPageEditor = ({
 
       const invokePromise = supabase.functions.invoke('ai-edit-page', {
         body: {
-          command: aiPrompt,
+          command: currentPrompt,
           mode: editorMode,
-          conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
+          model: selectedModel,
+          grokModel: selectedModel === 'grok' ? grokModel : undefined,
+          conversationHistory: editorMode === 'chat' ? currentChatHistory : undefined,
           context: {
             currentPage: {
               type: pageType,
@@ -377,17 +407,27 @@ const UnifiedPageEditor = ({
 
       // In build mode, auto-apply changes immediately
       if (editorMode === 'build' && data?.updatedHtml) {
-        setPreviousHtml(currentHtml);
-        setCurrentHtml(data.updatedHtml);
+        if (selectedModel === 'claude') {
+          setPreviousClaudeHtml(claudeHtml);
+          setClaudeHtml(data.updatedHtml);
+        } else {
+          setPreviousGrokHtml(grokHtml);
+          setGrokHtml(data.updatedHtml);
+        }
         setIsShowingPrevious(false);
       }
       
       const assistantMessage: ChatMessage = {
         role: 'assistant',
-        content: data?.explanation || 'AI has updated the page.'
+        content: data?.explanation || `${selectedModel === 'claude' ? 'Claude' : 'Grok'} has updated the page.`
       };
       
-      setChatMessages(prev => [...prev, assistantMessage]);
+      // Add to the appropriate chat history
+      if (selectedModel === 'claude') {
+        setClaudeChatMessages(prev => [...prev, assistantMessage]);
+      } else {
+        setGrokChatMessages(prev => [...prev, assistantMessage]);
+      }
     } catch (error: any) {
       console.error('AI Editor Error:', error);
       
@@ -424,18 +464,26 @@ const UnifiedPageEditor = ({
          role: 'assistant',
          content: `Error: ${errorMessage}`
        };
-       setChatMessages(prev => [...prev, assistantError]);
+       if (selectedModel === 'claude') {
+         setClaudeChatMessages(prev => [...prev, assistantError]);
+       } else {
+         setGrokChatMessages(prev => [...prev, assistantError]);
+       }
 
     } finally {
       setIsAiLoading(false);
     }
   };
   const resetChat = () => {
-    setChatMessages([]);
+    if (selectedModel === 'claude') {
+      setClaudeChatMessages([]);
+    } else {
+      setGrokChatMessages([]);
+    }
     setTokenCount(0);
     toast({
       title: 'Chat Reset',
-      description: 'Conversation history cleared.'
+      description: `${selectedModel === 'claude' ? 'Claude' : 'Grok'} conversation history cleared.`
     });
   };
   const toggleVersion = () => {
@@ -760,9 +808,9 @@ const UnifiedPageEditor = ({
 
             <ScrollArea className="flex-1 min-h-0">
               <div className="space-y-4 p-4 pb-4">
-                {chatMessages.length === 0 ? <div className="text-center text-muted-foreground py-12">
+                {(selectedModel === 'claude' ? claudeChatMessages : grokChatMessages).length === 0 ? <div className="text-center text-muted-foreground py-12">
                     <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p className="text-sm mb-2">Ask AI to modify your page</p>
+                    <p className="text-sm mb-2">Ask {selectedModel === 'claude' ? 'Claude' : 'Grok'} to modify your page</p>
                     <div className="text-xs space-y-1 max-w-xs mx-auto text-left">
                       <p>Examples:</p>
                       <ul className="list-disc list-inside mt-2 space-y-1">
@@ -838,10 +886,10 @@ const UnifiedPageEditor = ({
 
             <div className="flex-1 min-h-0 relative bg-white">
               {viewMode === 'preview' ? (
-                <PreviewIframe key={isShowingPrevious ? 'previous' : 'current'} html={renderedPreview} />
+                <PreviewIframe key={`${selectedModel}-${isShowingPrevious}`} html={renderedPreview} />
               ) : (
                 <Editor
-                  key={isShowingPrevious ? 'previous' : 'current'}
+                  key={`${selectedModel}-${isShowingPrevious}`}
                   height="100%"
                   defaultLanguage="html"
                   value={displayedHtml}

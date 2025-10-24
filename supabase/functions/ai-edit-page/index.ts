@@ -14,20 +14,25 @@ serve(async (req) => {
 
   try {
     const requestBody = await req.json();
-    const { command, mode = 'build', conversationHistory = [], context } = requestBody;
+    const { command, mode = 'build', conversationHistory = [], context, model = 'claude', grokModel = 'grok-4-fast-reasoning' } = requestBody;
     
     console.log('AI Edit Request:', { 
       command: command.substring(0, 200) + (command.length > 200 ? '...' : ''), 
       mode, 
+      model, 
       contextKeys: Object.keys(context),
       promptLength: command.length,
       htmlLength: context?.currentPage?.html?.length || 0
     });
 
     const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
+    const XAI_API_KEY = Deno.env.get('XAI_API_KEY');
     
-    if (!ANTHROPIC_API_KEY) {
+    if (model === 'claude' && !ANTHROPIC_API_KEY) {
       throw new Error('ANTHROPIC_API_KEY is not configured');
+    }
+    if (model === 'grok' && !XAI_API_KEY) {
+      throw new Error('XAI_API_KEY is not configured');
     }
 
     // Build comprehensive company profile
@@ -735,7 +740,7 @@ IMPORTANT: The examples below use default colors. You MUST replace them with the
 
 Return the complete, stunning HTML page using Lovable's design system now:`;
 
-    console.log('Calling Claude (Anthropic)...');
+    console.log(`Calling ${model === 'claude' ? 'Claude (Anthropic)' : 'Grok (xAI)'}...`);
 
     // Add timeout handling to prevent hanging requests
     const timeoutMs = 180000; // 3 minutes
@@ -759,22 +764,41 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
       }
     };
 
-    // Make API call to Claude
-    const response = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': ANTHROPIC_API_KEY!,
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 50000,
-        messages: [
-          { role: 'user', content: prompt }
-        ],
-      }),
-    });
+    let response: Response;
+    if (model === 'claude') {
+      response = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': ANTHROPIC_API_KEY!,
+          'anthropic-version': '2023-06-01',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5',
+          max_tokens: 50000,
+          messages: [
+            { role: 'user', content: prompt }
+          ],
+        }),
+      });
+    } else {
+      // Grok
+      console.log(`Using Grok model: ${grokModel}`);
+      response = await fetchWithTimeout('https://api.x.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${XAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: grokModel,
+          messages: [
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.7,
+        }),
+      });
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -793,11 +817,21 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
     }
 
     const data = await response.json();
-    const updatedHtml = data.content?.[0]?.text || '';
-    const usage = data.usage || {};
-    const tokenUsage = (usage.input_tokens || 0) + (usage.output_tokens || 0);
+    let updatedHtml = '';
+    let tokenUsage = 0;
+    
+    if (model === 'claude') {
+      updatedHtml = data.content?.[0]?.text || '';
+      const usage = data.usage || {};
+      tokenUsage = (usage.input_tokens || 0) + (usage.output_tokens || 0);
+    } else {
+      // Grok
+      updatedHtml = data.choices?.[0]?.message?.content || '';
+      const usage = data.usage || {};
+      tokenUsage = (usage.prompt_tokens || 0) + (usage.completion_tokens || 0);
+    }
 
-    console.log('Claude Edit Success, response length:', updatedHtml.length, 'tokens:', tokenUsage);
+    console.log(`${model === 'claude' ? 'Claude' : 'Grok'} Edit Success, response length:`, updatedHtml.length, 'tokens:', tokenUsage);
 
     // Clean up the response - remove markdown code blocks if present
     let cleanedHtml = updatedHtml.trim();
