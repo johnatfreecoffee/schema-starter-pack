@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
-import { Loader2, Send, Sparkles, Eye, Code, Trash2, AlertCircle } from 'lucide-react';
+import { Loader2, Send, Sparkles, Eye, Code, Trash2, AlertCircle, Copy, Check } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
 import TruncatedMessage from './TruncatedMessage';
@@ -125,6 +125,7 @@ const UnifiedPageEditor = ({
     const saved = localStorage.getItem('ai-editor-debug-accordion');
     return saved ? JSON.parse(saved) : [];
   });
+  const [copiedStates, setCopiedStates] = useState<{ [key: string]: 'content' | 'header' | null }>({});
   const [sendOnEnter, setSendOnEnter] = useState(() => {
     const saved = localStorage.getItem('ai-editor-send-on-enter');
     return saved !== null ? saved === 'true' : true;
@@ -559,6 +560,28 @@ const UnifiedPageEditor = ({
       setIsAiLoading(false);
     }
   };
+
+  const handleCopyDebug = async (key: string, content: string, header: string, type: 'content' | 'header') => {
+    try {
+      const textToCopy = type === 'content' ? content : `${header}\n\n${content}`;
+      await navigator.clipboard.writeText(textToCopy);
+      setCopiedStates(prev => ({ ...prev, [key]: type }));
+      toast({
+        title: 'Copied to clipboard',
+        duration: 2000,
+      });
+      setTimeout(() => {
+        setCopiedStates(prev => ({ ...prev, [key]: null }));
+      }, 2000);
+    } catch (error) {
+      toast({
+        title: 'Failed to copy',
+        variant: 'destructive',
+        duration: 2000,
+      });
+    }
+  };
+
   const resetChat = () => {
     setChatMessages([]);
     setTokenCount(0);
@@ -988,10 +1011,30 @@ const UnifiedPageEditor = ({
                         >
                           <AccordionItem value="prompt" className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
                             <AccordionTrigger className="px-4 hover:no-underline">
-                              <div className="flex items-center gap-2">
-                                <div className="h-6 w-1 bg-primary rounded-full" />
-                                <h3 className="font-semibold">Full Prompt Sent to Claude</h3>
-                                {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                              <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center gap-2">
+                                  <div className="h-6 w-1 bg-primary rounded-full" />
+                                  <h3 className="font-semibold">Full Prompt Sent to Claude</h3>
+                                  {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                                </div>
+                                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('prompt', debugData?.fullPrompt || '', 'Full Prompt Sent to Claude', 'content')}
+                                    className="h-7 px-2"
+                                  >
+                                    {copiedStates['prompt'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('prompt', debugData?.fullPrompt || '', 'Full Prompt Sent to Claude', 'header')}
+                                    className="h-7 px-2"
+                                  >
+                                    {copiedStates['prompt'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                  </Button>
+                                </div>
                               </div>
                             </AccordionTrigger>
                             <AccordionContent className="overflow-hidden max-w-full">
@@ -1003,9 +1046,29 @@ const UnifiedPageEditor = ({
 
                           <AccordionItem value="request" className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
                             <AccordionTrigger className="px-4 hover:no-underline">
-                              <div className="flex items-center gap-2">
-                                <div className="h-6 w-1 bg-blue-500 rounded-full" />
-                                <h3 className="font-semibold">Request Context</h3>
+                              <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center gap-2">
+                                  <div className="h-6 w-1 bg-blue-500 rounded-full" />
+                                  <h3 className="font-semibold">Request Context</h3>
+                                </div>
+                                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('request', JSON.stringify(debugData?.requestPayload, null, 2) || '', 'Request Context', 'content')}
+                                    className="h-7 px-2"
+                                  >
+                                    {copiedStates['request'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('request', JSON.stringify(debugData?.requestPayload, null, 2) || '', 'Request Context', 'header')}
+                                    className="h-7 px-2"
+                                  >
+                                    {copiedStates['request'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                  </Button>
+                                </div>
                               </div>
                             </AccordionTrigger>
                             <AccordionContent className="overflow-hidden max-w-full">
@@ -1017,10 +1080,30 @@ const UnifiedPageEditor = ({
 
                           <AccordionItem value="response" className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
                             <AccordionTrigger className="px-4 hover:no-underline">
-                              <div className="flex items-center gap-2">
-                                <div className="h-6 w-1 bg-green-500 rounded-full" />
-                                <h3 className="font-semibold">Claude's Raw Response</h3>
-                                {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                              <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center gap-2">
+                                  <div className="h-6 w-1 bg-green-500 rounded-full" />
+                                  <h3 className="font-semibold">Claude's Raw Response</h3>
+                                  {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                                </div>
+                                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "Claude's Raw Response", 'content')}
+                                    className="h-7 px-2"
+                                  >
+                                    {copiedStates['response'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "Claude's Raw Response", 'header')}
+                                    className="h-7 px-2"
+                                  >
+                                    {copiedStates['response'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                  </Button>
+                                </div>
                               </div>
                             </AccordionTrigger>
                             <AccordionContent className="overflow-hidden max-w-full">
@@ -1034,10 +1117,30 @@ const UnifiedPageEditor = ({
 
                           <AccordionItem value="html" className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
                             <AccordionTrigger className="px-4 hover:no-underline">
-                              <div className="flex items-center gap-2">
-                                <div className="h-6 w-1 bg-orange-500 rounded-full" />
-                                <h3 className="font-semibold">Generated HTML</h3>
-                                {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                              <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center gap-2">
+                                  <div className="h-6 w-1 bg-orange-500 rounded-full" />
+                                  <h3 className="font-semibold">Generated HTML</h3>
+                                  {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                                </div>
+                                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('html', debugData?.generatedHtml || '', 'Generated HTML', 'content')}
+                                    className="h-7 px-2"
+                                  >
+                                    {copiedStates['html'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('html', debugData?.generatedHtml || '', 'Generated HTML', 'header')}
+                                    className="h-7 px-2"
+                                  >
+                                    {copiedStates['html'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                  </Button>
+                                </div>
                               </div>
                             </AccordionTrigger>
                             <AccordionContent className="overflow-hidden max-w-full">
