@@ -836,8 +836,8 @@ const UnifiedPageEditor = ({
                 />
               ) : (
                 <div className="flex-1 min-h-0 overflow-hidden flex flex-col max-w-full">
-                  <ScrollArea className="flex-1 h-0 max-w-full">
-                    <div className="p-6 bg-muted/20 min-h-0 max-w-full overflow-x-hidden">
+                  <ScrollArea className="flex-1 max-w-full overflow-auto">
+                    <div className="p-6 bg-muted/20 max-w-full">
                       {!debugData ? (
                         <div className="text-center text-muted-foreground py-12">
                           <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
