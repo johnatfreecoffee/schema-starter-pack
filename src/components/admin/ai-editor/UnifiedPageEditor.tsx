@@ -846,7 +846,7 @@ const UnifiedPageEditor = ({
                         </div>
                       ) : (
                         <Accordion type="multiple" defaultValue={['prompt', 'request', 'response', 'html']} className="space-y-4 max-w-full">
-                          <AccordionItem value="prompt" className="bg-background rounded-lg border shadow-sm">
+                          <AccordionItem value="prompt" className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
                             <AccordionTrigger className="px-4 hover:no-underline">
                               <div className="flex items-center gap-2">
                                 <div className="h-6 w-1 bg-primary rounded-full" />
@@ -854,28 +854,28 @@ const UnifiedPageEditor = ({
                                 {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
                               </div>
                             </AccordionTrigger>
-                            <AccordionContent>
-                                <pre className="p-4 overflow-auto overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
+                            <AccordionContent className="overflow-hidden max-w-full">
+                                <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
                                 {debugData.fullPrompt}
                               </pre>
                             </AccordionContent>
                           </AccordionItem>
 
-                          <AccordionItem value="request" className="bg-background rounded-lg border shadow-sm">
+                          <AccordionItem value="request" className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
                             <AccordionTrigger className="px-4 hover:no-underline">
                               <div className="flex items-center gap-2">
                                 <div className="h-6 w-1 bg-blue-500 rounded-full" />
                                 <h3 className="font-semibold">Request Context</h3>
                               </div>
                             </AccordionTrigger>
-                            <AccordionContent>
-                                <pre className="p-4 overflow-auto overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
+                            <AccordionContent className="overflow-hidden max-w-full">
+                                <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
                                 {JSON.stringify(debugData.requestPayload, null, 2)}
                               </pre>
                             </AccordionContent>
                           </AccordionItem>
 
-                          <AccordionItem value="response" className="bg-background rounded-lg border shadow-sm">
+                          <AccordionItem value="response" className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
                             <AccordionTrigger className="px-4 hover:no-underline">
                               <div className="flex items-center gap-2">
                                 <div className="h-6 w-1 bg-green-500 rounded-full" />
@@ -883,8 +883,8 @@ const UnifiedPageEditor = ({
                                 {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
                               </div>
                             </AccordionTrigger>
-                            <AccordionContent>
-                                <pre className="p-4 overflow-auto overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
+                            <AccordionContent className="overflow-hidden max-w-full">
+                                <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
                                 {typeof debugData.responseData === 'string' 
                                   ? debugData.responseData 
                                   : JSON.stringify(debugData.responseData, null, 2)}
@@ -892,7 +892,7 @@ const UnifiedPageEditor = ({
                             </AccordionContent>
                           </AccordionItem>
 
-                          <AccordionItem value="html" className="bg-background rounded-lg border shadow-sm">
+                          <AccordionItem value="html" className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
                             <AccordionTrigger className="px-4 hover:no-underline">
                               <div className="flex items-center gap-2">
                                 <div className="h-6 w-1 bg-orange-500 rounded-full" />
@@ -900,8 +900,8 @@ const UnifiedPageEditor = ({
                                 {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
                               </div>
                             </AccordionTrigger>
-                            <AccordionContent>
-                              <pre className="p-4 overflow-auto overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
+                            <AccordionContent className="overflow-hidden max-w-full">
+                              <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
                                 {debugData.generatedHtml}
                               </pre>
                             </AccordionContent>
