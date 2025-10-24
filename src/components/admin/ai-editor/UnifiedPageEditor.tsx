@@ -662,7 +662,7 @@ const UnifiedPageEditor = ({
       </Dialog>;
   }
   return <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] h-[90vh] p-0">
+      <DialogContent className="max-w-[95vw] h-[90vh] p-0 overflow-hidden">
         <DialogHeader className="px-6 py-4 border-b">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 flex-1">
@@ -835,9 +835,9 @@ const UnifiedPageEditor = ({
                   }}
                 />
               ) : (
-                <div className="h-full overflow-hidden flex flex-col">
-                  <ScrollArea className="flex-1">
-                    <div className="p-6 bg-muted/20">
+                <div className="flex-1 min-h-0 overflow-hidden flex flex-col max-w-full">
+                  <ScrollArea className="flex-1 h-0 max-w-full">
+                    <div className="p-6 bg-muted/20 min-h-0 max-w-full overflow-x-hidden">
                       {!debugData ? (
                         <div className="text-center text-muted-foreground py-12">
                           <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -845,7 +845,7 @@ const UnifiedPageEditor = ({
                           <p className="text-sm mt-2">Send a command to Claude to see the full request and response</p>
                         </div>
                       ) : (
-                        <Accordion type="multiple" defaultValue={['prompt', 'request', 'response', 'html']} className="space-y-4">
+                        <Accordion type="multiple" defaultValue={['prompt', 'request', 'response', 'html']} className="space-y-4 max-w-full">
                           <AccordionItem value="prompt" className="bg-background rounded-lg border shadow-sm">
                             <AccordionTrigger className="px-4 hover:no-underline">
                               <div className="flex items-center gap-2">
@@ -855,7 +855,7 @@ const UnifiedPageEditor = ({
                               </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                              <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
+                                <pre className="p-4 overflow-auto overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
                                 {debugData.fullPrompt}
                               </pre>
                             </AccordionContent>
@@ -869,7 +869,7 @@ const UnifiedPageEditor = ({
                               </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                              <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
+                                <pre className="p-4 overflow-auto overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
                                 {JSON.stringify(debugData.requestPayload, null, 2)}
                               </pre>
                             </AccordionContent>
@@ -884,7 +884,7 @@ const UnifiedPageEditor = ({
                               </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                              <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
+                                <pre className="p-4 overflow-auto overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
                                 {typeof debugData.responseData === 'string' 
                                   ? debugData.responseData 
                                   : JSON.stringify(debugData.responseData, null, 2)}
@@ -901,7 +901,7 @@ const UnifiedPageEditor = ({
                               </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                              <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
+                              <pre className="p-4 overflow-auto overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
                                 {debugData.generatedHtml}
                               </pre>
                             </AccordionContent>
