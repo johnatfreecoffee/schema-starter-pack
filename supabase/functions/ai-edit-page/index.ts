@@ -243,7 +243,6 @@ Hover: hover:-translate-y-1 transition-all duration-300.
       headers: {
         'x-api-key': ANTHROPIC_API_KEY!,
         'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -292,8 +291,18 @@ Hover: hover:-translate-y-1 transition-all duration-300.
     const updatedHtml = data.content?.[0]?.text || '';
     const usage = data.usage || {};
     const tokenUsage = (usage.input_tokens || 0) + (usage.output_tokens || 0);
+    const cacheReads = usage.cache_read_input_tokens || 0;
+    const cacheWrites = usage.cache_creation_input_tokens || 0;
 
-    console.log('AI Edit Success, response length:', updatedHtml.length, 'tokens:', tokenUsage);
+    console.log('AI Edit Success:', {
+      responseLength: updatedHtml.length,
+      totalTokens: tokenUsage,
+      inputTokens: usage.input_tokens,
+      outputTokens: usage.output_tokens,
+      cacheReads: cacheReads,
+      cacheWrites: cacheWrites,
+      cacheHitRate: cacheReads > 0 ? `${((cacheReads / (cacheReads + (usage.input_tokens || 0))) * 100).toFixed(1)}%` : '0%'
+    });
 
     // Clean up the response - remove markdown code blocks if present
     let cleanedHtml = updatedHtml.trim();
