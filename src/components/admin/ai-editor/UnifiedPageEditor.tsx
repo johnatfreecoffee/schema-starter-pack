@@ -30,8 +30,8 @@ interface ChatMessage {
   suggestion?: string;
 }
 type EditorMode = 'chat' | 'build';
-const TOKEN_SOFT_LIMIT = 15000;
-const TOKEN_HARD_LIMIT = 20000;
+const TOKEN_SOFT_LIMIT = 800000;
+const TOKEN_HARD_LIMIT = 1000000;
 const UnifiedPageEditor = ({
   open,
   onClose,
