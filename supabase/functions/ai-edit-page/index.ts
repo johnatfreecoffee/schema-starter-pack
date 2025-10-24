@@ -415,25 +415,73 @@ HIGH-VALUE TRANSACTIONAL EXAMPLES:
      • Example: bg-white/10 backdrop-blur-sm is TOO LIGHT for small text - use bg-white/20 minimum
      • For glass-morphism effects, use backdrop-blur-md with bg-white/30 minimum
 
-3. **IMAGE SELECTION - INDUSTRY APPROPRIATE**
-   ↳ MATCH THE COMPANY'S INDUSTRY:
-     • Roofing company → Show roofs, shingles, contractors working on roofs
-     • Plumbing company → Show pipes, fixtures, plumbers at work
-     • HVAC company → Show air conditioning units, heating systems, technicians
-     • Restaurant → Show the actual food/dishes they serve, NOT random stock food
-     • IT company → Show computers, servers, office tech setups
+3. **IMAGE, ICON & EMOJI SELECTION - INDUSTRY APPROPRIATE**
+   ↳ CRITICAL: ANALYZE THE COMPANY DETAILS TO DETERMINE INDUSTRY:
+     • Read the business description, service offerings, and industry keywords
+     • Identify the core business type (e.g., roofing, plumbing, HVAC, restaurant, IT, legal, etc.)
+     • ALL visual elements (images, icons, emojis) MUST match this industry
+     • NEVER use generic or irrelevant visuals - they destroy credibility and confuse customers
+   
+   ↳ INDUSTRY-SPECIFIC IMAGE REQUIREMENTS:
+     • **Roofing/Construction**: Roofs, shingles, contractors, tools, residential/commercial buildings, safety equipment
+     • **Plumbing**: Pipes, faucets, water heaters, plumbers at work, fixtures, leak repairs
+     • **HVAC**: Air conditioning units, furnaces, ductwork, thermostats, technicians with equipment
+     • **Electrical**: Electrical panels, wiring, outlets, electricians, lighting installations
+     • **Landscaping**: Gardens, lawns, outdoor spaces, landscape equipment, plants, hardscaping
+     • **Restaurant/Food**: ONLY the actual cuisine type they serve (Italian food for Italian restaurant, NOT generic food)
+     • **Auto Repair**: Cars, engines, mechanics, repair shops, tools, vehicle parts
+     • **Legal Services**: Law books, courtrooms, professional office settings, documents, scales of justice
+     • **Medical/Dental**: Medical equipment, clean facilities, healthcare professionals, patient care
+     • **IT/Tech**: Computers, servers, networks, office tech, cybersecurity imagery, code/software
+     • **Real Estate**: Properties, homes, keys, agents showing properties, neighborhoods
+     • **Cleaning Services**: Clean spaces, cleaning equipment, professional cleaners, before/after results
+     • **Pet Services**: Dogs, cats, pets relevant to their service, grooming tools, veterinary equipment
+     • **Financial Services**: Charts, calculators, financial planning, professional consultations
+   
+   ↳ INDUSTRY-SPECIFIC ICON REQUIREMENTS (Use appropriate icon sets):
+     • **Construction/Trades**: 🔨 🔧 🏠 🛠️ 🏗️ 🔩 ⚙️ (tools, buildings, equipment)
+     • **Home Services**: 💧 🔥 ❄️ 💡 🚿 🚪 (utilities, appliances, home systems)
+     • **Food/Restaurant**: 🍽️ 👨‍🍳 🥘 🍕 🍔 (match cuisine type specifically)
+     • **Automotive**: 🚗 🔧 ⚙️ 🛞 🚙 (vehicles, parts, tools)
+     • **Legal/Professional**: ⚖️ 📋 📝 💼 🏛️ (scales, documents, briefcases)
+     • **Medical/Health**: 🏥 💊 🩺 ❤️ 🦷 (medical symbols, health)
+     • **Technology**: 💻 📱 🖥️ 🔒 📡 (devices, security, connectivity)
+     • **Finance**: 💰 📊 💳 📈 🏦 (money, charts, banking)
+     • **Pet Care**: 🐕 🐈 🐾 🦴 (specific animals they serve)
+   
+   ↳ INDUSTRY-SPECIFIC EMOJI USAGE:
+     • Use emojis SPARINGLY and ONLY when they reinforce the industry message
+     • Emergency services: ⚡ 🚨 (urgency, rapid response)
+     • Quality/Trust: ✅ ⭐ 🏆 (verification, ratings, awards)
+     • Location-based: 📍 🗺️ (service area, local presence)
+     • NEVER use emojis that conflict with the industry (no food emojis for plumbers!)
    
    ↳ USE UNSPLASH WITH SPECIFIC SEARCH TERMS:
      • https://images.unsplash.com/photo-[ID]?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80
-     • Search terms MUST match the service (e.g., "roof repair" not "restaurant food")
-     • For emergency services: Show damage, emergency response, or professional work
-     • For professional services: Show relevant workplace or client interactions
+     • Search terms MUST precisely match: "[industry] [action]" (e.g., "roof repair", "hvac technician", "italian restaurant kitchen")
+     • For the EXACT business: "roof installation" for roofers, "plumbing repair" for plumbers
+     • Show professionals at work, relevant equipment, or finished results
+     • For restaurants: Search by cuisine type (e.g., "italian pasta", "sushi platter", "mexican tacos")
    
-   ↳ AVOID COMPLETELY:
-     • Generic stock photos that don't match the industry
-     • Random food images for non-restaurant businesses
-     • Office meetings for hands-on service businesses
-     • Unrelated imagery that confuses the service offering
+   ↳ CONTEXTUAL ICON LIBRARIES:
+     • For service pages: Use Lucide icons or Heroicons (professional, clean)
+     • Match icon style to brand: rounded for friendly brands, sharp for modern/tech brands
+     • Icons must represent the SPECIFIC service (wrench for repairs, shield for warranties, clock for response time)
+   
+   ↳ ABSOLUTE PROHIBITIONS:
+     • ❌ NEVER use food images for non-food businesses (e.g., burger photos on a roofing site)
+     • ❌ NEVER use generic office/business imagery for hands-on trades (plumbers don't work in offices)
+     • ❌ NEVER use irrelevant icons (no shopping cart icons on HVAC sites)
+     • ❌ NEVER use party/celebration emojis for serious professional services (legal, medical)
+     • ❌ NEVER use images from wrong industry (no car repair images on a plumbing site)
+     • ❌ NEVER use contradictory visuals (tech company with old typewriter images)
+   
+   ↳ QUALITY CHECKS BEFORE FINALIZING:
+     1. Does this image/icon/emoji represent THIS specific industry?
+     2. Would a customer immediately understand what service this business provides?
+     3. Are all visual elements consistent with the business description?
+     4. Would this visual make sense to someone searching for this service?
+     If answer is NO to any question → CHANGE THE VISUAL ELEMENT
 
 4. **BACKGROUND IMAGE BEST PRACTICES**
    ↳ Hero sections with background images need:
