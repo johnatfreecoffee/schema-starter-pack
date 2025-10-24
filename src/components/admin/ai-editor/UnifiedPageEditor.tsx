@@ -360,11 +360,11 @@ const UnifiedPageEditor = ({
       const currentHtml = selectedModel === 'claude' ? claudeHtml : grokHtml;
       const currentChatHistory = selectedModel === 'claude' ? claudeChatMessages : grokChatMessages;
       
-      // Add timeout to the edge function call (60 seconds)
+      // Add timeout to the edge function call (180 seconds)
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout - AI took too long to respond. Please try a shorter prompt or reset the chat.')), 60000)
+        setTimeout(() => reject(new Error('Request timeout - AI took too long to respond. Please try a shorter prompt or reset the chat.')), 180000)
       );
-      
+
       const invokePromise = supabase.functions.invoke('ai-edit-page', {
         body: {
           command: currentPrompt,
@@ -456,12 +456,17 @@ const UnifiedPageEditor = ({
         description: errorMessage,
         variant: 'destructive'
       });
-      // Remove the user message on error
-      if (selectedModel === 'claude') {
-        setClaudeChatMessages(prev => prev.slice(0, -1));
-      } else {
-        setGrokChatMessages(prev => prev.slice(0, -1));
-      }
+       // Keep the user message and append an assistant error message
+       const assistantError: ChatMessage = {
+         role: 'assistant',
+         content: `Error: ${errorMessage}`
+       };
+       if (selectedModel === 'claude') {
+         setClaudeChatMessages(prev => [...prev, assistantError]);
+       } else {
+         setGrokChatMessages(prev => [...prev, assistantError]);
+       }
+
     } finally {
       setIsAiLoading(false);
     }
