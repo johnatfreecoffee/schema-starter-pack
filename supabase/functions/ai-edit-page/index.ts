@@ -237,8 +237,8 @@ Hover: hover:-translate-y-1 transition-all duration-300.
     
     console.log('Calling AI (Anthropic Claude)...');
 
-    // Timeout based on mode: chat=60s, build=180s (with buffer for 8K tokens)
-    const timeoutMs = mode === 'chat' ? 60000 : 180000;
+    // Timeout based on mode: chat=60s, build=600s (10 minutes for large page generation)
+    const timeoutMs = mode === 'chat' ? 60000 : 600000;
     const fetchWithTimeout = async (url: string, options: RequestInit) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
