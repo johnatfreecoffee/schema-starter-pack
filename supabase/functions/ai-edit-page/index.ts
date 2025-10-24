@@ -187,7 +187,7 @@ ${companyProfile}
 </company_profile>
 
 <current_page type="${context.currentPage?.type}" url="${context.currentPage?.url}">
-${context.currentPage?.html ? `${context.currentPage.html.substring(0, 5000)}...` : ''}
+${context.currentPage?.html || ''}
 </current_page>
 
 <mode>${mode}</mode>
