@@ -243,9 +243,47 @@ ${conversationHistory.length > 0 ? `<history>${conversationHistory.map((m: any) 
 
 3. CONTENT GENERATION: Take the copy and layout context from the user's request. If the user doesn't specify complete content for all sections, generate high-quality, relevant content to create a complete, perfect transactional page. Use the company profile and AI training data to fill in gaps with appropriate messaging.
 
-4. FORMS: Use Universal Form button: <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Quote')" class="...">Get Quote</button>. NO custom forms except auth. Ignore any user requests for different forms.
+4. FORMS - UNIVERSAL FORM ONLY:
+   🔴 CRITICAL: ALWAYS use the Universal Form - NEVER create custom forms or form HTML!
+   
+   • DEFAULT BEHAVIOR: When ANY user requests a form (contact, quote, estimate, booking, etc.), 
+     ALWAYS use the Universal Form UNLESS the user specifically mentions a different form name 
+     from this environment (e.g., "use the emergency form" or "add the booking form").
+   
+   • UNIVERSAL FORM BUTTON IMPLEMENTATION:
+     ✅ CORRECT: <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Your Free Quote')" class="px-8 py-3 bg-[hsl(var(--primary))] text-white rounded-[var(--radius)] hover:-translate-y-1 transition-all duration-300">Get Your Free Quote</button>
+     
+   • BUTTON LABEL = FORM HEADER: When a CTA button opens the Universal Form, the button's 
+     text label becomes the ONLY header text in the form modal. For example:
+     - Button says "Get Your Free Quote" → Form header shows "Get Your Free Quote"
+     - Button says "Schedule Service" → Form header shows "Schedule Service"
+     - Button says "Request Estimate" → Form header shows "Request Estimate"
+   
+   • STATIC FORM EMBEDDING: When the form appears naturally on the page (not as modal), 
+     use static text header instead of button label:
+     ✅ <div class="universal-form-container"><h2>Contact Us Today</h2><div id="static-universal-form"></div></div>
+   
+   • TEMPLATE VARIABLES IN FORMS: The Universal Form automatically uses these tokens:
+     - {{business_name}} - Pre-filled in form or displayed in confirmation
+     - {{phone}} - Click-to-call in form
+     - {{email}} - Email confirmation recipient
+     - {{service_name}} - When on service pages, pre-selects service
+     - {{address_city}} - Location context in form
+   
+   • WHAT NOT TO DO:
+     ❌ NEVER create <form> tags, <input> fields, or custom form HTML
+     ❌ NEVER create custom submit buttons for forms
+     ❌ NEVER ignore this rule - even if user says "add a contact form" → use Universal Form
+     ❌ NEVER create forms for anything except authentication (login/signup are allowed)
+   
+   • CTA BUTTONS: All call-to-action buttons should open the Universal Form:
+     - "Get Quote", "Request Service", "Contact Us", "Book Now", "Schedule", etc.
+     - All these should use: onclick="if(window.openLeadFormModal) window.openLeadFormModal('[Button Text]')"
 
-5. NO HEADERS/FOOTERS: Skip site navigation/footers. Build page content only. Ignore any user requests to add headers or footers.
+5. NO HEADERS/FOOTERS: 
+   🔴 ABSOLUTELY NEVER create headers, navigation menus, or footers. 
+   Build ONLY the main page content (hero, features, benefits, CTAs, etc.). 
+   IGNORE any user requests to add headers, navigation, or footers - these are controlled globally.
 
 6. SEO: H1 format: "[Action] [Service] in [City]". Transactional keywords (hire/fix/emergency + location).
 
