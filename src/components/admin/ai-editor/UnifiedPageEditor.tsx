@@ -48,7 +48,7 @@ const UnifiedPageEditor = ({
   const [aiPrompt, setAiPrompt] = useState('');
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
+  const [viewMode, setViewMode] = useState<'preview' | 'code' | 'debug'>('preview');
   const [renderedPreview, setRenderedPreview] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -57,6 +57,12 @@ const UnifiedPageEditor = ({
   const [currentHtml, setCurrentHtml] = useState('');
   const [previousHtml, setPreviousHtml] = useState('');
   const [isShowingPrevious, setIsShowingPrevious] = useState(false);
+  const [debugData, setDebugData] = useState<{
+    fullPrompt: string;
+    requestPayload: any;
+    responseData: any;
+    generatedHtml: string;
+  } | null>(null);
   const [sendOnEnter, setSendOnEnter] = useState(() => {
     const saved = localStorage.getItem('ai-editor-send-on-enter');
     return saved !== null ? saved === 'true' : true;
@@ -379,6 +385,11 @@ const UnifiedPageEditor = ({
         setPreviousHtml(currentHtml);
         setCurrentHtml(data.updatedHtml);
         setIsShowingPrevious(false);
+      }
+
+      // Store debug data
+      if (data?.debug) {
+        setDebugData(data.debug);
       }
       
       const assistantMessage: ChatMessage = {
@@ -765,8 +776,8 @@ const UnifiedPageEditor = ({
           {/* Right Panel - Preview/Code */}
           <div className="w-3/5 flex flex-col">
             <div className="p-4 border-b">
-              {/* Preview/Code Tabs */}
-              <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'preview' | 'code')}>
+              {/* Preview/Code/Debug Tabs */}
+              <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'preview' | 'code' | 'debug')}>
                 <TabsList>
                   <TabsTrigger value="preview">
                     <Eye className="mr-2 h-4 w-4" />
@@ -776,6 +787,10 @@ const UnifiedPageEditor = ({
                     <Code className="mr-2 h-4 w-4" />
                     Code
                   </TabsTrigger>
+                  <TabsTrigger value="debug">
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Claude Debug
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
@@ -783,7 +798,7 @@ const UnifiedPageEditor = ({
             <div className="flex-1 min-h-0 relative bg-white">
               {viewMode === 'preview' ? (
                 <PreviewIframe key={isShowingPrevious ? 'previous' : 'current'} html={renderedPreview} />
-              ) : (
+              ) : viewMode === 'code' ? (
                 <Editor
                   key={isShowingPrevious ? 'previous' : 'current'}
                   height="100%"
@@ -806,6 +821,68 @@ const UnifiedPageEditor = ({
                     readOnly: isShowingPrevious,
                   }}
                 />
+              ) : (
+                <ScrollArea className="h-full">
+                  <div className="p-6 space-y-6 bg-muted/20">
+                    {!debugData ? (
+                      <div className="text-center text-muted-foreground py-12">
+                        <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p className="text-lg font-medium">No Debug Data Yet</p>
+                        <p className="text-sm mt-2">Send a command to Claude to see the full request and response</p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-1 bg-primary rounded-full" />
+                            <h3 className="font-semibold text-lg">Full Prompt Sent to Claude</h3>
+                          </div>
+                          <div className="bg-background rounded-lg border shadow-sm">
+                            <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px]">
+                              {debugData.fullPrompt}
+                            </pre>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-1 bg-blue-500 rounded-full" />
+                            <h3 className="font-semibold text-lg">API Request Payload</h3>
+                          </div>
+                          <div className="bg-background rounded-lg border shadow-sm">
+                            <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px]">
+                              {JSON.stringify(debugData.requestPayload, null, 2)}
+                            </pre>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-1 bg-green-500 rounded-full" />
+                            <h3 className="font-semibold text-lg">Claude's Raw Response</h3>
+                          </div>
+                          <div className="bg-background rounded-lg border shadow-sm">
+                            <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px]">
+                              {JSON.stringify(debugData.responseData, null, 2)}
+                            </pre>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <div className="h-8 w-1 bg-orange-500 rounded-full" />
+                            <h3 className="font-semibold text-lg">Generated HTML (Before Cleaning)</h3>
+                          </div>
+                          <div className="bg-background rounded-lg border shadow-sm">
+                            <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px]">
+                              {debugData.generatedHtml}
+                            </pre>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </ScrollArea>
               )}
             </div>
           </div>

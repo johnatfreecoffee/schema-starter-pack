@@ -385,7 +385,13 @@ Hover: hover:-translate-y-1 transition-all duration-300.
         updatedHtml: responseHtml,
         message: message,
         explanation: message,
-        tokenUsage: tokenUsage
+        tokenUsage: tokenUsage,
+        debug: {
+          fullPrompt: prompt,
+          requestPayload,
+          responseData: data,
+          generatedHtml: updatedHtml
+        }
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
