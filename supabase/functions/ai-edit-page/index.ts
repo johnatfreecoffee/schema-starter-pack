@@ -14,7 +14,7 @@ serve(async (req) => {
 
   try {
     const requestBody = await req.json();
-    const { command, mode = 'build', conversationHistory = [], context, model = 'claude' } = requestBody;
+    const { command, mode = 'build', conversationHistory = [], context, model = 'claude', grokModel = 'grok-4-fast-reasoning' } = requestBody;
     
     console.log('AI Edit Request:', { 
       command: command.substring(0, 200) + (command.length > 200 ? '...' : ''), 
@@ -783,6 +783,7 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
       });
     } else {
       // Grok
+      console.log(`Using Grok model: ${grokModel}`);
       response = await fetchWithTimeout('https://api.x.ai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -790,7 +791,7 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'grok-4-fast-reasoning',
+          model: grokModel,
           messages: [
             { role: 'user', content: prompt }
           ],

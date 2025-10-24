@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Send, Sparkles, Eye, Code, Save, X } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
@@ -67,6 +68,7 @@ const UnifiedPageEditor = ({
   
   // Dual model support
   const [selectedModel, setSelectedModel] = useState<'claude' | 'grok'>('claude');
+  const [grokModel, setGrokModel] = useState<'grok-code-fast-1' | 'grok-4-fast-reasoning' | 'grok-4-fast-non-reasoning'>('grok-4-fast-reasoning');
   const [claudeHtml, setClaudeHtml] = useState('');
   const [grokHtml, setGrokHtml] = useState('');
   const [previousClaudeHtml, setPreviousClaudeHtml] = useState('');
@@ -371,6 +373,7 @@ const UnifiedPageEditor = ({
           command: currentPrompt,
           mode: editorMode,
           model: selectedModel,
+          grokModel: selectedModel === 'grok' ? grokModel : undefined,
           conversationHistory: editorMode === 'chat' ? currentChatHistory : undefined,
           context: {
             currentPage: {
@@ -738,6 +741,20 @@ const UnifiedPageEditor = ({
                 </TabsTrigger>
               </TabsList>
             </Tabs>
+            
+            {/* Grok Model Selector - Only shown when Grok is selected */}
+            {selectedModel === 'grok' && (
+              <Select value={grokModel} onValueChange={(value: any) => setGrokModel(value)}>
+                <SelectTrigger className="w-[200px] h-10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="grok-code-fast-1">Code Fast</SelectItem>
+                  <SelectItem value="grok-4-fast-reasoning">Reasoning</SelectItem>
+                  <SelectItem value="grok-4-fast-non-reasoning">Fast Response</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
             
             <div className="flex items-center gap-2">
               {((selectedModel === 'claude' && previousClaudeHtml !== claudeHtml) || 
