@@ -335,8 +335,42 @@ const UnifiedPageEditor = ({
     };
     
     setChatMessages(prev => [...prev, userMessage]);
+    const currentCommand = aiPrompt;
     setAiPrompt('');
     setIsAiLoading(true);
+
+    // Prepare request context for debug display
+    const requestContext = {
+      command: currentCommand,
+      mode: editorMode,
+      conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
+      context: {
+        currentPage: {
+          type: pageType,
+          url: service ? `/${service.slug}` : '/',
+          html: currentHtml
+        },
+        serviceInfo: service ? {
+          name: service.name,
+          slug: service.slug,
+          description: service.description || service.full_description || '',
+          category: service.category,
+          starting_price: service.starting_price,
+          is_active: service.is_active
+        } : null,
+        companyInfo: companySettings,
+        aiTraining: aiTraining,
+        siteSettings: siteSettings
+      }
+    };
+
+    // Show request data immediately in debug panel
+    setDebugData({
+      fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nPage Type: ${pageType}`,
+      requestPayload: requestContext,
+      responseData: { status: 'Waiting for Claude response...' },
+      generatedHtml: 'Waiting for response...'
+    });
     
     try {
       
@@ -346,29 +380,7 @@ const UnifiedPageEditor = ({
       );
 
       const invokePromise = supabase.functions.invoke('ai-edit-page', {
-        body: {
-          command: aiPrompt,
-          mode: editorMode,
-          conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
-          context: {
-            currentPage: {
-              type: pageType,
-              url: service ? `/${service.slug}` : '/',
-              html: currentHtml
-            },
-            serviceInfo: service ? {
-              name: service.name,
-              slug: service.slug,
-              description: service.description || service.full_description || '',
-              category: service.category,
-              starting_price: service.starting_price,
-              is_active: service.is_active
-            } : null,
-            companyInfo: companySettings,
-            aiTraining: aiTraining,
-            siteSettings: siteSettings
-          }
-        }
+        body: requestContext
       });
 
       const { data, error } = await Promise.race([invokePromise, timeoutPromise]) as any;
@@ -836,6 +848,7 @@ const UnifiedPageEditor = ({
                           <div className="flex items-center gap-2">
                             <div className="h-8 w-1 bg-primary rounded-full" />
                             <h3 className="font-semibold text-lg">Full Prompt Sent to Claude</h3>
+                            {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
                           </div>
                           <div className="bg-background rounded-lg border shadow-sm">
                             <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px]">
@@ -847,7 +860,7 @@ const UnifiedPageEditor = ({
                         <div className="space-y-3">
                           <div className="flex items-center gap-2">
                             <div className="h-8 w-1 bg-blue-500 rounded-full" />
-                            <h3 className="font-semibold text-lg">API Request Payload</h3>
+                            <h3 className="font-semibold text-lg">Request Context</h3>
                           </div>
                           <div className="bg-background rounded-lg border shadow-sm">
                             <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px]">
@@ -860,10 +873,13 @@ const UnifiedPageEditor = ({
                           <div className="flex items-center gap-2">
                             <div className="h-8 w-1 bg-green-500 rounded-full" />
                             <h3 className="font-semibold text-lg">Claude's Raw Response</h3>
+                            {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
                           </div>
                           <div className="bg-background rounded-lg border shadow-sm">
                             <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px]">
-                              {JSON.stringify(debugData.responseData, null, 2)}
+                              {typeof debugData.responseData === 'string' 
+                                ? debugData.responseData 
+                                : JSON.stringify(debugData.responseData, null, 2)}
                             </pre>
                           </div>
                         </div>
@@ -871,7 +887,8 @@ const UnifiedPageEditor = ({
                         <div className="space-y-3">
                           <div className="flex items-center gap-2">
                             <div className="h-8 w-1 bg-orange-500 rounded-full" />
-                            <h3 className="font-semibold text-lg">Generated HTML (Before Cleaning)</h3>
+                            <h3 className="font-semibold text-lg">Generated HTML</h3>
+                            {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
                           </div>
                           <div className="bg-background rounded-lg border shadow-sm">
                             <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px]">
