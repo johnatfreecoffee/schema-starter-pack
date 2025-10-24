@@ -964,7 +964,7 @@ const UnifiedPageEditor = ({
                 />
               ) : (
                 <div className="flex-1 min-h-0 overflow-hidden flex flex-col max-w-full">
-                  <ScrollArea className="flex-1 h-full max-w-full">
+                  <ScrollArea className="flex-1 min-h-0">
                     <div className="p-6 bg-muted/20 max-w-full">
                       {!debugData ? (
                         <div className="text-center text-muted-foreground py-12">
