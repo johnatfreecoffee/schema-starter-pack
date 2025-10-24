@@ -23,6 +23,11 @@ serve(async (req) => {
       promptLength: command.length,
       htmlLength: context?.currentPage?.html?.length || 0
     });
+    
+    // Log full command for debugging
+    console.log('=== FULL COMMAND START ===');
+    console.log(command);
+    console.log('=== FULL COMMAND END ===');
 
     const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
     
@@ -209,6 +214,11 @@ Hover: hover:-translate-y-1 transition-all duration-300.
 
 <output>Complete HTML from <!DOCTYPE> to </html>. NO markdown blocks. NO truncation.</output>`;
 
+    // Log the complete prompt being sent
+    console.log('=== COMPLETE PROMPT START ===');
+    console.log(prompt);
+    console.log('=== COMPLETE PROMPT END ===');
+    
     console.log('Calling AI (Anthropic Claude)...');
 
     // Timeout based on mode: chat=45s, build=90s (with buffer for 2K/4K tokens)
@@ -238,6 +248,35 @@ Hover: hover:-translate-y-1 transition-all duration-300.
     // Build mode (full pages): 4000 tokens = ~60 seconds
     const maxTokens = mode === 'chat' ? 2000 : 4000;
     
+    const requestPayload = {
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: maxTokens,
+      // Structure prompt with caching for design system (static content)
+      system: [
+        {
+          type: 'text',
+          text: 'You are an expert HTML page builder. Generate semantic, accessible HTML5 using Tailwind CSS.',
+          cache_control: { type: 'ephemeral' }
+        }
+      ],
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: prompt,
+              cache_control: { type: 'ephemeral' }
+            }
+          ]
+        }
+      ],
+    };
+    
+    console.log('=== FULL API REQUEST PAYLOAD START ===');
+    console.log(JSON.stringify(requestPayload, null, 2));
+    console.log('=== FULL API REQUEST PAYLOAD END ===');
+    
     const response = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -245,30 +284,7 @@ Hover: hover:-translate-y-1 transition-all duration-300.
         'anthropic-version': '2023-06-01',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: maxTokens,
-        // Structure prompt with caching for design system (static content)
-        system: [
-          {
-            type: 'text',
-            text: 'You are an expert HTML page builder. Generate semantic, accessible HTML5 using Tailwind CSS.',
-            cache_control: { type: 'ephemeral' }
-          }
-        ],
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: prompt,
-                cache_control: { type: 'ephemeral' }
-              }
-            ]
-          }
-        ],
-      }),
+      body: JSON.stringify(requestPayload),
     });
 
     if (!response.ok) {
@@ -288,6 +304,11 @@ Hover: hover:-translate-y-1 transition-all duration-300.
     }
 
     const data = await response.json();
+    
+    console.log('=== FULL API RESPONSE START ===');
+    console.log(JSON.stringify(data, null, 2));
+    console.log('=== FULL API RESPONSE END ===');
+    
     const updatedHtml = data.content?.[0]?.text || '';
     const usage = data.usage || {};
     const tokenUsage = (usage.input_tokens || 0) + (usage.output_tokens || 0);
@@ -303,6 +324,10 @@ Hover: hover:-translate-y-1 transition-all duration-300.
       cacheWrites: cacheWrites,
       cacheHitRate: cacheReads > 0 ? `${((cacheReads / (cacheReads + (usage.input_tokens || 0))) * 100).toFixed(1)}%` : '0%'
     });
+    
+    console.log('=== GENERATED HTML START ===');
+    console.log(updatedHtml);
+    console.log('=== GENERATED HTML END ===');
 
     // Clean up the response - remove markdown code blocks if present
     let cleanedHtml = updatedHtml.trim();
