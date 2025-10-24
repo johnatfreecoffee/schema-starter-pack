@@ -1023,6 +1023,7 @@ const UnifiedPageEditor = ({
                                     size="sm"
                                     onClick={() => handleCopyDebug('prompt', debugData?.fullPrompt || '', 'Full Prompt Sent to Claude', 'content')}
                                     className="h-7 px-2"
+                                    title="Copy content only"
                                   >
                                     {copiedStates['prompt'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                   </Button>
@@ -1030,9 +1031,11 @@ const UnifiedPageEditor = ({
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopyDebug('prompt', debugData?.fullPrompt || '', 'Full Prompt Sent to Claude', 'header')}
-                                    className="h-7 px-2"
+                                    className="h-7 px-2 gap-1"
+                                    title="Copy header + content (all)"
                                   >
                                     {copiedStates['prompt'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                    <span className="text-[10px] font-medium">ALL</span>
                                   </Button>
                                 </div>
                               </div>
@@ -1057,6 +1060,7 @@ const UnifiedPageEditor = ({
                                     size="sm"
                                     onClick={() => handleCopyDebug('request', JSON.stringify(debugData?.requestPayload, null, 2) || '', 'Request Context', 'content')}
                                     className="h-7 px-2"
+                                    title="Copy content only"
                                   >
                                     {copiedStates['request'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                   </Button>
@@ -1064,9 +1068,11 @@ const UnifiedPageEditor = ({
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopyDebug('request', JSON.stringify(debugData?.requestPayload, null, 2) || '', 'Request Context', 'header')}
-                                    className="h-7 px-2"
+                                    className="h-7 px-2 gap-1"
+                                    title="Copy header + content (all)"
                                   >
                                     {copiedStates['request'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                    <span className="text-[10px] font-medium">ALL</span>
                                   </Button>
                                 </div>
                               </div>
@@ -1092,6 +1098,7 @@ const UnifiedPageEditor = ({
                                     size="sm"
                                     onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "Claude's Raw Response", 'content')}
                                     className="h-7 px-2"
+                                    title="Copy content only"
                                   >
                                     {copiedStates['response'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                   </Button>
@@ -1099,9 +1106,11 @@ const UnifiedPageEditor = ({
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "Claude's Raw Response", 'header')}
-                                    className="h-7 px-2"
+                                    className="h-7 px-2 gap-1"
+                                    title="Copy header + content (all)"
                                   >
                                     {copiedStates['response'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                    <span className="text-[10px] font-medium">ALL</span>
                                   </Button>
                                 </div>
                               </div>
@@ -1129,6 +1138,7 @@ const UnifiedPageEditor = ({
                                     size="sm"
                                     onClick={() => handleCopyDebug('html', debugData?.generatedHtml || '', 'Generated HTML', 'content')}
                                     className="h-7 px-2"
+                                    title="Copy content only"
                                   >
                                     {copiedStates['html'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                   </Button>
@@ -1136,9 +1146,11 @@ const UnifiedPageEditor = ({
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleCopyDebug('html', debugData?.generatedHtml || '', 'Generated HTML', 'header')}
-                                    className="h-7 px-2"
+                                    className="h-7 px-2 gap-1"
+                                    title="Copy header + content (all)"
                                   >
                                     {copiedStates['html'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                    <span className="text-[10px] font-medium">ALL</span>
                                   </Button>
                                 </div>
                               </div>
