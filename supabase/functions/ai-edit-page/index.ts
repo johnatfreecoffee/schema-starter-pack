@@ -314,18 +314,21 @@ Hover: hover:-translate-y-1 transition-all duration-300.
       const commandLower = command.toLowerCase();
       
       if (commandLower.includes('finish') || commandLower.includes('complete') || commandLower.includes('entire')) {
-        // Full page generation - reduced from 64K to stay under infrastructure limits
-        // 32K tokens typically completes in under 2 minutes
+        // Full page generation - stays at 32K for explicit "finish the page" requests
         maxTokens = 32000;
-      } else if (commandLower.includes('section') || commandLower.includes('add') || commandLower.includes('create')) {
+      } else if (commandLower.includes('section') || commandLower.includes('add')) {
         // Section-level changes - medium budget
-        maxTokens = 32000;
+        maxTokens = 16000;
+      } else if (commandLower.includes('create')) {
+        // Create commands - balanced budget to avoid timeouts
+        // Reduced from 32K to ensure completion within 2-minute timeout
+        maxTokens = 12000;
       } else if (commandLower.includes('fix') || commandLower.includes('update') || commandLower.includes('change')) {
         // Small edits - conservative budget
-        maxTokens = 16000;
+        maxTokens = 8000;
       } else {
-        // Default: generous budget for unknown requests
-        maxTokens = 32000;
+        // Default: moderate budget for unknown requests
+        maxTokens = 16000;
       }
     }
 
