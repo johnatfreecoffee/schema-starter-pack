@@ -868,30 +868,44 @@ const UnifiedPageEditor = ({
             </div>
 
             <div className="flex-1 min-h-0 relative bg-white">
-              {viewMode === 'preview' ? renderedPreview ? <PreviewIframe html={renderedPreview} /> : <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
+              {viewMode === 'preview' ? (
+                renderedPreview ? (
+                  <PreviewIframe key={`${selectedModel}-${isShowingPrevious}`} html={renderedPreview} />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin" />
                     <p className="mt-2">Loading preview...</p>
-                  </div> : <Editor height="100%" defaultLanguage="html" value={displayedHtml} onChange={value => {
-              if (!isShowingPrevious && value !== undefined) {
-                // Update the appropriate model's HTML when editing
-                if (selectedModel === 'claude') {
-                  setClaudeHtml(value);
-                } else {
-                  setGrokHtml(value);
-                }
-                if (pageType === 'static' || pageType === 'generated') {
-                  setRenderedPreview(value);
-                }
-              }
-            }} theme="vs-dark" options={{
-              minimap: {
-                enabled: true
-              },
-              wordWrap: 'on',
-              automaticLayout: true,
-              fontSize: 14,
-              readOnly: isShowingPrevious
-            }} />}
+                  </div>
+                )
+              ) : (
+                <Editor
+                  key={`${selectedModel}-${isShowingPrevious}`}
+                  height="100%"
+                  defaultLanguage="html"
+                  value={displayedHtml}
+                  onChange={value => {
+                    if (!isShowingPrevious && value !== undefined) {
+                      // Update the appropriate model's HTML when editing
+                      if (selectedModel === 'claude') {
+                        setClaudeHtml(value);
+                      } else {
+                        setGrokHtml(value);
+                      }
+                      if (pageType === 'static' || pageType === 'generated') {
+                        setRenderedPreview(value);
+                      }
+                    }
+                  }}
+                  theme="vs-dark"
+                  options={{
+                    minimap: { enabled: true },
+                    wordWrap: 'on',
+                    automaticLayout: true,
+                    fontSize: 14,
+                    readOnly: isShowingPrevious,
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>
