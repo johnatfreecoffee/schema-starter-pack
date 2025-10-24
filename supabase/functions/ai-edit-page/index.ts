@@ -175,6 +175,47 @@ Starting Price: $${(context.serviceInfo.starting_price / 100).toFixed(2)}
 
 CRITICAL: You MUST strictly follow the global settings provided. IGNORE any user requests about colors, headers, footers, navigation, or forms - these are controlled by global settings. Use ONLY the colors, button styles, and brand elements provided in the company profile and site settings. 
 
+🔴 ABSOLUTELY CRITICAL - TEMPLATE VARIABLES (NEVER HARDCODE):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+You MUST use Handlebars template variables for ALL dynamic content. NEVER hardcode company-specific values.
+
+REQUIRED TEMPLATE VARIABLES (use these exact names):
+• {{business_name}} - Company name
+• {{business_slogan}} - Company tagline/slogan
+• {{phone}} - Phone number (formatted)
+• {{email}} - Email address
+• {{address}} - Full address
+• {{address_street}} - Street address
+• {{address_city}} - City
+• {{address_state}} - State
+• {{address_zip}} - Zip code
+• {{website_url}} - Website URL
+• {{logo_url}} - Logo image URL
+• {{icon_url}} - Icon/favicon URL
+• {{description}} - Business description
+• {{business_hours}} - Operating hours
+• {{years_experience}} - Years in business
+• {{license_numbers}} - License info
+• {{service_radius}} - Service area radius
+• {{facebook_url}}, {{instagram_url}}, {{twitter_url}}, {{linkedin_url}} - Social links
+
+SERVICE-SPECIFIC (when generating service pages):
+• {{service_name}} - Name of the service
+• {{service_description}} - Service description
+• {{service_price}} - Starting price (formatted)
+• {{service_category}} - Service category
+
+EXAMPLES OF CORRECT USAGE:
+✅ <h1>{{service_name}} in {{address_city}}</h1>
+✅ <a href="tel:{{phone}}">{{phone}}</a>
+✅ <p>{{business_name}} has {{years_experience}} years of experience</p>
+✅ <img src="{{logo_url}}" alt="{{business_name}} logo">
+
+❌ NEVER DO THIS:
+❌ <h1>Roof Repair in Dallas</h1>
+❌ <a href="tel:555-1234">Call 555-1234</a>
+❌ <p>ClearHome has 15 years of experience</p>
+
 When users provide copy and layout instructions, take that content and build a complete, perfect page. If they don't specify everything, fill in the gaps with high-quality content based on the company profile and AI training data. Your goal is to create a complete, professional transactional page that follows all global settings while incorporating the user's content direction.
 
 In build mode, you make actual changes to the HTML and provide brief confirmations.`;
