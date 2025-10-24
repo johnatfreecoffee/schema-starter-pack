@@ -63,6 +63,7 @@ const UnifiedPageEditor = ({
   });
   const [isPublishing, setIsPublishing] = useState(false);
   const [showPublishConfirm, setShowPublishConfirm] = useState(false);
+  const [publishModel, setPublishModel] = useState<'claude' | 'grok' | null>(null);
   
   // Dual model support
   const [selectedModel, setSelectedModel] = useState<'claude' | 'grok'>('claude');
@@ -573,12 +574,17 @@ const UnifiedPageEditor = ({
     }
   };
 
-  // Publish function - copies draft to live (uses currently selected model)
-  const handlePublish = async () => {
+  // Open publish dialog
+  const openPublishDialog = () => {
+    setShowPublishConfirm(true);
+  };
+
+  // Publish function - copies draft to live (uses model from confirmation dialog)
+  const handlePublish = async (modelToPublish: 'claude' | 'grok') => {
     if (isPublishing) return;
     
-    const currentHtml = selectedModel === 'claude' ? claudeHtml : grokHtml;
-    console.log('Publishing...', { currentHtml: currentHtml?.substring(0, 100), pageType, pageId, templateId: template?.id, model: selectedModel });
+    const currentHtml = modelToPublish === 'claude' ? claudeHtml : grokHtml;
+    console.log('Publishing...', { currentHtml: currentHtml?.substring(0, 100), pageType, pageId, templateId: template?.id, model: modelToPublish });
     setIsPublishing(true);
     try {
       if (pageType === 'static' && pageId) {
@@ -596,7 +602,7 @@ const UnifiedPageEditor = ({
         });
         toast({
           title: 'Published successfully',
-          description: `Your ${selectedModel === 'claude' ? 'Claude' : 'Grok'} changes are now live.`
+          description: `Your ${modelToPublish === 'claude' ? 'Claude' : 'Grok'} changes are now live.`
         });
       } else if (template?.id) {
         const {
@@ -618,7 +624,7 @@ const UnifiedPageEditor = ({
         });
         toast({
           title: 'Published successfully',
-          description: `Your ${selectedModel === 'claude' ? 'Claude' : 'Grok'} changes are now live.`
+          description: `Your ${modelToPublish === 'claude' ? 'Claude' : 'Grok'} changes are now live.`
         });
       }
       setOriginalHtml(currentHtml);
@@ -633,6 +639,8 @@ const UnifiedPageEditor = ({
       });
     } finally {
       setIsPublishing(false);
+      setShowPublishConfirm(false);
+      setPublishModel(null);
     }
   };
 
@@ -700,11 +708,19 @@ const UnifiedPageEditor = ({
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 flex-1">
               <DialogTitle>Editing: {pageTitle}</DialogTitle>
-              <div className="text-xs text-muted-foreground">
-                {isSaving ? <span className="flex items-center gap-1">
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    Saving draft...
-                  </span> : lastSaved ? <span>Draft saved {new Date(lastSaved).toLocaleTimeString()}</span> : templateHtml !== originalHtml ? <span>Unsaved changes</span> : <span>All changes saved</span>}
+              <div className="flex items-center gap-3">
+                <div className="text-xs text-muted-foreground">
+                  {isSaving ? <span className="flex items-center gap-1">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Saving draft...
+                    </span> : lastSaved ? <span>Draft saved {new Date(lastSaved).toLocaleTimeString()}</span> : templateHtml !== originalHtml ? <span>Unsaved changes</span> : <span>All changes saved</span>}
+                </div>
+                <Button onClick={openPublishDialog} disabled={isPublishing} size="sm" variant="default" className="gap-2">
+                  {isPublishing ? <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Publishing...
+                    </> : <>Publish</>}
+                </Button>
               </div>
             </div>
             
@@ -735,12 +751,6 @@ const UnifiedPageEditor = ({
                 <Button variant={isShowingPrevious ? 'default' : 'outline'} size="sm" onClick={toggleVersion} className="flex items-center gap-2">
                   {isShowingPrevious ? 'Current' : 'Previous'}
                 </Button>}
-              <Button onClick={handlePublish} disabled={isPublishing} size="sm" className="gap-2">
-                {isPublishing ? <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Publishing...
-                  </> : <>Publish {selectedModel === 'claude' ? 'Claude' : 'Grok'}</>}
-              </Button>
             </div>
           </div>
         </DialogHeader>
@@ -898,15 +908,72 @@ const UnifiedPageEditor = ({
       <Dialog open={showPublishConfirm} onOpenChange={setShowPublishConfirm}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-lg">
-              <span className="text-2xl">✓</span> Published Successfully
+            <DialogTitle className="text-lg">
+              Choose Version to Publish
             </DialogTitle>
+            <DialogDescription>
+              Select which AI model's version you want to publish to your live website.
+            </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
-            <p className="text-muted-foreground">
-              Your changes have been published and are now live on the website.
-            </p>
+          <div className="space-y-3 py-4">
+            <Button
+              onClick={() => setPublishModel('claude')}
+              variant={publishModel === 'claude' ? 'default' : 'outline'}
+              className="w-full justify-start gap-3 h-auto py-4"
+            >
+              <Sparkles className="h-5 w-5" />
+              <div className="text-left">
+                <div className="font-semibold">Publish Claude Version</div>
+                <div className="text-xs text-muted-foreground">Use the content generated by Claude</div>
+              </div>
+            </Button>
+            <Button
+              onClick={() => setPublishModel('grok')}
+              variant={publishModel === 'grok' ? 'default' : 'outline'}
+              className="w-full justify-start gap-3 h-auto py-4"
+            >
+              <Sparkles className="h-5 w-5" />
+              <div className="text-left">
+                <div className="font-semibold">Publish Grok Version</div>
+                <div className="text-xs text-muted-foreground">Use the content generated by Grok</div>
+              </div>
+            </Button>
           </div>
+          {publishModel && (
+            <div className="bg-muted/50 border rounded-lg p-4 space-y-3">
+              <p className="text-sm font-medium">⚠️ Confirm Publication</p>
+              <p className="text-xs text-muted-foreground">
+                Are you sure you want to publish the {publishModel === 'claude' ? 'Claude' : 'Grok'} version? 
+                This will replace your current live content.
+              </p>
+              <div className="flex gap-2 pt-2">
+                <Button
+                  onClick={() => handlePublish(publishModel)}
+                  disabled={isPublishing}
+                  className="flex-1"
+                >
+                  {isPublishing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      Publishing...
+                    </>
+                  ) : (
+                    <>Confirm & Publish</>
+                  )}
+                </Button>
+                <Button
+                  onClick={() => {
+                    setPublishModel(null);
+                    setShowPublishConfirm(false);
+                  }}
+                  variant="outline"
+                  disabled={isPublishing}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </Dialog>;
