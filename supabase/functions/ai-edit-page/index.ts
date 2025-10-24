@@ -14,25 +14,20 @@ serve(async (req) => {
 
   try {
     const requestBody = await req.json();
-    const { command, mode = 'build', conversationHistory = [], context, model = 'claude', grokModel = 'grok-4-fast-reasoning' } = requestBody;
+    const { command, mode = 'build', conversationHistory = [], context } = requestBody;
     
     console.log('AI Edit Request:', { 
       command: command.substring(0, 200) + (command.length > 200 ? '...' : ''), 
       mode, 
-      model, 
       contextKeys: Object.keys(context),
       promptLength: command.length,
       htmlLength: context?.currentPage?.html?.length || 0
     });
 
     const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
-    const XAI_API_KEY = Deno.env.get('XAI_API_KEY');
     
-    if (model === 'claude' && !ANTHROPIC_API_KEY) {
+    if (!ANTHROPIC_API_KEY) {
       throw new Error('ANTHROPIC_API_KEY is not configured');
-    }
-    if (model === 'grok' && !XAI_API_KEY) {
-      throw new Error('XAI_API_KEY is not configured');
     }
 
     // Build comprehensive company profile

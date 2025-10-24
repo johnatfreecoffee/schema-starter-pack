@@ -45,10 +45,8 @@ const UnifiedPageEditor = ({
 }: UnifiedPageEditorProps) => {
   const [templateHtml, setTemplateHtml] = useState('');
   const [originalHtml, setOriginalHtml] = useState('');
-  const [claudePrompt, setClaudePrompt] = useState('');
-  const [grokPrompt, setGrokPrompt] = useState('');
-  const [claudeChatMessages, setClaudeChatMessages] = useState<ChatMessage[]>([]);
-  const [grokChatMessages, setGrokChatMessages] = useState<ChatMessage[]>([]);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
   const [renderedPreview, setRenderedPreview] = useState('');
@@ -56,6 +54,7 @@ const UnifiedPageEditor = ({
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [editorMode, setEditorMode] = useState<EditorMode>('build');
   const [tokenCount, setTokenCount] = useState(0);
+  const [currentHtml, setCurrentHtml] = useState('');
   const [previousHtml, setPreviousHtml] = useState('');
   const [isShowingPrevious, setIsShowingPrevious] = useState(false);
   const [sendOnEnter, setSendOnEnter] = useState(() => {
@@ -63,16 +62,6 @@ const UnifiedPageEditor = ({
     return saved !== null ? saved === 'true' : true;
   });
   const [isPublishing, setIsPublishing] = useState(false);
-  const [showPublishConfirm, setShowPublishConfirm] = useState(false);
-  const [publishModel, setPublishModel] = useState<'claude' | 'grok' | null>(null);
-  
-  // Dual model support
-  const [selectedModel, setSelectedModel] = useState<'claude' | 'grok'>('claude');
-  const [grokModel, setGrokModel] = useState<'grok-code-fast-1' | 'grok-4-fast-reasoning' | 'grok-4-fast-non-reasoning'>('grok-4-fast-reasoning');
-  const [claudeHtml, setClaudeHtml] = useState('');
-  const [grokHtml, setGrokHtml] = useState('');
-  const [previousClaudeHtml, setPreviousClaudeHtml] = useState('');
-  const [previousGrokHtml, setPreviousGrokHtml] = useState('');
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -243,29 +232,22 @@ const UnifiedPageEditor = ({
       });
       setTemplateHtml(template.template_html);
       setOriginalHtml(template.template_html);
+      setCurrentHtml(template.template_html);
       setPreviousHtml(template.template_html);
-      // Initialize both models with the same HTML
-      setClaudeHtml(template.template_html);
-      setGrokHtml(template.template_html);
-      setPreviousClaudeHtml(template.template_html);
-      setPreviousGrokHtml(template.template_html);
     }
   }, [template, pageType]);
 
   // Reset chat when dialog opens
   useEffect(() => {
     if (open) {
-      setClaudeChatMessages([]);
-      setGrokChatMessages([]);
+      setChatMessages([]);
       setTokenCount(0);
       setIsShowingPrevious(false);
     }
   }, [open]);
 
-  // Compute displayed HTML based on version toggle and selected model
-  const displayedHtml = isShowingPrevious 
-    ? (selectedModel === 'claude' ? previousClaudeHtml : previousGrokHtml)
-    : (selectedModel === 'claude' ? claudeHtml : grokHtml);
+  // Compute displayed HTML based on version toggle
+  const displayedHtml = isShowingPrevious ? previousHtml : currentHtml;
 
   // Update preview when template changes
   useEffect(() => {
@@ -316,10 +298,9 @@ const UnifiedPageEditor = ({
       // Fallback: show raw template without substitution so preview never stays blank
       setRenderedPreview(htmlToRender);
     }
-  }, [displayedHtml, serviceAreas, companySettings, service, pageType, selectedModel, isShowingPrevious]);
+  }, [displayedHtml, serviceAreas, companySettings, service, pageType, isShowingPrevious]);
   const sendToAi = async () => {
-    const currentPrompt = selectedModel === 'claude' ? claudePrompt : grokPrompt;
-    if (!currentPrompt.trim()) return;
+    if (!aiPrompt.trim()) return;
 
     // Check if user is authenticated
     const { data: { session } } = await supabase.auth.getSession();
@@ -344,24 +325,14 @@ const UnifiedPageEditor = ({
     
     const userMessage: ChatMessage = {
       role: 'user',
-      content: currentPrompt
+      content: aiPrompt
     };
     
-    // Add to the appropriate chat history
-    if (selectedModel === 'claude') {
-      setClaudeChatMessages(prev => [...prev, userMessage]);
-      setClaudePrompt(''); // Clear Claude's input
-    } else {
-      setGrokChatMessages(prev => [...prev, userMessage]);
-      setGrokPrompt(''); // Clear Grok's input
-    }
-    
+    setChatMessages(prev => [...prev, userMessage]);
+    setAiPrompt('');
     setIsAiLoading(true);
     
     try {
-      // Only call the selected model
-      const currentHtml = selectedModel === 'claude' ? claudeHtml : grokHtml;
-      const currentChatHistory = selectedModel === 'claude' ? claudeChatMessages : grokChatMessages;
       
       // Add timeout to the edge function call (180 seconds)
       const timeoutPromise = new Promise((_, reject) => 
@@ -370,11 +341,9 @@ const UnifiedPageEditor = ({
 
       const invokePromise = supabase.functions.invoke('ai-edit-page', {
         body: {
-          command: currentPrompt,
+          command: aiPrompt,
           mode: editorMode,
-          model: selectedModel,
-          grokModel: selectedModel === 'grok' ? grokModel : undefined,
-          conversationHistory: editorMode === 'chat' ? currentChatHistory : undefined,
+          conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
           context: {
             currentPage: {
               type: pageType,
@@ -407,27 +376,17 @@ const UnifiedPageEditor = ({
 
       // In build mode, auto-apply changes immediately
       if (editorMode === 'build' && data?.updatedHtml) {
-        if (selectedModel === 'claude') {
-          setPreviousClaudeHtml(claudeHtml);
-          setClaudeHtml(data.updatedHtml);
-        } else {
-          setPreviousGrokHtml(grokHtml);
-          setGrokHtml(data.updatedHtml);
-        }
+        setPreviousHtml(currentHtml);
+        setCurrentHtml(data.updatedHtml);
         setIsShowingPrevious(false);
       }
       
       const assistantMessage: ChatMessage = {
         role: 'assistant',
-        content: data?.explanation || `${selectedModel === 'claude' ? 'Claude' : 'Grok'} has updated the page.`
+        content: data?.explanation || 'AI has updated the page.'
       };
       
-      // Add to the appropriate chat history
-      if (selectedModel === 'claude') {
-        setClaudeChatMessages(prev => [...prev, assistantMessage]);
-      } else {
-        setGrokChatMessages(prev => [...prev, assistantMessage]);
-      }
+      setChatMessages(prev => [...prev, assistantMessage]);
     } catch (error: any) {
       console.error('AI Editor Error:', error);
       
@@ -464,26 +423,18 @@ const UnifiedPageEditor = ({
          role: 'assistant',
          content: `Error: ${errorMessage}`
        };
-       if (selectedModel === 'claude') {
-         setClaudeChatMessages(prev => [...prev, assistantError]);
-       } else {
-         setGrokChatMessages(prev => [...prev, assistantError]);
-       }
+       setChatMessages(prev => [...prev, assistantError]);
 
     } finally {
       setIsAiLoading(false);
     }
   };
   const resetChat = () => {
-    if (selectedModel === 'claude') {
-      setClaudeChatMessages([]);
-    } else {
-      setGrokChatMessages([]);
-    }
+    setChatMessages([]);
     setTokenCount(0);
     toast({
       title: 'Chat Reset',
-      description: `${selectedModel === 'claude' ? 'Claude' : 'Grok'} conversation history cleared.`
+      description: 'AI conversation history cleared.'
     });
   };
   const toggleVersion = () => {
@@ -510,14 +461,9 @@ const UnifiedPageEditor = ({
     if (textareaRef.current) {
       const start = textareaRef.current.selectionStart;
       const end = textareaRef.current.selectionEnd;
-      const currentText = selectedModel === 'claude' ? claudePrompt : grokPrompt;
-      const newText = currentText.substring(0, start) + variable + currentText.substring(end);
+      const newText = aiPrompt.substring(0, start) + variable + aiPrompt.substring(end);
       
-      if (selectedModel === 'claude') {
-        setClaudePrompt(newText);
-      } else {
-        setGrokPrompt(newText);
-      }
+      setAiPrompt(newText);
       
       setTimeout(() => {
         if (textareaRef.current) {
@@ -529,9 +475,8 @@ const UnifiedPageEditor = ({
     }
   };
 
-  // Auto-save function - saves to draft (uses currently selected model)
+  // Auto-save function - saves to draft
   const autoSave = async () => {
-    const currentHtml = selectedModel === 'claude' ? claudeHtml : grokHtml;
     if (currentHtml === originalHtml) return;
     setIsSaving(true);
     try {
@@ -576,17 +521,11 @@ const UnifiedPageEditor = ({
     }
   };
 
-  // Open publish dialog
-  const openPublishDialog = () => {
-    setShowPublishConfirm(true);
-  };
-
-  // Publish function - copies draft to live (uses model from confirmation dialog)
-  const handlePublish = async (modelToPublish: 'claude' | 'grok') => {
+  // Publish function - copies draft to live
+  const handlePublish = async () => {
     if (isPublishing) return;
     
-    const currentHtml = modelToPublish === 'claude' ? claudeHtml : grokHtml;
-    console.log('Publishing...', { currentHtml: currentHtml?.substring(0, 100), pageType, pageId, templateId: template?.id, model: modelToPublish });
+    console.log('Publishing...', { currentHtml: currentHtml?.substring(0, 100), pageType, pageId, templateId: template?.id });
     setIsPublishing(true);
     try {
       if (pageType === 'static' && pageId) {
@@ -604,7 +543,7 @@ const UnifiedPageEditor = ({
         });
         toast({
           title: 'Published successfully',
-          description: `Your ${modelToPublish === 'claude' ? 'Claude' : 'Grok'} changes are now live.`
+          description: 'Your changes are now live.'
         });
       } else if (template?.id) {
         const {
@@ -626,12 +565,10 @@ const UnifiedPageEditor = ({
         });
         toast({
           title: 'Published successfully',
-          description: `Your ${modelToPublish === 'claude' ? 'Claude' : 'Grok'} changes are now live.`
+          description: 'Your changes are now live.'
         });
       }
       setOriginalHtml(currentHtml);
-      setShowPublishConfirm(true);
-      setTimeout(() => setShowPublishConfirm(false), 3000);
     } catch (error: any) {
       console.error('Publish error:', error);
       toast({
@@ -641,14 +578,11 @@ const UnifiedPageEditor = ({
       });
     } finally {
       setIsPublishing(false);
-      setShowPublishConfirm(false);
-      setPublishModel(null);
     }
   };
 
-  // Debounced auto-save effect (watches current model's HTML)
+  // Debounced auto-save effect
   useEffect(() => {
-    const currentHtml = selectedModel === 'claude' ? claudeHtml : grokHtml;
     if (currentHtml !== originalHtml) {
       // Clear existing timeout
       if (autoSaveTimeoutRef.current) {
@@ -665,11 +599,10 @@ const UnifiedPageEditor = ({
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-  }, [claudeHtml, grokHtml, originalHtml, selectedModel]);
+  }, [currentHtml, originalHtml]);
 
   // Save immediately when dialog closes
   useEffect(() => {
-    const currentHtml = selectedModel === 'claude' ? claudeHtml : grokHtml;
     if (!open && currentHtml !== originalHtml) {
       autoSave();
     }
@@ -682,7 +615,7 @@ const UnifiedPageEditor = ({
       behavior: 'smooth',
       block: 'end'
     });
-  }, [claudeChatMessages, grokChatMessages, isAiLoading]);
+  }, [chatMessages, isAiLoading]);
   const closeMutation = useMutation({
     mutationFn: async () => {
       await onSave(templateHtml);
@@ -715,9 +648,9 @@ const UnifiedPageEditor = ({
                   {isSaving ? <span className="flex items-center gap-1">
                       <Loader2 className="h-3 w-3 animate-spin" />
                       Saving draft...
-                    </span> : lastSaved ? <span>Draft saved {new Date(lastSaved).toLocaleTimeString()}</span> : templateHtml !== originalHtml ? <span>Unsaved changes</span> : <span>All changes saved</span>}
+                     </span> : lastSaved ? <span>Draft saved {new Date(lastSaved).toLocaleTimeString()}</span> : templateHtml !== originalHtml ? <span>Unsaved changes</span> : <span>All changes saved</span>}
                 </div>
-                <Button onClick={openPublishDialog} disabled={isPublishing} size="sm" variant="default" className="gap-2">
+                <Button onClick={handlePublish} disabled={isPublishing} size="sm" variant="default" className="gap-2">
                   {isPublishing ? <>
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Publishing...
@@ -726,39 +659,8 @@ const UnifiedPageEditor = ({
               </div>
             </div>
             
-            {/* Model Selector - Wide Tabs with Icons */}
-            <Tabs value={selectedModel} onValueChange={(v) => {
-              setSelectedModel(v as 'claude' | 'grok');
-            }} className="flex-1 max-w-md">
-              <TabsList className="grid w-full grid-cols-2 h-12">
-                <TabsTrigger value="claude" className="gap-2 text-base">
-                  <Sparkles className="h-5 w-5" />
-                  Claude
-                </TabsTrigger>
-                <TabsTrigger value="grok" className="gap-2 text-base">
-                  <Sparkles className="h-5 w-5" />
-                  Grok
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-            
-            {/* Grok Model Selector - Only shown when Grok is selected */}
-            {selectedModel === 'grok' && (
-              <Select value={grokModel} onValueChange={(value: any) => setGrokModel(value)}>
-                <SelectTrigger className="w-[200px] h-10">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="grok-code-fast-1">Code Fast</SelectItem>
-                  <SelectItem value="grok-4-fast-reasoning">Reasoning</SelectItem>
-                  <SelectItem value="grok-4-fast-non-reasoning">Fast Response</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-            
             <div className="flex items-center gap-2">
-              {((selectedModel === 'claude' && previousClaudeHtml !== claudeHtml) || 
-                (selectedModel === 'grok' && previousGrokHtml !== grokHtml)) && 
+              {previousHtml !== currentHtml && 
                 <Button variant={isShowingPrevious ? 'default' : 'outline'} size="sm" onClick={toggleVersion} className="flex items-center gap-2">
                   {isShowingPrevious ? 'Current' : 'Previous'}
                 </Button>}
@@ -808,9 +710,9 @@ const UnifiedPageEditor = ({
 
             <ScrollArea className="flex-1 min-h-0">
               <div className="space-y-4 p-4 pb-4">
-                {(selectedModel === 'claude' ? claudeChatMessages : grokChatMessages).length === 0 ? <div className="text-center text-muted-foreground py-12">
+                {chatMessages.length === 0 ? <div className="text-center text-muted-foreground py-12">
                     <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p className="text-sm mb-2">Ask {selectedModel === 'claude' ? 'Claude' : 'Grok'} to modify your page</p>
+                    <p className="text-sm mb-2">Ask AI to modify your page</p>
                     <div className="text-xs space-y-1 max-w-xs mx-auto text-left">
                       <p>Examples:</p>
                       <ul className="list-disc list-inside mt-2 space-y-1">
@@ -820,12 +722,12 @@ const UnifiedPageEditor = ({
                         <li>Build a beautiful hero section</li>
                       </ul>
                     </div>
-                  </div> : (selectedModel === 'claude' ? claudeChatMessages : grokChatMessages).map((msg, idx) => <div key={idx} className={`p-3 rounded-lg max-w-full overflow-hidden break-words ${msg.role === 'user' ? 'bg-primary text-primary-foreground ml-8' : 'bg-muted mr-8'}`}>
+                  </div> : chatMessages.map((msg, idx) => <div key={idx} className={`p-3 rounded-lg max-w-full overflow-hidden break-words ${msg.role === 'user' ? 'bg-primary text-primary-foreground ml-8' : 'bg-muted mr-8'}`}>
                       <TruncatedMessage content={msg.content} isUser={msg.role === 'user'} />
                     </div>)}
                 {isAiLoading && <div className="flex items-center gap-2 text-muted-foreground p-3">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="text-sm">{selectedModel === 'claude' ? 'Claude' : 'Grok'} is working...</span>
+                    <span className="text-sm">AI is working...</span>
                   </div>}
                 <div ref={chatEndRef} className="h-1" />
               </div>
@@ -836,13 +738,7 @@ const UnifiedPageEditor = ({
                 <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
               </div>
               <div className="flex gap-2">
-                <Textarea ref={textareaRef} placeholder={`Ask ${selectedModel === 'claude' ? 'Claude' : 'Grok'} to build something...`} value={selectedModel === 'claude' ? claudePrompt : grokPrompt} onChange={e => {
-                  if (selectedModel === 'claude') {
-                    setClaudePrompt(e.target.value);
-                  } else {
-                    setGrokPrompt(e.target.value);
-                  }
-                }} onKeyDown={e => {
+                <Textarea ref={textareaRef} placeholder="Ask AI to build something..." value={aiPrompt} onChange={e => setAiPrompt(e.target.value)} onKeyDown={e => {
                 if (sendOnEnter && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                   e.preventDefault();
                   sendToAi();
@@ -859,7 +755,7 @@ const UnifiedPageEditor = ({
                   </Label>
                   <Switch id="send-on-enter" checked={sendOnEnter} onCheckedChange={toggleSendOnEnter} />
                 </div>
-                <Button onClick={sendToAi} disabled={isAiLoading || !(selectedModel === 'claude' ? claudePrompt : grokPrompt).trim()} size="sm">
+                <Button onClick={sendToAi} disabled={isAiLoading || !aiPrompt.trim()} size="sm">
                   {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="mr-2 h-4 w-4" /> Send</>}
                 </Button>
               </div>
@@ -886,21 +782,16 @@ const UnifiedPageEditor = ({
 
             <div className="flex-1 min-h-0 relative bg-white">
               {viewMode === 'preview' ? (
-                <PreviewIframe key={`${selectedModel}-${isShowingPrevious}`} html={renderedPreview} />
+                <PreviewIframe key={isShowingPrevious ? 'previous' : 'current'} html={renderedPreview} />
               ) : (
                 <Editor
-                  key={`${selectedModel}-${isShowingPrevious}`}
+                  key={isShowingPrevious ? 'previous' : 'current'}
                   height="100%"
                   defaultLanguage="html"
                   value={displayedHtml}
                   onChange={value => {
                     if (!isShowingPrevious && value !== undefined) {
-                      // Update the appropriate model's HTML when editing
-                      if (selectedModel === 'claude') {
-                        setClaudeHtml(value);
-                      } else {
-                        setGrokHtml(value);
-                      }
+                      setCurrentHtml(value);
                       if (pageType === 'static' || pageType === 'generated') {
                         setRenderedPreview(value);
                       }
@@ -920,79 +811,6 @@ const UnifiedPageEditor = ({
           </div>
         </div>
       </DialogContent>
-
-      {/* Publish Confirmation Modal */}
-      <Dialog open={showPublishConfirm} onOpenChange={setShowPublishConfirm}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-lg">
-              Choose Version to Publish
-            </DialogTitle>
-            <DialogDescription>
-              Select which AI model's version you want to publish to your live website.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3 py-4">
-            <Button
-              onClick={() => setPublishModel('claude')}
-              variant={publishModel === 'claude' ? 'default' : 'outline'}
-              className="w-full justify-start gap-3 h-auto py-4"
-            >
-              <Sparkles className="h-5 w-5" />
-              <div className="text-left">
-                <div className="font-semibold">Publish Claude Version</div>
-                <div className="text-xs text-muted-foreground">Use the content generated by Claude</div>
-              </div>
-            </Button>
-            <Button
-              onClick={() => setPublishModel('grok')}
-              variant={publishModel === 'grok' ? 'default' : 'outline'}
-              className="w-full justify-start gap-3 h-auto py-4"
-            >
-              <Sparkles className="h-5 w-5" />
-              <div className="text-left">
-                <div className="font-semibold">Publish Grok Version</div>
-                <div className="text-xs text-muted-foreground">Use the content generated by Grok</div>
-              </div>
-            </Button>
-          </div>
-          {publishModel && (
-            <div className="bg-muted/50 border rounded-lg p-4 space-y-3">
-              <p className="text-sm font-medium">⚠️ Confirm Publication</p>
-              <p className="text-xs text-muted-foreground">
-                Are you sure you want to publish the {publishModel === 'claude' ? 'Claude' : 'Grok'} version? 
-                This will replace your current live content.
-              </p>
-              <div className="flex gap-2 pt-2">
-                <Button
-                  onClick={() => handlePublish(publishModel)}
-                  disabled={isPublishing}
-                  className="flex-1"
-                >
-                  {isPublishing ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      Publishing...
-                    </>
-                  ) : (
-                    <>Confirm & Publish</>
-                  )}
-                </Button>
-                <Button
-                  onClick={() => {
-                    setPublishModel(null);
-                    setShowPublishConfirm(false);
-                  }}
-                  variant="outline"
-                  disabled={isPublishing}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </Dialog>;
 };
 export default UnifiedPageEditor;
