@@ -963,7 +963,7 @@ const UnifiedPageEditor = ({
                   }}
                 />
               ) : (
-                <div className="flex-1 min-h-0 overflow-y-auto max-w-full">
+                <div className="flex-1 min-h-0 overflow-y-auto max-h-[80vh] max-w-full">
                   <div className="flex-1 min-h-0">
                     <div className="p-6 bg-muted/20 max-w-full">
                       {!debugData ? (
