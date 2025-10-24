@@ -963,8 +963,8 @@ const UnifiedPageEditor = ({
                   }}
                 />
               ) : (
-                <div className="flex-1 min-h-0 overflow-hidden flex flex-col max-w-full">
-                  <ScrollArea className="flex-1 min-h-0">
+                <div className="flex-1 min-h-0 flex flex-col max-w-full">
+                  <div className="flex-1 min-h-0 overflow-y-auto">
                     <div className="p-6 bg-muted/20 max-w-full">
                       {!debugData ? (
                         <div className="text-center text-muted-foreground py-12">
@@ -1037,7 +1037,7 @@ const UnifiedPageEditor = ({
                         </Accordion>
                       )}
                     </div>
-                  </ScrollArea>
+                  </div>
                 </div>
               )}
             </div>
