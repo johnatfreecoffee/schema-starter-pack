@@ -259,10 +259,40 @@ Hover: hover:-translate-y-1 transition-all duration-300.
       }
     };
 
-    // Differentiate token budget based on mode
-    // Chat mode (small edits): 2000 tokens
-    // Build mode (full pages): 8000 tokens for complete HTML output
-    const maxTokens = mode === 'chat' ? 2000 : 8000;
+    // Calculate input token estimate (rough: ~4 chars per token)
+    const inputTokenEstimate = Math.floor(prompt.length * 0.25);
+
+    // Dynamic max_tokens based on mode and request type
+    let maxTokens: number;
+    if (mode === 'chat') {
+      // Chat mode: shorter responses (suggestions, explanations)
+      maxTokens = 4000;
+    } else {
+      // Build mode: analyze command to determine appropriate token budget
+      const commandLower = command.toLowerCase();
+      
+      if (commandLower.includes('finish') || commandLower.includes('complete') || commandLower.includes('entire')) {
+        // Full page generation - use maximum budget
+        maxTokens = 64000;
+      } else if (commandLower.includes('section') || commandLower.includes('add') || commandLower.includes('create')) {
+        // Section-level changes - medium budget
+        maxTokens = 32000;
+      } else if (commandLower.includes('fix') || commandLower.includes('update') || commandLower.includes('change')) {
+        // Small edits - conservative budget
+        maxTokens = 16000;
+      } else {
+        // Default: generous budget for unknown requests
+        maxTokens = 32000;
+      }
+    }
+
+    console.log('Token allocation:', {
+      mode,
+      command: command.substring(0, 50),
+      estimatedInput: inputTokenEstimate,
+      maxOutput: maxTokens,
+      totalBudget: inputTokenEstimate + maxTokens
+    });
     
     const requestPayload = {
       model: 'claude-sonnet-4-5-20250929',
@@ -396,12 +426,34 @@ Hover: hover:-translate-y-1 transition-all duration-300.
       }
     }
 
+    // Calculate costs (Claude Sonnet 4.5 pricing)
+    const inputCost = (usage.input_tokens || 0) * 0.000003; // $3 per 1M tokens
+    const outputCost = (usage.output_tokens || 0) * 0.000015; // $15 per 1M tokens
+    const cacheWriteCost = (cacheWrites || 0) * 0.00000375; // $3.75 per 1M tokens (25% premium)
+    const cacheReadCost = (cacheReads || 0) * 0.0000003; // $0.30 per 1M tokens (90% discount)
+    const totalCost = inputCost + outputCost + cacheWriteCost + cacheReadCost;
+
     return new Response(
       JSON.stringify({
         updatedHtml: responseHtml,
         message: message,
         explanation: message,
         tokenUsage: tokenUsage,
+        usage: {
+          inputTokens: usage.input_tokens || 0,
+          outputTokens: usage.output_tokens || 0,
+          totalTokens: tokenUsage,
+          cacheReads: cacheReads,
+          cacheWrites: cacheWrites,
+          maxTokensAllowed: maxTokens,
+          costs: {
+            input: inputCost,
+            output: outputCost,
+            cacheWrite: cacheWriteCost,
+            cacheRead: cacheReadCost,
+            total: totalCost
+          }
+        },
         debug: {
           fullPrompt: prompt,
           requestPayload,
