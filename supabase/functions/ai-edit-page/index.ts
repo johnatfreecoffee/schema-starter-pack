@@ -237,8 +237,9 @@ Hover: hover:-translate-y-1 transition-all duration-300.
     
     console.log('Calling AI (Anthropic Claude)...');
 
-    // Timeout based on mode: chat=60s, build=600s (10 minutes for large page generation)
-    const timeoutMs = mode === 'chat' ? 60000 : 600000;
+    // Timeout based on mode: chat=60s, build=120s (2 minutes - under Supabase's 150s hard limit)
+    // Note: Supabase Edge Functions have a 150-second hard timeout at infrastructure level
+    const timeoutMs = mode === 'chat' ? 60000 : 120000;
     const fetchWithTimeout = async (url: string, options: RequestInit) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -272,8 +273,9 @@ Hover: hover:-translate-y-1 transition-all duration-300.
       const commandLower = command.toLowerCase();
       
       if (commandLower.includes('finish') || commandLower.includes('complete') || commandLower.includes('entire')) {
-        // Full page generation - use maximum budget
-        maxTokens = 64000;
+        // Full page generation - reduced from 64K to stay under infrastructure limits
+        // 32K tokens typically completes in under 2 minutes
+        maxTokens = 32000;
       } else if (commandLower.includes('section') || commandLower.includes('add') || commandLower.includes('create')) {
         // Section-level changes - medium budget
         maxTokens = 32000;
@@ -323,15 +325,23 @@ Hover: hover:-translate-y-1 transition-all duration-300.
     console.log(JSON.stringify(requestPayload, null, 2));
     console.log('=== FULL API REQUEST PAYLOAD END ===');
     
-    const response = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': ANTHROPIC_API_KEY!,
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestPayload),
-    });
+    let response;
+    try {
+      console.log('Making API call to Anthropic...');
+      response = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': ANTHROPIC_API_KEY!,
+          'anthropic-version': '2023-06-01',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestPayload),
+      });
+      console.log('API call completed, status:', response.status);
+    } catch (error) {
+      console.error('API call failed:', error);
+      throw new Error(`Failed to connect to Claude API: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -349,7 +359,15 @@ Hover: hover:-translate-y-1 transition-all duration-300.
       throw new Error(errorMessage);
     }
 
-    const data = await response.json();
+    let data;
+    try {
+      console.log('Parsing JSON response...');
+      data = await response.json();
+      console.log('JSON parsed successfully');
+    } catch (error) {
+      console.error('Failed to parse JSON response:', error);
+      throw new Error(`Failed to parse Claude API response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
     
     console.log('=== FULL API RESPONSE START ===');
     console.log(JSON.stringify(data, null, 2));
