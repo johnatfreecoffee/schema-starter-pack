@@ -727,7 +727,7 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-5',
-          max_tokens: 16000,
+          max_tokens: 50000,
           messages: [
             { role: 'user', content: prompt }
           ],
