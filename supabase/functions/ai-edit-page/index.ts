@@ -457,17 +457,26 @@ HIGH-VALUE TRANSACTIONAL EXAMPLES:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-LOVABLE DESIGN SYSTEM - USE THESE PATTERNS:
+LOVABLE DESIGN SYSTEM - USE COMPANY'S CUSTOM THEME:
 
 📦 REQUIRED: Include Tailwind CDN in <head>:
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   @layer base {
     :root {
+      ${context.siteSettings ? `
+      --primary: ${context.siteSettings.primary_color?.replace('hsl(', '').replace(')', '') || '221 83% 53%'};
+      --secondary: ${context.siteSettings.secondary_color?.replace('hsl(', '').replace(')', '') || '210 40% 96%'};
+      --accent: ${context.siteSettings.accent_color?.replace('hsl(', '').replace(')', '') || '142 76% 36%'};
+      --radius: ${context.siteSettings.button_border_radius ? (context.siteSettings.button_border_radius / 16) + 'rem' : '0.5rem'};
+      --card-radius: ${context.siteSettings.card_border_radius ? (context.siteSettings.card_border_radius / 16) + 'rem' : '0.75rem'};` : `
       --primary: 221 83% 53%;
+      --secondary: 210 40% 96%;
+      --accent: 142 76% 36%;
+      --radius: 0.5rem;
+      --card-radius: 0.75rem;`}
       --primary-foreground: 0 0% 100%;
       --primary-glow: 221 83% 65%;
-      --accent: 142 76% 36%;
       --accent-foreground: 0 0% 100%;
       --destructive: 0 84% 60%;
       --destructive-foreground: 0 0% 100%;
@@ -476,40 +485,56 @@ LOVABLE DESIGN SYSTEM - USE THESE PATTERNS:
       --muted: 210 40% 96%;
       --muted-foreground: 215 16% 47%;
       --border: 214 32% 91%;
-      --radius: 0.75rem;
     }
   }
 </style>
 
-🎨 COMPONENT PATTERNS:
+🎨 YOUR THEME COLORS (Use these HSL values in all styling):
+${context.siteSettings ? `
+Primary Color: hsl(${context.siteSettings.primary_color?.replace('hsl(', '').replace(')', '') || '221 83% 53%'})
+Secondary Color: hsl(${context.siteSettings.secondary_color?.replace('hsl(', '').replace(')', '') || '210 40% 96%'})
+Accent Color: hsl(${context.siteSettings.accent_color?.replace('hsl(', '').replace(')', '') || '142 76% 36%'})
+Button Border Radius: ${context.siteSettings.button_border_radius || 8}px
+Card Border Radius: ${context.siteSettings.card_border_radius || 12}px
+` : 'Using default theme values'}
 
-1. HERO SECTION:
-<section class="relative bg-gradient-to-br from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] text-white py-20 px-6 rounded-xl mb-16 overflow-hidden">
+⚠️ CRITICAL: Use ONLY the theme colors defined above. DO NOT use hardcoded colors.
+
+🎨 COMPONENT PATTERNS (Replace color values with YOUR theme):
+
+IMPORTANT: The examples below use default colors. You MUST replace them with the actual theme colors from above.
+- Replace "hsl(221,83%,53%)" → Use PRIMARY color from your theme
+- Replace "hsl(142,76%,36%)" → Use ACCENT color from your theme  
+- Replace "hsl(210,40%,96%)" → Use SECONDARY color from your theme
+- Use the actual border-radius values from your theme
+
+1. HERO SECTION (use PRIMARY color):
+<section class="relative bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] text-white py-20 px-6 rounded-[var(--radius)] mb-16 overflow-hidden">
   <div class="max-w-6xl mx-auto">
     <h1 class="text-5xl font-bold mb-6 leading-tight">{{service_name}} in {{city_name}}</h1>
     <p class="text-xl opacity-95 mb-8 max-w-3xl">{{service_description}}</p>
-    <a href="#contact" class="inline-block bg-white text-[hsl(221,83%,53%)] px-8 py-4 rounded-xl font-bold shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)] hover:-translate-y-1 transition-all duration-300">Get Started Today</a>
+    <a href="#contact" class="inline-block bg-white text-[hsl(var(--primary))] px-8 py-4 rounded-[var(--radius)] font-bold shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)] hover:-translate-y-1 transition-all duration-300">Get Started Today</a>
   </div>
 </section>
 
-2. FEATURE CARDS:
+2. FEATURE CARDS (use PRIMARY for accents):
 <div class="grid md:grid-cols-3 gap-8 my-16">
-  <div class="bg-white p-8 rounded-xl shadow-[0_10px_30px_-10px_hsl(221,83%,53%,0.15)] border border-[hsl(214,32%,91%)] hover:shadow-[0_20px_40px_-10px_hsl(221,83%,53%,0.25)] hover:-translate-y-2 transition-all duration-300">
-    <div class="w-14 h-14 bg-gradient-to-br from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] rounded-xl flex items-center justify-center mb-6">
+  <div class="bg-white p-8 rounded-[var(--card-radius)] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] border border-[hsl(var(--border))] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15)] hover:-translate-y-2 transition-all duration-300">
+    <div class="w-14 h-14 bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] rounded-[var(--radius)] flex items-center justify-center mb-6">
       <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="white" viewBox="0 0 256 256">
         <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm40-68a28,28,0,0,1-28,28H116a8,8,0,0,1,0-16h24a12,12,0,0,0,0-24H116a28,28,0,0,1,0-56h4V72a8,8,0,0,1,16,0v8h4a8,8,0,0,1,0,16H116a12,12,0,0,0,0,24h24A28,28,0,0,1,168,148Z"/>
       </svg>
     </div>
-    <h3 class="text-2xl font-bold mb-4 text-[hsl(222,47%,11%)]">Feature Title</h3>
-    <p class="text-[hsl(215,16%,47%)] leading-relaxed">Feature description with compelling benefits.</p>
+    <h3 class="text-2xl font-bold mb-4 text-[hsl(var(--foreground))]">Feature Title</h3>
+    <p class="text-[hsl(var(--muted-foreground))] leading-relaxed">Feature description with compelling benefits.</p>
   </div>
 </div>
 
-3. TESTIMONIAL SECTION:
-<section class="bg-gradient-to-br from-[hsl(210,40%,98%)] to-[hsl(210,40%,96%)] py-20 px-6 rounded-xl my-16">
-  <h2 class="text-4xl font-bold text-center mb-12 text-[hsl(222,47%,11%)]">What Our Customers Say</h2>
+3. TESTIMONIAL SECTION (use SECONDARY for background):
+<section class="bg-[hsl(var(--secondary))] py-20 px-6 rounded-[var(--card-radius)] my-16">
+  <h2 class="text-4xl font-bold text-center mb-12 text-[hsl(var(--foreground))]">What Our Customers Say</h2>
   <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-    <div class="bg-white p-8 rounded-xl shadow-[0_5px_20px_rgba(0,0,0,0.08)]">
+    <div class="bg-white p-8 rounded-[var(--card-radius)] shadow-[0_5px_20px_rgba(0,0,0,0.08)]">
       <div class="flex gap-1 mb-4">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fbbf24" viewBox="0 0 256 256"><path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a16,16,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"/></svg>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fbbf24" viewBox="0 0 256 256"><path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a16,16,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"/></svg>
@@ -517,72 +542,72 @@ LOVABLE DESIGN SYSTEM - USE THESE PATTERNS:
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fbbf24" viewBox="0 0 256 256"><path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a16,16,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"/></svg>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fbbf24" viewBox="0 0 256 256"><path d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a16,16,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"/></svg>
       </div>
-      <p class="text-[hsl(215,16%,47%)] mb-4 leading-relaxed">"Testimonial text goes here..."</p>
-      <div class="font-semibold text-[hsl(222,47%,11%)]">— Customer Name</div>
+      <p class="text-[hsl(var(--muted-foreground))] mb-4 leading-relaxed">"Testimonial text goes here..."</p>
+      <div class="font-semibold text-[hsl(var(--foreground))]">— Customer Name</div>
     </div>
   </div>
 </section>
 
 4. CTA BUTTON VARIANTS:
-<!-- Primary CTA -->
-<a href="#contact" class="inline-block bg-[hsl(221,83%,53%)] text-white px-8 py-4 rounded-xl font-bold shadow-[0_10px_30px_-10px_hsl(221,83%,53%,0.3)] hover:bg-[hsl(221,83%,45%)] hover:-translate-y-1 transition-all duration-300">Contact Us Now</a>
+<!-- Primary CTA (use PRIMARY color) -->
+<a href="#contact" class="inline-block bg-[hsl(var(--primary))] text-white px-8 py-4 rounded-[var(--radius)] font-bold shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-300">Contact Us Now</a>
 
-<!-- Accent CTA (Green) -->
-<a href="#call" class="inline-block bg-[hsl(142,76%,36%)] text-white px-8 py-4 rounded-xl font-bold shadow-[0_10px_30px_-10px_hsl(142,76%,36%,0.3)] hover:bg-[hsl(142,76%,30%)] hover:-translate-y-1 transition-all duration-300">Call Now</a>
+<!-- Accent CTA (use ACCENT color) -->
+<a href="#call" class="inline-block bg-[hsl(var(--accent))] text-white px-8 py-4 rounded-[var(--radius)] font-bold shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-300">Call Now</a>
 
-<!-- Emergency/Urgent CTA (Red) -->
-<a href="tel:{{company_phone}}" class="inline-block bg-[hsl(0,84%,60%)] text-white px-8 py-4 rounded-xl font-bold shadow-[0_10px_30px_-10px_hsl(0,84%,60%,0.3)] hover:bg-[hsl(0,84%,50%)] hover:-translate-y-1 transition-all duration-300">Emergency Service</a>
+<!-- Emergency/Urgent CTA (Red - only for emergencies) -->
+<a href="tel:{{company_phone}}" class="inline-block bg-[hsl(var(--destructive))] text-white px-8 py-4 rounded-[var(--radius)] font-bold shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-300">Emergency Service</a>
 
 5. STATS/NUMBERS:
-<div class="bg-[hsl(222,47%,11%)] py-20 px-6 rounded-xl my-16">
+<div class="bg-[hsl(var(--foreground))] py-20 px-6 rounded-[var(--card-radius)] my-16">
   <div class="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto text-center">
     <div>
-      <div class="text-6xl font-extrabold bg-gradient-to-r from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] bg-clip-text text-transparent mb-3">500+</div>
-      <div class="text-[hsl(210,40%,70%)] text-lg">Projects Completed</div>
+      <div class="text-6xl font-extrabold bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] bg-clip-text text-transparent mb-3">500+</div>
+      <div class="text-[hsl(var(--muted-foreground))] text-lg">Projects Completed</div>
     </div>
     <div>
-      <div class="text-6xl font-extrabold bg-gradient-to-r from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] bg-clip-text text-transparent mb-3">25+</div>
-      <div class="text-[hsl(210,40%,70%)] text-lg">Years Experience</div>
+      <div class="text-6xl font-extrabold bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] bg-clip-text text-transparent mb-3">25+</div>
+      <div class="text-[hsl(var(--muted-foreground))] text-lg">Years Experience</div>
     </div>
     <div>
-      <div class="text-6xl font-extrabold bg-gradient-to-r from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] bg-clip-text text-transparent mb-3">100%</div>
-      <div class="text-[hsl(210,40%,70%)] text-lg">Satisfaction Rate</div>
+      <div class="text-6xl font-extrabold bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] bg-clip-text text-transparent mb-3">100%</div>
+      <div class="text-[hsl(var(--muted-foreground))] text-lg">Satisfaction Rate</div>
     </div>
   </div>
 </div>
 
 6. PRICING CARDS:
 <div class="grid md:grid-cols-3 gap-8 my-16">
-  <div class="bg-white p-8 rounded-xl border-2 border-[hsl(214,32%,91%)] hover:border-[hsl(221,83%,53%)] hover:shadow-[0_20px_40px_-10px_hsl(221,83%,53%,0.2)] transition-all duration-300">
-    <h3 class="text-2xl font-bold mb-2 text-[hsl(222,47%,11%)]">Basic Plan</h3>
-    <div class="text-4xl font-extrabold mb-6 text-[hsl(221,83%,53%)]">$99<span class="text-lg text-[hsl(215,16%,47%)]">/mo</span></div>
+  <div class="bg-white p-8 rounded-[var(--card-radius)] border-2 border-[hsl(var(--border))] hover:border-[hsl(var(--primary))] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15)] transition-all duration-300">
+    <h3 class="text-2xl font-bold mb-2 text-[hsl(var(--foreground))]">Basic Plan</h3>
+    <div class="text-4xl font-extrabold mb-6 text-[hsl(var(--primary))]">$99<span class="text-lg text-[hsl(var(--muted-foreground))]">/mo</span></div>
     <ul class="space-y-3 mb-8">
-      <li class="flex items-center gap-2 text-[hsl(215,16%,47%)]">
+      <li class="flex items-center gap-2 text-[hsl(var(--muted-foreground))]">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#16a34a" viewBox="0 0 256 256"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg>
         Feature one
       </li>
-      <li class="flex items-center gap-2 text-[hsl(215,16%,47%)]">
+      <li class="flex items-center gap-2 text-[hsl(var(--muted-foreground))]">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#16a34a" viewBox="0 0 256 256"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg>
         Feature two
       </li>
-      <li class="flex items-center gap-2 text-[hsl(215,16%,47%)]">
+      <li class="flex items-center gap-2 text-[hsl(var(--muted-foreground))]">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#16a34a" viewBox="0 0 256 256"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg>
         Feature three
       </li>
     </ul>
-    <a href="#contact" class="block text-center bg-gradient-to-r from-[hsl(221,83%,53%)] to-[hsl(221,83%,65%)] text-white py-4 rounded-xl font-bold hover:-translate-y-1 transition-all duration-300">Choose Plan</a>
+    <a href="#contact" class="block text-center bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] text-white py-4 rounded-[var(--radius)] font-bold hover:-translate-y-1 transition-all duration-300">Choose Plan</a>
   </div>
 </div>
 
 7. CONTACT SECTION:
-<section class="bg-white p-12 rounded-xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] my-16">
-  <h2 class="text-4xl font-bold text-center mb-8 text-[hsl(222,47%,11%)]">Get in Touch</h2>
+<section class="bg-white p-12 rounded-[var(--card-radius)] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] my-16">
+  <h2 class="text-4xl font-bold text-center mb-8 text-[hsl(var(--foreground))]">Get in Touch</h2>
   <div class="max-w-2xl mx-auto">
     <form class="space-y-6">
-      <input type="text" placeholder="Your Name" class="w-full px-4 py-3 border border-[hsl(214,32%,91%)] rounded-xl focus:ring-2 focus:ring-[hsl(221,83%,53%)] outline-none transition-all">
-      <input type="email" placeholder="Your Email" class="w-full px-4 py-3 border border-[hsl(214,32%,91%)] rounded-xl focus:ring-2 focus:ring-[hsl(221,83%,53%)] outline-none transition-all">
-      <textarea placeholder="Your Message" rows="4" class="w-full px-4 py-3 border border-[hsl(214,32%,91%)] rounded-xl focus:ring-2 focus:ring-[hsl(221,83%,53%)] outline-none transition-all resize-none"></textarea>
-      <button type="submit" class="w-full bg-[hsl(142,76%,36%)] text-white py-4 rounded-xl font-bold shadow-[0_10px_30px_-10px_hsl(142,76%,36%,0.3)] hover:bg-[hsl(142,76%,30%)] hover:-translate-y-1 transition-all duration-300">Send Message</button>
+      <input type="text" placeholder="Your Name" class="w-full px-4 py-3 border border-[hsl(var(--border))] rounded-[var(--radius)] focus:ring-2 focus:ring-[hsl(var(--primary))] outline-none transition-all">
+      <input type="email" placeholder="Your Email" class="w-full px-4 py-3 border border-[hsl(var(--border))] rounded-[var(--radius)] focus:ring-2 focus:ring-[hsl(var(--primary))] outline-none transition-all">
+      <textarea placeholder="Your Message" rows="4" class="w-full px-4 py-3 border border-[hsl(var(--border))] rounded-[var(--radius)] focus:ring-2 focus:ring-[hsl(var(--primary))] outline-none transition-all resize-none"></textarea>
+      <button type="submit" class="w-full bg-[hsl(var(--accent))] text-white py-4 rounded-[var(--radius)] font-bold shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)] hover:-translate-y-1 transition-all duration-300">Send Message</button>
     </form>
   </div>
 </section>

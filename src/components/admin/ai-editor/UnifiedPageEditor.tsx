@@ -181,7 +181,7 @@ const UnifiedPageEditor = ({
     enabled: (!!service?.id || pageType === 'static') && open
   });
 
-  // Load company settings and AI training
+  // Load company settings, AI training, and site settings
   const {
     data: companySettings
   } = useQuery({
@@ -202,6 +202,18 @@ const UnifiedPageEditor = ({
       const {
         data
       } = await supabase.from('ai_training').select('*').single();
+      return data;
+    },
+    enabled: open
+  });
+  const {
+    data: siteSettings
+  } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: async () => {
+      const {
+        data
+      } = await supabase.from('site_settings').select('*').maybeSingle();
       return data;
     },
     enabled: open
@@ -374,7 +386,8 @@ const UnifiedPageEditor = ({
               is_active: service.is_active
             } : null,
             companyInfo: companySettings,
-            aiTraining: aiTraining
+            aiTraining: aiTraining,
+            siteSettings: siteSettings
           }
         }
       });
