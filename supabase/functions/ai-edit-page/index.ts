@@ -669,9 +669,31 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
 
     console.log(`Calling ${model === 'claude' ? 'Claude (Anthropic)' : 'Grok (xAI)'}...`);
 
+    // Add timeout handling to prevent hanging requests
+    const timeoutMs = 180000; // 3 minutes
+    const fetchWithTimeout = async (url: string, options: RequestInit) => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+      
+      try {
+        const response = await fetch(url, {
+          ...options,
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        return response;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error instanceof Error && error.name === 'AbortError') {
+          throw new Error(`Request timed out after ${timeoutMs/1000} seconds`);
+        }
+        throw error;
+      }
+    };
+
     let response: Response;
     if (model === 'claude') {
-      response = await fetch('https://api.anthropic.com/v1/messages', {
+      response = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
           'x-api-key': ANTHROPIC_API_KEY!,
@@ -688,7 +710,7 @@ Return the complete, stunning HTML page using Lovable's design system now:`;
       });
     } else {
       // Grok
-      response = await fetch('https://api.x.ai/v1/chat/completions', {
+      response = await fetchWithTimeout('https://api.x.ai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${XAI_API_KEY}`,
