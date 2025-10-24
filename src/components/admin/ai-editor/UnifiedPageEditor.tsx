@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -834,72 +835,82 @@ const UnifiedPageEditor = ({
                   }}
                 />
               ) : (
-                <ScrollArea className="h-full">
-                  <div className="p-6 space-y-6 bg-muted/20">
-                    {!debugData ? (
-                      <div className="text-center text-muted-foreground py-12">
-                        <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p className="text-lg font-medium">No Debug Data Yet</p>
-                        <p className="text-sm mt-2">Send a command to Claude to see the full request and response</p>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2">
-                            <div className="h-8 w-1 bg-primary rounded-full" />
-                            <h3 className="font-semibold text-lg">Full Prompt Sent to Claude</h3>
-                            {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
-                          </div>
-                          <div className="bg-background rounded-lg border shadow-sm">
-                            <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px]">
-                              {debugData.fullPrompt}
-                            </pre>
-                          </div>
+                <div className="h-full overflow-hidden flex flex-col">
+                  <ScrollArea className="flex-1">
+                    <div className="p-6 bg-muted/20">
+                      {!debugData ? (
+                        <div className="text-center text-muted-foreground py-12">
+                          <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                          <p className="text-lg font-medium">No Debug Data Yet</p>
+                          <p className="text-sm mt-2">Send a command to Claude to see the full request and response</p>
                         </div>
+                      ) : (
+                        <Accordion type="multiple" defaultValue={['prompt', 'request', 'response', 'html']} className="space-y-4">
+                          <AccordionItem value="prompt" className="bg-background rounded-lg border shadow-sm">
+                            <AccordionTrigger className="px-4 hover:no-underline">
+                              <div className="flex items-center gap-2">
+                                <div className="h-6 w-1 bg-primary rounded-full" />
+                                <h3 className="font-semibold">Full Prompt Sent to Claude</h3>
+                                {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
+                                {debugData.fullPrompt}
+                              </pre>
+                            </AccordionContent>
+                          </AccordionItem>
 
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2">
-                            <div className="h-8 w-1 bg-blue-500 rounded-full" />
-                            <h3 className="font-semibold text-lg">Request Context</h3>
-                          </div>
-                          <div className="bg-background rounded-lg border shadow-sm">
-                            <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px]">
-                              {JSON.stringify(debugData.requestPayload, null, 2)}
-                            </pre>
-                          </div>
-                        </div>
+                          <AccordionItem value="request" className="bg-background rounded-lg border shadow-sm">
+                            <AccordionTrigger className="px-4 hover:no-underline">
+                              <div className="flex items-center gap-2">
+                                <div className="h-6 w-1 bg-blue-500 rounded-full" />
+                                <h3 className="font-semibold">Request Context</h3>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
+                                {JSON.stringify(debugData.requestPayload, null, 2)}
+                              </pre>
+                            </AccordionContent>
+                          </AccordionItem>
 
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2">
-                            <div className="h-8 w-1 bg-green-500 rounded-full" />
-                            <h3 className="font-semibold text-lg">Claude's Raw Response</h3>
-                            {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
-                          </div>
-                          <div className="bg-background rounded-lg border shadow-sm">
-                            <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px]">
-                              {typeof debugData.responseData === 'string' 
-                                ? debugData.responseData 
-                                : JSON.stringify(debugData.responseData, null, 2)}
-                            </pre>
-                          </div>
-                        </div>
+                          <AccordionItem value="response" className="bg-background rounded-lg border shadow-sm">
+                            <AccordionTrigger className="px-4 hover:no-underline">
+                              <div className="flex items-center gap-2">
+                                <div className="h-6 w-1 bg-green-500 rounded-full" />
+                                <h3 className="font-semibold">Claude's Raw Response</h3>
+                                {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
+                                {typeof debugData.responseData === 'string' 
+                                  ? debugData.responseData 
+                                  : JSON.stringify(debugData.responseData, null, 2)}
+                              </pre>
+                            </AccordionContent>
+                          </AccordionItem>
 
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2">
-                            <div className="h-8 w-1 bg-orange-500 rounded-full" />
-                            <h3 className="font-semibold text-lg">Generated HTML</h3>
-                            {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
-                          </div>
-                          <div className="bg-background rounded-lg border shadow-sm">
-                            <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px]">
-                              {debugData.generatedHtml}
-                            </pre>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </ScrollArea>
+                          <AccordionItem value="html" className="bg-background rounded-lg border shadow-sm">
+                            <AccordionTrigger className="px-4 hover:no-underline">
+                              <div className="flex items-center gap-2">
+                                <div className="h-6 w-1 bg-orange-500 rounded-full" />
+                                <h3 className="font-semibold">Generated HTML</h3>
+                                {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <pre className="p-4 overflow-auto text-xs font-mono whitespace-pre-wrap break-words max-h-[400px] bg-muted/30 rounded">
+                                {debugData.generatedHtml}
+                              </pre>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      )}
+                    </div>
+                  </ScrollArea>
+                </div>
               )}
             </div>
           </div>
