@@ -246,7 +246,7 @@ Hover: hover:-translate-y-1 transition-all duration-300.
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
+        model: 'claude-sonnet-4-5-20250929',
         max_tokens: maxTokens,
         // Structure prompt with caching for design system (static content)
         system: [
