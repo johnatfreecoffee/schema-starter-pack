@@ -237,8 +237,8 @@ Hover: hover:-translate-y-1 transition-all duration-300.
     
     console.log('Calling AI (Anthropic Claude)...');
 
-    // Timeout based on mode: chat=45s, build=90s (with buffer for 2K/4K tokens)
-    const timeoutMs = mode === 'chat' ? 45000 : 90000;
+    // Timeout based on mode: chat=60s, build=180s (with buffer for 8K tokens)
+    const timeoutMs = mode === 'chat' ? 60000 : 180000;
     const fetchWithTimeout = async (url: string, options: RequestInit) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -260,9 +260,9 @@ Hover: hover:-translate-y-1 transition-all duration-300.
     };
 
     // Differentiate token budget based on mode
-    // Chat mode (small edits): 2000 tokens = ~30 seconds
-    // Build mode (full pages): 4000 tokens = ~60 seconds
-    const maxTokens = mode === 'chat' ? 2000 : 4000;
+    // Chat mode (small edits): 2000 tokens
+    // Build mode (full pages): 8000 tokens for complete HTML output
+    const maxTokens = mode === 'chat' ? 2000 : 8000;
     
     const requestPayload = {
       model: 'claude-sonnet-4-5-20250929',
