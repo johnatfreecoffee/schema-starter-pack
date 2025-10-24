@@ -314,7 +314,7 @@ const UnifiedPageEditor = ({
       // Fallback: show raw template without substitution so preview never stays blank
       setRenderedPreview(htmlToRender);
     }
-  }, [displayedHtml, serviceAreas, companySettings, service, pageType]);
+  }, [displayedHtml, serviceAreas, companySettings, service, pageType, selectedModel, isShowingPrevious]);
   const sendToAi = async () => {
     const currentPrompt = selectedModel === 'claude' ? claudePrompt : grokPrompt;
     if (!currentPrompt.trim()) return;
@@ -869,14 +869,7 @@ const UnifiedPageEditor = ({
 
             <div className="flex-1 min-h-0 relative bg-white">
               {viewMode === 'preview' ? (
-                renderedPreview ? (
-                  <PreviewIframe key={`${selectedModel}-${isShowingPrevious}`} html={renderedPreview} />
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
-                    <Loader2 className="h-8 w-8 animate-spin" />
-                    <p className="mt-2">Loading preview...</p>
-                  </div>
-                )
+                <PreviewIframe key={`${selectedModel}-${isShowingPrevious}`} html={renderedPreview} />
               ) : (
                 <Editor
                   key={`${selectedModel}-${isShowingPrevious}`}
