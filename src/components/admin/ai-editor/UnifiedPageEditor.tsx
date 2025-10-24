@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
-import { Loader2, Send, Sparkles, Eye, Code } from 'lucide-react';
+import { Loader2, Send, Sparkles, Eye, Code, Trash2, AlertCircle } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
 import TruncatedMessage from './TruncatedMessage';
@@ -34,6 +34,63 @@ interface ChatMessage {
 type EditorMode = 'chat' | 'build';
 const TOKEN_SOFT_LIMIT = 800000;
 const TOKEN_HARD_LIMIT = 1000000;
+
+// Helper functions for localStorage
+const STORAGE_KEY_CHAT = 'ai-editor-chat-history';
+const STORAGE_KEY_DEBUG = 'ai-editor-debug-data';
+const STORAGE_KEY_SETTINGS_HASH = 'ai-editor-settings-hash';
+
+const generateSettingsHash = (companySettings: any, aiTraining: any, siteSettings: any) => {
+  const combined = JSON.stringify({ companySettings, aiTraining, siteSettings });
+  let hash = 0;
+  for (let i = 0; i < combined.length; i++) {
+    const char = combined.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return hash.toString();
+};
+
+const loadChatHistory = (): ChatMessage[] => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY_CHAT);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveChatHistory = (messages: ChatMessage[]) => {
+  try {
+    localStorage.setItem(STORAGE_KEY_CHAT, JSON.stringify(messages));
+  } catch (e) {
+    console.error('Failed to save chat history:', e);
+  }
+};
+
+const loadDebugData = () => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY_DEBUG);
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+};
+
+const saveDebugData = (data: any) => {
+  try {
+    localStorage.setItem(STORAGE_KEY_DEBUG, JSON.stringify(data));
+  } catch (e) {
+    console.error('Failed to save debug data:', e);
+  }
+};
+
+const clearHistory = () => {
+  localStorage.removeItem(STORAGE_KEY_CHAT);
+  localStorage.removeItem(STORAGE_KEY_DEBUG);
+  localStorage.removeItem(STORAGE_KEY_SETTINGS_HASH);
+};
+
 const UnifiedPageEditor = ({
   open,
   onClose,
@@ -69,12 +126,14 @@ const UnifiedPageEditor = ({
     return saved !== null ? saved === 'true' : true;
   });
   const [isPublishing, setIsPublishing] = useState(false);
+  const [settingsChanged, setSettingsChanged] = useState(false);
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const queryClient = useQueryClient();
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const hasLoadedHistory = useRef(false);
 
   // Load template for service or static page
   const {
@@ -244,14 +303,56 @@ const UnifiedPageEditor = ({
     }
   }, [template, pageType]);
 
-  // Reset chat when dialog opens
+  // Load chat history and debug data on mount (only once)
   useEffect(() => {
-    if (open) {
-      setChatMessages([]);
-      setTokenCount(0);
+    if (open && !hasLoadedHistory.current) {
+      const savedChat = loadChatHistory();
+      const savedDebug = loadDebugData();
+      
+      if (savedChat.length > 0) {
+        setChatMessages(savedChat);
+        // Estimate token count (rough approximation)
+        const estimatedTokens = savedChat.reduce((sum, msg) => sum + msg.content.length * 0.25, 0);
+        setTokenCount(Math.floor(estimatedTokens));
+      }
+      
+      if (savedDebug) {
+        setDebugData(savedDebug);
+      }
+      
+      hasLoadedHistory.current = true;
       setIsShowingPrevious(false);
     }
+    
+    // Reset flag when dialog closes
+    if (!open) {
+      hasLoadedHistory.current = false;
+    }
   }, [open]);
+
+  // Check for settings changes
+  useEffect(() => {
+    if (open && companySettings && aiTraining && siteSettings) {
+      const currentHash = generateSettingsHash(companySettings, aiTraining, siteSettings);
+      const storedHash = localStorage.getItem(STORAGE_KEY_SETTINGS_HASH);
+      
+      if (storedHash && storedHash !== currentHash) {
+        setSettingsChanged(true);
+      } else {
+        setSettingsChanged(false);
+      }
+      
+      // Update stored hash
+      localStorage.setItem(STORAGE_KEY_SETTINGS_HASH, currentHash);
+    }
+  }, [open, companySettings, aiTraining, siteSettings]);
+
+  // Save chat history whenever it changes
+  useEffect(() => {
+    if (chatMessages.length > 0) {
+      saveChatHistory(chatMessages);
+    }
+  }, [chatMessages]);
 
   // Compute displayed HTML based on version toggle
   const displayedHtml = isShowingPrevious ? previousHtml : currentHtml;
@@ -403,6 +504,7 @@ const UnifiedPageEditor = ({
       // Store debug data
       if (data?.debug) {
         setDebugData(data.debug);
+        saveDebugData(data.debug);
       }
       
       const assistantMessage: ChatMessage = {
@@ -456,9 +558,12 @@ const UnifiedPageEditor = ({
   const resetChat = () => {
     setChatMessages([]);
     setTokenCount(0);
+    setDebugData(null);
+    clearHistory();
+    setSettingsChanged(false);
     toast({
-      title: 'Chat Reset',
-      description: 'AI conversation history cleared.'
+      title: 'History Cleared',
+      description: 'Chat and debug data have been cleared.'
     });
   };
   const toggleVersion = () => {
@@ -696,10 +801,25 @@ const UnifiedPageEditor = ({
           {/* Left Panel - AI Chat */}
           <div className="w-2/5 border-r flex flex-col overflow-hidden">
             <div className="p-4 border-b flex-shrink-0">
+              {settingsChanged && (
+                <div className="mb-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 text-xs text-yellow-700 dark:text-yellow-500">
+                    <p className="font-medium">Company settings updated</p>
+                    <p className="mt-0.5">Consider clearing history for best results with updated information.</p>
+                  </div>
+                </div>
+              )}
+              
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">AI Assistant</h3>
+                  {chatMessages.length > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      ({chatMessages.length} messages)
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant={editorMode === 'chat' ? 'default' : 'outline'} size="sm" onClick={() => setEditorMode('chat')} className="text-xs h-7">
@@ -720,9 +840,17 @@ const UnifiedPageEditor = ({
                       {(tokenCount / 1000000).toFixed(2)}M
                     </span>
                   </span>
-                  {tokenCount > 0 && <Button variant="ghost" size="sm" onClick={resetChat} className="text-xs h-6 px-2">
-                      Reset
-                    </Button>}
+                  {(chatMessages.length > 0 || debugData) && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={resetChat} 
+                      className="text-xs h-6 px-2 gap-1"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      Clear History
+                    </Button>
+                  )}
                 </div>
               </div>
               {tokenCount >= TOKEN_SOFT_LIMIT && <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded-md">
