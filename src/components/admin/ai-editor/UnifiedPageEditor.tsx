@@ -121,6 +121,10 @@ const UnifiedPageEditor = ({
     responseData: any;
     generatedHtml: string;
   } | null>(null);
+  const [debugAccordionValue, setDebugAccordionValue] = useState<string[]>(() => {
+    const saved = localStorage.getItem('ai-editor-debug-accordion');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [sendOnEnter, setSendOnEnter] = useState(() => {
     const saved = localStorage.getItem('ai-editor-send-on-enter');
     return saved !== null ? saved === 'true' : true;
@@ -973,7 +977,15 @@ const UnifiedPageEditor = ({
                           <p className="text-sm mt-2">Send a command to Claude to see the full request and response</p>
                         </div>
                       ) : (
-                        <Accordion type="multiple" defaultValue={['prompt', 'request', 'response', 'html']} className="space-y-4 max-w-full">
+                        <Accordion 
+                          type="multiple" 
+                          value={debugAccordionValue}
+                          onValueChange={(value) => {
+                            setDebugAccordionValue(value);
+                            localStorage.setItem('ai-editor-debug-accordion', JSON.stringify(value));
+                          }}
+                          className="space-y-4 max-w-full"
+                        >
                           <AccordionItem value="prompt" className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
                             <AccordionTrigger className="px-4 hover:no-underline">
                               <div className="flex items-center gap-2">
