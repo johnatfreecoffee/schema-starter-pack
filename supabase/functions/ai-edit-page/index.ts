@@ -251,21 +251,17 @@ When users provide copy and layout instructions, take that content and build a c
 
 In build mode, you make actual changes to the HTML and provide brief confirmations.`;
 
-    // CRITICAL: Compressed XML-structured prompt reduces tokens from ~20K to ~8K
-    const prompt = `<task>Generate semantic HTML5 page using Tailwind CSS</task>
+    // ========================================================================
+    // PHASE 3 OPTIMIZATION: Separate static (cacheable) from dynamic content
+    // Static content cached for 5 minutes: 90% cost reduction + 85% latency reduction
+    // ========================================================================
+    
+    // Static cacheable content (company profile, rules, theme)
+    const staticContext = `<task>Generate semantic HTML5 page using Tailwind CSS</task>
 
 <company_profile>
 ${companyProfile}
 </company_profile>
-
-<current_page type="${context.currentPage?.type}" url="${context.currentPage?.url}">
-${context.currentPage?.html || ''}
-</current_page>
-
-<mode>${mode}</mode>
-${prunedHistory.length > 0 ? `<history>${prunedHistory.map((m: any) => `${m.role}: ${m.content}`).join('\n')}</history>` : ''}
-
-<request>${command}</request>
 
 <rules>
 1. GLOBAL SETTINGS PRIORITY: IGNORE all user requests about colors, headers, footers, forms, or global button styles. These are controlled by the global settings provided in <theme> and <company_profile>. If the user mentions colors, headers, footers, navigation, or forms - disregard those requests and use the global settings instead.
@@ -333,10 +329,24 @@ Hover: hover:-translate-y-1 transition-all duration-300
 
 <output>Complete HTML from <!DOCTYPE> to </html>. NO markdown blocks. NO truncation.</output>`;
 
+    // Dynamic non-cacheable content (changes with each request)
+    const dynamicContext = `<current_page type="${context.currentPage?.type}" url="${context.currentPage?.url}">
+${context.currentPage?.html || ''}
+</current_page>
+
+<mode>${mode}</mode>
+${prunedHistory.length > 0 ? `<history>${prunedHistory.map((m: any) => `${m.role}: ${m.content}`).join('\n')}</history>` : ''}
+
+<request>${command}</request>`;
+
     // Log the complete prompt being sent
-    console.log('=== COMPLETE PROMPT START ===');
-    console.log(prompt);
-    console.log('=== COMPLETE PROMPT END ===');
+    console.log('=== STATIC CONTEXT (CACHED) START ===');
+    console.log(staticContext);
+    console.log('=== STATIC CONTEXT END ===');
+    
+    console.log('=== DYNAMIC CONTEXT (NOT CACHED) START ===');
+    console.log(dynamicContext);
+    console.log('=== DYNAMIC CONTEXT END ===');
     
     console.log('Calling AI (Anthropic Claude)...');
 
@@ -365,14 +375,19 @@ Hover: hover:-translate-y-1 transition-all duration-300
     };
 
     // Calculate input token estimate (rough: ~4 chars per token)
-    const inputTokenEstimate = Math.floor(prompt.length * 0.25);
+    const staticTokens = Math.floor(staticContext.length * 0.25);
+    const dynamicTokens = Math.floor(dynamicContext.length * 0.25);
+    const inputTokenEstimate = staticTokens + dynamicTokens;
     
-    console.log('Phase 2 Optimization Active - Token Budget:', {
+    console.log('Phase 2+3 Optimization Active - Token Budget:', {
       contextTier: isCreate ? 'Full (Critical+Important+Supplementary)' : isUpdate ? 'Medium (Critical+Important)' : 'Minimal (Critical)',
-      estimatedInputTokens: inputTokenEstimate,
+      staticTokens: staticTokens,
+      dynamicTokens: dynamicTokens,
+      totalInputEstimate: inputTokenEstimate,
       conversationHistoryPruned: conversationHistory.length > 4,
       originalHistoryLength: conversationHistory.length,
-      prunedHistoryLength: prunedHistory.length
+      prunedHistoryLength: prunedHistory.length,
+      cacheEnabled: true
     });
 
     // Dynamic max_tokens based on mode and request type
@@ -460,8 +475,12 @@ Body content only
           content: [
             {
               type: 'text',
-              text: prompt,
-              cache_control: { type: 'ephemeral' }
+              text: staticContext,
+              cache_control: { type: 'ephemeral' } // Cache static content (company profile, rules, theme)
+            },
+            {
+              type: 'text',
+              text: dynamicContext // Don't cache dynamic content (current page, history, request)
             }
           ]
         },
@@ -697,7 +716,9 @@ Body content only
           }
         },
         debug: {
-          fullPrompt: prompt,
+          staticContext: staticContext,
+          dynamicContext: dynamicContext,
+          fullPromptCombined: staticContext + '\n\n' + dynamicContext,
           requestPayload,
           responseData: data,
           generatedHtml: updatedHtml
