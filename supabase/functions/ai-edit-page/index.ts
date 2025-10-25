@@ -394,6 +394,67 @@ function getCachedContent(companyId: string): string | null {
   return cached.name;
 }
 
+// ========================================================================
+// PHASE 2 OPTIMIZATION: Proper Multi-Turn Chat History
+// Structures conversation in Gemini's native format for better understanding
+// ========================================================================
+
+interface ConversationTurn {
+  command?: string;
+  userMessage?: string;
+  modelResponse?: string;
+  html?: string;
+}
+
+function buildProperChatHistory(
+  history: ConversationTurn[],
+  currentRequest: string,
+  currentPageHtml?: string,
+  pageType?: string
+): Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> {
+  const contents: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
+  
+  // Add previous conversation turns in proper alternating format
+  for (const turn of history) {
+    // Add user's message/command
+    const userMessage = turn.userMessage || turn.command;
+    if (userMessage) {
+      contents.push({
+        role: 'user',
+        parts: [{ text: userMessage }]
+      });
+    }
+    
+    // Add model's response (if available)
+    if (turn.modelResponse || turn.html) {
+      const response = turn.modelResponse || `Generated HTML (${(turn.html || '').length} chars)`;
+      contents.push({
+        role: 'model',
+        parts: [{ text: response }]
+      });
+    }
+  }
+  
+  // Add current request with context
+  let currentMessage = `USER REQUEST: ${currentRequest}\n`;
+  
+  if (currentPageHtml) {
+    const htmlPreview = currentPageHtml.substring(0, 3000);
+    currentMessage += `\nCURRENT PAGE HTML (first 3000 chars):\n${htmlPreview}\n`;
+  }
+  
+  if (pageType) {
+    currentMessage += `\nPAGE TYPE: ${pageType}\n`;
+  }
+  
+  contents.push({
+    role: 'user',
+    parts: [{ text: currentMessage }]
+  });
+  
+  return contents;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -652,6 +713,7 @@ ${buildThemeContext(context)}
 `.trim();
 
     // Build dynamic context (current request, not cached)
+    // PHASE 2: No longer concatenate history as text - will use proper multi-turn format
     let dynamicContext = `\nUSER REQUEST: ${command}\n`;
     
     if (context.currentPage?.html) {
@@ -661,13 +723,6 @@ ${buildThemeContext(context)}
     
     if (context.currentPage?.pageType) {
       dynamicContext += `\nPAGE TYPE: ${context.currentPage.pageType}\n`;
-    }
-    
-    if (conversationHistory.length > 0) {
-      dynamicContext += `\nRECENT EDIT HISTORY:\n`;
-      for (const item of conversationHistory.slice(-3)) {
-        dynamicContext += `- ${item.command}\n`;
-      }
     }
 
     // ========================================================================
@@ -692,16 +747,41 @@ ${buildThemeContext(context)}
     // ========================================================================
     // API REQUEST: Call Gemini with streaming
     // PHASE 1: Use systemInstruction field for free token optimization
+    // PHASE 2: Use proper multi-turn chat format for better context understanding
     // ========================================================================
+    
+    // Build proper multi-turn conversation history (Phase 2)
+    let chatContents;
+    
+    if (conversationHistory.length > 0) {
+      // Multi-turn conversation exists
+      chatContents = buildProperChatHistory(
+        conversationHistory.slice(-5), // Keep last 5 turns for context
+        command,
+        context.currentPage?.html,
+        context.currentPage?.pageType
+      );
+    } else {
+      // First message - include context as needed
+      chatContents = [{
+        role: 'user' as const,
+        parts: [{ text: dynamicContext }]
+      }];
+    }
+    
+    // If no cached content available, prepend static context to first user message
+    if (!cachedContentName && chatContents.length > 0) {
+      const firstUserMessage = chatContents.find(msg => msg.role === 'user');
+      if (firstUserMessage) {
+        firstUserMessage.parts[0].text = staticContext + '\n\n' + firstUserMessage.parts[0].text;
+      }
+    }
     
     const requestPayload: any = {
       systemInstruction: {
         parts: [{ text: systemInstructions }]  // FREE - not counted in tokens!
       },
-      contents: [{
-        role: 'user',
-        parts: [{ text: cachedContentName ? dynamicContext : staticContext + '\n\n' + dynamicContext }]
-      }],
+      contents: chatContents,
       generationConfig: {
         maxOutputTokens: 6000,
         temperature: 0.2,
@@ -716,10 +796,12 @@ ${buildThemeContext(context)}
 
     console.log('Calling Gemini 2.5 Pro API...');
     console.log('✅ Phase 1 Optimization: Using systemInstruction field (free tokens)');
+    console.log('✅ Phase 2 Optimization: Using proper multi-turn chat format');
     console.log('Request payload structure:', {
       hasSystemInstruction: true,
       hasCachedContent: !!cachedContentName,
-      contentLength: requestPayload.contents[0].parts[0].text.length,
+      conversationTurns: chatContents.length,
+      latestMessageLength: chatContents[chatContents.length - 1]?.parts[0]?.text.length || 0,
       maxOutputTokens: requestPayload.generationConfig.maxOutputTokens
     });
 
