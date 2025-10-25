@@ -594,14 +594,16 @@ serve(async (req) => {
     
     // ========================================================================
     // PHASE 3 OPTIMIZATION: Static vs Dynamic Context Separation
+    // PHASE 1 OPTIMIZATION: Separate system instructions (free tokens!)
     // Static context = Company profile, brand rules, theme (cacheable)
     // Dynamic context = Current page, edit history, specific request (not cached)
+    // System instructions = Rules and guidelines (not counted in tokens)
     // ========================================================================
     
     const companyId = context.companyInfo?.id || 'default';
     
-    // Build static context (cacheable, ~5000-7000 tokens)
-    const staticContext = `
+    // PHASE 1: System instructions (FREE - not counted in token usage)
+    const systemInstructions = `
 You are an expert web page generator for service businesses. Generate complete, production-ready HTML pages.
 
 CRITICAL OUTPUT RULES:
@@ -610,12 +612,6 @@ CRITICAL OUTPUT RULES:
 3. Use Handlebars {{variables}} for ALL dynamic content - NEVER hard-code company info
 4. Every page MUST use Tailwind CSS via CDN
 5. Every CTA button MUST use: onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Text')"
-
-${buildCriticalContext(context)}
-${buildImportantContext(context)}
-${buildSupplementaryContext(context)}
-${buildServiceContext(context.serviceInfo)}
-${buildThemeContext(context)}
 
 DESIGN REQUIREMENTS:
 - Mobile-first responsive design
@@ -644,6 +640,15 @@ SEO REQUIREMENTS:
 - Schema.org structured data for LocalBusiness
 - Alt text for all images
 - Proper heading hierarchy (single H1, then H2s, H3s)
+`.trim();
+    
+    // Build static context (cacheable company data, ~3000-5000 tokens)
+    const staticContext = `
+${buildCriticalContext(context)}
+${buildImportantContext(context)}
+${buildSupplementaryContext(context)}
+${buildServiceContext(context.serviceInfo)}
+${buildThemeContext(context)}
 `.trim();
 
     // Build dynamic context (current request, not cached)
@@ -686,12 +691,16 @@ SEO REQUIREMENTS:
 
     // ========================================================================
     // API REQUEST: Call Gemini with streaming
+    // PHASE 1: Use systemInstruction field for free token optimization
     // ========================================================================
     
     const requestPayload: any = {
+      systemInstruction: {
+        parts: [{ text: systemInstructions }]  // FREE - not counted in tokens!
+      },
       contents: [{
         role: 'user',
-        parts: [{ text: dynamicContext }]
+        parts: [{ text: cachedContentName ? dynamicContext : staticContext + '\n\n' + dynamicContext }]
       }],
       generationConfig: {
         maxOutputTokens: 6000,
@@ -703,13 +712,12 @@ SEO REQUIREMENTS:
     // Add cached content reference if available
     if (cachedContentName) {
       requestPayload.cachedContent = cachedContentName;
-    } else {
-      // If no cache, include static context directly
-      requestPayload.contents[0].parts[0].text = staticContext + dynamicContext;
     }
 
     console.log('Calling Gemini 2.5 Pro API...');
+    console.log('✅ Phase 1 Optimization: Using systemInstruction field (free tokens)');
     console.log('Request payload structure:', {
+      hasSystemInstruction: true,
       hasCachedContent: !!cachedContentName,
       contentLength: requestPayload.contents[0].parts[0].text.length,
       maxOutputTokens: requestPayload.generationConfig.maxOutputTokens
