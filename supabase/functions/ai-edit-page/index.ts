@@ -899,6 +899,51 @@ ${buildThemeContext(context)}
       }
     };
     
+    // PHASE 6: Add response schema for outline/structured output mode
+    if (mode === 'outline' || mode === 'structured') {
+      requestPayload.generationConfig.responseMimeType = "application/json";
+      requestPayload.generationConfig.responseSchema = {
+        type: "object",
+        properties: {
+          sections: {
+            type: "array",
+            description: "Array of page sections to generate",
+            items: {
+              type: "object",
+              properties: {
+                id: { 
+                  type: "string",
+                  description: "Unique identifier for the section"
+                },
+                heading: { 
+                  type: "string",
+                  description: "Main heading for the section"
+                },
+                subheadings: { 
+                  type: "array",
+                  description: "Optional subheadings within the section",
+                  items: { type: "string" }
+                },
+                keywords: { 
+                  type: "array",
+                  description: "SEO keywords relevant to this section",
+                  items: { type: "string" }
+                },
+                handlebars_vars: { 
+                  type: "array",
+                  description: "Handlebars variables to use in this section",
+                  items: { type: "string" }
+                }
+              },
+              required: ["id", "heading"]
+            }
+          }
+        },
+        required: ["sections"]
+      };
+      console.log('✅ Phase 6: Using structured JSON output with response schema');
+    }
+    
     // Add cached content reference if available
     if (cachedContentName) {
       requestPayload.cachedContent = cachedContentName;
@@ -910,11 +955,16 @@ ${buildThemeContext(context)}
     console.log('✅ Phase 3 Optimization: Using persistent database cache storage');
     console.log('✅ Phase 4 Optimization: Extended cache TTL to 1 hour (12x lifetime)');
     console.log('✅ Phase 5 Optimization: Conversation pruning (max 5 turns, prevents token bloat)');
+    if (mode === 'outline' || mode === 'structured') {
+      console.log('✅ Phase 6 Optimization: Structured JSON output with response schema (guaranteed valid JSON)');
+    }
     console.log('Request payload structure:', {
       hasSystemInstruction: true,
       hasCachedContent: !!cachedContentName,
       cacheStorageType: 'database',
       cacheTTL: '1 hour',
+      mode: mode,
+      structuredOutput: mode === 'outline' || mode === 'structured',
       conversationTurns: chatContents.length,
       latestMessageLength: chatContents[chatContents.length - 1]?.parts[0]?.text.length || 0,
       maxOutputTokens: requestPayload.generationConfig.maxOutputTokens
