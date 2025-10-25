@@ -7,14 +7,332 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// ========================================================================
+// PHASE 5: VALIDATION & ERROR HANDLING
+// Ensures output quality, provides fallbacks, graceful degradation
+// ========================================================================
+
+function validateHTML(html: string): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  const trimmed = html.trim();
+
+  // Check DOCTYPE
+  if (!trimmed.startsWith('<!DOCTYPE html>')) {
+    errors.push('Missing or incorrect DOCTYPE declaration');
+  }
+
+  // Check closing html tag
+  if (!trimmed.endsWith('</html>')) {
+    errors.push('Missing closing </html> tag');
+  }
+
+  // Check for markdown code blocks
+  if (trimmed.includes('```')) {
+    errors.push('Contains markdown code blocks (should be pure HTML)');
+  }
+
+  // Check for Tailwind CSS
+  if (!trimmed.includes('tailwindcss')) {
+    errors.push('Missing Tailwind CSS CDN');
+  }
+
+  // Check for unclosed Handlebars
+  const openBraces = (trimmed.match(/\{\{/g) || []).length;
+  const closeBraces = (trimmed.match(/\}\}/g) || []).length;
+  if (openBraces !== closeBraces) {
+    errors.push(`Unclosed Handlebars syntax (${openBraces} open, ${closeBraces} close)`);
+  }
+
+  // Check for incomplete Handlebars at end
+  if (trimmed.match(/\{\{[^}]*$/)) {
+    errors.push('Incomplete Handlebars expression at end of file');
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  };
+}
+
+function performAutomatedChecks(html: string, companyName: string): string[] {
+  const issues: string[] = [];
+  const lowerHtml = html.toLowerCase();
+
+  // Check for hard-coded company info
+  const testCompanyNames = ['acme', 'example', 'company name', 'your company'];
+  for (const testName of testCompanyNames) {
+    if (lowerHtml.includes(testName) && !lowerHtml.includes('{{')) {
+      issues.push(`Possible hard-coded placeholder: "${testName}"`);
+    }
+  }
+
+  // Check for proper CTA usage
+  if (html.includes('<form') && !html.includes('multiuse-form-integration')) {
+    issues.push('Contains standalone form instead of using openLeadFormModal');
+  }
+
+  // Check for header/nav (should not be present in body content)
+  if (html.match(/<header[^>]*>|<nav[^>]*>/)) {
+    issues.push('Contains header/nav elements (should be site-level only)');
+  }
+
+  // Check for footer (should not be present in body content)
+  if (html.match(/<footer[^>]*>/)) {
+    issues.push('Contains footer element (should be site-level only)');
+  }
+
+  // Check that CTAs use openLeadFormModal
+  const buttons = html.match(/<button[^>]*>/gi) || [];
+  const links = html.match(/<a[^>]*>/gi) || [];
+  const ctaElements = [...buttons, ...links];
+  
+  for (const element of ctaElements) {
+    if ((element.includes('contact') || element.includes('get quote') || element.includes('schedule')) &&
+        !element.includes('openLeadFormModal')) {
+      issues.push('CTA button/link does not use openLeadFormModal');
+    }
+  }
+
+  return issues;
+}
+
+// Fallback templates for different page types
+const fallbackTemplates: Record<string, string> = {
+  homepage: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{business_name}}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --primary: 221 83% 53%;
+      --accent: 142 76% 36%;
+      --radius: 0.5rem;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <main class="container mx-auto px-4 py-16">
+    <section class="text-center mb-16">
+      <h1 class="text-5xl font-bold text-gray-900 mb-4">{{business_name}}</h1>
+      <p class="text-xl text-gray-600 mb-8">{{business_slogan}}</p>
+      <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Started')" 
+              class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition">
+        Get Started
+      </button>
+    </section>
+
+    <section class="grid md:grid-cols-3 gap-8 mb-16">
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-xl font-semibold mb-2">Quality Service</h3>
+        <p class="text-gray-600">Professional {{business_slogan}} services</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-xl font-semibold mb-2">Expert Team</h3>
+        <p class="text-gray-600">{{years_experience}} years of experience</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="text-xl font-semibold mb-2">Customer First</h3>
+        <p class="text-gray-600">Serving {{address_city}} and surrounding areas</p>
+      </div>
+    </section>
+
+    <section class="text-center">
+      <h2 class="text-3xl font-bold mb-8">Ready to Get Started?</h2>
+      <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Contact Us')" 
+              class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition">
+        Contact Us Today
+      </button>
+    </section>
+  </main>
+</body>
+</html>`,
+  
+  about: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About {{business_name}}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <main class="container mx-auto px-4 py-16">
+    <h1 class="text-4xl font-bold text-center mb-12">About {{business_name}}</h1>
+    
+    <section class="max-w-3xl mx-auto mb-16">
+      <p class="text-lg text-gray-700 mb-4">With {{years_experience}} years of experience, {{business_name}} has been serving the {{address_city}} area with dedication and expertise.</p>
+    </section>
+
+    <section class="text-center">
+      <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Learn More')" 
+              class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition">
+        Learn More
+      </button>
+    </section>
+  </main>
+</body>
+</html>`,
+
+  services: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services - {{business_name}}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <main class="container mx-auto px-4 py-16">
+    <h1 class="text-4xl font-bold text-center mb-12">Our Services</h1>
+    
+    <section class="grid md:grid-cols-2 gap-8">
+      <div class="bg-white p-8 rounded-lg shadow">
+        <h2 class="text-2xl font-semibold mb-4">Professional Service</h2>
+        <p class="text-gray-600 mb-4">Expert solutions for your needs</p>
+        <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Request Service')" 
+                class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+          Get a Quote
+        </button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>`
+};
+
+function getFallbackTemplate(pageType: string, userRequest: string): string {
+  const lower = userRequest.toLowerCase();
+  
+  if (lower.includes('about')) return fallbackTemplates.about;
+  if (lower.includes('service')) return fallbackTemplates.services;
+  return fallbackTemplates.homepage;
+}
+
+// ========================================================================
+// PHASE 6: MONITORING & METRICS
+// Track performance, costs, quality for continuous optimization
+// ========================================================================
+
+interface GenerationMetrics {
+  startTime: number;
+  endTime?: number;
+  duration?: number;
+  command: string;
+  mode: string;
+  inputTokens: number;
+  outputTokens: number;
+  staticTokens?: number;
+  dynamicTokens?: number;
+  cacheReads?: number;
+  cacheWrites?: number;
+  cacheHit?: boolean;
+  cacheEnabled: boolean;
+  multiPass: boolean;
+  timeoutOccurred: boolean;
+  validationPassed: boolean;
+  validationErrors?: string[];
+  automatedChecks?: string[];
+  cost?: number;
+  stopReason?: string;
+  fallbackUsed?: boolean;
+}
+
+function calculateCost(
+  inputTokens: number, 
+  outputTokens: number, 
+  cacheReads: number = 0,
+  cacheWrites: number = 0
+): number {
+  // Claude 3.5 Sonnet pricing
+  const inputCostPerMillion = 3.00;
+  const outputCostPerMillion = 15.00;
+  const cacheReadCostPerMillion = 0.30; // 90% discount
+  const cacheWriteCostPerMillion = 3.75; // 25% premium
+  
+  const regularInputCost = ((inputTokens - cacheReads) / 1_000_000) * inputCostPerMillion;
+  const cacheReadCost = (cacheReads / 1_000_000) * cacheReadCostPerMillion;
+  const cacheWriteCost = (cacheWrites / 1_000_000) * cacheWriteCostPerMillion;
+  const outputCost = (outputTokens / 1_000_000) * outputCostPerMillion;
+  
+  return regularInputCost + cacheReadCost + cacheWriteCost + outputCost;
+}
+
+function logMetrics(metrics: GenerationMetrics) {
+  console.log('=== GENERATION METRICS ===');
+  console.log(JSON.stringify(metrics, null, 2));
+  
+  // Warnings based on thresholds from Phase 6
+  if (metrics.duration && metrics.duration > 40000) {
+    console.warn(`⚠️ SLOW GENERATION: ${(metrics.duration/1000).toFixed(1)}s (target: <40s)`);
+  }
+  
+  if (metrics.duration && metrics.duration > 100000) {
+    console.error(`❌ CRITICAL SLOW GENERATION: ${(metrics.duration/1000).toFixed(1)}s (approaching timeout)`);
+  }
+  
+  if (metrics.cacheEnabled && !metrics.cacheHit && metrics.inputTokens > 10000) {
+    console.warn(`⚠️ CACHE MISS: ${metrics.inputTokens} input tokens without cache hit`);
+  }
+  
+  if (!metrics.validationPassed) {
+    console.error('❌ VALIDATION FAILED:', metrics.validationErrors);
+  }
+  
+  if (metrics.automatedChecks && metrics.automatedChecks.length > 0) {
+    console.warn('⚠️ AUTOMATED CHECKS FLAGGED:', metrics.automatedChecks);
+  }
+  
+  if (metrics.cost && metrics.cost > 0.05) {
+    console.warn(`⚠️ HIGH COST: $${metrics.cost.toFixed(4)} (target: $0.01-0.03)`);
+  }
+  
+  if (metrics.timeoutOccurred) {
+    console.error('❌ TIMEOUT OCCURRED');
+  }
+  
+  if (metrics.fallbackUsed) {
+    console.warn('⚠️ FALLBACK TEMPLATE USED (generation failed)');
+  }
+  
+  // Success metrics
+  if (metrics.validationPassed && metrics.duration && metrics.duration < 30000) {
+    console.log('✅ EXCELLENT GENERATION: Fast + Valid');
+  }
+  
+  if (metrics.cacheHit && metrics.cost && metrics.cost < 0.02) {
+    console.log('✅ OPTIMAL COST: Cache hit + low cost');
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Initialize metrics tracking
+  const metrics: GenerationMetrics = {
+    startTime: Date.now(),
+    command: '',
+    mode: 'build',
+    inputTokens: 0,
+    outputTokens: 0,
+    cacheEnabled: true,
+    multiPass: false,
+    timeoutOccurred: false,
+    validationPassed: false,
+    fallbackUsed: false
+  };
+
   try {
     const requestBody = await req.json();
     const { command, mode = 'build', conversationHistory = [], context } = requestBody;
+    
+    // Update metrics
+    metrics.command = command.substring(0, 100);
+    metrics.mode = mode;
     
     console.log('AI Edit Request:', { 
       command: command.substring(0, 200) + (command.length > 200 ? '...' : ''), 
@@ -669,6 +987,26 @@ Body content only
       cleanedHtml = cleanedHtml.replace(/^```\n/, '').replace(/\n```$/, '');
     }
 
+    // PHASE 5: Validate HTML output
+    const validation = validateHTML(cleanedHtml);
+    const automatedChecks = performAutomatedChecks(cleanedHtml, context.companyInfo?.business_name || 'Company');
+    
+    metrics.validationPassed = validation.valid;
+    metrics.validationErrors = validation.errors;
+    metrics.automatedChecks = automatedChecks;
+    
+    if (!validation.valid) {
+      console.error('HTML validation failed:', validation.errors);
+      // Don't use fallback for chat mode or minor issues
+      if (mode === 'build' && validation.errors.some(e => e.includes('DOCTYPE') || e.includes('</html>'))) {
+        console.warn('Critical validation failure - considering fallback template');
+      }
+    }
+    
+    if (automatedChecks.length > 0) {
+      console.warn('Automated checks flagged issues:', automatedChecks);
+    }
+
     // Generate response based on mode
     let message = "";
     let responseHtml = mode === 'build' ? cleanedHtml : null;
@@ -719,6 +1057,21 @@ Body content only
     const cacheReadCost = (cacheReads || 0) * 0.0000003; // $0.30 per 1M tokens (90% discount)
     const totalCost = inputCost + outputCost + cacheWriteCost + cacheReadCost;
 
+    // PHASE 6: Update and log metrics
+    metrics.endTime = Date.now();
+    metrics.duration = metrics.endTime - metrics.startTime;
+    metrics.inputTokens = usage.input_tokens || 0;
+    metrics.outputTokens = usage.output_tokens || 0;
+    metrics.staticTokens = staticTokens;
+    metrics.dynamicTokens = dynamicTokens;
+    metrics.cacheReads = cacheReads;
+    metrics.cacheWrites = cacheWrites;
+    metrics.cacheHit = cacheReads > 0;
+    metrics.cost = totalCost;
+    metrics.stopReason = data?.stop_reason;
+    
+    logMetrics(metrics);
+
     return new Response(
       JSON.stringify({
         updatedHtml: responseHtml,
@@ -740,6 +1093,16 @@ Body content only
             total: totalCost
           }
         },
+        validation: {
+          passed: metrics.validationPassed,
+          errors: metrics.validationErrors || [],
+          warnings: metrics.automatedChecks || []
+        },
+        metrics: {
+          duration: metrics.duration,
+          cacheHit: metrics.cacheHit,
+          cost: metrics.cost
+        },
         debug: {
           staticContext: staticContext,
           dynamicContext: dynamicContext,
@@ -757,11 +1120,55 @@ Body content only
   } catch (error) {
     console.error('Error in ai-edit-page function:', error);
     
+    // Update metrics for error case
+    metrics.endTime = Date.now();
+    metrics.duration = metrics.endTime - metrics.startTime;
+    metrics.timeoutOccurred = error instanceof Error && error.message.includes('timed out');
+    
+    logMetrics(metrics);
+    
+    // PHASE 5: Consider fallback template for critical errors in build mode
+    if (metrics.mode === 'build' && metrics.timeoutOccurred) {
+      console.warn('Timeout occurred - considering fallback template');
+      
+      const commandLower = metrics.command.toLowerCase();
+      const useFallback = commandLower.includes('create') || commandLower.includes('homepage');
+      
+      if (useFallback) {
+        console.log('Using fallback template due to timeout');
+        const fallbackHtml = getFallbackTemplate('homepage', metrics.command);
+        metrics.fallbackUsed = true;
+        logMetrics(metrics);
+        
+        return new Response(
+          JSON.stringify({
+            updatedHtml: fallbackHtml,
+            message: "⚠️ Generation timed out - using fallback template. You can refine this page with additional edits.",
+            explanation: "Used fallback template due to timeout",
+            fallbackUsed: true,
+            validation: {
+              passed: true,
+              errors: [],
+              warnings: ['Fallback template used due to timeout']
+            }
+          }),
+          {
+            status: 200,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+    
     // Provide detailed error information
     const errorDetails = {
       error: error instanceof Error ? error.message : 'Unknown error',
       errorType: error instanceof Error ? error.constructor.name : typeof error,
-      stack: error instanceof Error ? error.stack : undefined
+      stack: error instanceof Error ? error.stack : undefined,
+      metrics: {
+        duration: metrics.duration,
+        timeoutOccurred: metrics.timeoutOccurred
+      }
     };
     
     return new Response(
