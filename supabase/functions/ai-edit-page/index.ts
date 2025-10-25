@@ -360,7 +360,7 @@ async function createCachedContent(
           role: 'user',
           parts: [{ text: staticContext }]
         }],
-        ttl: '300s', // 5 minutes (will extend in Phase 4)
+        ttl: '3600s', // PHASE 4: Extended to 1 hour (Google's recommendation for chat apps)
         displayName: `page-generator-${companyId}`
       })
     });
@@ -376,8 +376,8 @@ async function createCachedContent(
     const staticContextHash = hashString(staticContext);
     const cacheKey = `${companyId}-${staticContextHash}`;
     
-    // Calculate expiration time (5 minutes from now)
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+    // Calculate expiration time (PHASE 4: 1 hour from now)
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
     
     // Store in database (PHASE 3: Persistent storage)
     const { error } = await supabaseClient
@@ -890,10 +890,12 @@ ${buildThemeContext(context)}
     console.log('✅ Phase 1 Optimization: Using systemInstruction field (free tokens)');
     console.log('✅ Phase 2 Optimization: Using proper multi-turn chat format');
     console.log('✅ Phase 3 Optimization: Using persistent database cache storage');
+    console.log('✅ Phase 4 Optimization: Extended cache TTL to 1 hour (12x lifetime)');
     console.log('Request payload structure:', {
       hasSystemInstruction: true,
       hasCachedContent: !!cachedContentName,
       cacheStorageType: 'database',
+      cacheTTL: '1 hour',
       conversationTurns: chatContents.length,
       latestMessageLength: chatContents[chatContents.length - 1]?.parts[0]?.text.length || 0,
       maxOutputTokens: requestPayload.generationConfig.maxOutputTokens
