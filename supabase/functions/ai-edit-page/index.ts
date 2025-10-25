@@ -319,7 +319,8 @@ function logMetrics(metrics: GenerationMetrics) {
 
 // ========================================================================
 // GEMINI CACHE MANAGEMENT
-// Explicit cache creation and reuse for Gemini 2.5 Pro
+// PHASE 3 OPTIMIZATION: Persistent cache storage using Supabase database
+// Eliminates cache misses from edge function cold starts
 // ========================================================================
 
 interface CachedContent {
@@ -329,13 +330,22 @@ interface CachedContent {
   expireTime: string;
 }
 
-// In-memory cache store (simple implementation)
-const cacheStore = new Map<string, CachedContent>();
+// Helper function to create a hash of the static context
+function hashString(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash).toString(36);
+}
 
 async function createCachedContent(
   staticContext: string,
   companyId: string,
-  apiKey: string
+  apiKey: string,
+  supabaseClient: any
 ): Promise<string | null> {
   try {
     const response = await fetch('https://generativelanguage.googleapis.com/v1beta/cachedContents', {
@@ -350,7 +360,7 @@ async function createCachedContent(
           role: 'user',
           parts: [{ text: staticContext }]
         }],
-        ttl: '300s', // 5 minutes
+        ttl: '300s', // 5 minutes (will extend in Phase 4)
         displayName: `page-generator-${companyId}`
       })
     });
@@ -363,14 +373,29 @@ async function createCachedContent(
 
     const data = await response.json();
     const cacheName = data.name;
+    const staticContextHash = hashString(staticContext);
+    const cacheKey = `${companyId}-${staticContextHash}`;
     
-    // Store in memory
-    cacheStore.set(companyId, {
-      name: cacheName,
-      createTime: data.createTime,
-      updateTime: data.updateTime,
-      expireTime: data.expireTime
-    });
+    // Calculate expiration time (5 minutes from now)
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+    
+    // Store in database (PHASE 3: Persistent storage)
+    const { error } = await supabaseClient
+      .from('gemini_cache_metadata')
+      .insert({
+        cache_key: cacheKey,
+        cache_name: cacheName,
+        company_id: companyId,
+        static_context_hash: staticContextHash,
+        expires_at: expiresAt
+      });
+    
+    if (error) {
+      console.error('Failed to store cache metadata:', error);
+      // Continue anyway - cache will still work for this invocation
+    } else {
+      console.log('✅ Stored cache metadata in database:', cacheKey);
+    }
     
     console.log('✅ Created cached content:', cacheName);
     return cacheName;
@@ -380,18 +405,69 @@ async function createCachedContent(
   }
 }
 
-function getCachedContent(companyId: string): string | null {
-  const cached = cacheStore.get(companyId);
-  if (!cached) return null;
+async function getCachedContent(
+  companyId: string,
+  staticContext: string,
+  supabaseClient: any
+): Promise<string | null> {
+  const staticContextHash = hashString(staticContext);
+  const cacheKey = `${companyId}-${staticContextHash}`;
   
-  // Check if expired
-  const expireTime = new Date(cached.expireTime);
-  if (expireTime < new Date()) {
-    cacheStore.delete(companyId);
+  try {
+    // Check database for cached content (PHASE 3: Persistent storage)
+    const { data, error } = await supabaseClient
+      .from('gemini_cache_metadata')
+      .select('cache_name, expires_at')
+      .eq('cache_key', cacheKey)
+      .single();
+    
+    if (error || !data) {
+      console.log('No cache found in database for key:', cacheKey);
+      return null;
+    }
+    
+    // Check if expired
+    const expiresAt = new Date(data.expires_at);
+    if (expiresAt < new Date()) {
+      console.log('Cache expired, deleting from database');
+      await supabaseClient
+        .from('gemini_cache_metadata')
+        .delete()
+        .eq('cache_key', cacheKey);
+      return null;
+    }
+    
+    console.log('✅ Found valid cache in database:', data.cache_name);
+    return data.cache_name;
+  } catch (error) {
+    console.error('Error retrieving cached content from database:', error);
     return null;
   }
-  
-  return cached.name;
+}
+
+// Cleanup expired cache entries (run periodically)
+async function cleanupExpiredCache(supabaseClient: any): Promise<number> {
+  try {
+    const { data, error } = await supabaseClient
+      .from('gemini_cache_metadata')
+      .delete()
+      .lt('expires_at', new Date().toISOString())
+      .select();
+    
+    if (error) {
+      console.error('Failed to cleanup expired cache:', error);
+      return 0;
+    }
+    
+    const count = data?.length || 0;
+    if (count > 0) {
+      console.log(`🧹 Cleaned up ${count} expired cache entries`);
+    }
+    return count;
+  } catch (error) {
+    console.error('Error during cache cleanup:', error);
+    return 0;
+  }
 }
 
 // ========================================================================
@@ -501,6 +577,16 @@ serve(async (req) => {
     if (!GOOGLE_GEMINI_API_KEY) {
       throw new Error('GOOGLE_GEMINI_API_KEY is not configured');
     }
+
+    // Initialize Supabase client for database operations (PHASE 3: Persistent cache)
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error('Supabase environment variables not configured');
+    }
+    
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // ========================================================================
     // PHASE 2 OPTIMIZATION: Helper functions for tiered context loading
@@ -727,15 +813,21 @@ ${buildThemeContext(context)}
 
     // ========================================================================
     // CACHE MANAGEMENT: Create or reuse cached content
+    // PHASE 3: Using persistent database storage
     // ========================================================================
     
-    let cachedContentName = getCachedContent(companyId);
+    let cachedContentName = await getCachedContent(companyId, staticContext, supabase);
     
     if (!cachedContentName) {
       console.log('Creating new cached content for company:', companyId);
-      cachedContentName = await createCachedContent(staticContext, companyId, GOOGLE_GEMINI_API_KEY);
+      cachedContentName = await createCachedContent(staticContext, companyId, GOOGLE_GEMINI_API_KEY, supabase);
       metrics.cacheCreated = true;
       metrics.cacheReused = false;
+      
+      // Cleanup expired cache entries (opportunistic)
+      cleanupExpiredCache(supabase).catch(err => 
+        console.error('Background cache cleanup failed:', err)
+      );
     } else {
       console.log('Reusing cached content:', cachedContentName);
       metrics.cacheCreated = false;
@@ -797,9 +889,11 @@ ${buildThemeContext(context)}
     console.log('Calling Gemini 2.5 Pro API...');
     console.log('✅ Phase 1 Optimization: Using systemInstruction field (free tokens)');
     console.log('✅ Phase 2 Optimization: Using proper multi-turn chat format');
+    console.log('✅ Phase 3 Optimization: Using persistent database cache storage');
     console.log('Request payload structure:', {
       hasSystemInstruction: true,
       hasCachedContent: !!cachedContentName,
+      cacheStorageType: 'database',
       conversationTurns: chatContents.length,
       latestMessageLength: chatContents[chatContents.length - 1]?.parts[0]?.text.length || 0,
       maxOutputTokens: requestPayload.generationConfig.maxOutputTokens

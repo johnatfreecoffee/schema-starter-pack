@@ -1105,6 +1105,36 @@ export type Database = {
         }
         Relationships: []
       }
+      gemini_cache_metadata: {
+        Row: {
+          cache_key: string
+          cache_name: string
+          company_id: string | null
+          created_at: string | null
+          expires_at: string
+          id: string
+          static_context_hash: string
+        }
+        Insert: {
+          cache_key: string
+          cache_name: string
+          company_id?: string | null
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          static_context_hash: string
+        }
+        Update: {
+          cache_key?: string
+          cache_name?: string
+          company_id?: string | null
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          static_context_hash?: string
+        }
+        Relationships: []
+      }
       generated_pages: {
         Row: {
           created_at: string
