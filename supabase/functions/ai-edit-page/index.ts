@@ -316,9 +316,10 @@ Hover: hover:-translate-y-1 transition-all duration-300.
     
     console.log('Calling AI (Anthropic Claude)...');
 
-    // Timeout based on mode: chat=60s, build=120s (2 minutes - under Supabase's 150s hard limit)
+    // Timeout based on mode: chat=60s, build=130s (safely under Supabase's 150s hard limit)
     // Note: Supabase Edge Functions have a 150-second hard timeout at infrastructure level
-    const timeoutMs = mode === 'chat' ? 60000 : 120000;
+    // Claude Sonnet 4.5 generates ~67 tokens/second, so 6K tokens = ~95s + 10s overhead = 105s safe
+    const timeoutMs = mode === 'chat' ? 60000 : 130000;
     const fetchWithTimeout = async (url: string, options: RequestInit) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -343,30 +344,32 @@ Hover: hover:-translate-y-1 transition-all duration-300.
     const inputTokenEstimate = Math.floor(prompt.length * 0.25);
 
     // Dynamic max_tokens based on mode and request type
+    // Claude Sonnet 4.5 generates ~67 tokens/second
+    // Formula: Total time = 1.5s (TTFT) + (max_tokens ÷ 67) + 5s (overhead)
+    // For 130s timeout: safe max = (130 - 6.5) × 67 ≈ 8,275 tokens
     let maxTokens: number;
     if (mode === 'chat') {
       // Chat mode: shorter responses (suggestions, explanations)
-      maxTokens = 4000;
+      maxTokens = 4000; // ~65 seconds generation time
     } else {
       // Build mode: analyze command to determine appropriate token budget
       const commandLower = command.toLowerCase();
       
       if (commandLower.includes('finish') || commandLower.includes('complete') || commandLower.includes('entire')) {
-        // Full page generation - stays at 32K for explicit "finish the page" requests
-        maxTokens = 32000;
+        // Full page generation - maximum safe budget
+        maxTokens = 6000; // ~95 seconds generation time (safe for 130s timeout)
       } else if (commandLower.includes('section') || commandLower.includes('add')) {
         // Section-level changes - medium budget
-        maxTokens = 16000;
+        maxTokens = 3000; // ~50 seconds generation time
       } else if (commandLower.includes('create')) {
-        // Create commands - balanced budget to avoid timeouts
-        // Reduced from 32K to ensure completion within 2-minute timeout
-        maxTokens = 12000;
+        // Create commands - balanced budget optimized to avoid timeouts
+        maxTokens = 6000; // ~95 seconds generation time (sufficient for most homepages)
       } else if (commandLower.includes('fix') || commandLower.includes('update') || commandLower.includes('change')) {
         // Small edits - conservative budget
-        maxTokens = 8000;
+        maxTokens = 1500; // ~30 seconds generation time
       } else {
         // Default: moderate budget for unknown requests
-        maxTokens = 16000;
+        maxTokens = 4000; // ~65 seconds generation time
       }
     }
 
@@ -381,11 +384,41 @@ Hover: hover:-translate-y-1 transition-all duration-300.
     const requestPayload = {
       model: 'claude-sonnet-4-5-20250929',
       max_tokens: maxTokens,
+      temperature: 0.2, // Lower temperature for faster, more consistent HTML generation
+      stream: true, // Enable streaming to keep connection alive and prevent idle timeouts
+      stop_sequences: ['</html>', '<!-- END -->'], // Graceful truncation at natural completion points
       // Structure prompt with caching for design system (static content)
       system: [
         {
           type: 'text',
-          text: 'You are an expert HTML page builder. Generate semantic, accessible HTML5 using Tailwind CSS.',
+          text: `<system_instructions>
+Expert HTML5 generator for home services websites. Output complete, valid HTML from DOCTYPE to closing html tag.
+
+<output_format>
+- Semantic HTML5 (main, section, article, aside)
+- Tailwind CSS styling (include CDN)
+- Mobile-responsive, accessibility-compliant
+- NO markdown blocks, NO explanatory text
+- Start with <!DOCTYPE html>
+</output_format>
+
+<handlebars_rules>
+All dynamic data: {{variable_name}} syntax
+Examples: {{business_name}}, {{phone}}, {{service_name}}
+Arrays: {{#each services}}...{{/each}}
+</handlebars_rules>
+
+<forms_rule>
+Universal Form ONLY: onclick="if(window.openLeadFormModal) window.openLeadFormModal('[Button Text]')"
+NO standalone contact forms
+</forms_rule>
+
+<exclusions>
+No header/nav elements (site-level, not page-level)
+No footer (site-level, not page-level)
+Body content only
+</exclusions>
+</system_instructions>`,
           cache_control: { type: 'ephemeral' }
         }
       ],
@@ -399,7 +432,12 @@ Hover: hover:-translate-y-1 transition-all duration-300.
               cache_control: { type: 'ephemeral' }
             }
           ]
-        }
+        },
+        // Response prefilling: Forces immediate HTML generation without preambles
+        ...(mode === 'build' ? [{
+          role: 'assistant',
+          content: '<!DOCTYPE html>\n<html lang="en">\n<head>'
+        }] : [])
       ],
     };
     
@@ -409,12 +447,13 @@ Hover: hover:-translate-y-1 transition-all duration-300.
     
     let response;
     try {
-      console.log('Making API call to Anthropic...');
+      console.log('Making API call to Anthropic with streaming enabled...');
       response = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
           'x-api-key': ANTHROPIC_API_KEY!,
           'anthropic-version': '2023-06-01',
+          'anthropic-beta': 'prompt-caching-2024-07-31', // Enable prompt caching
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestPayload),
@@ -441,22 +480,93 @@ Hover: hover:-translate-y-1 transition-all duration-300.
       throw new Error(errorMessage);
     }
 
+    // Handle streaming response
     let data;
-    try {
-      console.log('Parsing JSON response...');
-      data = await response.json();
-      console.log('JSON parsed successfully');
-    } catch (error) {
-      console.error('Failed to parse JSON response:', error);
-      throw new Error(`Failed to parse Claude API response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    let updatedHtml = '';
+    
+    if (requestPayload.stream) {
+      try {
+        console.log('Processing streaming response...');
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        
+        if (!reader) {
+          throw new Error('Response body is null');
+        }
+        
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const jsonStr = line.slice(6).trim();
+              if (jsonStr === '[DONE]') continue;
+              
+              try {
+                const chunk = JSON.parse(jsonStr);
+                
+                // Accumulate content deltas
+                if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
+                  updatedHtml += chunk.delta.text;
+                }
+                
+                // Store final message data
+                if (chunk.type === 'message_stop') {
+                  // Message complete
+                }
+                
+                // Capture usage data from message_start
+                if (chunk.type === 'message_start' && chunk.message) {
+                  data = chunk.message;
+                }
+                
+                // Update usage from message_delta
+                if (chunk.type === 'message_delta' && chunk.usage) {
+                  data = data || {};
+                  data.usage = { ...(data.usage || {}), ...chunk.usage };
+                }
+              } catch (parseError) {
+                console.warn('Failed to parse SSE chunk:', jsonStr.substring(0, 100));
+              }
+            }
+          }
+        }
+        
+        console.log('Streaming complete, total HTML length:', updatedHtml.length);
+        
+        // Ensure we have usage data structure
+        if (!data) {
+          data = { usage: {} };
+        }
+      } catch (error) {
+        console.error('Failed to process streaming response:', error);
+        throw new Error(`Failed to process Claude API streaming response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    } else {
+      // Fallback to non-streaming
+      try {
+        console.log('Parsing JSON response...');
+        data = await response.json();
+        updatedHtml = data.content?.[0]?.text || '';
+        console.log('JSON parsed successfully');
+      } catch (error) {
+        console.error('Failed to parse JSON response:', error);
+        throw new Error(`Failed to parse Claude API response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     }
     
-    console.log('=== FULL API RESPONSE START ===');
+    console.log('=== FULL API RESPONSE DATA START ===');
     console.log(JSON.stringify(data, null, 2));
-    console.log('=== FULL API RESPONSE END ===');
+    console.log('=== FULL API RESPONSE DATA END ===');
     
-    const updatedHtml = data.content?.[0]?.text || '';
-    const usage = data.usage || {};
+    // updatedHtml already populated from streaming or JSON response
+    const usage = data?.usage || {};
     const tokenUsage = (usage.input_tokens || 0) + (usage.output_tokens || 0);
     const cacheReads = usage.cache_read_input_tokens || 0;
     const cacheWrites = usage.cache_creation_input_tokens || 0;
