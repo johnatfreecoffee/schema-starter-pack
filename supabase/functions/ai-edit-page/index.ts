@@ -482,6 +482,20 @@ interface ConversationTurn {
   html?: string;
 }
 
+// PHASE 5: Conversation pruning to prevent token bloat
+function pruneConversationHistory(
+  history: ConversationTurn[], 
+  maxTurns: number = 5
+): ConversationTurn[] {
+  if (history.length <= maxTurns) {
+    return history;
+  }
+  
+  const pruned = history.slice(-maxTurns);
+  console.log(`🔄 Pruned conversation history: ${history.length} turns → ${pruned.length} turns (kept last ${maxTurns})`);
+  return pruned;
+}
+
 function buildProperChatHistory(
   history: ConversationTurn[],
   currentRequest: string,
@@ -840,15 +854,19 @@ ${buildThemeContext(context)}
     // API REQUEST: Call Gemini with streaming
     // PHASE 1: Use systemInstruction field for free token optimization
     // PHASE 2: Use proper multi-turn chat format for better context understanding
+    // PHASE 5: Apply conversation pruning to prevent token bloat
     // ========================================================================
     
-    // Build proper multi-turn conversation history (Phase 2)
+    // Build proper multi-turn conversation history (Phase 2 + Phase 5)
     let chatContents;
     
     if (conversationHistory.length > 0) {
+      // PHASE 5: Prune conversation history to last 5 turns
+      const prunedHistory = pruneConversationHistory(conversationHistory, 5);
+      
       // Multi-turn conversation exists
       chatContents = buildProperChatHistory(
-        conversationHistory.slice(-5), // Keep last 5 turns for context
+        prunedHistory,
         command,
         context.currentPage?.html,
         context.currentPage?.pageType
@@ -891,6 +909,7 @@ ${buildThemeContext(context)}
     console.log('✅ Phase 2 Optimization: Using proper multi-turn chat format');
     console.log('✅ Phase 3 Optimization: Using persistent database cache storage');
     console.log('✅ Phase 4 Optimization: Extended cache TTL to 1 hour (12x lifetime)');
+    console.log('✅ Phase 5 Optimization: Conversation pruning (max 5 turns, prevents token bloat)');
     console.log('Request payload structure:', {
       hasSystemInstruction: true,
       hasCachedContent: !!cachedContentName,
