@@ -35,10 +35,11 @@ type EditorMode = 'chat' | 'build';
 const TOKEN_SOFT_LIMIT = 800000;
 const TOKEN_HARD_LIMIT = 1000000;
 
-// Helper functions for localStorage
-const STORAGE_KEY_CHAT = 'ai-editor-chat-history';
-const STORAGE_KEY_DEBUG = 'ai-editor-debug-data';
-const STORAGE_KEY_SETTINGS_HASH = 'ai-editor-settings-hash';
+// Helper functions for localStorage with page-specific keys
+const getStorageKey = (base: string, pageType: string, pageId?: string) => {
+  const identifier = pageId || 'new';
+  return `${base}-${pageType}-${identifier}`;
+};
 
 const generateSettingsHash = (companySettings: any, aiTraining: any, siteSettings: any) => {
   const combined = JSON.stringify({ companySettings, aiTraining, siteSettings });
@@ -51,44 +52,51 @@ const generateSettingsHash = (companySettings: any, aiTraining: any, siteSetting
   return hash.toString();
 };
 
-const loadChatHistory = (): ChatMessage[] => {
+const loadChatHistory = (pageType: string, pageId?: string): ChatMessage[] => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY_CHAT);
+    const key = getStorageKey('ai-editor-chat-history', pageType, pageId);
+    const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : [];
   } catch {
     return [];
   }
 };
 
-const saveChatHistory = (messages: ChatMessage[]) => {
+const saveChatHistory = (messages: ChatMessage[], pageType: string, pageId?: string) => {
   try {
-    localStorage.setItem(STORAGE_KEY_CHAT, JSON.stringify(messages));
+    const key = getStorageKey('ai-editor-chat-history', pageType, pageId);
+    localStorage.setItem(key, JSON.stringify(messages));
   } catch (e) {
     console.error('Failed to save chat history:', e);
   }
 };
 
-const loadDebugData = () => {
+const loadDebugData = (pageType: string, pageId?: string) => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY_DEBUG);
+    const key = getStorageKey('ai-editor-debug-data', pageType, pageId);
+    const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : null;
   } catch {
     return null;
   }
 };
 
-const saveDebugData = (data: any) => {
+const saveDebugData = (data: any, pageType: string, pageId?: string) => {
   try {
-    localStorage.setItem(STORAGE_KEY_DEBUG, JSON.stringify(data));
+    const key = getStorageKey('ai-editor-debug-data', pageType, pageId);
+    localStorage.setItem(key, JSON.stringify(data));
   } catch (e) {
     console.error('Failed to save debug data:', e);
   }
 };
 
-const clearHistory = () => {
-  localStorage.removeItem(STORAGE_KEY_CHAT);
-  localStorage.removeItem(STORAGE_KEY_DEBUG);
-  localStorage.removeItem(STORAGE_KEY_SETTINGS_HASH);
+const clearHistory = (pageType: string, pageId?: string) => {
+  const chatKey = getStorageKey('ai-editor-chat-history', pageType, pageId);
+  const debugKey = getStorageKey('ai-editor-debug-data', pageType, pageId);
+  const settingsKey = getStorageKey('ai-editor-settings-hash', pageType, pageId);
+  localStorage.removeItem(chatKey);
+  localStorage.removeItem(debugKey);
+  localStorage.removeItem(settingsKey);
 };
 
 const UnifiedPageEditor = ({
@@ -319,8 +327,8 @@ const UnifiedPageEditor = ({
   // Load chat history and debug data on mount (only once)
   useEffect(() => {
     if (open && !hasLoadedHistory.current) {
-      const savedChat = loadChatHistory();
-      const savedDebug = loadDebugData();
+      const savedChat = loadChatHistory(pageType, pageId);
+      const savedDebug = loadDebugData(pageType, pageId);
       
       if (savedChat.length > 0) {
         setChatMessages(savedChat);
@@ -341,13 +349,14 @@ const UnifiedPageEditor = ({
     if (!open) {
       hasLoadedHistory.current = false;
     }
-  }, [open]);
+  }, [open, pageType, pageId]);
 
   // Check for settings changes
   useEffect(() => {
     if (open && companySettings && aiTraining && siteSettings) {
       const currentHash = generateSettingsHash(companySettings, aiTraining, siteSettings);
-      const storedHash = localStorage.getItem(STORAGE_KEY_SETTINGS_HASH);
+      const settingsKey = getStorageKey('ai-editor-settings-hash', pageType, pageId);
+      const storedHash = localStorage.getItem(settingsKey);
       
       if (storedHash && storedHash !== currentHash) {
         setSettingsChanged(true);
@@ -356,16 +365,16 @@ const UnifiedPageEditor = ({
       }
       
       // Update stored hash
-      localStorage.setItem(STORAGE_KEY_SETTINGS_HASH, currentHash);
+      localStorage.setItem(settingsKey, currentHash);
     }
-  }, [open, companySettings, aiTraining, siteSettings]);
+  }, [open, companySettings, aiTraining, siteSettings, pageType, pageId]);
 
   // Save chat history whenever it changes
   useEffect(() => {
     if (chatMessages.length > 0) {
-      saveChatHistory(chatMessages);
+      saveChatHistory(chatMessages, pageType, pageId);
     }
-  }, [chatMessages]);
+  }, [chatMessages, pageType, pageId]);
 
   // Compute displayed HTML based on version toggle
   const displayedHtml = isShowingPrevious ? previousHtml : currentHtml;
@@ -529,7 +538,7 @@ const UnifiedPageEditor = ({
       // Store debug data
       if (data?.debug) {
         setDebugData(data.debug);
-        saveDebugData(data.debug);
+        saveDebugData(data.debug, pageType, pageId);
       }
       
       const assistantMessage: ChatMessage = {
@@ -607,7 +616,7 @@ const UnifiedPageEditor = ({
     setTokenCount(0);
     setDebugData(null);
     setLastUsage(null);
-    clearHistory();
+    clearHistory(pageType, pageId);
     setSettingsChanged(false);
     toast({
       title: 'History Cleared',
