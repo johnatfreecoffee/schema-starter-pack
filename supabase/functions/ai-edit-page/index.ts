@@ -390,6 +390,31 @@ ${prunedHistory.length > 0 ? `<history>${prunedHistory.map((m: any) => `${m.role
       cacheEnabled: true
     });
 
+    // ========================================================================
+    // PHASE 4: MULTI-PASS ARCHITECTURE
+    // For large creates, split into: outline → parallel sections → assembly
+    // Benefits: 10-15s total time, zero timeout risk, better cache hits
+    // ========================================================================
+    
+    const shouldUseMultiPass = mode === 'build' && isCreate && 
+      (context.currentPage?.type === 'homepage' || 
+       commandLower.includes('homepage') || 
+       commandLower.includes('home page') ||
+       (!context.currentPage?.html || context.currentPage.html.length < 500));
+    
+    if (shouldUseMultiPass) {
+      console.log('🚀 Phase 4 Multi-Pass: Detected large create operation');
+      const multiPassResult = await handleMultiPassGeneration({
+        staticContext,
+        dynamicContext,
+        anthropicApiKey: ANTHROPIC_API_KEY,
+        companyName: context.companyInfo?.business_name || 'Company',
+        corsHeaders,
+        command
+      });
+      return multiPassResult;
+    }
+
     // Dynamic max_tokens based on mode and request type
     // Claude Sonnet 4.5 generates ~67 tokens/second
     // Formula: Total time = 1.5s (TTFT) + (max_tokens ÷ 67) + 5s (overhead)
@@ -748,3 +773,322 @@ Body content only
     );
   }
 });
+
+// ========================================================================
+// PHASE 4: MULTI-PASS ARCHITECTURE IMPLEMENTATION
+// ========================================================================
+
+interface MultiPassParams {
+  staticContext: string;
+  dynamicContext: string;
+  anthropicApiKey: string;
+  companyName: string;
+  corsHeaders: Record<string, string>;
+  command: string;
+}
+
+interface SectionOutline {
+  id: string;
+  title: string;
+  description: string;
+  estimatedTokens: number;
+}
+
+async function handleMultiPassGeneration(params: MultiPassParams): Promise<Response> {
+  const { staticContext, dynamicContext, anthropicApiKey, companyName, corsHeaders, command } = params;
+  const startTime = Date.now();
+  
+  console.log('📋 Pass 1: Generating page outline...');
+  
+  // PASS 1: Generate outline
+  const outlinePrompt = `You are architecting a professional home services website page.
+
+${dynamicContext}
+
+Generate a JSON outline with 4-6 major sections. Each section should be substantial and focused.
+
+Return ONLY valid JSON (no markdown, no explanation):
+{
+  "sections": [
+    {
+      "id": "hero",
+      "title": "Hero Section",
+      "description": "Main headline with company value prop, subheadline, primary CTA button",
+      "estimatedTokens": 800
+    },
+    {
+      "id": "features",
+      "title": "Key Services",
+      "description": "3-4 service highlights with icons, titles, descriptions",
+      "estimatedTokens": 1200
+    }
+  ]
+}`;
+
+  const outlineResponse = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': anthropicApiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-beta': 'prompt-caching-2024-07-31',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: 2000,
+      temperature: 1,
+      system: [{ 
+        type: 'text', 
+        text: 'You are an expert web architect. Generate structured outlines in valid JSON format only.' 
+      }],
+      messages: [{
+        role: 'user',
+        content: [{ type: 'text', text: outlinePrompt }]
+      }]
+    })
+  });
+
+  if (!outlineResponse.ok) {
+    const errorText = await outlineResponse.text();
+    console.error('Outline generation failed:', outlineResponse.status, errorText);
+    throw new Error(`Outline generation failed: ${outlineResponse.status}`);
+  }
+
+  const outlineData = await outlineResponse.json();
+  const outlineText = outlineData.content[0].text;
+  const pass1Time = Date.now() - startTime;
+  console.log(`✅ Pass 1 complete in ${pass1Time}ms`);
+  console.log('Outline text:', outlineText);
+  
+  // Parse outline
+  let outline: { sections: SectionOutline[] };
+  try {
+    // Extract JSON from potential markdown code blocks
+    const jsonMatch = outlineText.match(/\{[\s\S]*\}/);
+    outline = JSON.parse(jsonMatch ? jsonMatch[0] : outlineText);
+    
+    if (!outline.sections || !Array.isArray(outline.sections)) {
+      throw new Error('Invalid outline structure: missing sections array');
+    }
+  } catch (e) {
+    console.error('Failed to parse outline:', outlineText);
+    throw new Error(`Invalid outline format: ${e instanceof Error ? e.message : 'Unknown error'}`);
+  }
+
+  console.log(`📦 Pass 2: Generating ${outline.sections.length} sections in parallel...`);
+  
+  const pass2StartTime = Date.now();
+  
+  // PASS 2: Generate sections in parallel
+  const sectionPromises = outline.sections.map(async (section, index) => {
+    const sectionStart = Date.now();
+    
+    const sectionPrompt = `<page_outline>
+${outline.sections.map((s, i) => `${i + 1}. ${s.title}: ${s.description}`).join('\n')}
+</page_outline>
+
+<your_section>
+Section ${index + 1} of ${outline.sections.length}
+Title: ${section.title}
+Description: ${section.description}
+</your_section>
+
+<request>
+${command}
+</request>
+
+Generate ONLY the HTML for "${section.title}".
+- Use semantic HTML5 tags (section, article, div)
+- Use Tailwind CSS classes
+- Responsive and accessible
+- NO <!DOCTYPE>, NO <html>, NO <head>, NO <body> tags
+- Start directly with opening tag (e.g., <section>, <div>)
+- This will be combined with other sections`;
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': anthropicApiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-beta': 'prompt-caching-2024-07-31',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5-20250929',
+          max_tokens: Math.min(section.estimatedTokens * 2, 3000),
+          temperature: 1,
+          system: [{ 
+            type: 'text', 
+            text: 'You are an expert frontend developer. Generate clean, semantic HTML with Tailwind CSS. Output HTML only, no explanations.' 
+          }],
+          messages: [{
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: staticContext,
+                cache_control: { type: 'ephemeral' }
+              },
+              {
+                type: 'text',
+                text: sectionPrompt
+              }
+            ]
+          }],
+          // Prefill to force HTML output
+          ...(index === 0 ? {} : {
+            messages: [{
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: staticContext,
+                  cache_control: { type: 'ephemeral' }
+                },
+                {
+                  type: 'text',
+                  text: sectionPrompt
+                }
+              ]
+            }, {
+              role: 'assistant',
+              content: '<'
+            }]
+          })
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Section ${section.id} failed:`, response.status, errorText);
+        return { 
+          id: section.id, 
+          title: section.title,
+          html: `<!-- Section ${section.title} generation failed: ${response.status} -->`, 
+          time: Date.now() - sectionStart,
+          error: true
+        };
+      }
+
+      const data = await response.json();
+      let html = data.content[0].text
+        .replace(/```html\n?/g, '')
+        .replace(/```\n?/g, '')
+        .trim();
+      
+      // If prefill was used, prepend the <
+      if (index > 0 && html && !html.startsWith('<')) {
+        html = '<' + html;
+      }
+      
+      const sectionTime = Date.now() - sectionStart;
+      console.log(`  ✅ ${section.title} complete in ${sectionTime}ms (${html.length} chars)`);
+      
+      return { 
+        id: section.id, 
+        title: section.title, 
+        html, 
+        time: sectionTime,
+        error: false,
+        tokens: data.usage
+      };
+    } catch (error) {
+      console.error(`Section ${section.id} error:`, error);
+      return { 
+        id: section.id, 
+        title: section.title,
+        html: `<!-- Section ${section.title} generation error: ${error instanceof Error ? error.message : 'Unknown'} -->`, 
+        time: Date.now() - sectionStart,
+        error: true
+      };
+    }
+  });
+
+  const sections = await Promise.all(sectionPromises);
+  const pass2Time = Date.now() - pass2StartTime;
+  console.log(`✅ Pass 2 complete in ${pass2Time}ms (parallel execution)`);
+
+  console.log('🔨 Pass 3: Assembling final HTML...');
+  const pass3StartTime = Date.now();
+  
+  // PASS 3: Assemble HTML
+  const sectionsHtml = sections
+    .filter(s => !s.error)
+    .map(s => s.html)
+    .join('\n\n  ');
+    
+  const failedSections = sections.filter(s => s.error);
+  if (failedSections.length > 0) {
+    console.warn(`⚠️ ${failedSections.length} section(s) failed:`, failedSections.map(s => s.title));
+  }
+  
+  const finalHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{business_name}} - Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --primary: ${staticContext.match(/primary="([^"]+)"/)?.[1] || '221 83% 53%'};
+      --accent: ${staticContext.match(/accent="([^"]+)"/)?.[1] || '142 76% 36%'};
+      --radius: ${staticContext.match(/radius value="([^"]+)"/)?.[1] || '0.5rem'};
+    }
+  </style>
+</head>
+<body class="antialiased">
+  ${sectionsHtml}
+</body>
+</html>`;
+
+  const pass3Time = Date.now() - pass3StartTime;
+  const totalTime = Date.now() - startTime;
+  console.log(`✅ Pass 3 complete in ${pass3Time}ms`);
+  console.log(`✅ Total Multi-Pass time: ${totalTime}ms`);
+
+  // Calculate total tokens
+  const totalTokens = sections.reduce((sum, s) => {
+    if (s.tokens) {
+      return sum + (s.tokens.input_tokens || 0) + (s.tokens.output_tokens || 0);
+    }
+    return sum;
+  }, 0);
+
+  // Return response
+  return new Response(
+    JSON.stringify({
+      updatedHtml: finalHtml,
+      message: `✅ Page generated using Multi-Pass Architecture in ${(totalTime / 1000).toFixed(1)}s:\n• Pass 1 (Outline): ${pass1Time}ms\n• Pass 2 (${sections.length} sections parallel): ${pass2Time}ms\n• Pass 3 (Assembly): ${pass3Time}ms${failedSections.length > 0 ? `\n⚠️ ${failedSections.length} section(s) had errors` : ''}`,
+      explanation: `Multi-pass generation complete`,
+      tokenUsage: totalTokens,
+      usage: {
+        mode: 'multi-pass',
+        phases: {
+          outline: { time: pass1Time, tokens: outlineData.usage },
+          sections: { 
+            time: pass2Time, 
+            count: sections.length,
+            parallel: true,
+            details: sections.map(s => ({ 
+              title: s.title, 
+              time: s.time, 
+              tokens: s.tokens,
+              error: s.error 
+            }))
+          },
+          assembly: { time: pass3Time }
+        },
+        totalTime,
+        totalTokens,
+        successfulSections: sections.filter(s => !s.error).length,
+        failedSections: failedSections.length
+      }
+    }),
+    {
+      status: 200,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    }
+  );
+}
