@@ -77,6 +77,10 @@ const Home = () => {
       '<img loading="lazy"'
     );
 
+    // Check if this is a rich landing page (starts with specific container classes)
+    const isRichLandingPage = renderedContent.includes('class="min-h-screen"') || 
+                              renderedContent.includes('className="min-h-screen"');
+
     return (
       <>
         <SEOHead
@@ -94,10 +98,20 @@ const Home = () => {
           url={window.location.origin}
           logo={companySettings?.logo_url}
         />
-        <article 
-          className="max-w-none"
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
-        />
+        {isRichLandingPage ? (
+          // Rich landing pages with custom Tailwind styling - render without prose wrapper
+          <div 
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
+          />
+        ) : (
+          // Traditional article-style pages - use prose styling
+          <div className="container mx-auto px-4 py-8">
+            <article 
+              className="prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
+            />
+          </div>
+        )}
       </>
     );
   }
