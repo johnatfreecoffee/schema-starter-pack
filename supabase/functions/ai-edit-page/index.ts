@@ -797,6 +797,16 @@ DESIGN REQUIREMENTS:
 - Accessibility (ARIA labels, semantic HTML)
 - Fast loading (optimized images, minimal JS)
 
+COLOR CONTRAST REQUIREMENTS (CRITICAL):
+- ALWAYS ensure high contrast between text and backgrounds (WCAG AA minimum: 4.5:1 for normal text)
+- On light backgrounds (white, gray-50, gray-100): Use dark text (text-gray-900, text-gray-800, text-black)
+- On dark backgrounds (gray-800, gray-900, black): Use light text (text-white, text-gray-100)
+- NEVER use light text (text-white, text-gray-100, text-gray-200) on light backgrounds
+- NEVER use dark text (text-gray-900, text-black) on dark backgrounds
+- For colored backgrounds: Test contrast - use white text on dark colors, dark text on light colors
+- Buttons must have clear contrast between text and button background
+- Test your color choices: light backgrounds need dark text, dark backgrounds need light text
+
 IMAGE REQUIREMENTS (CRITICAL):
 - NEVER use placeholder images, broken image links, or image descriptions
 - ALWAYS use real, high-quality image URLs from free sources like Unsplash, Pexels, or Pixabay
