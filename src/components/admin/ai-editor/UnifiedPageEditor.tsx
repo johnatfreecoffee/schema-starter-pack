@@ -563,14 +563,15 @@ const UnifiedPageEditor = ({
       // Update token count and usage info
       if (data?.usage) {
         const usage = data.usage;
-        setTokenCount(prev => prev + (usage.totalTokens || 0));
+        const total = usage.totalTokens ?? usage.total_tokens ?? ((usage.inputTokens ?? usage.input_tokens ?? 0) + (usage.outputTokens ?? usage.output_tokens ?? 0));
+        setTokenCount(prev => prev + total);
         setLastUsage({
-          inputTokens: usage.inputTokens || 0,
-          outputTokens: usage.outputTokens || 0,
-          totalTokens: usage.totalTokens || 0,
-          cost: usage.costs?.total || 0,
-          cacheReads: usage.cacheReads || 0,
-          cacheWrites: usage.cacheWrites || 0
+          inputTokens: usage.inputTokens ?? usage.input_tokens ?? 0,
+          outputTokens: usage.outputTokens ?? usage.output_tokens ?? 0,
+          totalTokens: total,
+          cost: usage.cost ?? usage.costs?.total ?? 0,
+          cacheReads: usage.cacheReads ?? usage.cache_reads ?? 0,
+          cacheWrites: usage.cacheWrites ?? usage.cache_writes ?? 0
         });
       } else if (data?.tokenUsage) {
         // Fallback for old response format
@@ -578,9 +579,10 @@ const UnifiedPageEditor = ({
       }
 
       // In build mode, auto-apply changes immediately
-      if (editorMode === 'build' && data?.updatedHtml) {
+      const newHtml = data?.updatedHtml ?? data?.html ?? data?.updated_html;
+      if (editorMode === 'build' && newHtml) {
         setPreviousHtml(currentHtml);
-        setCurrentHtml(data.updatedHtml);
+        setCurrentHtml(newHtml);
         setIsShowingPrevious(false);
       }
 
@@ -592,7 +594,7 @@ const UnifiedPageEditor = ({
       
       const assistantMessage: ChatMessage = {
         role: 'assistant',
-        content: data?.explanation || 'AI has updated the page.'
+        content: data?.messages?.[0]?.content || data?.explanation || 'AI has updated the page.'
       };
       
       setChatMessages(prev => [...prev, assistantMessage]);
