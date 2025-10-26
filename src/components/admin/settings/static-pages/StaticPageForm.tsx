@@ -121,8 +121,15 @@ const StaticPageForm = ({ page, onClose }: StaticPageFormProps) => {
     }
   });
 
+  const onSubmit = (data: any) => {
+    savePage.mutate(data);
+  };
+
   return (
-    <form onSubmit={handleSubmit((data) => savePage.mutate(data))} className="space-y-6">
+    <form onSubmit={(e) => {
+      e.preventDefault();
+      handleSubmit(onSubmit)(e);
+    }} className="space-y-6">
       <div>
         <Label htmlFor="title">Page Title *</Label>
         <Input
