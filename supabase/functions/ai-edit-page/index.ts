@@ -893,9 +893,9 @@ ${buildThemeContext(context)}
       },
       contents: chatContents,
       generationConfig: {
-        maxOutputTokens: 6000,
+        maxOutputTokens: 12000,
         temperature: 0.2,
-        stopSequences: ['</html>', '<!-- END -->']
+        // Removed stopSequences to prevent premature stopping before page completion
       }
     };
     
