@@ -366,8 +366,8 @@ const UnifiedPageEditor = ({
       // Show toast if we auto-loaded published version
       if ((template as any).was_draft_blank) {
         toast({
-          title: 'Draft was empty',
-          description: 'Loaded published page code to start from.'
+          title: 'Published page loaded in draft editor',
+          description: 'Draft was empty, so the published version was loaded for editing.'
         });
       }
     }
