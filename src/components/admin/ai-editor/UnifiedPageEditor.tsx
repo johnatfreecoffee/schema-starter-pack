@@ -323,18 +323,36 @@ const UnifiedPageEditor = ({
     enabled: open
   });
   useEffect(() => {
-    if (template?.template_html) {
+    if (template?.template_html !== undefined) {
+      const draftHtml = template.template_html;
+      const pubHtml = (template as any).published_html || '';
+      
       console.log('Setting template HTML', {
-        length: template.template_html.length,
+        draftLength: draftHtml.length,
+        publishedLength: pubHtml.length,
         pageType,
         hasUnpublishedChanges: (template as any).has_unpublished_changes
       });
-      setTemplateHtml(template.template_html);
-      setOriginalHtml(template.template_html);
-      setCurrentHtml(template.template_html);
-      setPreviousHtml(template.template_html);
-      if ((template as any).published_html) {
-        setPublishedHtml((template as any).published_html);
+      
+      // If draft is blank/empty but published exists, load published
+      const isDraftBlank = !draftHtml || draftHtml.trim().length === 0;
+      const htmlToLoad = isDraftBlank && pubHtml ? pubHtml : draftHtml;
+      
+      setTemplateHtml(htmlToLoad);
+      setOriginalHtml(htmlToLoad);
+      setCurrentHtml(htmlToLoad);
+      setPreviousHtml(htmlToLoad);
+      
+      if (pubHtml) {
+        setPublishedHtml(pubHtml);
+      }
+      
+      // Show toast if we auto-loaded published version
+      if (isDraftBlank && pubHtml) {
+        toast({
+          title: 'Loaded published version',
+          description: 'Draft was empty, loaded published page code.'
+        });
       }
     }
   }, [template, pageType]);
@@ -884,8 +902,14 @@ const UnifiedPageEditor = ({
                      </span> : lastSaved ? <span>Auto-saved {new Date(lastSaved).toLocaleTimeString()}</span> : currentHtml !== originalHtml ? <span>Unsaved changes</span> : null}
                 </div>
                 
-                {currentHtml !== publishedHtml && publishedHtml && (
-                  <Button onClick={handleLoadPublished} size="sm" variant="outline" className="gap-2">
+                {publishedHtml && (
+                  <Button 
+                    onClick={handleLoadPublished} 
+                    size="sm" 
+                    variant="outline" 
+                    className="gap-2"
+                    disabled={currentHtml === publishedHtml}
+                  >
                     Load Published
                   </Button>
                 )}
