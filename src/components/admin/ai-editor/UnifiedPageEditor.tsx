@@ -941,12 +941,6 @@ const UnifiedPageEditor = ({
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
-              {previousHtml !== currentHtml && 
-                <Button variant={isShowingPrevious ? 'default' : 'outline'} size="sm" onClick={toggleVersion} className="flex items-center gap-2">
-                  {isShowingPrevious ? 'Current' : 'Previous'}
-                </Button>}
-            </div>
           </div>
         </DialogHeader>
 
