@@ -41,6 +41,20 @@ const getStorageKey = (base: string, pageType: string, pageId?: string) => {
   return `${base}-${pageType}-${identifier}`;
 };
 
+// Token estimation for Gemini 2.5 Pro
+// Gemini uses ~4 characters per token on average for English text
+const estimateTokens = (charCount: number): number => {
+  return Math.ceil(charCount / 4);
+};
+
+// System instructions baseline token count
+// Based on the edge function's system instructions (~37 lines, ~2500 chars)
+const getSystemInstructionsLength = (): number => {
+  // System instructions from ai-edit-page edge function
+  // Approximately 2500 characters
+  return 2500;
+};
+
 const generateSettingsHash = (companySettings: any, aiTraining: any, siteSettings: any) => {
   const combined = JSON.stringify({ companySettings, aiTraining, siteSettings });
   let hash = 0;
@@ -130,14 +144,7 @@ const UnifiedPageEditor = ({
     responseData: any;
     generatedHtml: string;
   } | null>(null);
-  const [lastUsage, setLastUsage] = useState<{
-    inputTokens: number;
-    outputTokens: number;
-    totalTokens: number;
-    cost: number;
-    cacheReads: number;
-    cacheWrites: number;
-  } | null>(null);
+  const [inputTokenCount, setInputTokenCount] = useState(0);
   const [debugAccordionValue, setDebugAccordionValue] = useState<string[]>(() => {
     const saved = localStorage.getItem('ai-editor-debug-accordion');
     return saved ? JSON.parse(saved) : [];
@@ -372,9 +379,6 @@ const UnifiedPageEditor = ({
       
       if (savedChat.length > 0) {
         setChatMessages(savedChat);
-        // Estimate token count (rough approximation)
-        const estimatedTokens = savedChat.reduce((sum, msg) => sum + msg.content.length * 0.25, 0);
-        setTokenCount(Math.floor(estimatedTokens));
       }
       
       if (savedDebug) {
@@ -415,6 +419,20 @@ const UnifiedPageEditor = ({
       saveChatHistory(chatMessages, pageType, pageId);
     }
   }, [chatMessages, pageType, pageId]);
+
+  // Calculate input token count live (for Gemini 2.5 Pro)
+  useEffect(() => {
+    const systemTokens = estimateTokens(getSystemInstructionsLength());
+    const chatHistoryTokens = estimateTokens(
+      chatMessages.reduce((sum, msg) => sum + msg.content.length, 0)
+    );
+    const currentInputTokens = estimateTokens(aiPrompt.length);
+    const contextTokens = estimateTokens(currentHtml.length);
+    
+    // Total: system + history + current input + context
+    const total = systemTokens + chatHistoryTokens + currentInputTokens + contextTokens;
+    setInputTokenCount(total);
+  }, [chatMessages, aiPrompt, currentHtml]);
 
   // Compute displayed HTML based on version toggle
   const displayedHtml = isShowingPrevious ? previousHtml : currentHtml;
@@ -483,8 +501,8 @@ const UnifiedPageEditor = ({
       return;
     }
 
-    // Check token limits
-    if (tokenCount >= TOKEN_HARD_LIMIT) {
+    // Check token limits based on input tokens
+    if (inputTokenCount >= TOKEN_HARD_LIMIT) {
       toast({
         title: 'Token Limit Reached',
         description: 'Please reset the chat to continue.',
@@ -551,23 +569,7 @@ const UnifiedPageEditor = ({
 
       if (error) throw error;
 
-      // Update token count and usage info
-      if (data?.usage) {
-        const usage = data.usage;
-        const total = usage.totalTokens ?? usage.total_tokens ?? ((usage.inputTokens ?? usage.input_tokens ?? 0) + (usage.outputTokens ?? usage.output_tokens ?? 0));
-        setTokenCount(prev => prev + total);
-        setLastUsage({
-          inputTokens: usage.inputTokens ?? usage.input_tokens ?? 0,
-          outputTokens: usage.outputTokens ?? usage.output_tokens ?? 0,
-          totalTokens: total,
-          cost: usage.cost ?? usage.costs?.total ?? 0,
-          cacheReads: usage.cacheReads ?? usage.cache_reads ?? 0,
-          cacheWrites: usage.cacheWrites ?? usage.cache_writes ?? 0
-        });
-      } else if (data?.tokenUsage) {
-        // Fallback for old response format
-        setTokenCount(prev => prev + data.tokenUsage);
-      }
+      // Token tracking removed - now using live input token counter
 
       // In build mode, auto-apply changes immediately
       const newHtml = data?.updatedHtml ?? data?.html ?? data?.updated_html;
@@ -655,9 +657,7 @@ const UnifiedPageEditor = ({
 
   const resetChat = () => {
     setChatMessages([]);
-    setTokenCount(0);
     setDebugData(null);
-    setLastUsage(null);
     clearHistory(pageType, pageId);
     setSettingsChanged(false);
     toast({
@@ -974,8 +974,8 @@ const UnifiedPageEditor = ({
                 </p>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">
-                    Context: <span className={tokenCount >= TOKEN_SOFT_LIMIT ? 'text-destructive font-semibold' : tokenCount >= 150000 ? 'text-yellow-600 font-semibold' : ''}>
-                      {(tokenCount / 1000).toFixed(1)}K
+                    Context: <span className={inputTokenCount >= TOKEN_SOFT_LIMIT ? 'text-destructive font-semibold' : inputTokenCount >= 150000 ? 'text-yellow-600 font-semibold' : ''}>
+                      {(inputTokenCount / 1000).toFixed(1)}K
                     </span> / 200K
                   </span>
                   {(chatMessages.length > 0 || debugData) && (
@@ -992,46 +992,40 @@ const UnifiedPageEditor = ({
                 </div>
               </div>
               
-              {/* Token usage display */}
-              {lastUsage && (
-                <div className="mb-2 p-2 bg-muted/50 rounded-md border border-border/50">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Last request:</span>
-                    <span className="font-mono">
-                      <span className="text-green-600 dark:text-green-400">{lastUsage.inputTokens.toLocaleString()}</span>
-                      {' → '}
-                      <span className="text-blue-600 dark:text-blue-400">{lastUsage.outputTokens.toLocaleString()}</span>
-                      {' tokens'}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs mt-1">
-                    <span className="text-muted-foreground">Cost:</span>
-                    <span className="font-mono text-primary font-semibold">
-                      ${lastUsage.cost.toFixed(4)}
-                    </span>
-                  </div>
-                  {(lastUsage.cacheReads > 0 || lastUsage.cacheWrites > 0) && (
-                    <div className="flex items-center justify-between text-xs mt-1 text-purple-600 dark:text-purple-400">
-                      <span>Cache:</span>
-                      <span className="font-mono">
-                        {lastUsage.cacheReads > 0 && `${lastUsage.cacheReads.toLocaleString()} reads `}
-                        {lastUsage.cacheWrites > 0 && `${lastUsage.cacheWrites.toLocaleString()} writes`}
-                      </span>
-                    </div>
-                  )}
+              {/* Live Input Token Visualizer */}
+              <div className="mb-2 p-2 bg-muted/50 rounded-md border border-border/50">
+                <div className="flex items-center justify-between text-xs mb-1">
+                  <span className="text-muted-foreground font-medium">Input Tokens</span>
+                  <span className="font-mono font-semibold text-primary">
+                    {inputTokenCount.toLocaleString()}
+                  </span>
                 </div>
-              )}
+                <div className="space-y-0.5 text-xs text-muted-foreground">
+                  <div className="flex justify-between">
+                    <span>System Instructions:</span>
+                    <span className="font-mono">{estimateTokens(getSystemInstructionsLength()).toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Chat History:</span>
+                    <span className="font-mono">{estimateTokens(chatMessages.reduce((sum, msg) => sum + msg.content.length, 0)).toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Current Input:</span>
+                    <span className="font-mono">{estimateTokens(aiPrompt.length).toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
               
-              {tokenCount >= 150000 && tokenCount < TOKEN_SOFT_LIMIT && (
+              {inputTokenCount >= 150000 && inputTokenCount < TOKEN_SOFT_LIMIT && (
                 <div className="mb-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
                   <p className="text-xs text-yellow-700 dark:text-yellow-500">
-                    ⚠️ Context is at {((tokenCount / 200000) * 100).toFixed(0)}% capacity. Consider clearing history soon to prevent truncation.
+                    ⚠️ Context is at {((inputTokenCount / 200000) * 100).toFixed(0)}% capacity. Consider clearing history soon to prevent truncation.
                   </p>
                 </div>
               )}
-              {tokenCount >= TOKEN_SOFT_LIMIT && <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded-md">
+              {inputTokenCount >= TOKEN_SOFT_LIMIT && <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded-md">
                   <p className="text-xs text-destructive">
-                    {tokenCount >= TOKEN_HARD_LIMIT ? 'Token limit reached. Please reset the chat to continue.' : 'Approaching token limit. Consider resetting the chat soon.'}
+                    {inputTokenCount >= TOKEN_HARD_LIMIT ? 'Token limit reached. Please reset the chat to continue.' : 'Approaching token limit. Consider resetting the chat soon.'}
                   </p>
                 </div>}
             </div>
