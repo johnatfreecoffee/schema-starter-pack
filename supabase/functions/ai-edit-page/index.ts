@@ -909,7 +909,7 @@ ${buildThemeContext(context)}
       },
       contents: chatContents,
       generationConfig: {
-        maxOutputTokens: 40000,
+        maxOutputTokens: mode === 'build' ? 40000 : 10000, // Build: 40k for full pages, Chat: 10k for iterations
         temperature: 0.2,
         // Removed stopSequences to prevent premature stopping before page completion
       }
