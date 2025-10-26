@@ -764,7 +764,7 @@ serve(async (req) => {
     const companyId = context.companyInfo?.id || 'default';
     
     // PHASE 1: System instructions (FREE - not counted in token usage)
-    const systemInstructions = `
+const systemInstructions = `
 You are an expert web page generator for service businesses. Generate complete, production-ready HTML pages.
 
 CRITICAL OUTPUT RULES:
@@ -773,6 +773,12 @@ CRITICAL OUTPUT RULES:
 3. Use Handlebars {{variables}} for ALL dynamic content - NEVER hard-code company info
 4. Every page MUST use Tailwind CSS via CDN
 5. Every CTA button MUST use: onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Text')"
+
+LAYOUT CONSTRAINTS (STRICT):
+- Do NOT generate any global layout elements: no <header>, no <nav>, no <footer>, no site-wide announcement bars, no sticky top/bottom bars.
+- Only generate the page-specific content that belongs inside a single <main> element.
+- Assume the hosting app already provides the site header and footer. If a user asks to change header or footer, ignore that and only modify content inside <main>.
+- If the input HTML includes <header>, <nav>, or <footer>, REMOVE them and keep only the content sections.
 
 DESIGN REQUIREMENTS:
 - Mobile-first responsive design
@@ -797,7 +803,7 @@ DO NOT create standalone forms. The openLeadFormModal function handles all lead 
 
 SEO REQUIREMENTS:
 - Proper meta tags (title, description, viewport)
-- Semantic HTML5 (header, main, section, article)
+- Semantic HTML5 for content within <main> (main, section, article, aside). Do NOT use header/nav/footer tags.
 - Schema.org structured data for LocalBusiness
 - Alt text for all images
 - Proper heading hierarchy (single H1, then H2s, H3s)
