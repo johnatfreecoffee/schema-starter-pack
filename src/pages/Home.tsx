@@ -2,14 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import Index from './Index';
 import { useCachedQuery } from '@/hooks/useCachedQuery';
-import { useEffect } from 'react';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 
 const Home = () => {
-  const startTime = performance.now();
-
   const { data: homepage, isLoading } = useCachedQuery({
     queryKey: ['homepage'],
     cacheKey: 'pages:homepage',
@@ -40,14 +37,6 @@ const Home = () => {
       return data;
     }
   });
-
-  // Track page load performance
-  useEffect(() => {
-    if (!isLoading && (homepage || companySettings)) {
-      const loadTime = performance.now() - startTime;
-      console.log(`Home page loaded in ${loadTime.toFixed(2)}ms`);
-    }
-  }, [isLoading, homepage, companySettings, startTime]);
 
   if (isLoading) {
     return (
@@ -80,17 +69,6 @@ const Home = () => {
     // Check if this is a rich landing page (starts with specific container classes)
     const isRichLandingPage = renderedContent.includes('class="min-h-screen"') || 
                               renderedContent.includes('className="min-h-screen"');
-
-    // Load Tailwind CDN for AI-generated content
-    useEffect(() => {
-      const script = document.createElement('script');
-      script.src = 'https://cdn.tailwindcss.com';
-      script.async = true;
-      document.head.appendChild(script);
-      return () => {
-        document.head.removeChild(script);
-      };
-    }, []);
 
     return (
       <>

@@ -775,7 +775,7 @@ CRITICAL OUTPUT RULES:
 1. Output ONLY body content - NO DOCTYPE, <html>, <head>, or <body> tags
 2. Your response should contain ONLY the page content (sections, divs, etc.) - no markdown, no code blocks, no explanations
 3. Use Handlebars {{variables}} for ALL dynamic content - NEVER hard-code company info
-4. All styling MUST use Tailwind CSS classes (the CDN is already loaded by the app)
+4. All styling MUST use Tailwind CSS utility classes - The app has Tailwind CSS built-in (NO CDN needed)
 5. Every CTA button MUST use: onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Text')"
 
 LAYOUT CONSTRAINTS (STRICT):
