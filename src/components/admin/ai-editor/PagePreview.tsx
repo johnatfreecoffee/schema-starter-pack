@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Monitor, Tablet, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { sanitizeRichText } from '@/lib/sanitize';
+import AIHTMLRenderer from '@/components/ai/AIHTMLRenderer';
 
 interface PagePreviewProps {
   content: string;
@@ -62,10 +62,9 @@ const PagePreview = ({ content }: PagePreviewProps) => {
               minHeight: '500px',
             }}
           >
-            <div
-              className="prose prose-sm max-w-none p-6"
-              dangerouslySetInnerHTML={{ __html: sanitizeRichText(content) }}
-            />
+            <div className="p-6">
+              <AIHTMLRenderer html={content} />
+            </div>
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ import { ServiceReviews } from '@/components/reviews/ServiceReviews';
 import { Button } from '@/components/ui/button';
 import { useLeadFormModal } from '@/hooks/useLeadFormModal';
 import { MessageSquare } from 'lucide-react';
-import { sanitizeHtml } from '@/lib/sanitize';
+import AIHTMLRenderer from '@/components/ai/AIHTMLRenderer';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 
@@ -77,9 +77,8 @@ const GeneratedPage = () => {
 
   const { content, pageData } = pageResponse;
 
-  // Sanitize and enhance content
-  let sanitizedContent = sanitizeHtml(content);
-  sanitizedContent = sanitizedContent.replace(
+  // Enhance content: add lazy loading to images but keep AI styling intact
+  let processedContent = content.replace(
     /<img(?![^>]*loading=)/gi,
     '<img loading="lazy"'
   );
@@ -174,10 +173,9 @@ const GeneratedPage = () => {
       </div>
 
       {/* Rendered Content */}
-      <div
-        className="container mx-auto px-4 py-8 prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-      />
+      <div className="container mx-auto px-4 py-8">
+        <AIHTMLRenderer html={processedContent} />
+      </div>
 
       {/* Bottom CTA Section */}
       <div className="bg-muted/30 border-y">

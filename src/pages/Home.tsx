@@ -2,10 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import Index from './Index';
 import { useCachedQuery } from '@/hooks/useCachedQuery';
-import { sanitizeHtml } from '@/lib/sanitize';
+
 import { SEOHead } from '@/components/seo/SEOHead';
 import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 import { renderTemplate } from '@/lib/templateEngine';
+import AIHTMLRenderer from '@/components/ai/AIHTMLRenderer';
 
 const Home = () => {
   const { data: homepage, isLoading } = useCachedQuery({
@@ -117,17 +118,10 @@ const Home = () => {
           logo={companySettings?.logo_url}
         />
         {isRichLandingPage ? (
-          // Rich landing pages with custom Tailwind styling - render without prose wrapper
-          <div 
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
-          />
+          <AIHTMLRenderer html={renderedContent} />
         ) : (
-          // Traditional article-style pages - use prose styling
           <div className="container mx-auto px-4 py-8">
-            <article 
-              className="prose prose-lg max-w-none"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
-            />
+            <AIHTMLRenderer html={renderedContent} />
           </div>
         )}
       </>

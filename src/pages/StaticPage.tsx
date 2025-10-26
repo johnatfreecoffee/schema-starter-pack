@@ -2,9 +2,10 @@ import { useParams, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useCachedQuery } from '@/hooks/useCachedQuery';
-import { sanitizeHtml } from '@/lib/sanitize';
+
 import { SEOHead } from '@/components/seo/SEOHead';
 import { renderTemplate } from '@/lib/templateEngine';
+import AIHTMLRenderer from '@/components/ai/AIHTMLRenderer';
 
 const StaticPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -115,17 +116,11 @@ const StaticPage = () => {
         ogImage={companySettings?.logo_url}
       />
       {isRichLandingPage ? (
-        // Rich landing pages with custom Tailwind styling - render without prose wrapper
-        <div 
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
-        />
+        <AIHTMLRenderer html={renderedContent} />
       ) : (
         // Traditional article-style pages - use prose styling
         <div className="container mx-auto px-4 py-8">
-          <article 
-            className="prose prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
-          />
+          <AIHTMLRenderer html={renderedContent} />
         </div>
       )}
     </>
