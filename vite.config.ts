@@ -11,12 +11,18 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "@/integrations/supabase/client": path.resolve(
-        __dirname,
-        "./src/integrations/supabase/runtime-client.ts"
-      ),
-    },
+    alias: [
+      {
+        find: '@/integrations/supabase/client',
+        replacement: path.resolve(
+          __dirname,
+          './src/integrations/supabase/runtime-client.ts'
+        ),
+      },
+      {
+        find: '@',
+        replacement: path.resolve(__dirname, './src'),
+      },
+    ],
   },
 }));
