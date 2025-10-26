@@ -5,6 +5,7 @@ import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { renderTemplate } from '@/lib/templateEngine';
+import { Helmet } from 'react-helmet';
 
 const StaticPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -108,6 +109,9 @@ const StaticPage = () => {
 
   return (
     <>
+      <Helmet>
+        <script src="https://cdn.tailwindcss.com"></script>
+      </Helmet>
       <SEOHead
         title={page.title}
         description={page.meta_description || companySettings?.description || ''}

@@ -6,6 +6,7 @@ import { sanitizeHtml } from '@/lib/sanitize';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 import { renderTemplate } from '@/lib/templateEngine';
+import { Helmet } from 'react-helmet';
 
 const Home = () => {
   const { data: homepage, isLoading } = useCachedQuery({
@@ -101,6 +102,9 @@ const Home = () => {
 
     return (
       <>
+        <Helmet>
+          <script src="https://cdn.tailwindcss.com"></script>
+        </Helmet>
         <SEOHead
           title={homepage.title || `${companySettings?.business_name || 'Home'}`}
           description={homepage.meta_description || companySettings?.description || ''}
