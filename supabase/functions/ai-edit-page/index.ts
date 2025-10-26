@@ -797,6 +797,18 @@ DESIGN REQUIREMENTS:
 - Accessibility (ARIA labels, semantic HTML)
 - Fast loading (optimized images, minimal JS)
 
+IMAGE REQUIREMENTS (CRITICAL):
+- NEVER use placeholder images, broken image links, or image descriptions
+- ALWAYS use real, high-quality image URLs from free sources like Unsplash, Pexels, or Pixabay
+- Images MUST be relevant to the content and context of the page
+- Use Unsplash Source API for quick, high-quality images: https://source.unsplash.com/1600x900/?[keyword]
+- Examples:
+  * Hero images: https://source.unsplash.com/1600x900/?business,office
+  * Service images: https://source.unsplash.com/800x600/?construction,roofing
+  * Team images: https://source.unsplash.com/400x400/?portrait,professional
+- Always include descriptive alt text for accessibility
+- Add loading="lazy" to all images for performance
+
 HANDLEBARS VARIABLES AVAILABLE:
 {{business_name}}, {{business_slogan}}, {{years_experience}}, {{phone}}, {{email}}, 
 {{address}}, {{address_city}}, {{address_state}}, {{logo_url}}, {{icon_url}}, 
