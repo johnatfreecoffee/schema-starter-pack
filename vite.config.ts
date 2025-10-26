@@ -13,6 +13,10 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@/integrations/supabase/client": path.resolve(
+        __dirname,
+        "./src/integrations/supabase/runtime-client.ts"
+      ),
     },
   },
 }));
