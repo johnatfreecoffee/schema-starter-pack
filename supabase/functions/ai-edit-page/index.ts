@@ -740,19 +740,32 @@ serve(async (req) => {
       return parts.join('\n');
     };
     
-    // Helper: Build theme context
+    // Helper: Build theme context with design system
     const buildThemeContext = (ctx: any): string => {
-      if (!ctx.theme) return '';
+      const theme = ctx.theme || {};
+      
+      // Build comprehensive design system object
+      const designSystem = {
+        colors: {
+          primary: theme.primaryColor || '#4A90E2',
+          secondary: theme.secondaryColor || '#50E3C2',
+          accent: theme.accentColor || '#F5A623',
+          text: {
+            dark: '#1F2937',
+            light: '#F9FAFB'
+          },
+          background: {
+            dark: '#111827',
+            light: '#FFFFFF'
+          }
+        },
+        typography: {
+          fontFamily: theme.fontFamily || "'Inter', sans-serif"
+        }
+      };
       
       const parts = ['<theme>'];
-      const theme = ctx.theme;
-      
-      if (theme.primaryColor) parts.push(`primary: ${theme.primaryColor}`);
-      if (theme.secondaryColor) parts.push(`secondary: ${theme.secondaryColor}`);
-      if (theme.accentColor) parts.push(`accent: ${theme.accentColor}`);
-      if (theme.fontFamily) parts.push(`font: ${theme.fontFamily}`);
-      if (theme.borderRadius) parts.push(`radius: ${theme.borderRadius}`);
-      
+      parts.push(JSON.stringify(designSystem, null, 2));
       parts.push('</theme>');
       return parts.join('\n');
     };
@@ -771,18 +784,49 @@ serve(async (req) => {
 const systemInstructions = `
 You are an expert web page generator for service businesses. Generate complete, production-ready HTML content.
 
-CRITICAL OUTPUT RULES:
-1. Output ONLY body content - NO DOCTYPE, <html>, <head>, or <body> tags
-2. Your response should contain ONLY the page content (sections, divs, etc.) - no markdown, no code blocks, no explanations
-3. Use Handlebars {{variables}} for ALL dynamic content - NEVER hard-code company info
-4. All styling MUST use Tailwind CSS utility classes - The app has Tailwind CSS built-in (NO CDN needed)
-5. Every CTA button MUST use: onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Text')"
+CRITICAL OUTPUT & STYLING RULES:
+
+1. **Output ONLY Body Content**: Your entire response must be a single block of HTML containing only the page content. DO NOT include DOCTYPE, <html>, <head>, or <body> tags. The very first thing in your response should be a <section> or <div>.
+
+2. **Unique Section Wrapper**: Enclose the entire generated content in a single <div> with a unique ID. Generate this ID yourself using format: id="ai-section-[8_random_chars]". Example: id="ai-section-f4a7b2c9". This is CRITICAL for scoping styles.
+
+3. **Styling Method (Hybrid Approach)**:
+   - **Primary Styling**: Use INLINE style attributes for all static CSS properties (colors, background colors, font sizes, padding, margins, font families, etc.)
+   - **Responsive & Interactive Styles**: At the very top of your response, inside the unique wrapper <div>, create a <style> block for responsive styles (using CSS media queries) and pseudo-classes (e.g., :hover, :focus)
+   - All CSS rules inside the <style> block MUST be prefixed with the unique section ID to prevent conflicts (e.g., #ai-section-XYZ .my-class { ... })
+
+4. **Color Palette & Design System**: You will be provided with a theme object containing the design system. You MUST use these values for all styling:
+   - theme.colors.primary: Main brand color for buttons, links, and accents
+   - theme.colors.secondary: Supporting color
+   - theme.colors.accent: Color for special highlights
+   - theme.colors.text.dark: For text on light backgrounds
+   - theme.colors.text.light: For text on dark backgrounds
+   - theme.colors.background.dark: For dark section backgrounds
+   - theme.colors.background.light: For light section backgrounds
+   - theme.typography.fontFamily: The font family to use for all text
+
+5. **Color Contrast (CRITICAL & NON-NEGOTIABLE)**:
+   - You MUST ensure a WCAG AA minimum contrast ratio of 4.5:1 for all text-to-background combinations
+   - When using a dark background color (theme.colors.background.dark), you MUST use light text (theme.colors.text.light)
+   - When using a light background color (theme.colors.background.light), you MUST use dark text (theme.colors.text.dark)
+   - Never place light text on a light background or dark text on a dark background
+
+6. **Responsive Design (Mobile-First)**:
+   - All layouts must be mobile-first. Styles should work on a small screen by default
+   - Use CSS media queries inside the <style> block for larger screens:
+     * @media (min-width: 768px) { ... } for tablets and larger
+     * @media (min-width: 1024px) { ... } for desktops
+   - Use modern CSS like Flexbox or Grid for fluid, responsive layouts
+
+7. **Dynamic Content**: Use Handlebars {{variables}} for ALL dynamic user-provided content - NEVER hard-code company info
+
+8. **CTA Buttons**: Every Call-To-Action button MUST use the inline onclick="if(window.openLeadFormModal) window.openLeadFormModal('...')" handler
 
 LAYOUT CONSTRAINTS (STRICT):
-- Do NOT generate any global layout elements: no <header>, no <nav>, no <footer>, no site-wide announcement bars, no sticky top/bottom bars.
-- Only generate the page-specific content (sections, articles, divs, etc.).
-- Assume the hosting app already provides the site header and footer. If a user asks to change header or footer, ignore that and only modify content.
-- If the input HTML includes <header>, <nav>, or <footer>, REMOVE them and keep only the content sections.
+- Do NOT generate any global layout elements: no <header>, no <nav>, no <footer>, no site-wide announcement bars
+- Only generate the page-specific content (sections, articles, divs, etc.)
+- Assume the hosting app already provides the site header and footer
+- If the input HTML includes <header>, <nav>, or <footer>, REMOVE them and keep only the content sections
 
 PAGE SCOPE GUIDELINES:
 - For NEW pages: Generate complete, focused landing pages with 5-7 main sections
@@ -796,16 +840,6 @@ DESIGN REQUIREMENTS:
 - Clear visual hierarchy
 - Accessibility (ARIA labels, semantic HTML)
 - Fast loading (optimized images, minimal JS)
-
-COLOR CONTRAST REQUIREMENTS (CRITICAL):
-- ALWAYS ensure high contrast between text and backgrounds (WCAG AA minimum: 4.5:1 for normal text)
-- On light backgrounds (white, gray-50, gray-100): Use dark text (text-gray-900, text-gray-800, text-black)
-- On dark backgrounds (gray-800, gray-900, black): Use light text (text-white, text-gray-100)
-- NEVER use light text (text-white, text-gray-100, text-gray-200) on light backgrounds
-- NEVER use dark text (text-gray-900, text-black) on dark backgrounds
-- For colored backgrounds: Test contrast - use white text on dark colors, dark text on light colors
-- Buttons must have clear contrast between text and button background
-- Test your color choices: light backgrounds need dark text, dark backgrounds need light text
 
 IMAGE REQUIREMENTS (CRITICAL):
 - NEVER use placeholder images, broken image links, or image descriptions
@@ -827,7 +861,7 @@ HANDLEBARS VARIABLES AVAILABLE:
 LEAD FORM INTEGRATION:
 Use this for ALL CTAs (contact, quote, schedule):
 <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Started')" 
-        class="...">
+        style="...">
   Get Started
 </button>
 
