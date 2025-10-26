@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+
 import { Loader2, Send, Sparkles, Eye, Code, Trash2, AlertCircle, Copy, Check } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
@@ -39,20 +40,18 @@ const getStorageKey = (base: string, pageType: string, pageId?: string) => {
   const identifier = pageId || 'new';
   return `${base}-${pageType}-${identifier}`;
 };
+
 const generateSettingsHash = (companySettings: any, aiTraining: any, siteSettings: any) => {
-  const combined = JSON.stringify({
-    companySettings,
-    aiTraining,
-    siteSettings
-  });
+  const combined = JSON.stringify({ companySettings, aiTraining, siteSettings });
   let hash = 0;
   for (let i = 0; i < combined.length; i++) {
     const char = combined.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
+    hash = ((hash << 5) - hash) + char;
     hash = hash & hash;
   }
   return hash.toString();
 };
+
 const loadChatHistory = (pageType: string, pageId?: string): ChatMessage[] => {
   try {
     const key = getStorageKey('ai-editor-chat-history', pageType, pageId);
@@ -62,6 +61,7 @@ const loadChatHistory = (pageType: string, pageId?: string): ChatMessage[] => {
     return [];
   }
 };
+
 const saveChatHistory = (messages: ChatMessage[], pageType: string, pageId?: string) => {
   try {
     const key = getStorageKey('ai-editor-chat-history', pageType, pageId);
@@ -70,6 +70,7 @@ const saveChatHistory = (messages: ChatMessage[], pageType: string, pageId?: str
     console.error('Failed to save chat history:', e);
   }
 };
+
 const loadDebugData = (pageType: string, pageId?: string) => {
   try {
     const key = getStorageKey('ai-editor-debug-data', pageType, pageId);
@@ -79,6 +80,7 @@ const loadDebugData = (pageType: string, pageId?: string) => {
     return null;
   }
 };
+
 const saveDebugData = (data: any, pageType: string, pageId?: string) => {
   try {
     const key = getStorageKey('ai-editor-debug-data', pageType, pageId);
@@ -87,6 +89,7 @@ const saveDebugData = (data: any, pageType: string, pageId?: string) => {
     console.error('Failed to save debug data:', e);
   }
 };
+
 const clearHistory = (pageType: string, pageId?: string) => {
   const chatKey = getStorageKey('ai-editor-chat-history', pageType, pageId);
   const debugKey = getStorageKey('ai-editor-debug-data', pageType, pageId);
@@ -95,6 +98,7 @@ const clearHistory = (pageType: string, pageId?: string) => {
   localStorage.removeItem(debugKey);
   localStorage.removeItem(settingsKey);
 };
+
 const UnifiedPageEditor = ({
   open,
   onClose,
@@ -110,7 +114,8 @@ const UnifiedPageEditor = ({
   const [aiPrompt, setAiPrompt] = useState('');
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [viewMode, setViewMode] = useState<'preview' | 'code' | 'debug'>('preview');
+  const [viewMode, setViewMode] = useState<'preview' | 'code' | 'published' | 'debug'>('preview');
+  const [publishedHtml, setPublishedHtml] = useState('');
   const [renderedPreview, setRenderedPreview] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -137,15 +142,14 @@ const UnifiedPageEditor = ({
     const saved = localStorage.getItem('ai-editor-debug-accordion');
     return saved ? JSON.parse(saved) : [];
   });
-  const [copiedStates, setCopiedStates] = useState<{
-    [key: string]: 'content' | 'header' | null;
-  }>({});
+  const [copiedStates, setCopiedStates] = useState<{ [key: string]: 'content' | 'header' | null }>({});
   const [sendOnEnter, setSendOnEnter] = useState(() => {
     const saved = localStorage.getItem('ai-editor-send-on-enter');
     return saved !== null ? saved === 'true' : true;
   });
   const [isPublishing, setIsPublishing] = useState(false);
   const [settingsChanged, setSettingsChanged] = useState(false);
+  
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const queryClient = useQueryClient();
@@ -175,19 +179,45 @@ const UnifiedPageEditor = ({
             console.warn('Static page fetch error, falling back to initialHtml:', error.message);
           }
           if (data) {
+            // Prefer DB published HTML, fallback to initialHtml prop if DB is empty
+            const publishedCandidate = (data.content_html && data.content_html.trim().length > 0)
+              ? data.content_html
+              : (initialHtml || '');
+            
+            // Normalize draft to string
+            const draftRaw = data.content_html_draft ?? '';
+            const isDraftBlank = !draftRaw || draftRaw.trim().length === 0;
+            const htmlToUse = isDraftBlank ? (publishedCandidate || '') : draftRaw;
+            
+            // Store published version separately
+            setPublishedHtml(publishedCandidate);
+            
             return {
               id: data.id,
-              template_html: data.content_html_draft || data.content_html || '',
+              template_html: htmlToUse,
+              published_html: publishedCandidate,
               name: data.title || pageTitle,
-              template_type: 'static'
+              template_type: 'static',
+              has_unpublished_changes: htmlToUse !== publishedCandidate,
+              was_draft_blank: isDraftBlank && !!publishedCandidate
             };
           }
         }
         return {
           id: pageId || 'static',
           template_html: initialHtml || '',
+          published_html: initialHtml || '',
           name: pageTitle,
-          template_type: 'static'
+          template_type: 'static',
+          has_unpublished_changes: false
+        };
+        return {
+          id: pageId || 'static',
+          template_html: initialHtml || '',
+          published_html: initialHtml || '',
+          name: pageTitle,
+          template_type: 'static',
+          has_unpublished_changes: false
         };
       }
       if (!service?.id) return null;
@@ -195,10 +225,14 @@ const UnifiedPageEditor = ({
         data: serviceData
       } = await supabase.from('services').select('template_id, templates(id, name, template_html, template_html_draft, template_type)').eq('id', service.id).single();
       if (serviceData?.template_id && serviceData.templates) {
+        // Store published version separately
+        setPublishedHtml(serviceData.templates.template_html || '');
         // Return draft version if it exists, otherwise fall back to published
         return {
           ...serviceData.templates,
-          template_html: serviceData.templates.template_html_draft || serviceData.templates.template_html
+          template_html: serviceData.templates.template_html_draft || serviceData.templates.template_html,
+          published_html: serviceData.templates.template_html || '',
+          has_unpublished_changes: (serviceData.templates.template_html_draft || serviceData.templates.template_html) !== serviceData.templates.template_html
         };
       }
 
@@ -309,15 +343,33 @@ const UnifiedPageEditor = ({
     enabled: open
   });
   useEffect(() => {
-    if (template?.template_html) {
+    if (template?.template_html !== undefined) {
+      const htmlToLoad = template.template_html;
+      const pubHtml = (template as any).published_html || '';
+      
       console.log('Setting template HTML', {
-        length: template.template_html.length,
-        pageType
+        loadedLength: htmlToLoad.length,
+        publishedLength: pubHtml.length,
+        pageType,
+        wasDraftBlank: (template as any).was_draft_blank
       });
-      setTemplateHtml(template.template_html);
-      setOriginalHtml(template.template_html);
-      setCurrentHtml(template.template_html);
-      setPreviousHtml(template.template_html);
+      
+      setTemplateHtml(htmlToLoad);
+      setOriginalHtml(htmlToLoad);
+      setCurrentHtml(htmlToLoad);
+      setPreviousHtml(htmlToLoad);
+      
+      if (pubHtml) {
+        setPublishedHtml(pubHtml);
+      }
+      
+      // Show toast if we auto-loaded published version
+      if ((template as any).was_draft_blank) {
+        toast({
+          title: 'Published page loaded in draft editor',
+          description: 'Draft was empty, so the published version was loaded for editing.'
+        });
+      }
     }
   }, [template, pageType]);
 
@@ -326,19 +378,22 @@ const UnifiedPageEditor = ({
     if (open && !hasLoadedHistory.current) {
       const savedChat = loadChatHistory(pageType, pageId);
       const savedDebug = loadDebugData(pageType, pageId);
+      
       if (savedChat.length > 0) {
         setChatMessages(savedChat);
         // Estimate token count (rough approximation)
         const estimatedTokens = savedChat.reduce((sum, msg) => sum + msg.content.length * 0.25, 0);
         setTokenCount(Math.floor(estimatedTokens));
       }
+      
       if (savedDebug) {
         setDebugData(savedDebug);
       }
+      
       hasLoadedHistory.current = true;
       setIsShowingPrevious(false);
     }
-
+    
     // Reset flag when dialog closes
     if (!open) {
       hasLoadedHistory.current = false;
@@ -351,12 +406,13 @@ const UnifiedPageEditor = ({
       const currentHash = generateSettingsHash(companySettings, aiTraining, siteSettings);
       const settingsKey = getStorageKey('ai-editor-settings-hash', pageType, pageId);
       const storedHash = localStorage.getItem(settingsKey);
+      
       if (storedHash && storedHash !== currentHash) {
         setSettingsChanged(true);
       } else {
         setSettingsChanged(false);
       }
-
+      
       // Update stored hash
       localStorage.setItem(settingsKey, currentHash);
     }
@@ -426,11 +482,7 @@ const UnifiedPageEditor = ({
     if (!aiPrompt.trim()) return;
 
     // Check if user is authenticated
-    const {
-      data: {
-        session
-      }
-    } = await supabase.auth.getSession();
+    const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       toast({
         title: 'Authentication Required',
@@ -449,10 +501,12 @@ const UnifiedPageEditor = ({
       });
       return;
     }
+    
     const userMessage: ChatMessage = {
       role: 'user',
       content: aiPrompt
     };
+    
     setChatMessages(prev => [...prev, userMessage]);
     const currentCommand = aiPrompt;
     setAiPrompt('');
@@ -487,34 +541,37 @@ const UnifiedPageEditor = ({
     setDebugData({
       fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nPage Type: ${pageType}`,
       requestPayload: requestContext,
-      responseData: {
-        status: 'Waiting for Claude response...'
-      },
+      responseData: { status: 'Waiting for Claude response...' },
       generatedHtml: 'Waiting for response...'
     });
+    
     try {
+      
       // Add timeout to the edge function call (180 seconds)
-      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout - AI took too long to respond. Please try a shorter prompt or reset the chat.')), 180000));
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout - AI took too long to respond. Please try a shorter prompt or reset the chat.')), 180000)
+      );
+
       const invokePromise = supabase.functions.invoke('ai-edit-page', {
         body: requestContext
       });
-      const {
-        data,
-        error
-      } = (await Promise.race([invokePromise, timeoutPromise])) as any;
+
+      const { data, error } = await Promise.race([invokePromise, timeoutPromise]) as any;
+
       if (error) throw error;
 
       // Update token count and usage info
       if (data?.usage) {
         const usage = data.usage;
-        setTokenCount(prev => prev + (usage.totalTokens || 0));
+        const total = usage.totalTokens ?? usage.total_tokens ?? ((usage.inputTokens ?? usage.input_tokens ?? 0) + (usage.outputTokens ?? usage.output_tokens ?? 0));
+        setTokenCount(prev => prev + total);
         setLastUsage({
-          inputTokens: usage.inputTokens || 0,
-          outputTokens: usage.outputTokens || 0,
-          totalTokens: usage.totalTokens || 0,
-          cost: usage.costs?.total || 0,
-          cacheReads: usage.cacheReads || 0,
-          cacheWrites: usage.cacheWrites || 0
+          inputTokens: usage.inputTokens ?? usage.input_tokens ?? 0,
+          outputTokens: usage.outputTokens ?? usage.output_tokens ?? 0,
+          totalTokens: total,
+          cost: usage.cost ?? usage.costs?.total ?? 0,
+          cacheReads: usage.cacheReads ?? usage.cache_reads ?? 0,
+          cacheWrites: usage.cacheWrites ?? usage.cache_writes ?? 0
         });
       } else if (data?.tokenUsage) {
         // Fallback for old response format
@@ -522,9 +579,10 @@ const UnifiedPageEditor = ({
       }
 
       // In build mode, auto-apply changes immediately
-      if (editorMode === 'build' && data?.updatedHtml) {
+      const newHtml = data?.updatedHtml ?? data?.html ?? data?.updated_html;
+      if (editorMode === 'build' && newHtml) {
         setPreviousHtml(currentHtml);
-        setCurrentHtml(data.updatedHtml);
+        setCurrentHtml(newHtml);
         setIsShowingPrevious(false);
       }
 
@@ -533,20 +591,23 @@ const UnifiedPageEditor = ({
         setDebugData(data.debug);
         saveDebugData(data.debug, pageType, pageId);
       }
+      
       const assistantMessage: ChatMessage = {
         role: 'assistant',
-        content: data?.explanation || 'AI has updated the page.'
+        content: data?.messages?.[0]?.content || data?.explanation || 'AI has updated the page.'
       };
+      
       setChatMessages(prev => [...prev, assistantMessage]);
     } catch (error: any) {
       console.error('AI Editor Error:', error);
-
+      
       // Provide more detailed error message
       let errorMessage = 'Unknown error occurred';
       let errorTitle = 'AI Error';
+      
       if (error?.message) {
         errorMessage = error.message;
-
+        
         // Check for common error patterns
         if (error.message.includes('JWT') || error.message.includes('auth') || error.message.includes('unauthorized')) {
           errorTitle = 'Authentication Error';
@@ -562,47 +623,45 @@ const UnifiedPageEditor = ({
       } else if (typeof error === 'string') {
         errorMessage = error;
       }
+      
       toast({
         title: errorTitle,
         description: errorMessage,
         variant: 'destructive'
       });
-      // Keep the user message and append an assistant error message
-      const assistantError: ChatMessage = {
-        role: 'assistant',
-        content: `Error: ${errorMessage}`
-      };
-      setChatMessages(prev => [...prev, assistantError]);
+       // Keep the user message and append an assistant error message
+       const assistantError: ChatMessage = {
+         role: 'assistant',
+         content: `Error: ${errorMessage}`
+       };
+       setChatMessages(prev => [...prev, assistantError]);
+
     } finally {
       setIsAiLoading(false);
     }
   };
+
   const handleCopyDebug = async (key: string, content: string, header: string, type: 'content' | 'header') => {
     try {
       const textToCopy = type === 'content' ? content : `${header}\n\n${content}`;
       await navigator.clipboard.writeText(textToCopy);
-      setCopiedStates(prev => ({
-        ...prev,
-        [key]: type
-      }));
+      setCopiedStates(prev => ({ ...prev, [key]: type }));
       toast({
         title: 'Copied to clipboard',
-        duration: 2000
+        duration: 2000,
       });
       setTimeout(() => {
-        setCopiedStates(prev => ({
-          ...prev,
-          [key]: null
-        }));
+        setCopiedStates(prev => ({ ...prev, [key]: null }));
       }, 2000);
     } catch (error) {
       toast({
         title: 'Failed to copy',
         variant: 'destructive',
-        duration: 2000
+        duration: 2000,
       });
     }
   };
+
   const resetChat = () => {
     setChatMessages([]);
     setTokenCount(0);
@@ -640,7 +699,9 @@ const UnifiedPageEditor = ({
       const start = textareaRef.current.selectionStart;
       const end = textareaRef.current.selectionEnd;
       const newText = aiPrompt.substring(0, start) + variable + aiPrompt.substring(end);
+      
       setAiPrompt(newText);
+      
       setTimeout(() => {
         if (textareaRef.current) {
           textareaRef.current.focus();
@@ -697,15 +758,30 @@ const UnifiedPageEditor = ({
     }
   };
 
+  // Load published code into draft
+  const handleLoadPublished = async () => {
+    if (!publishedHtml) {
+      toast({
+        title: 'No published version',
+        description: 'There is no published version to load.',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
+    setCurrentHtml(publishedHtml);
+    setRenderedPreview(publishedHtml);
+    toast({
+      title: 'Loaded published version',
+      description: 'Draft reset to published code.'
+    });
+  };
+
   // Publish function - copies draft to live
   const handlePublish = async () => {
     if (isPublishing) return;
-    console.log('Publishing...', {
-      currentHtml: currentHtml?.substring(0, 100),
-      pageType,
-      pageId,
-      templateId: template?.id
-    });
+    
+    console.log('Publishing...', { currentHtml: currentHtml?.substring(0, 100), pageType, pageId, templateId: template?.id });
     setIsPublishing(true);
     try {
       if (pageType === 'static' && pageId) {
@@ -718,6 +794,7 @@ const UnifiedPageEditor = ({
           updated_at: new Date().toISOString()
         }).eq('id', pageId);
         if (error) throw error;
+        setPublishedHtml(currentHtml);
         queryClient.invalidateQueries({
           queryKey: ['static-pages', pageId]
         });
@@ -735,6 +812,7 @@ const UnifiedPageEditor = ({
           updated_at: new Date().toISOString()
         }).eq('id', template.id);
         if (error) throw error;
+        setPublishedHtml(currentHtml);
         if (service) {
           await supabase.from('generated_pages').update({
             needs_regeneration: true
@@ -824,13 +902,37 @@ const UnifiedPageEditor = ({
             <div className="flex items-center gap-3 flex-1">
               <DialogTitle>Editing: {pageTitle}</DialogTitle>
               <div className="flex items-center gap-3">
+                {/* Status Badge */}
+                {currentHtml !== publishedHtml ? (
+                  <span className="text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 font-medium">
+                    Draft - Unpublished Changes
+                  </span>
+                ) : (
+                  <span className="text-xs px-2 py-1 rounded-full bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/20 font-medium">
+                    Published
+                  </span>
+                )}
+                
                 <div className="text-xs text-muted-foreground">
                   {isSaving ? <span className="flex items-center gap-1">
                       <Loader2 className="h-3 w-3 animate-spin" />
                       Saving draft...
-                     </span> : lastSaved ? <span>Draft saved {new Date(lastSaved).toLocaleTimeString()}</span> : templateHtml !== originalHtml ? <span>Unsaved changes</span> : <span>All changes saved</span>}
+                     </span> : lastSaved ? <span>Auto-saved {new Date(lastSaved).toLocaleTimeString()}</span> : currentHtml !== originalHtml ? <span>Unsaved changes</span> : null}
                 </div>
-                <Button onClick={handlePublish} disabled={isPublishing} size="sm" variant="default" className="gap-2">
+                
+                {publishedHtml && (
+                  <Button 
+                    onClick={handleLoadPublished} 
+                    size="sm" 
+                    variant="outline" 
+                    className="gap-2"
+                    disabled={currentHtml === publishedHtml}
+                  >
+                    Load Published
+                  </Button>
+                )}
+                
+                <Button onClick={handlePublish} disabled={isPublishing || currentHtml === publishedHtml} size="sm" variant="default" className="gap-2">
                   {isPublishing ? <>
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Publishing...
@@ -840,7 +942,8 @@ const UnifiedPageEditor = ({
             </div>
             
             <div className="flex items-center gap-2">
-              {previousHtml !== currentHtml && <Button variant={isShowingPrevious ? 'default' : 'outline'} size="sm" onClick={toggleVersion} className="flex items-center gap-2">
+              {previousHtml !== currentHtml && 
+                <Button variant={isShowingPrevious ? 'default' : 'outline'} size="sm" onClick={toggleVersion} className="flex items-center gap-2">
                   {isShowingPrevious ? 'Current' : 'Previous'}
                 </Button>}
             </div>
@@ -851,21 +954,25 @@ const UnifiedPageEditor = ({
           {/* Left Panel - AI Chat */}
           <div className="w-2/5 border-r flex flex-col overflow-hidden">
             <div className="p-4 border-b flex-shrink-0">
-              {settingsChanged && <div className="mb-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md flex items-start gap-2">
+              {settingsChanged && (
+                <div className="mb-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md flex items-start gap-2">
                   <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <div className="flex-1 text-xs text-yellow-700 dark:text-yellow-500">
                     <p className="font-medium">Company settings updated</p>
                     <p className="mt-0.5">Consider clearing history for best results with updated information.</p>
                   </div>
-                </div>}
+                </div>
+              )}
               
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-primary" />
                   <h3 className="font-semibold">AI Assistant</h3>
-                  {chatMessages.length > 0 && <span className="text-xs text-muted-foreground">
+                  {chatMessages.length > 0 && (
+                    <span className="text-xs text-muted-foreground">
                       ({chatMessages.length} messages)
-                    </span>}
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant={editorMode === 'chat' ? 'default' : 'outline'} size="sm" onClick={() => setEditorMode('chat')} className="text-xs h-7">
@@ -886,15 +993,23 @@ const UnifiedPageEditor = ({
                       {(tokenCount / 1000).toFixed(1)}K
                     </span> / 200K
                   </span>
-                  {(chatMessages.length > 0 || debugData) && <Button variant="ghost" size="sm" onClick={resetChat} className="text-xs h-6 px-2 gap-1">
+                  {(chatMessages.length > 0 || debugData) && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={resetChat} 
+                      className="text-xs h-6 px-2 gap-1"
+                    >
                       <Trash2 className="h-3 w-3" />
                       Clear History
-                    </Button>}
+                    </Button>
+                  )}
                 </div>
               </div>
               
               {/* Token usage display */}
-              {lastUsage && <div className="mb-2 p-2 bg-muted/50 rounded-md border border-border/50">
+              {lastUsage && (
+                <div className="mb-2 p-2 bg-muted/50 rounded-md border border-border/50">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Last request:</span>
                     <span className="font-mono">
@@ -910,18 +1025,25 @@ const UnifiedPageEditor = ({
                       ${lastUsage.cost.toFixed(4)}
                     </span>
                   </div>
-                  {(lastUsage.cacheReads > 0 || lastUsage.cacheWrites > 0) && <div className="flex items-center justify-between text-xs mt-1 text-purple-600 dark:text-purple-400">
+                  {(lastUsage.cacheReads > 0 || lastUsage.cacheWrites > 0) && (
+                    <div className="flex items-center justify-between text-xs mt-1 text-purple-600 dark:text-purple-400">
                       <span>Cache:</span>
                       <span className="font-mono">
                         {lastUsage.cacheReads > 0 && `${lastUsage.cacheReads.toLocaleString()} reads `}
                         {lastUsage.cacheWrites > 0 && `${lastUsage.cacheWrites.toLocaleString()} writes`}
                       </span>
-                    </div>}
-                </div>}
+                    </div>
+                  )}
+                </div>
+              )}
               
-              {tokenCount >= 150000 && tokenCount < TOKEN_SOFT_LIMIT && <div className="mb-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
-                  
-                </div>}
+              {tokenCount >= 150000 && tokenCount < TOKEN_SOFT_LIMIT && (
+                <div className="mb-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
+                  <p className="text-xs text-yellow-700 dark:text-yellow-500">
+                    ⚠️ Context is at {((tokenCount / 200000) * 100).toFixed(0)}% capacity. Consider clearing history soon to prevent truncation.
+                  </p>
+                </div>
+              )}
               {tokenCount >= TOKEN_SOFT_LIMIT && <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded-md">
                   <p className="text-xs text-destructive">
                     {tokenCount >= TOKEN_HARD_LIMIT ? 'Token limit reached. Please reset the chat to continue.' : 'Approaching token limit. Consider resetting the chat soon.'}
@@ -986,16 +1108,20 @@ const UnifiedPageEditor = ({
           {/* Right Panel - Preview/Code */}
           <div className="w-3/5 flex flex-col min-h-0">
             <div className="p-4 border-b">
-              {/* Preview/Code/Debug Tabs */}
-              <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'preview' | 'code' | 'debug')}>
+              {/* Preview/Code/Published/Debug Tabs */}
+              <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'preview' | 'code' | 'published' | 'debug')}>
                 <TabsList>
                   <TabsTrigger value="preview">
                     <Eye className="mr-2 h-4 w-4" />
-                    Preview
+                    Draft Preview
                   </TabsTrigger>
                   <TabsTrigger value="code">
                     <Code className="mr-2 h-4 w-4" />
-                    Code
+                    Draft Code
+                  </TabsTrigger>
+                  <TabsTrigger value="published">
+                    <Eye className="mr-2 h-4 w-4" />
+                    Published Page
                   </TabsTrigger>
                   <TabsTrigger value="debug">
                     <Sparkles className="mr-2 h-4 w-4" />
@@ -1006,32 +1132,89 @@ const UnifiedPageEditor = ({
             </div>
 
             <div className="flex-1 min-h-0 relative bg-white">
-              {viewMode === 'preview' ? <PreviewIframe key={isShowingPrevious ? 'previous' : 'current'} html={renderedPreview} /> : viewMode === 'code' ? <Editor key={isShowingPrevious ? 'previous' : 'current'} height="100%" defaultLanguage="html" value={displayedHtml} onChange={value => {
-              if (!isShowingPrevious && value !== undefined) {
-                setCurrentHtml(value);
-                if (pageType === 'static' || pageType === 'generated') {
-                  setRenderedPreview(value);
-                }
-              }
-            }} theme="vs-dark" options={{
-              minimap: {
-                enabled: true
-              },
-              wordWrap: 'on',
-              automaticLayout: true,
-              fontSize: 14,
-              readOnly: isShowingPrevious
-            }} /> : <div className="flex-1 min-h-0 overflow-y-auto max-h-[80vh] max-w-full">
+              {viewMode === 'preview' ? (
+                <div className="h-full flex flex-col">
+                  <div className="bg-blue-500/10 border-b border-blue-500/20 px-4 py-2">
+                    <p className="text-xs text-blue-700 dark:text-blue-400 font-medium">
+                      📝 Draft Preview - Changes not yet published
+                    </p>
+                  </div>
+                  <div className="flex-1">
+                    <PreviewIframe key={isShowingPrevious ? 'previous' : 'current'} html={renderedPreview} />
+                  </div>
+                </div>
+              ) : viewMode === 'code' ? (
+                <div className="h-full flex flex-col">
+                  <div className="bg-blue-500/10 border-b border-blue-500/20 px-4 py-2">
+                    <p className="text-xs text-blue-700 dark:text-blue-400 font-medium">
+                      📝 Draft Code - Editing working copy
+                    </p>
+                  </div>
+                  <div className="flex-1">
+                    <Editor
+                      key={isShowingPrevious ? 'previous' : 'current'}
+                      height="100%"
+                      defaultLanguage="html"
+                      value={displayedHtml}
+                      onChange={value => {
+                        if (!isShowingPrevious && value !== undefined) {
+                          setCurrentHtml(value);
+                          if (pageType === 'static' || pageType === 'generated') {
+                            setRenderedPreview(value);
+                          }
+                        }
+                      }}
+                      theme="vs-dark"
+                      options={{
+                        minimap: { enabled: true },
+                        wordWrap: 'on',
+                        automaticLayout: true,
+                        fontSize: 14,
+                        readOnly: isShowingPrevious,
+                      }}
+                    />
+                  </div>
+                </div>
+              ) : viewMode === 'published' ? (
+                <div className="h-full flex flex-col">
+                  <div className="bg-green-500/10 border-b border-green-500/20 px-4 py-2 flex items-center justify-between">
+                    <p className="text-xs text-green-700 dark:text-green-400 font-medium">
+                      ✅ Published Version - Live on website
+                    </p>
+                    {!publishedHtml && (
+                      <span className="text-xs text-muted-foreground italic">No published version yet</span>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    {publishedHtml ? (
+                      <PreviewIframe key="published" html={publishedHtml} />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-muted-foreground">
+                        <p>No published version available</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 min-h-0 overflow-y-auto max-h-[80vh] max-w-full">
                   <div className="flex-1 min-h-0">
                     <div className="p-6 bg-muted/20 max-w-full">
-                      {!debugData ? <div className="text-center text-muted-foreground py-12">
+                      {!debugData ? (
+                        <div className="text-center text-muted-foreground py-12">
                           <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
                           <p className="text-lg font-medium">No Debug Data Yet</p>
                           <p className="text-sm mt-2">Send a command to Claude to see the full request and response</p>
-                        </div> : <Accordion type="multiple" value={debugAccordionValue} onValueChange={value => {
-                    setDebugAccordionValue(value);
-                    localStorage.setItem('ai-editor-debug-accordion', JSON.stringify(value));
-                  }} className="space-y-4 max-w-full">
+                        </div>
+                      ) : (
+                        <Accordion 
+                          type="multiple" 
+                          value={debugAccordionValue}
+                          onValueChange={(value) => {
+                            setDebugAccordionValue(value);
+                            localStorage.setItem('ai-editor-debug-accordion', JSON.stringify(value));
+                          }}
+                          className="space-y-4 max-w-full"
+                        >
                           <AccordionItem value="prompt" className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
                             <AccordionTrigger className="px-4 hover:no-underline">
                               <div className="flex items-center justify-between w-full">
@@ -1040,11 +1223,23 @@ const UnifiedPageEditor = ({
                                   <h3 className="font-semibold">Full Prompt Sent to Claude</h3>
                                   {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
                                 </div>
-                                <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-                                  <Button variant="ghost" size="sm" onClick={() => handleCopyDebug('prompt', debugData?.fullPrompt || '', 'Full Prompt Sent to Claude', 'content')} className="h-7 px-2" title="Copy content only">
+                                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('prompt', debugData?.fullPrompt || '', 'Full Prompt Sent to Claude', 'content')}
+                                    className="h-7 px-2"
+                                    title="Copy content only"
+                                  >
                                     {copiedStates['prompt'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                   </Button>
-                                  <Button variant="ghost" size="sm" onClick={() => handleCopyDebug('prompt', debugData?.fullPrompt || '', 'Full Prompt Sent to Claude', 'header')} className="h-7 px-2 gap-1" title="Copy header + content (all)">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('prompt', debugData?.fullPrompt || '', 'Full Prompt Sent to Claude', 'header')}
+                                    className="h-7 px-2 gap-1"
+                                    title="Copy header + content (all)"
+                                  >
                                     {copiedStates['prompt'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                     <span className="text-[10px] font-medium">ALL</span>
                                   </Button>
@@ -1065,11 +1260,23 @@ const UnifiedPageEditor = ({
                                   <div className="h-6 w-1 bg-blue-500 rounded-full" />
                                   <h3 className="font-semibold">Request Context</h3>
                                 </div>
-                                <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-                                  <Button variant="ghost" size="sm" onClick={() => handleCopyDebug('request', JSON.stringify(debugData?.requestPayload, null, 2) || '', 'Request Context', 'content')} className="h-7 px-2" title="Copy content only">
+                                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('request', JSON.stringify(debugData?.requestPayload, null, 2) || '', 'Request Context', 'content')}
+                                    className="h-7 px-2"
+                                    title="Copy content only"
+                                  >
                                     {copiedStates['request'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                   </Button>
-                                  <Button variant="ghost" size="sm" onClick={() => handleCopyDebug('request', JSON.stringify(debugData?.requestPayload, null, 2) || '', 'Request Context', 'header')} className="h-7 px-2 gap-1" title="Copy header + content (all)">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('request', JSON.stringify(debugData?.requestPayload, null, 2) || '', 'Request Context', 'header')}
+                                    className="h-7 px-2 gap-1"
+                                    title="Copy header + content (all)"
+                                  >
                                     {copiedStates['request'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                     <span className="text-[10px] font-medium">ALL</span>
                                   </Button>
@@ -1091,11 +1298,23 @@ const UnifiedPageEditor = ({
                                   <h3 className="font-semibold">Claude's Raw Response</h3>
                                   {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
                                 </div>
-                                <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-                                  <Button variant="ghost" size="sm" onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "Claude's Raw Response", 'content')} className="h-7 px-2" title="Copy content only">
+                                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "Claude's Raw Response", 'content')}
+                                    className="h-7 px-2"
+                                    title="Copy content only"
+                                  >
                                     {copiedStates['response'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                   </Button>
-                                  <Button variant="ghost" size="sm" onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "Claude's Raw Response", 'header')} className="h-7 px-2 gap-1" title="Copy header + content (all)">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "Claude's Raw Response", 'header')}
+                                    className="h-7 px-2 gap-1"
+                                    title="Copy header + content (all)"
+                                  >
                                     {copiedStates['response'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                     <span className="text-[10px] font-medium">ALL</span>
                                   </Button>
@@ -1104,7 +1323,9 @@ const UnifiedPageEditor = ({
                             </AccordionTrigger>
                             <AccordionContent className="overflow-hidden max-w-full">
                                 <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
-                                {typeof debugData.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData.responseData, null, 2)}
+                                {typeof debugData.responseData === 'string' 
+                                  ? debugData.responseData 
+                                  : JSON.stringify(debugData.responseData, null, 2)}
                               </pre>
                             </AccordionContent>
                           </AccordionItem>
@@ -1117,11 +1338,23 @@ const UnifiedPageEditor = ({
                                   <h3 className="font-semibold">Generated HTML</h3>
                                   {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
                                 </div>
-                                <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-                                  <Button variant="ghost" size="sm" onClick={() => handleCopyDebug('html', debugData?.generatedHtml || '', 'Generated HTML', 'content')} className="h-7 px-2" title="Copy content only">
+                                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('html', debugData?.generatedHtml || '', 'Generated HTML', 'content')}
+                                    className="h-7 px-2"
+                                    title="Copy content only"
+                                  >
                                     {copiedStates['html'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                   </Button>
-                                  <Button variant="ghost" size="sm" onClick={() => handleCopyDebug('html', debugData?.generatedHtml || '', 'Generated HTML', 'header')} className="h-7 px-2 gap-1" title="Copy header + content (all)">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleCopyDebug('html', debugData?.generatedHtml || '', 'Generated HTML', 'header')}
+                                    className="h-7 px-2 gap-1"
+                                    title="Copy header + content (all)"
+                                  >
                                     {copiedStates['html'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                                     <span className="text-[10px] font-medium">ALL</span>
                                   </Button>
@@ -1134,10 +1367,12 @@ const UnifiedPageEditor = ({
                               </pre>
                             </AccordionContent>
                           </AccordionItem>
-                        </Accordion>}
+                        </Accordion>
+                      )}
                     </div>
                   </div>
-                </div>}
+                </div>
+              )}
             </div>
           </div>
         </div>
