@@ -60,6 +60,13 @@ const Home = () => {
   // If a homepage static page exists, render it
   if (homepage) {
     let renderedContent = homepage.content_html;
+    
+    // Extract body content if this is a full HTML document
+    const bodyMatch = renderedContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+    if (bodyMatch) {
+      renderedContent = bodyMatch[1];
+    }
+    
     if (companySettings) {
       renderedContent = renderedContent
         .replace(/\{\{company_name\}\}/g, companySettings.business_name || '')
@@ -94,12 +101,10 @@ const Home = () => {
           url={window.location.origin}
           logo={companySettings?.logo_url}
         />
-        <div className="container mx-auto px-4 py-8">
-          <article 
-            className="prose prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
-          />
-        </div>
+        <article 
+          className="max-w-none"
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(renderedContent) }}
+        />
       </>
     );
   }
