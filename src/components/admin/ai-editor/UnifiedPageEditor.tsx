@@ -179,15 +179,13 @@ const UnifiedPageEditor = ({
             console.warn('Static page fetch error, falling back to initialHtml:', error.message);
           }
           if (data) {
-            // Prefer DB published HTML, fallback to initialHtml prop if DB is empty
-            const publishedCandidate = (data.content_html && data.content_html.trim().length > 0)
-              ? data.content_html
-              : (initialHtml || '');
+            // Always use DB content_html as the published version (never use initialHtml)
+            const publishedCandidate = data.content_html || '';
             
-            // Normalize draft to string
+            // For draft: use content_html_draft if it exists, otherwise use published as fallback
             const draftRaw = data.content_html_draft ?? '';
             const isDraftBlank = !draftRaw || draftRaw.trim().length === 0;
-            const htmlToUse = isDraftBlank ? (publishedCandidate || '') : draftRaw;
+            const htmlToUse = isDraftBlank ? publishedCandidate : draftRaw;
             
             // Store published version separately
             setPublishedHtml(publishedCandidate);
@@ -203,18 +201,11 @@ const UnifiedPageEditor = ({
             };
           }
         }
+        // Fallback for new pages without database entry
         return {
           id: pageId || 'static',
-          template_html: initialHtml || '',
-          published_html: initialHtml || '',
-          name: pageTitle,
-          template_type: 'static',
-          has_unpublished_changes: false
-        };
-        return {
-          id: pageId || 'static',
-          template_html: initialHtml || '',
-          published_html: initialHtml || '',
+          template_html: '',  // Start with empty draft for new pages
+          published_html: '',
           name: pageTitle,
           template_type: 'static',
           has_unpublished_changes: false
