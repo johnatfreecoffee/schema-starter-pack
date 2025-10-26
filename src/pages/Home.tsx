@@ -5,6 +5,7 @@ import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
+import { renderTemplate } from '@/lib/templateEngine';
 
 const Home = () => {
   const { data: homepage, isLoading } = useCachedQuery({
@@ -50,14 +51,42 @@ const Home = () => {
   if (homepage) {
     let renderedContent = homepage.content_html;
     if (companySettings) {
-      renderedContent = renderedContent
-        .replace(/\{\{company_name\}\}/g, companySettings.business_name || '')
-        .replace(/\{\{company_phone\}\}/g, companySettings.phone || '')
-        .replace(/\{\{company_email\}\}/g, companySettings.email || '')
-        .replace(/\{\{company_address\}\}/g, companySettings.address || '')
-        .replace(/\{\{company_description\}\}/g, companySettings.description || '')
-        .replace(/\{\{logo_url\}\}/g, companySettings.logo_url || '')
-        .replace(/\{\{icon_url\}\}/g, companySettings.icon_url || '');
+      try {
+        const templateData = {
+          // Common company variables
+          company_name: companySettings.business_name || '',
+          business_name: companySettings.business_name || '', // support both keys
+          company_phone: companySettings.phone || '',
+          company_email: companySettings.email || '',
+          company_address: companySettings.address || '',
+          company_website: companySettings.website_url || '',
+          years_experience: companySettings.years_experience || 0,
+          license_number: companySettings.license_numbers || '',
+          business_slogan: companySettings.business_slogan || '',
+          logo_url: companySettings.logo_url || '',
+          icon_url: companySettings.icon_url || '',
+          business_hours: companySettings.business_hours || '',
+          address_street: companySettings.address_street || '',
+          address_unit: companySettings.address_unit || '',
+          address_city: companySettings.address_city || '',
+          address_state: companySettings.address_state || '',
+          address_zip: companySettings.address_zip || '',
+          service_radius: companySettings.service_radius || '',
+          service_radius_unit: companySettings.service_radius_unit || 'miles',
+          facebook_url: companySettings.facebook_url || '',
+          instagram_url: companySettings.instagram_url || '',
+          twitter_url: companySettings.twitter_url || '',
+          linkedin_url: companySettings.linkedin_url || '',
+          email_from_name: companySettings.email_from_name || '',
+          email_signature: companySettings.email_signature || '',
+          description: companySettings.description || '',
+          license_numbers: companySettings.license_numbers || '',
+        };
+        renderedContent = renderTemplate(homepage.content_html, templateData);
+      } catch (error) {
+        console.error('Template rendering error (homepage):', error);
+        // Fallback to original content if template rendering fails
+      }
     }
 
     // Add lazy loading to images in rendered HTML
