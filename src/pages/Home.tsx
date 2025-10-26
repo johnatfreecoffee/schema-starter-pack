@@ -81,6 +81,17 @@ const Home = () => {
     const isRichLandingPage = renderedContent.includes('class="min-h-screen"') || 
                               renderedContent.includes('className="min-h-screen"');
 
+    // Load Tailwind CDN for AI-generated content
+    useEffect(() => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.tailwindcss.com';
+      script.async = true;
+      document.head.appendChild(script);
+      return () => {
+        document.head.removeChild(script);
+      };
+    }, []);
+
     return (
       <>
         <SEOHead

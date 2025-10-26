@@ -5,6 +5,7 @@ import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { renderTemplate } from '@/lib/templateEngine';
+import { useEffect } from 'react';
 
 const StaticPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -105,6 +106,17 @@ const StaticPage = () => {
   // Check if this is a rich landing page (starts with specific container classes)
   const isRichLandingPage = renderedContent.includes('class="min-h-screen"') || 
                             renderedContent.includes('className="min-h-screen"');
+
+  // Load Tailwind CDN for AI-generated content
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.tailwindcss.com';
+    script.async = true;
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
 
   return (
     <>
