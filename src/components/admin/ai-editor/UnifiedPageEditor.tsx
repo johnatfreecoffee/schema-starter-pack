@@ -179,27 +179,38 @@ const UnifiedPageEditor = ({
             console.warn('Static page fetch error, falling back to initialHtml:', error.message);
           }
           if (data) {
-            const publishedHtml = data.content_html || '';
-            const draftHtml = data.content_html_draft;
+            // Prefer DB published HTML, fallback to initialHtml prop if DB is empty
+            const publishedCandidate = (data.content_html && data.content_html.trim().length > 0)
+              ? data.content_html
+              : (initialHtml || '');
             
-            // If draft is blank/empty but published exists, use published
-            const isDraftBlank = !draftHtml || draftHtml.trim().length === 0;
-            const htmlToUse = isDraftBlank && publishedHtml ? publishedHtml : (draftHtml || publishedHtml || '');
+            // Normalize draft to string
+            const draftRaw = data.content_html_draft ?? '';
+            const isDraftBlank = !draftRaw || draftRaw.trim().length === 0;
+            const htmlToUse = isDraftBlank ? (publishedCandidate || '') : draftRaw;
             
             // Store published version separately
-            setPublishedHtml(publishedHtml);
+            setPublishedHtml(publishedCandidate);
             
             return {
               id: data.id,
               template_html: htmlToUse,
-              published_html: publishedHtml,
+              published_html: publishedCandidate,
               name: data.title || pageTitle,
               template_type: 'static',
-              has_unpublished_changes: htmlToUse !== publishedHtml,
-              was_draft_blank: isDraftBlank && publishedHtml
+              has_unpublished_changes: htmlToUse !== publishedCandidate,
+              was_draft_blank: isDraftBlank && !!publishedCandidate
             };
           }
         }
+        return {
+          id: pageId || 'static',
+          template_html: initialHtml || '',
+          published_html: initialHtml || '',
+          name: pageTitle,
+          template_type: 'static',
+          has_unpublished_changes: false
+        };
         return {
           id: pageId || 'static',
           template_html: initialHtml || '',
