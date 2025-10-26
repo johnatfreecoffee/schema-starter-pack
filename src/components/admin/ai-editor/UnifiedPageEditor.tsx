@@ -1025,7 +1025,7 @@ const UnifiedPageEditor = ({
                   </TabsTrigger>
                   <TabsTrigger value="debug">
                     <Sparkles className="mr-2 h-4 w-4" />
-                    Claude Debug
+                    Debug
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
