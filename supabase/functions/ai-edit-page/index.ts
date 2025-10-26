@@ -780,6 +780,12 @@ LAYOUT CONSTRAINTS (STRICT):
 - Assume the hosting app already provides the site header and footer. If a user asks to change header or footer, ignore that and only modify content inside <main>.
 - If the input HTML includes <header>, <nav>, or <footer>, REMOVE them and keep only the content sections.
 
+PAGE SCOPE GUIDELINES:
+- For NEW pages: Generate complete, focused landing pages with 5-7 main sections
+- For MODIFICATIONS: Regenerate only the requested changes plus surrounding context
+- Keep content scannable and purposeful - quality over quantity
+- Typical complete page: ~8,000-15,000 tokens (20-40K characters)
+
 DESIGN REQUIREMENTS:
 - Mobile-first responsive design
 - Modern, professional aesthetics
@@ -899,7 +905,7 @@ ${buildThemeContext(context)}
       },
       contents: chatContents,
       generationConfig: {
-        maxOutputTokens: 12000,
+        maxOutputTokens: 32000,
         temperature: 0.2,
         // Removed stopSequences to prevent premature stopping before page completion
       }
