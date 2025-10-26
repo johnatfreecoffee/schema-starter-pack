@@ -546,6 +546,10 @@ function buildProperChatHistory(
 }
 
 serve(async (req) => {
+  console.log('=== AI-EDIT-PAGE FUNCTION CALLED ===');
+  console.log('Request method:', req.method);
+  console.log('Timestamp:', new Date().toISOString());
+  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -905,7 +909,7 @@ ${buildThemeContext(context)}
       },
       contents: chatContents,
       generationConfig: {
-        maxOutputTokens: 44000,
+        maxOutputTokens: 8192,
         temperature: 0.2,
         // Removed stopSequences to prevent premature stopping before page completion
       }
@@ -1046,7 +1050,12 @@ ${buildThemeContext(context)}
                           errorData.error?.status || 
                           `Gemini API error: ${response.status}`;
       
-      console.error('Gemini API error:', response.status, errorData);
+      console.error('❌ GEMINI API ERROR:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorData: JSON.stringify(errorData, null, 2),
+        maxOutputTokens: requestPayload.generationConfig.maxOutputTokens
+      });
       throw new Error(errorMessage);
     }
 
@@ -1226,15 +1235,19 @@ ${buildThemeContext(context)}
     });
 
   } catch (error: any) {
-    console.error('Error in ai-edit-page function:', error);
+    console.error('❌ ERROR IN AI-EDIT-PAGE FUNCTION ===');
+    console.error('Error type:', error.constructor.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
     
     metrics.endTime = Date.now();
     metrics.duration = metrics.endTime - metrics.startTime;
     logMetrics(metrics);
     
     return new Response(JSON.stringify({ 
-      error: error.message,
+      error: error.message || 'Unknown error occurred',
       details: error.stack,
+      type: error.constructor.name,
       metrics: {
         duration: metrics.duration,
         timeoutOccurred: metrics.timeoutOccurred
