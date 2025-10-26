@@ -179,15 +179,24 @@ const UnifiedPageEditor = ({
             console.warn('Static page fetch error, falling back to initialHtml:', error.message);
           }
           if (data) {
+            const publishedHtml = data.content_html || '';
+            const draftHtml = data.content_html_draft;
+            
+            // If draft is blank/empty but published exists, use published
+            const isDraftBlank = !draftHtml || draftHtml.trim().length === 0;
+            const htmlToUse = isDraftBlank && publishedHtml ? publishedHtml : (draftHtml || publishedHtml || '');
+            
             // Store published version separately
-            setPublishedHtml(data.content_html || '');
+            setPublishedHtml(publishedHtml);
+            
             return {
               id: data.id,
-              template_html: data.content_html_draft || data.content_html || '',
-              published_html: data.content_html || '',
+              template_html: htmlToUse,
+              published_html: publishedHtml,
               name: data.title || pageTitle,
               template_type: 'static',
-              has_unpublished_changes: (data.content_html_draft || data.content_html) !== data.content_html
+              has_unpublished_changes: htmlToUse !== publishedHtml,
+              was_draft_blank: isDraftBlank && publishedHtml
             };
           }
         }
@@ -324,19 +333,15 @@ const UnifiedPageEditor = ({
   });
   useEffect(() => {
     if (template?.template_html !== undefined) {
-      const draftHtml = template.template_html;
+      const htmlToLoad = template.template_html;
       const pubHtml = (template as any).published_html || '';
       
       console.log('Setting template HTML', {
-        draftLength: draftHtml.length,
+        loadedLength: htmlToLoad.length,
         publishedLength: pubHtml.length,
         pageType,
-        hasUnpublishedChanges: (template as any).has_unpublished_changes
+        wasDraftBlank: (template as any).was_draft_blank
       });
-      
-      // If draft is blank/empty but published exists, load published
-      const isDraftBlank = !draftHtml || draftHtml.trim().length === 0;
-      const htmlToLoad = isDraftBlank && pubHtml ? pubHtml : draftHtml;
       
       setTemplateHtml(htmlToLoad);
       setOriginalHtml(htmlToLoad);
@@ -348,10 +353,10 @@ const UnifiedPageEditor = ({
       }
       
       // Show toast if we auto-loaded published version
-      if (isDraftBlank && pubHtml) {
+      if ((template as any).was_draft_blank) {
         toast({
-          title: 'Loaded published version',
-          description: 'Draft was empty, loaded published page code.'
+          title: 'Draft was empty',
+          description: 'Loaded published page code to start from.'
         });
       }
     }
