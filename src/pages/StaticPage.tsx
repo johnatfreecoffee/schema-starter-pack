@@ -56,13 +56,6 @@ const StaticPage = () => {
   // Static pages use ONLY company variables (no service/area variables)
   // Reference: src/templates/STATIC_PAGES_TEMPLATE_GUIDE.md
   let renderedContent = page.content_html;
-  
-  // Extract body content if this is a full HTML document
-  const bodyMatch = renderedContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-  if (bodyMatch) {
-    renderedContent = bodyMatch[1];
-  }
-  
   if (companySettings) {
     try {
       const templateData = {
@@ -94,7 +87,7 @@ const StaticPage = () => {
         license_numbers: companySettings.license_numbers || '',
       };
       
-      renderedContent = renderTemplate(renderedContent, templateData);
+      renderedContent = renderTemplate(page.content_html, templateData);
     } catch (error) {
       console.error('Template rendering error:', error);
       // Fallback to original content if template rendering fails

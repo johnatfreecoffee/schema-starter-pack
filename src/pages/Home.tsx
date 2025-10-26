@@ -60,13 +60,6 @@ const Home = () => {
   // If a homepage static page exists, render it
   if (homepage) {
     let renderedContent = homepage.content_html;
-    
-    // Extract body content if this is a full HTML document
-    const bodyMatch = renderedContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
-    if (bodyMatch) {
-      renderedContent = bodyMatch[1];
-    }
-    
     if (companySettings) {
       renderedContent = renderedContent
         .replace(/\{\{company_name\}\}/g, companySettings.business_name || '')
