@@ -83,11 +83,7 @@ The system provides dynamic brand colors and styling that users can customize in
 /* Component Styling */
 --radius       /* Border radius for buttons/cards (e.g., "0.5rem", "20px") */
 
-/* Header/Footer (if needed) */
---header-bg    /* Header background color (HSL) */
---header-text  /* Header text color (HSL) */
---footer-bg    /* Footer background color (HSL) */
---footer-text  /* Footer text color (HSL) */
+
 ```
 
 **How to Use CSS Variables in HTML:**
