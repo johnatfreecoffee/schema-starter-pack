@@ -134,6 +134,7 @@ const UnifiedPageEditor = ({
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [editorMode, setEditorMode] = useState<EditorMode>('build');
+  const [aiModel, setAiModel] = useState<'claude' | 'grok'>('claude');
   const [tokenCount, setTokenCount] = useState(0);
   const [currentHtml, setCurrentHtml] = useState('');
   const [previousHtml, setPreviousHtml] = useState('');
@@ -525,6 +526,7 @@ const UnifiedPageEditor = ({
     const requestContext = {
       command: currentCommand,
       mode: editorMode,
+      model: aiModel,
       conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
       context: {
         currentPage: {
@@ -548,9 +550,9 @@ const UnifiedPageEditor = ({
 
     // Show request data immediately in debug panel
     setDebugData({
-      fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nPage Type: ${pageType}`,
+      fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nModel: ${aiModel}\nPage Type: ${pageType}`,
       requestPayload: requestContext,
-      responseData: { status: 'Waiting for Claude response...' },
+      responseData: { status: `Waiting for ${aiModel === 'grok' ? 'Grok' : 'Claude'} response...` },
       generatedHtml: 'Waiting for response...'
     });
     
@@ -1041,6 +1043,27 @@ const UnifiedPageEditor = ({
                     Build
                   </Button>
                 </div>
+              </div>
+              
+              {/* AI Model Selector */}
+              <div className="flex items-center gap-2 mb-3 p-2 bg-muted/50 rounded-md">
+                <span className="text-xs font-medium text-muted-foreground">Model:</span>
+                <Button 
+                  variant={aiModel === 'claude' ? 'default' : 'outline'} 
+                  size="sm" 
+                  onClick={() => setAiModel('claude')} 
+                  className="text-xs h-7"
+                >
+                  Claude
+                </Button>
+                <Button 
+                  variant={aiModel === 'grok' ? 'default' : 'outline'} 
+                  size="sm" 
+                  onClick={() => setAiModel('grok')} 
+                  className="text-xs h-7"
+                >
+                  Grok
+                </Button>
               </div>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs text-muted-foreground">

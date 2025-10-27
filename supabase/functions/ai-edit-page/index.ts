@@ -222,7 +222,7 @@ interface GenerationMetrics {
   duration?: number;
   command: string;
   mode: string;
-  provider: 'claude';
+  provider: 'claude' | 'grok';
   inputTokens: number;
   outputTokens: number;
   staticTokens?: number;
@@ -264,7 +264,8 @@ function logMetrics(metrics: GenerationMetrics) {
   console.log('=== GENERATION METRICS ===');
   console.log(JSON.stringify(metrics, null, 2));
   
-  console.log('Using AI Provider: Claude Sonnet 4.5');
+  const providerName = metrics.provider === 'grok' ? 'Grok 4' : 'Claude Sonnet 4.5';
+  console.log(`Using AI Provider: ${providerName}`);
   
   // Warnings based on thresholds
   if (metrics.duration && metrics.duration > 40000) {
@@ -559,11 +560,12 @@ serve(async (req) => {
 
   try {
     const requestBody = await req.json();
-    const { command, mode = 'build', conversationHistory = [], context } = requestBody;
+    const { command, mode = 'build', conversationHistory = [], context, model = 'claude' } = requestBody;
     
     // Update metrics
     metrics.command = command.substring(0, 100);
     metrics.mode = mode;
+    metrics.provider = model === 'grok' ? 'grok' : 'claude';
     
     console.log('AI Edit Request:', { 
       command: command.substring(0, 200) + (command.length > 200 ? '...' : ''), 
@@ -1182,28 +1184,71 @@ ${buildThemeContext(context)}
       }
     }
     
-    const requestPayload: any = {
-      model: 'claude-sonnet-4-5-20250929',
-      max_tokens: 8192, // Use full capacity for both chat and build modes
-      temperature: 1.0, // Claude default
-      system: systemInstructions,
-      messages: chatMessages,
-      stream: true
-    };
+    // Prepare API call based on selected model
+    let apiUrl: string;
+    let requestPayload: any;
+    let apiHeaders: Record<string, string>;
     
-    console.log('Calling Claude Sonnet 4.5 API...');
+    if (model === 'grok') {
+      // Grok (X.AI) configuration
+      const X_AI_API_KEY = Deno.env.get('X_AI_API_KEY');
+      if (!X_AI_API_KEY) {
+        throw new Error('X_AI_API_KEY is not configured');
+      }
+      
+      apiUrl = 'https://api.x.ai/v1/chat/completions';
+      
+      // Convert system instructions to first message for Grok
+      const grokMessages = [
+        { role: 'system', content: systemInstructions },
+        ...chatMessages
+      ];
+      
+      requestPayload = {
+        model: 'grok-4-latest',
+        messages: grokMessages,
+        stream: false,
+        temperature: 0
+      };
+      
+      apiHeaders = {
+        'Authorization': `Bearer ${X_AI_API_KEY}`,
+        'Content-Type': 'application/json',
+      };
+      
+      console.log('Calling Grok 4 API...');
+    } else {
+      // Claude (Anthropic) configuration
+      requestPayload = {
+        model: 'claude-sonnet-4-5-20250929',
+        max_tokens: 8192,
+        temperature: 1.0,
+        system: systemInstructions,
+        messages: chatMessages,
+        stream: true
+      };
+      
+      apiUrl = 'https://api.anthropic.com/v1/messages';
+      apiHeaders = {
+        'x-api-key': CLAUDE_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'Content-Type': 'application/json',
+      };
+      
+      console.log('Calling Claude Sonnet 4.5 API...');
+    }
+    
     console.log('✅ Phase 1 Optimization: Using system field (efficient context)');
     console.log('✅ Phase 2 Optimization: Using proper multi-turn chat format');
     console.log('✅ Phase 5 Optimization: Conversation pruning (max 5 turns, prevents token bloat)');
     console.log('Request payload structure:', {
+      model: model,
       hasSystemPrompt: true,
       mode: mode,
       conversationTurns: chatMessages.length,
       latestMessageLength: chatMessages[chatMessages.length - 1]?.content.length || 0,
-      maxTokens: requestPayload.max_tokens
+      maxTokens: requestPayload.max_tokens || 'default'
     });
-
-    const apiUrl = 'https://api.anthropic.com/v1/messages';
     
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
@@ -1215,11 +1260,7 @@ ${buildThemeContext(context)}
     try {
       response = await fetch(apiUrl, {
         method: 'POST',
-        headers: {
-          'x-api-key': CLAUDE_API_KEY,
-          'anthropic-version': '2023-06-01',
-          'Content-Type': 'application/json',
-        },
+        headers: apiHeaders,
         body: JSON.stringify(requestPayload),
         signal: controller.signal
       });
@@ -1266,9 +1307,9 @@ ${buildThemeContext(context)}
       const errorData = await response.json().catch(() => ({}));
       const errorMessage = errorData.error?.message || 
                           errorData.message || 
-                          `Claude API error: ${response.status}`;
+                          `${model === 'grok' ? 'Grok' : 'Claude'} API error: ${response.status}`;
       
-      console.error('❌ CLAUDE API ERROR:', {
+      console.error(`❌ ${model === 'grok' ? 'GROK' : 'CLAUDE'} API ERROR:`, {
         status: response.status,
         statusText: response.statusText,
         errorData: JSON.stringify(errorData, null, 2),
@@ -1278,103 +1319,126 @@ ${buildThemeContext(context)}
     }
 
     // ========================================================================
-    // STREAMING RESPONSE PARSING
+    // RESPONSE PARSING - STREAMING (Claude) OR NON-STREAMING (Grok)
     // ========================================================================
     
-    const reader = response.body?.getReader();
-    const decoder = new TextDecoder();
-    
-    if (!reader) {
-      throw new Error('Response body is not readable');
-    }
-
     let updatedHtml = '';
-    let buffer = '';
     let usageMetadata: any = null;
-    let currentEvent = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      
-      if (done) break;
-      
-      buffer += decoder.decode(value, { stream: true });
-      
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || '';
-      
-      for (const line of lines) {
-        const trimmedLine = line.trim();
-        
-        if (trimmedLine.startsWith(':') || trimmedLine === '') continue;
-        
-        // Parse event type
-        if (trimmedLine.startsWith('event: ')) {
-          currentEvent = trimmedLine.slice(7).trim();
-          continue;
-        }
-        
-        if (!trimmedLine.startsWith('data: ')) continue;
-        
-        const jsonStr = trimmedLine.slice(6).trim();
-        
-        try {
-          const chunk = JSON.parse(jsonStr);
-          
-          // Extract text from Claude streaming response
-          if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
-            updatedHtml += chunk.delta.text;
-          }
-          
-          // Extract usage metadata from message_delta event
-          if (chunk.type === 'message_delta' && chunk.usage) {
-            usageMetadata = {
-              input_tokens: usageMetadata?.input_tokens || 0,
-              output_tokens: chunk.usage.output_tokens || 0
-            };
-          }
-          
-          // Extract input tokens from message_start event
-          if (chunk.type === 'message_start' && chunk.message?.usage) {
-            usageMetadata = {
-              input_tokens: chunk.message.usage.input_tokens || 0,
-              output_tokens: usageMetadata?.output_tokens || 0
-            };
-          }
-          
-          // Check for stop reason
-          if (chunk.delta?.stop_reason) {
-            metrics.stopReason = chunk.delta.stop_reason;
-          }
-        } catch (parseError) {
-          console.error('Error parsing SSE chunk:', parseError, 'Line:', jsonStr);
-        }
-      }
-    }
     
-    // Process any remaining buffer
-    if (buffer.trim()) {
-      const trimmedLine = buffer.trim();
-      if (trimmedLine.startsWith('data: ')) {
-        const jsonStr = trimmedLine.slice(6).trim();
-        try {
-          const chunk = JSON.parse(jsonStr);
-          if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
-            updatedHtml += chunk.delta.text;
+    if (model === 'grok') {
+      // Handle non-streaming Grok response
+      const grokResponse = await response.json();
+      
+      if (grokResponse.choices && grokResponse.choices[0]) {
+        updatedHtml = grokResponse.choices[0].message.content;
+        
+        // Extract usage metadata if available
+        if (grokResponse.usage) {
+          usageMetadata = {
+            input_tokens: grokResponse.usage.prompt_tokens || 0,
+            output_tokens: grokResponse.usage.completion_tokens || 0
+          };
+        }
+      } else {
+        throw new Error('Invalid Grok response format');
+      }
+      
+      console.log('Grok response complete. HTML length:', updatedHtml.length);
+    } else {
+      // Handle streaming Claude response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (!reader) {
+        throw new Error('Response body is not readable');
+      }
+
+      let buffer = '';
+      let currentEvent = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        
+        for (const line of lines) {
+          const trimmedLine = line.trim();
+          
+          if (trimmedLine.startsWith(':') || trimmedLine === '') continue;
+          
+          // Parse event type
+          if (trimmedLine.startsWith('event: ')) {
+            currentEvent = trimmedLine.slice(7).trim();
+            continue;
           }
-          if (chunk.type === 'message_delta' && chunk.usage) {
-            usageMetadata = {
-              ...usageMetadata,
-              output_tokens: chunk.usage.output_tokens || usageMetadata?.output_tokens || 0
-            };
+          
+          if (!trimmedLine.startsWith('data: ')) continue;
+          
+          const jsonStr = trimmedLine.slice(6).trim();
+          
+          try {
+            const chunk = JSON.parse(jsonStr);
+            
+            // Extract text from Claude streaming response
+            if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
+              updatedHtml += chunk.delta.text;
+            }
+            
+            // Extract usage metadata from message_delta event
+            if (chunk.type === 'message_delta' && chunk.usage) {
+              usageMetadata = {
+                input_tokens: usageMetadata?.input_tokens || 0,
+                output_tokens: chunk.usage.output_tokens || 0
+              };
+            }
+            
+            // Extract input tokens from message_start event
+            if (chunk.type === 'message_start' && chunk.message?.usage) {
+              usageMetadata = {
+                input_tokens: chunk.message.usage.input_tokens || 0,
+                output_tokens: usageMetadata?.output_tokens || 0
+              };
+            }
+            
+            // Check for stop reason
+            if (chunk.delta?.stop_reason) {
+              metrics.stopReason = chunk.delta.stop_reason;
+            }
+          } catch (parseError) {
+            console.error('Error parsing SSE chunk:', parseError, 'Line:', jsonStr);
           }
-        } catch (parseError) {
-          console.error('Error parsing final chunk:', parseError);
         }
       }
-    }
+      
+      // Process any remaining buffer
+      if (buffer.trim()) {
+        const trimmedLine = buffer.trim();
+        if (trimmedLine.startsWith('data: ')) {
+          const jsonStr = trimmedLine.slice(6).trim();
+          try {
+            const chunk = JSON.parse(jsonStr);
+            if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
+              updatedHtml += chunk.delta.text;
+            }
+            if (chunk.type === 'message_delta' && chunk.usage) {
+              usageMetadata = {
+                ...usageMetadata,
+                output_tokens: chunk.usage.output_tokens || usageMetadata?.output_tokens || 0
+              };
+            }
+          } catch (parseError) {
+            console.error('Error parsing final chunk:', parseError);
+          }
+        }
+      }
 
-    console.log('Streaming complete. HTML length:', updatedHtml.length);
+      console.log('Claude streaming complete. HTML length:', updatedHtml.length);
+    }
 
     // ========================================================================
     // POST-PROCESSING & VALIDATION
