@@ -40,7 +40,8 @@ This document provides comprehensive technical specifications for generating HTM
 - No logic in templates (conditionals/loops handled by system)
 
 **JavaScript (Global Functions)**
-- `window.openLeadForm(message, context)` - Lead form trigger
+- `window.openLeadFormModal(message, context)` - Lead form trigger function
+- **CRITICAL:** Function name is `openLeadFormModal` NOT `openLeadForm`
 - No external JS libraries required
 - No custom JavaScript allowed
 
@@ -84,9 +85,10 @@ This document provides comprehensive technical specifications for generating HTM
 
 #### Contact Information
 ```handlebars
-{{company_phone}}             # Primary phone (formatted)
+{{company_phone}}             # Primary phone (PRE-FORMATTED)
                               # Example: "(555) 123-4567"
                               # Usage: Phone links, contact info
+                              # IMPORTANT: Display as-is, already formatted
 
 {{company_email}}             # Primary email address
                               # Example: "info@company.com"
@@ -298,8 +300,10 @@ The system provides a global JavaScript function that opens a pre-built lead for
 
 **Function Signature:**
 ```javascript
-window.openLeadForm(headerText, contextObject)
+window.openLeadFormModal(headerText, contextObject)
 ```
+
+**CRITICAL:** The function name is `openLeadFormModal` NOT `openLeadForm`
 
 **Parameters:**
 
@@ -319,7 +323,7 @@ window.openLeadForm(headerText, contextObject)
 #### Basic CTA Button
 ```html
 <button 
-    onclick="window.openLeadForm('Request free quote', {
+    onclick="window.openLeadFormModal('Request free quote', {
         source: 'hero_primary_cta'
     })"
     class="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
@@ -331,7 +335,7 @@ window.openLeadForm(headerText, contextObject)
 #### Service-Specific CTA
 ```html
 <button 
-    onclick="window.openLeadForm('Request {{service_name}} quote in {{city_name}}', {
+    onclick="window.openLeadFormModal('Request {{service_name}} quote in {{city_name}}', {
         serviceId: '{{service_id}}',
         cityId: '{{city_id}}',
         source: 'service_card_cta'
@@ -345,7 +349,7 @@ window.openLeadForm(headerText, contextObject)
 #### Emergency CTA
 ```html
 <button 
-    onclick="window.openLeadForm('Emergency service request', {
+    onclick="window.openLeadFormModal('Emergency service request', {
         source: 'emergency_cta',
         priority: 'urgent'
     })"
@@ -360,7 +364,7 @@ window.openLeadForm(headerText, contextObject)
 <div class="flex flex-col sm:flex-row gap-4">
     <!-- Primary CTA -->
     <button 
-        onclick="window.openLeadForm('Get your free estimate', {
+        onclick="window.openLeadFormModal('Get your free estimate', {
             source: 'hero_primary'
         })"
         class="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700"
@@ -370,7 +374,7 @@ window.openLeadForm(headerText, contextObject)
     
     <!-- Secondary CTA -->
     <button 
-        onclick="window.openLeadForm('Schedule consultation', {
+        onclick="window.openLeadFormModal('Schedule consultation', {
             source: 'hero_secondary'
         })"
         class="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50"
@@ -383,7 +387,7 @@ window.openLeadForm(headerText, contextObject)
 #### Phone Link Alternative
 ```html
 <div class="flex flex-col sm:flex-row gap-4 items-center">
-    <button onclick="window.openLeadForm('Request callback', {source: 'contact_form'})">
+    <button onclick="window.openLeadFormModal('Request callback', {source: 'contact_form'})">
         Request Callback
     </button>
     
@@ -472,10 +476,17 @@ Use descriptive `source` values to track where leads originate:
 **CTA Integration:**
 Use generic, company-focused messaging:
 ```html
-<button onclick="window.openLeadForm('Contact {{company_name}}', {source: 'about_cta'})">
+<button onclick="window.openLeadFormModal('Contact {{company_name}}', {source: 'about_cta'})">
     Get In Touch
 </button>
 ```
+
+**Footer Guidelines for ALL Pages:**
+- Create ONE simple footer at the very end
+- Use plain `•` for separators (NOT `{" • "}` which is JSX)
+- Keep it minimal: company name, address, phone, email, copyright
+- DO NOT create a huge "Final CTA Section" right before the footer
+- DO NOT duplicate contact info in both a pre-footer section AND the footer
 
 ---
 

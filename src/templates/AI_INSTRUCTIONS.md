@@ -49,12 +49,14 @@ You are generating **pure HTML templates** for a service business website system
 <p>Serving Dallas, TX</p>
 ```
 
+**IMPORTANT:** Phone numbers are provided PRE-FORMATTED as `(555) 123-4567`. Display them as-is.
+
 ### 3. Form Integration: Use Global Function
 
 **For all CTAs and forms, use:**
 ```html
 <button 
-    onclick="window.openLeadForm('Request quote', {
+    onclick="window.openLeadFormModal('Request quote', {
         serviceId: '{{service_id}}',
         cityId: '{{city_id}}',
         source: 'hero_cta'
@@ -64,6 +66,8 @@ You are generating **pure HTML templates** for a service business website system
     Get Free Quote
 </button>
 ```
+
+**CRITICAL:** The function name is `window.openLeadFormModal` (not `openLeadForm`)
 
 **NEVER create custom forms or use React hooks**
 
@@ -91,6 +95,38 @@ Every page MUST include:
 - Proper meta tags in `<head>`
 - Semantic HTML5 structure (`<main>`, `<section>`, `<article>`)
 - Descriptive image alt text with variables
+
+### 7. Footer Guidelines
+
+**DO:**
+- Create ONE simple footer with basic contact info
+- Use plain HTML entities: `•` for bullets (NOT `{" • "}`)
+- Keep footer minimal and clean
+
+**DON'T:**
+- Create a huge "Final CTA Section" before the footer
+- Duplicate contact information in both pre-footer section AND footer
+- Use JSX syntax like `{" • "}` - this is HTML, not React!
+
+**Good Footer Example:**
+```html
+<footer class="bg-gray-900 text-gray-300 py-8">
+    <div class="container mx-auto px-4 text-center">
+        <p class="font-bold text-white mb-2">{{company_name}}</p>
+        <p class="text-sm mb-2">
+            {{company_address}}, {{company_city}}, {{company_state}} {{company_zip}}
+        </p>
+        <p class="text-sm">
+            <a href="tel:{{company_phone}}">{{company_phone}}</a>
+            •
+            <a href="mailto:{{company_email}}">{{company_email}}</a>
+        </p>
+        <p class="text-xs text-gray-500 mt-4">
+            © 2025 {{company_name}}. All rights reserved.
+        </p>
+    </div>
+</footer>
+```
 
 ---
 
@@ -195,7 +231,7 @@ For the complete list and usage details, see the specification sheet.
         <p class="text-xl text-gray-600 mb-8">
             {{service_description}}
         </p>
-        <button onclick="window.openLeadForm('Request quote', {source: 'hero'})">
+        <button onclick="window.openLeadFormModal('Request quote', {source: 'hero'})">
             Get Free Quote
         </button>
     </div>
@@ -205,7 +241,7 @@ For the complete list and usage details, see the specification sheet.
 ### CTA Button
 ```html
 <button 
-    onclick="window.openLeadForm('Request {{service_name}} quote', {
+    onclick="window.openLeadFormModal('Request {{service_name}} quote', {
         serviceId: '{{service_id}}',
         cityId: '{{city_id}}',
         source: 'cta_button'
