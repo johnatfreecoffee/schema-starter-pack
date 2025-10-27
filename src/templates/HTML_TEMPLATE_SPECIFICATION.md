@@ -8,31 +8,94 @@ This document provides comprehensive technical specifications for generating HTM
 
 ## Table of Contents
 
-1. [Technical Stack](#technical-stack)
-2. [Complete Variable Reference](#complete-variable-reference)
-3. [Form Integration System](#form-integration-system)
-4. [Page Type Specifications](#page-type-specifications)
-5. [HTML Component Library](#html-component-library)
-6. [SEO Requirements](#seo-requirements)
-7. [Responsive Design Patterns](#responsive-design-patterns)
-8. [Complete Examples](#complete-examples)
+1. [Design Principles](#design-principles)
+2. [Technical Stack](#technical-stack)
+3. [Complete Variable Reference](#complete-variable-reference)
+4. [Form Integration System](#form-integration-system)
+5. [Page Type Specifications](#page-type-specifications)
+6. [HTML Component Library](#html-component-library)
+7. [SEO Requirements](#seo-requirements)
+8. [Responsive Design Patterns](#responsive-design-patterns)
+9. [Complete Examples](#complete-examples)
+
+---
+
+## Design Principles
+
+### 1. Professional, Trust-Building Design
+**This is a professional, modern, elegant business website** targeting commercial clients and property owners.
+
+- Clean layouts with strategic use of white space
+- Professional color palette (blues, reds for emergency, greens for success)
+- High-quality imagery showing actual work/results
+- Clear visual hierarchy guiding users to CTAs
+- Sophisticated, corporate-appropriate visual language
+- Professional icon usage (SVG icons, not emojis for UI elements)
+
+### 2. Icon Usage Standards
+
+**Professional SVG Icons (Required for UI):**
+- Use professional icon libraries: Lucide, Heroicons, Font Awesome, or similar
+- Maintain consistent icon style throughout the page (all solid OR all outlined)
+- Appropriate sizing: 24-32px for inline icons, 48-64px for feature icons
+- Color coordination with brand palette
+- Use for: Features, services, benefits, process steps, CTAs, trust indicators
+
+**Icon Categories & Usage:**
+- **Navigation & UI**: Professional arrow, chevron, menu icons
+- **Features & Benefits**: Professional checkmarks, shields, stars, badges
+- **Emergency/Alerts**: Professional bell, warning, alert icons (NOT emoji alarm)
+- **Contact Methods**: Professional phone, email, location icons
+- **Process Steps**: Professional numbered badges, arrows, connecting lines
+- **Trust Indicators**: Professional certification, insurance, experience icons
+
+**Emoji Guidelines (Limited):**
+- ✅ Acceptable: Sparingly in body text for personality ("We're here 24/7 ⚡")
+- ❌ Prohibited: As primary feature icons, section headers, buttons, or UI elements
+- ❌ Never use: Emoji alarm bells, checkmarks, phones, etc. as main icons
+
+### 3. Mobile-First Responsive
+- All layouts must work perfectly on mobile devices
+- Touch-friendly buttons and spacing (44px minimum touch targets)
+- Readable text sizes (16px minimum on mobile)
+- Simplified navigation and forms for small screens
 
 ---
 
 ## Technical Stack
 
+### CRITICAL: HTML Output Format
+
+**Your HTML output must be ONLY main content sections - NO document structure:**
+
+```html
+<main>
+    <section class="hero">
+        <!-- Hero content -->
+    </section>
+    
+    <section class="features">
+        <!-- Features content -->
+    </section>
+</main>
+```
+
+**❌ DO NOT INCLUDE:**
+- NO `<!DOCTYPE html>`, `<html>`, `<head>`, or `<body>` tags
+- NO `<script src="https://cdn.tailwindcss.com"></script>` (Tailwind already loaded globally)
+- NO `<meta>` tags, `<title>` tags, or any head elements
+- NO `<header>` or navigation (CMS injects automatically)
+- NO `<footer>` (CMS injects automatically)
+
+**Why:** The CMS renders your HTML inside a React app that already has complete document structure, Tailwind CSS loaded globally, and auto-injected headers/footers. Including these will cause style conflicts.
+
 ### Required Technologies
 
-**HTML5**
-- Semantic markup required
-- DOCTYPE declaration mandatory
-- Valid W3C HTML5 structure
-
-**Tailwind CSS (via CDN)**
-- Version: Latest (auto-updated via CDN)
-- Include: `<script src="https://cdn.tailwindcss.com"></script>`
-- No configuration file needed
-- All styling via utility classes
+**Tailwind CSS**
+- Already loaded globally in the application
+- All utility classes available
+- Use semantic color names from design system
+- Mobile-first responsive classes
 
 **Handlebars Template Engine**
 - Variable syntax: `{{variable_name}}`
@@ -481,13 +544,34 @@ Use generic, company-focused messaging:
 </button>
 ```
 
-**CRITICAL - Page Structure Requirements for ALL Pages:**
-- ❌ DO NOT include any `<header>` or navigation elements - The CMS automatically injects these
-- ❌ DO NOT include any `<footer>` elements - The CMS automatically injects these
-- ❌ DO NOT create a "Final CTA Section" that looks like footer content
-- ✅ Start directly with your main content sections
-- ✅ End with your last content section only
-- ✅ Pages should contain ONLY the main content area
+**CRITICAL - HTML Output Format:**
+Your HTML output must be ONLY the main content sections - NO document structure.
+
+**❌ DO NOT INCLUDE:**
+- NO `<!DOCTYPE html>`, `<html>`, `<head>`, or `<body>` tags
+- NO `<script src="https://cdn.tailwindcss.com"></script>` tag (Tailwind already loaded globally)
+- NO `<meta>` tags, `<title>` tags, or any head elements
+- NO `<header>` or navigation elements (CMS injects these automatically)
+- NO `<footer>` elements (CMS injects these automatically)
+- NO "Final CTA Section" that duplicates footer content
+
+**✅ CORRECT OUTPUT FORMAT:**
+```html
+<main>
+    <section class="hero">
+        <!-- Hero content -->
+    </section>
+    
+    <section class="features">
+        <!-- Features content -->
+    </section>
+    
+    <!-- Additional sections -->
+</main>
+```
+
+**Why This Matters:**
+The CMS renders your HTML inside a React app that already has complete document structure, Tailwind CSS loaded globally, and auto-injected headers/footers. Including these elements will cause style conflicts and break the layout.
 
 ---
 

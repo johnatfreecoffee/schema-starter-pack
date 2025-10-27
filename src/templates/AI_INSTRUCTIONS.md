@@ -32,6 +32,48 @@ You are generating **pure HTML templates** for a service business website system
 - Import statements
 - npm package dependencies
 
+## 2. Design System & Visual Standards
+
+### Professional Modern Aesthetic
+This is a **professional, modern, elegant business website** - not a casual or playful design.
+
+- Clean, contemporary layouts with generous white space
+- Professional color palette (blues, grays, accent colors)
+- Consistent typography hierarchy
+- Mobile-first responsive design
+- Sophisticated, corporate-appropriate visual language
+
+### Icon Usage Guidelines
+
+**Professional SVG Icons (Preferred):**
+- Use professional icon sets for UI elements, features, and services
+- Examples: Lucide icons, Heroicons, Font Awesome, or similar professional sets
+- Maintain consistent icon style throughout the page
+- Use icons for: Features, services, benefits, process steps, trust indicators
+- Icon styling: Solid or outlined style, consistent sizing, appropriate colors
+
+**Emojis (Limited Use):**
+- Use emojis ONLY sparingly within text content for personality
+- ❌ DO NOT use emojis as primary icons for features, buttons, or sections
+- ❌ DO NOT use emojis for alarm bells, checkmarks, phones, or other UI elements
+- ✅ OK to use occasionally in body text for emphasis or character
+- Example of acceptable emoji use: "We're available 24/7 ⚡ when you need us"
+
+**Icon vs Emoji Decision Matrix:**
+- Section icons → Professional SVG icons
+- Feature bullets → Professional checkmark icons
+- CTAs → Professional arrow/chevron icons  
+- Emergency indicators → Professional alert icons
+- Phone/email → Professional contact icons
+- Body text emphasis → Emojis OK (sparingly)
+
+### Color Usage
+- Primary CTA buttons: Red (#DC2626) for urgency/emergency
+- Secondary buttons: Blue (#2563EB) for standard actions
+- Accent colors: Green for success indicators
+- Background variations: White, light gray (#F8F9FA), dark (#1F2937)
+- Professional color combinations that convey trust and expertise
+
 ### 2. Variable System: Never Hardcode
 
 **ALWAYS use Handlebars variables:**
@@ -50,14 +92,6 @@ You are generating **pure HTML templates** for a service business website system
 ```
 
 **IMPORTANT:** Phone numbers are provided PRE-FORMATTED as `(555) 123-4567`. Display them as-is.
-
-### 3. Form Integration: Use Global Function
-
-**For all CTAs and forms, use:**
-```html
-<button 
-    onclick="window.openLeadFormModal('Request quote', {
-        serviceId: '{{service_id}}',
         cityId: '{{city_id}}',
         source: 'hero_cta'
     })"
@@ -98,40 +132,52 @@ Every page MUST include:
 
 ### 7. Page Structure Guidelines
 
-**CRITICAL - DO NOT INCLUDE:**
-- ❌ NO HEADER/NAVIGATION - The CMS automatically injects headers
-- ❌ NO FOOTER - The CMS automatically injects footers
-- ❌ NO "Final CTA Section" that duplicates footer content
+**CRITICAL - OUTPUT FORMAT:**
+Your output should be ONLY the main content sections - NO document structure tags.
 
-**DO INCLUDE:**
-- ✅ Start directly with main content sections
-- ✅ End with your last content section (no footer after)
-- ✅ Use semantic HTML5: `<main>`, `<section>`, `<article>`
-- ✅ CTAs throughout the page content as appropriate
+**❌ DO NOT INCLUDE:**
+- NO `<!DOCTYPE html>`, `<html>`, `<head>`, or `<body>` tags
+- NO `<script src="https://cdn.tailwindcss.com"></script>` (Tailwind is already loaded globally)
+- NO `<meta>` tags, `<title>` tags, or any head elements
+- NO HEADER/NAVIGATION - The CMS automatically injects headers
+- NO FOOTER - The CMS automatically injects footers
+- NO "Final CTA Section" that duplicates footer content
 
-**Page Structure:**
+**✅ DO INCLUDE:**
+- Start directly with `<main>` tag and content sections
+- End with your last content section (no footer after)
+- Use semantic HTML5: `<main>`, `<section>`, `<article>`
+- CTAs throughout the page content as appropriate
+- All Tailwind classes will work (already loaded globally)
+
+**Correct Page Structure:**
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{company_name}}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
-    <!-- NO HEADER HERE -->
+<main>
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 text-white py-20 md:py-28">
+        <div class="container mx-auto px-4">
+            <!-- Hero content -->
+        </div>
+    </section>
     
-    <main>
-        <!-- Your content sections here -->
-        <section class="hero">...</section>
-        <section class="features">...</section>
-        <section class="final-cta">...</section>
-    </main>
+    <!-- Features Section -->
+    <section class="py-16 md:py-24 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <!-- Features content -->
+        </div>
+    </section>
     
-    <!-- NO FOOTER HERE -->
-</body>
-</html>
+    <!-- Additional sections... -->
+</main>
 ```
+
+**Why This Matters:**
+The CMS renders your HTML inside a React application that already has:
+- Complete HTML document structure
+- Tailwind CSS loaded globally
+- Headers and footers injected automatically
+
+Including document tags will cause style conflicts and break the page layout.
 
 ---
 
