@@ -222,7 +222,7 @@ interface GenerationMetrics {
   duration?: number;
   command: string;
   mode: string;
-  provider: 'gemini';
+  provider: 'claude';
   inputTokens: number;
   outputTokens: number;
   staticTokens?: number;
@@ -248,10 +248,10 @@ function calculateCost(
   outputTokens: number, 
   cachedTokens: number = 0
 ): number {
-  // Gemini 2.5 Pro pricing
-  const inputCostPerMillion = 1.25;
-  const outputCostPerMillion = 5.00;
-  const cachedInputCostPerMillion = 0.3125; // 75% discount
+  // Claude Sonnet 4.5 pricing
+  const inputCostPerMillion = 3.00;
+  const outputCostPerMillion = 15.00;
+  const cachedInputCostPerMillion = 0.30; // 90% discount for prompt caching
   
   const regularInputCost = ((inputTokens - cachedTokens) / 1_000_000) * inputCostPerMillion;
   const cachedCost = (cachedTokens / 1_000_000) * cachedInputCostPerMillion;
@@ -264,15 +264,7 @@ function logMetrics(metrics: GenerationMetrics) {
   console.log('=== GENERATION METRICS ===');
   console.log(JSON.stringify(metrics, null, 2));
   
-  console.log('Using AI Provider: Gemini 2.5 Pro');
-  if (metrics.cacheName) {
-    console.log('Cache Status:', {
-      created: metrics.cacheCreated,
-      reused: metrics.cacheReused,
-      name: metrics.cacheName,
-      storageCost: metrics.cacheStorageCost
-    });
-  }
+  console.log('Using AI Provider: Claude Sonnet 4.5');
   
   // Warnings based on thresholds
   if (metrics.duration && metrics.duration > 40000) {
@@ -281,10 +273,6 @@ function logMetrics(metrics: GenerationMetrics) {
   
   if (metrics.duration && metrics.duration > 100000) {
     console.error(`❌ CRITICAL SLOW GENERATION: ${(metrics.duration/1000).toFixed(1)}s (approaching timeout)`);
-  }
-  
-  if (metrics.cacheEnabled && !metrics.cacheReused && metrics.inputTokens > 10000) {
-    console.warn(`⚠️ CACHE MISS: ${metrics.inputTokens} input tokens without cache hit`);
   }
   
   if (!metrics.validationPassed) {
@@ -312,8 +300,8 @@ function logMetrics(metrics: GenerationMetrics) {
     console.log('✅ EXCELLENT GENERATION: Fast + Valid');
   }
   
-  if (metrics.cacheReused && metrics.cost && metrics.cost < 0.02) {
-    console.log('✅ OPTIMAL COST: Cache hit + low cost');
+  if (metrics.cost && metrics.cost < 0.02) {
+    console.log('✅ OPTIMAL COST: Low cost generation');
   }
 }
 
@@ -501,26 +489,26 @@ function buildProperChatHistory(
   currentRequest: string,
   currentPageHtml?: string,
   pageType?: string
-): Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> {
-  const contents: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
+): Array<{ role: 'user' | 'assistant'; content: string }> {
+  const messages: Array<{ role: 'user' | 'assistant'; content: string }> = [];
   
   // Add previous conversation turns in proper alternating format
   for (const turn of history) {
     // Add user's message/command
     const userMessage = turn.userMessage || turn.command;
     if (userMessage) {
-      contents.push({
+      messages.push({
         role: 'user',
-        parts: [{ text: userMessage }]
+        content: userMessage
       });
     }
     
-    // Add model's response (if available)
+    // Add assistant's response (if available)
     if (turn.modelResponse || turn.html) {
       const response = turn.modelResponse || `Generated HTML (${(turn.html || '').length} chars)`;
-      contents.push({
-        role: 'model',
-        parts: [{ text: response }]
+      messages.push({
+        role: 'assistant',
+        content: response
       });
     }
   }
@@ -537,12 +525,12 @@ function buildProperChatHistory(
     currentMessage += `\nPAGE TYPE: ${pageType}\n`;
   }
   
-  contents.push({
+  messages.push({
     role: 'user',
-    parts: [{ text: currentMessage }]
+    content: currentMessage
   });
   
-  return contents;
+  return messages;
 }
 
 serve(async (req) => {
@@ -559,10 +547,10 @@ serve(async (req) => {
     startTime: Date.now(),
     command: '',
     mode: 'build',
-    provider: 'gemini',
+    provider: 'claude',
     inputTokens: 0,
     outputTokens: 0,
-    cacheEnabled: true,
+    cacheEnabled: false,
     multiPass: false,
     timeoutOccurred: false,
     validationPassed: false,
@@ -590,10 +578,10 @@ serve(async (req) => {
     console.log(command);
     console.log('=== FULL COMMAND END ===');
 
-    const GOOGLE_GEMINI_API_KEY = Deno.env.get('GOOGLE_GEMINI_API_KEY');
+    const CLAUDE_API_KEY = Deno.env.get('CLAUDE');
     
-    if (!GOOGLE_GEMINI_API_KEY) {
-      throw new Error('GOOGLE_GEMINI_API_KEY is not configured');
+    if (!CLAUDE_API_KEY) {
+      throw new Error('CLAUDE API key is not configured');
     }
 
     // Initialize Supabase client for database operations (PHASE 3: Persistent cache)
@@ -1152,29 +1140,10 @@ ${buildThemeContext(context)}
     }
 
     // ========================================================================
-    // CACHE MANAGEMENT: Create or reuse cached content
-    // PHASE 3: Using persistent database storage
+    // Cache functionality disabled for Claude migration
     // ========================================================================
     
-    let cachedContentName = await getCachedContent(companyId, staticContext, supabase);
-    
-    if (!cachedContentName) {
-      console.log('Creating new cached content for company:', companyId);
-      cachedContentName = await createCachedContent(staticContext, companyId, GOOGLE_GEMINI_API_KEY, supabase);
-      metrics.cacheCreated = true;
-      metrics.cacheReused = false;
-      
-      // Cleanup expired cache entries (opportunistic)
-      cleanupExpiredCache(supabase).catch(err => 
-        console.error('Background cache cleanup failed:', err)
-      );
-    } else {
-      console.log('Reusing cached content:', cachedContentName);
-      metrics.cacheCreated = false;
-      metrics.cacheReused = true;
-    }
-    
-    metrics.cacheName = cachedContentName || undefined;
+    const cachedContentName = null;
 
     // ========================================================================
     // API REQUEST: Call Gemini with streaming
@@ -1184,14 +1153,14 @@ ${buildThemeContext(context)}
     // ========================================================================
     
     // Build proper multi-turn conversation history (Phase 2 + Phase 5)
-    let chatContents;
+    let chatMessages;
     
     if (conversationHistory.length > 0) {
       // PHASE 5: Prune conversation history to last 5 turns
       const prunedHistory = pruneConversationHistory(conversationHistory, 5);
       
       // Multi-turn conversation exists
-      chatContents = buildProperChatHistory(
+      chatMessages = buildProperChatHistory(
         prunedHistory,
         command,
         context.currentPage?.html,
@@ -1199,104 +1168,42 @@ ${buildThemeContext(context)}
       );
     } else {
       // First message - include context as needed
-      chatContents = [{
+      chatMessages = [{
         role: 'user' as const,
-        parts: [{ text: dynamicContext }]
+        content: dynamicContext
       }];
     }
     
     // If no cached content available, prepend static context to first user message
-    if (!cachedContentName && chatContents.length > 0) {
-      const firstUserMessage = chatContents.find(msg => msg.role === 'user');
+    if (!cachedContentName && chatMessages.length > 0) {
+      const firstUserMessage = chatMessages.find(msg => msg.role === 'user');
       if (firstUserMessage) {
-        firstUserMessage.parts[0].text = staticContext + '\n\n' + firstUserMessage.parts[0].text;
+        firstUserMessage.content = staticContext + '\n\n' + firstUserMessage.content;
       }
     }
     
     const requestPayload: any = {
-      systemInstruction: {
-        parts: [{ text: systemInstructions }]  // FREE - not counted in tokens!
-      },
-      contents: chatContents,
-      generationConfig: {
-        maxOutputTokens: mode === 'build' ? 40000 : 10000, // Build: 40k for full pages, Chat: 10k for iterations
-        temperature: 0.2,
-        // Removed stopSequences to prevent premature stopping before page completion
-      }
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: mode === 'build' ? 8192 : 4096, // Claude max: 8192 tokens
+      temperature: 1.0, // Claude default
+      system: systemInstructions,
+      messages: chatMessages,
+      stream: true
     };
     
-    // PHASE 6: Add response schema for outline/structured output mode
-    if (mode === 'outline' || mode === 'structured') {
-      requestPayload.generationConfig.responseMimeType = "application/json";
-      requestPayload.generationConfig.responseSchema = {
-        type: "object",
-        properties: {
-          sections: {
-            type: "array",
-            description: "Array of page sections to generate",
-            items: {
-              type: "object",
-              properties: {
-                id: { 
-                  type: "string",
-                  description: "Unique identifier for the section"
-                },
-                heading: { 
-                  type: "string",
-                  description: "Main heading for the section"
-                },
-                subheadings: { 
-                  type: "array",
-                  description: "Optional subheadings within the section",
-                  items: { type: "string" }
-                },
-                keywords: { 
-                  type: "array",
-                  description: "SEO keywords relevant to this section",
-                  items: { type: "string" }
-                },
-                handlebars_vars: { 
-                  type: "array",
-                  description: "Handlebars variables to use in this section",
-                  items: { type: "string" }
-                }
-              },
-              required: ["id", "heading"]
-            }
-          }
-        },
-        required: ["sections"]
-      };
-      console.log('✅ Phase 6: Using structured JSON output with response schema');
-    }
-    
-    // Add cached content reference if available
-    if (cachedContentName) {
-      requestPayload.cachedContent = cachedContentName;
-    }
-
-    console.log('Calling Gemini 2.5 Pro API...');
-    console.log('✅ Phase 1 Optimization: Using systemInstruction field (free tokens)');
+    console.log('Calling Claude Sonnet 4.5 API...');
+    console.log('✅ Phase 1 Optimization: Using system field (efficient context)');
     console.log('✅ Phase 2 Optimization: Using proper multi-turn chat format');
-    console.log('✅ Phase 3 Optimization: Using persistent database cache storage');
-    console.log('✅ Phase 4 Optimization: Extended cache TTL to 1 hour (12x lifetime)');
     console.log('✅ Phase 5 Optimization: Conversation pruning (max 5 turns, prevents token bloat)');
-    if (mode === 'outline' || mode === 'structured') {
-      console.log('✅ Phase 6 Optimization: Structured JSON output with response schema (guaranteed valid JSON)');
-    }
     console.log('Request payload structure:', {
-      hasSystemInstruction: true,
-      hasCachedContent: !!cachedContentName,
-      cacheStorageType: 'database',
-      cacheTTL: '1 hour',
+      hasSystemPrompt: true,
       mode: mode,
-      structuredOutput: mode === 'outline' || mode === 'structured',
-      conversationTurns: chatContents.length,
-      latestMessageLength: chatContents[chatContents.length - 1]?.parts[0]?.text.length || 0,
-      maxOutputTokens: requestPayload.generationConfig.maxOutputTokens
+      conversationTurns: chatMessages.length,
+      latestMessageLength: chatMessages[chatMessages.length - 1]?.content.length || 0,
+      maxTokens: requestPayload.max_tokens
     });
 
-    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:streamGenerateContent?alt=sse';
+    const apiUrl = 'https://api.anthropic.com/v1/messages';
     
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
@@ -1309,7 +1216,8 @@ ${buildThemeContext(context)}
       response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'x-goog-api-key': GOOGLE_GEMINI_API_KEY,
+          'x-api-key': CLAUDE_API_KEY,
+          'anthropic-version': '2023-06-01',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(requestPayload),
@@ -1357,14 +1265,14 @@ ${buildThemeContext(context)}
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       const errorMessage = errorData.error?.message || 
-                          errorData.error?.status || 
-                          `Gemini API error: ${response.status}`;
+                          errorData.message || 
+                          `Claude API error: ${response.status}`;
       
-      console.error('❌ GEMINI API ERROR:', {
+      console.error('❌ CLAUDE API ERROR:', {
         status: response.status,
         statusText: response.statusText,
         errorData: JSON.stringify(errorData, null, 2),
-        maxOutputTokens: requestPayload.generationConfig.maxOutputTokens
+        maxTokens: requestPayload.max_tokens
       });
       throw new Error(errorMessage);
     }
@@ -1383,6 +1291,7 @@ ${buildThemeContext(context)}
     let updatedHtml = '';
     let buffer = '';
     let usageMetadata: any = null;
+    let currentEvent = '';
 
     while (true) {
       const { done, value } = await reader.read();
@@ -1398,28 +1307,44 @@ ${buildThemeContext(context)}
         const trimmedLine = line.trim();
         
         if (trimmedLine.startsWith(':') || trimmedLine === '') continue;
+        
+        // Parse event type
+        if (trimmedLine.startsWith('event: ')) {
+          currentEvent = trimmedLine.slice(7).trim();
+          continue;
+        }
+        
         if (!trimmedLine.startsWith('data: ')) continue;
         
         const jsonStr = trimmedLine.slice(6).trim();
-        if (jsonStr === '[DONE]') continue;
         
         try {
           const chunk = JSON.parse(jsonStr);
           
-          // Extract text from Gemini response
-          const text = chunk.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (text) {
-            updatedHtml += text;
+          // Extract text from Claude streaming response
+          if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
+            updatedHtml += chunk.delta.text;
           }
           
-          // Extract usage metadata
-          if (chunk.usageMetadata) {
-            usageMetadata = chunk.usageMetadata;
+          // Extract usage metadata from message_delta event
+          if (chunk.type === 'message_delta' && chunk.usage) {
+            usageMetadata = {
+              input_tokens: usageMetadata?.input_tokens || 0,
+              output_tokens: chunk.usage.output_tokens || 0
+            };
           }
           
-          // Check for finish reason
-          if (chunk.candidates?.[0]?.finishReason) {
-            metrics.stopReason = chunk.candidates[0].finishReason;
+          // Extract input tokens from message_start event
+          if (chunk.type === 'message_start' && chunk.message?.usage) {
+            usageMetadata = {
+              input_tokens: chunk.message.usage.input_tokens || 0,
+              output_tokens: usageMetadata?.output_tokens || 0
+            };
+          }
+          
+          // Check for stop reason
+          if (chunk.delta?.stop_reason) {
+            metrics.stopReason = chunk.delta.stop_reason;
           }
         } catch (parseError) {
           console.error('Error parsing SSE chunk:', parseError, 'Line:', jsonStr);
@@ -1432,19 +1357,19 @@ ${buildThemeContext(context)}
       const trimmedLine = buffer.trim();
       if (trimmedLine.startsWith('data: ')) {
         const jsonStr = trimmedLine.slice(6).trim();
-        if (jsonStr !== '[DONE]') {
-          try {
-            const chunk = JSON.parse(jsonStr);
-            const text = chunk.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (text) {
-              updatedHtml += text;
-            }
-            if (chunk.usageMetadata) {
-              usageMetadata = chunk.usageMetadata;
-            }
-          } catch (parseError) {
-            console.error('Error parsing final chunk:', parseError);
+        try {
+          const chunk = JSON.parse(jsonStr);
+          if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
+            updatedHtml += chunk.delta.text;
           }
+          if (chunk.type === 'message_delta' && chunk.usage) {
+            usageMetadata = {
+              ...usageMetadata,
+              output_tokens: chunk.usage.output_tokens || usageMetadata?.output_tokens || 0
+            };
+          }
+        } catch (parseError) {
+          console.error('Error parsing final chunk:', parseError);
         }
       }
     }
@@ -1487,9 +1412,9 @@ ${buildThemeContext(context)}
     
     // Update metrics with token usage
     if (usageMetadata) {
-      metrics.inputTokens = usageMetadata.promptTokenCount || 0;
-      metrics.outputTokens = usageMetadata.candidatesTokenCount || 0;
-      metrics.cachedTokens = usageMetadata.cachedContentTokenCount || 0;
+      metrics.inputTokens = usageMetadata.input_tokens || 0;
+      metrics.outputTokens = usageMetadata.output_tokens || 0;
+      metrics.cachedTokens = 0; // Claude caching handled differently
       
       metrics.cost = calculateCost(
         metrics.inputTokens,
@@ -1531,8 +1456,8 @@ ${buildThemeContext(context)}
       metrics: {
         duration: metrics.duration,
         cost: metrics.cost,
-        provider: 'gemini',
-        cacheHit: metrics.cacheReused
+        provider: 'claude',
+        cacheHit: false
       },
       mode,
       debug: {
