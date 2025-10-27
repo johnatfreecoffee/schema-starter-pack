@@ -32,27 +32,50 @@ This document provides comprehensive technical specifications for generating HTM
 - Sophisticated, corporate-appropriate visual language
 - Professional icon usage (SVG icons, not emojis for UI elements)
 
-### 2. Icon Usage Standards
+### 2. Icon Usage Standards - Lucide Icons (REQUIRED)
 
-**Professional SVG Icons (Required for UI):**
-- Use professional icon libraries: Lucide, Heroicons, Font Awesome, or similar
-- Maintain consistent icon style throughout the page (all solid OR all outlined)
-- Appropriate sizing: 24-32px for inline icons, 48-64px for feature icons
-- Color coordination with brand palette
-- Use for: Features, services, benefits, process steps, CTAs, trust indicators
+**CRITICAL:** This application uses Lucide icons exclusively. They are loaded globally and ready to use.
 
-**Icon Categories & Usage:**
-- **Navigation & UI**: Professional arrow, chevron, menu icons
-- **Features & Benefits**: Professional checkmarks, shields, stars, badges
-- **Emergency/Alerts**: Professional bell, warning, alert icons (NOT emoji alarm)
-- **Contact Methods**: Professional phone, email, location icons
-- **Process Steps**: Professional numbered badges, arrows, connecting lines
-- **Trust Indicators**: Professional certification, insurance, experience icons
+**How to Implement Lucide Icons:**
+```html
+<!-- Basic icon -->
+<i data-lucide="check" class="w-6 h-6"></i>
 
-**Emoji Guidelines (Limited):**
+<!-- Icon with CSS variable color -->
+<i data-lucide="shield-check" style="color: hsl(var(--primary));" class="w-8 h-8"></i>
+
+<!-- Icon in colored background -->
+<div style="background-color: hsl(var(--accent) / 0.1); border-radius: var(--radius);" class="p-3">
+    <i data-lucide="phone" style="color: hsl(var(--accent));" class="w-6 h-6"></i>
+</div>
+```
+
+**Icon Categories & Common Choices:**
+- **CTAs & Actions**: `arrow-right`, `phone`, `mail`, `calendar`, `send`, `external-link`
+- **Features & Benefits**: `check`, `check-circle`, `shield-check`, `star`, `award`, `badge-check`
+- **Emergency/Alerts**: `alert-triangle`, `alert-circle`, `clock`, `zap`, `siren`
+- **Contact Methods**: `phone`, `mail`, `map-pin`, `message-circle`, `headphones`
+- **Process Steps**: `clipboard-check`, `wrench`, `truck`, `check-circle-2`, `package`
+- **Trust Indicators**: `shield`, `badge-check`, `users`, `building`, `award`
+- **Services**: `hammer`, `paintbrush`, `zap`, `droplet`, `wind`, `home`
+
+**Icon Sizing Guidelines:**
+- Inline with text: `w-4 h-4` or `w-5 h-5`
+- Standard UI icons: `w-6 h-6`
+- Feature/service icons: `w-8 h-8` to `w-12 h-12`
+- Hero section icons: `w-16 h-16` or larger
+
+**Browse All Icons:** https://lucide.dev/icons/
+
+**Emoji Guidelines (Limited Use Only):**
 - ✅ Acceptable: Sparingly in body text for personality ("We're here 24/7 ⚡")
 - ❌ Prohibited: As primary feature icons, section headers, buttons, or UI elements
 - ❌ Never use: Emoji alarm bells, checkmarks, phones, etc. as main icons
+
+**NEVER:**
+- ❌ Use inline SVG code (use Lucide `data-lucide` instead)
+- ❌ Use external icon CDNs or icon fonts
+- ❌ Use emojis for UI icons
 
 ### 3. Mobile-First Responsive
 - All layouts must work perfectly on mobile devices

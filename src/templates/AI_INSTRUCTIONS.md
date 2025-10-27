@@ -169,10 +169,75 @@ The system provides dynamic brand colors and styling that users can customize in
 ```
 
 **IMPORTANT:** Phone numbers are provided PRE-FORMATTED as `(555) 123-4567`. Display them as-is.
+
+### 3. Icon System: Lucide Icons (REQUIRED)
+
+**CRITICAL:** The application has Lucide icons loaded globally. You MUST use Lucide icons for all UI elements.
+
+**How to Use Lucide Icons:**
+```html
+<!-- Basic icon usage -->
+<i data-lucide="check" class="w-6 h-6"></i>
+
+<!-- Icon with color (using CSS variables) -->
+<i data-lucide="phone" class="w-6 h-6" style="color: hsl(var(--primary));"></i>
+
+<!-- Icon in a button -->
+<button 
+    onclick="window.openLeadFormModal('Call Now', {source: 'hero'})"
+    style="background-color: hsl(var(--primary)); border-radius: var(--radius);"
+    class="inline-flex items-center gap-2 text-white px-6 py-3 font-semibold hover:opacity-90"
+>
+    <i data-lucide="phone" class="w-5 h-5"></i>
+    Call Now
+</button>
+
+<!-- Icon in a feature card -->
+<div class="flex items-start gap-4">
+    <div style="background-color: hsl(var(--accent) / 0.1); border-radius: var(--radius);" class="p-3">
+        <i data-lucide="shield-check" class="w-8 h-8" style="color: hsl(var(--accent));"></i>
+    </div>
+    <div>
+        <h3 class="text-xl font-bold mb-2">Fully Licensed & Insured</h3>
+        <p class="text-gray-600">Your protection is our priority</p>
+    </div>
+</div>
+```
+
+**Common Lucide Icons to Use:**
+- **CTAs & Actions**: `arrow-right`, `phone`, `mail`, `calendar`, `send`
+- **Features & Benefits**: `check`, `check-circle`, `shield-check`, `star`, `award`
+- **Emergency/Alerts**: `alert-triangle`, `alert-circle`, `clock`, `zap`
+- **Trust Indicators**: `shield`, `badge-check`, `users`, `building`
+- **Process Steps**: `clipboard-check`, `wrench`, `truck`, `check-circle-2`
+- **Contact**: `phone`, `mail`, `map-pin`, `message-circle`
+
+**Browse all icons:** https://lucide.dev/icons/
+
+**Icon Sizing Guidelines:**
+- Inline with text: `w-4 h-4` or `w-5 h-5`
+- Standard UI icons: `w-6 h-6`
+- Feature icons: `w-8 h-8` to `w-12 h-12`
+- Hero section icons: `w-16 h-16` or larger
+
+**NEVER:**
+- ❌ Don't use emojis for UI icons (no 📞, ✅, 🚨, etc.)
+- ❌ Don't use inline SVG code (use Lucide instead)
+- ❌ Don't use external icon CDNs (Lucide is already loaded)
+
+### 4. Form Integration: Lead Capture
+
+**Use `window.openLeadFormModal()` for ALL calls-to-action:**
+
+```html
+<button 
+    onclick="window.openLeadFormModal('Request Quote', {
+        serviceId: '{{service_id}}',
         cityId: '{{city_id}}',
         source: 'hero_cta'
     })"
-    class="bg-blue-600 text-white px-6 py-3 rounded-lg"
+    style="background-color: hsl(var(--primary)); border-radius: var(--radius);"
+    class="text-white px-6 py-3 font-semibold"
 >
     Get Free Quote
 </button>
@@ -182,14 +247,14 @@ The system provides dynamic brand colors and styling that users can customize in
 
 **NEVER create custom forms or use React hooks**
 
-### 4. Styling: Tailwind CSS via CDN
+### 5. Styling: Tailwind CSS (Already Loaded)
 
-- Include `<script src="https://cdn.tailwindcss.com"></script>` in every page
+- Tailwind CSS is already loaded globally in the application
 - Use Tailwind utility classes for all styling
 - Use responsive breakpoints: `md:`, `lg:`, `xl:`
 - No external CSS files or `<style>` tags needed
 
-### 5. Page Type Awareness
+### 6. Page Type Awareness
 
 **Static Pages** (About, Contact, Terms):
 - ✅ Use ONLY `{{company_*}}` variables
@@ -198,7 +263,7 @@ The system provides dynamic brand colors and styling that users can customize in
 **Service Template Pages** (Service/Location pages):
 - ✅ Use ALL variables: `{{company_*}}`, `{{service_*}}`, `{{city_*}}`
 
-### 6. SEO Requirements
+### 7. SEO Requirements
 
 Every page MUST include:
 - One `<h1>` tag with main keyword
@@ -207,7 +272,7 @@ Every page MUST include:
 - Semantic HTML5 structure (`<main>`, `<section>`, `<article>`)
 - Descriptive image alt text with variables
 
-### 7. Page Structure Guidelines
+### 8. Page Structure Guidelines
 
 **CRITICAL - OUTPUT FORMAT:**
 Your output should be ONLY the main content sections - NO document structure tags.
