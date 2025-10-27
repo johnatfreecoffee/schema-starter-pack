@@ -594,10 +594,20 @@ const UnifiedPageEditor = ({
     } catch (error: any) {
       console.error('AI Editor Error:', error);
       
-      // Provide more detailed error message
+      // Extract detailed error information
       let errorMessage = 'Unknown error occurred';
       let errorTitle = 'AI Error';
+      let statusCode: number | undefined;
+      let errorDetails = '';
       
+      // Try to extract status code and detailed error info
+      if (error?.status) {
+        statusCode = error.status;
+      } else if (error?.context?.status) {
+        statusCode = error.context.status;
+      }
+      
+      // Build detailed error message
       if (error?.message) {
         errorMessage = error.message;
         
@@ -610,6 +620,9 @@ const UnifiedPageEditor = ({
         } else if (error.message.includes('network') || error.message.includes('fetch')) {
           errorTitle = 'Network Error';
           errorMessage = 'Unable to reach the server. Please check your connection and try again.';
+        } else if (error.message.includes('overloaded')) {
+          errorTitle = 'Service Unavailable (503)';
+          errorMessage = 'The AI service is currently overloaded. Please try again in a moment.';
         }
       } else if (error?.error) {
         errorMessage = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
@@ -617,17 +630,43 @@ const UnifiedPageEditor = ({
         errorMessage = error;
       }
       
+      // Build detailed technical info
+      const technicalDetails: string[] = [];
+      
+      if (statusCode) {
+        technicalDetails.push(`**Status Code:** ${statusCode}`);
+      }
+      
+      if (error?.context) {
+        technicalDetails.push(`**Error Context:**\n\`\`\`json\n${JSON.stringify(error.context, null, 2)}\n\`\`\``);
+      }
+      
+      if (error?.name) {
+        technicalDetails.push(`**Error Type:** ${error.name}`);
+      }
+      
+      if (error?.stack && process.env.NODE_ENV === 'development') {
+        technicalDetails.push(`**Stack Trace:**\n\`\`\`\n${error.stack}\n\`\`\``);
+      }
+      
+      // Include the full error object for debugging
+      technicalDetails.push(`**Raw Error Object:**\n\`\`\`json\n${JSON.stringify(error, null, 2)}\n\`\`\``);
+      
+      errorDetails = technicalDetails.join('\n\n');
+      
+      // Show toast with basic error
       toast({
-        title: errorTitle,
+        title: statusCode ? `${errorTitle} (${statusCode})` : errorTitle,
         description: errorMessage,
         variant: 'destructive'
       });
-       // Keep the user message and append an assistant error message
-       const assistantError: ChatMessage = {
-         role: 'assistant',
-         content: `Error: ${errorMessage}`
-       };
-       setChatMessages(prev => [...prev, assistantError]);
+      
+      // Append detailed error message to chat
+      const assistantError: ChatMessage = {
+        role: 'assistant',
+        content: `## ❌ Error Occurred\n\n**${errorMessage}**\n\n### Technical Details\n\n${errorDetails}`
+      };
+      setChatMessages(prev => [...prev, assistantError]);
 
     } finally {
       setIsAiLoading(false);
