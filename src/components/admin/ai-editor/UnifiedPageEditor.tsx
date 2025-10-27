@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import { Loader2, Send, Sparkles, Eye, Code, Trash2, AlertCircle, Copy, Check } from 'lucide-react';
 import VariablePicker from './VariablePicker';
@@ -1045,26 +1046,6 @@ const UnifiedPageEditor = ({
                 </div>
               </div>
               
-              {/* AI Model Selector */}
-              <div className="flex items-center gap-2 mb-3 p-2 bg-muted/50 rounded-md">
-                <span className="text-xs font-medium text-muted-foreground">Model:</span>
-                <Button 
-                  variant={aiModel === 'claude' ? 'default' : 'outline'} 
-                  size="sm" 
-                  onClick={() => setAiModel('claude')} 
-                  className="text-xs h-7"
-                >
-                  Claude
-                </Button>
-                <Button 
-                  variant={aiModel === 'grok' ? 'default' : 'outline'} 
-                  size="sm" 
-                  onClick={() => setAiModel('grok')} 
-                  className="text-xs h-7"
-                >
-                  Grok
-                </Button>
-              </div>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs text-muted-foreground">
                   {editorMode === 'chat' ? 'Chat about your page and get feedback' : 'Describe changes to build your page'}
@@ -1156,7 +1137,16 @@ const UnifiedPageEditor = ({
               <div className="flex gap-2 mb-2">
                 <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-start">
+                <Select value={aiModel} onValueChange={(value: 'claude' | 'grok') => setAiModel(value)}>
+                  <SelectTrigger className="w-[110px] h-9 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="claude" className="text-xs">Claude</SelectItem>
+                    <SelectItem value="grok" className="text-xs">Grok</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Textarea ref={textareaRef} placeholder="Ask AI to build something..." value={aiPrompt} onChange={e => setAiPrompt(e.target.value)} onKeyDown={e => {
                 if (sendOnEnter && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                   e.preventDefault();
