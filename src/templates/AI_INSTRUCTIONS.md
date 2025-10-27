@@ -365,6 +365,61 @@ Before submitting, verify:
 - [ ] No React/TypeScript/imports
 - [ ] No header/footer sections
 
+### Step 5: Publish to Database (AUTOMATIC)
+
+After generating and validating the HTML template, **automatically publish it to the database** so it appears live on the website immediately.
+
+**For Static Pages:**
+Execute the following SQL to insert/update the page in the `static_pages` table:
+
+```sql
+-- Insert or update the static page
+INSERT INTO static_pages (slug, page_title, content_html, content_html_draft, status, updated_at)
+VALUES (
+  'page-slug',           -- e.g., 'home', 'about', 'contact'
+  '{{page_title}}',      -- e.g., 'Home - {{company_name}}'
+  '<!-- generated HTML here -->',
+  '<!-- generated HTML here -->',
+  true,                  -- status = true makes it live immediately
+  now()
+)
+ON CONFLICT (slug) 
+DO UPDATE SET 
+  content_html = EXCLUDED.content_html,
+  content_html_draft = EXCLUDED.content_html_draft,
+  page_title = EXCLUDED.page_title,
+  status = EXCLUDED.status,
+  updated_at = now();
+```
+
+**For Service Template Pages:**
+Execute the following SQL to insert/update the template in the `service_templates` table:
+
+```sql
+-- Insert or update the service template
+INSERT INTO service_templates (template_name, content_html, content_html_draft, status, updated_at)
+VALUES (
+  '{{service_name}}',    -- e.g., 'HVAC Repair', 'Plumbing Services'
+  '<!-- generated HTML here -->',
+  '<!-- generated HTML here -->',
+  true,                  -- status = true makes it live immediately
+  now()
+)
+ON CONFLICT (template_name) 
+DO UPDATE SET 
+  content_html = EXCLUDED.content_html,
+  content_html_draft = EXCLUDED.content_html_draft,
+  status = EXCLUDED.status,
+  updated_at = now();
+```
+
+**Important Notes:**
+- Setting `status = true` publishes the page immediately (Option A workflow)
+- Both `content_html` and `content_html_draft` are populated with the same content
+- This ensures compatibility with the AI Assistant Builder's draft/publish workflow
+- The `ON CONFLICT` clause handles both new pages and updates to existing pages
+- After database insertion, confirm to the user that the page has been published live
+
 ---
 
 ## Specification Sheet Reference
