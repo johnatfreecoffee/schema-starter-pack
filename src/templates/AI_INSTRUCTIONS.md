@@ -147,7 +147,7 @@ When you receive a request to generate a page:
 - Start with proper HTML5 doctype and structure
 - Include Tailwind CDN in `<head>`
 - Use appropriate variables throughout
-- Add CTAs with `window.openLeadForm()` function
+- Add CTAs with `window.openLeadFormModal()` function
 - Ensure mobile-responsive design
 - Include proper SEO structure
 
@@ -157,7 +157,7 @@ Before submitting, verify:
 - [ ] Includes Tailwind CDN
 - [ ] All dynamic content uses `{{variables}}`
 - [ ] No hardcoded company/service/location data
-- [ ] Forms use `onclick="window.openLeadForm(...)"`
+- [ ] Forms use `onclick="window.openLeadFormModal(...)"`
 - [ ] Has one H1 and multiple H2s
 - [ ] Responsive classes applied (`md:`, `lg:`)
 - [ ] No React/TypeScript/imports
@@ -305,7 +305,7 @@ export default function HomePage() { ... }
 </head>
 <body>
     <h1>{{company_name}} in {{city_name}}</h1>
-    <button onclick="window.openLeadForm('Get Quote', {source: 'cta'})">
+    <button onclick="window.openLeadFormModal('Get Quote', {source: 'cta'})">
         Contact Us
     </button>
 </body>
@@ -342,7 +342,7 @@ Every generated template must:
 **Remember:**
 - Generate pure HTML with `<!DOCTYPE html>`
 - Use `{{variables}}` for all dynamic content
-- Use `window.openLeadForm()` for all CTAs
+- Use `window.openLeadFormModal()` for all CTAs
 - Include Tailwind CDN for styling
 - Check page type to know which variables are available
 - Refer to specification sheet for detailed reference

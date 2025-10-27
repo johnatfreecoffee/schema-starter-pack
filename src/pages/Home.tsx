@@ -5,7 +5,7 @@ import { useCachedQuery } from '@/hooks/useCachedQuery';
 
 import { SEOHead } from '@/components/seo/SEOHead';
 import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
-import { renderTemplate } from '@/lib/templateEngine';
+import { renderTemplate, formatPhone } from '@/lib/templateEngine';
 import AIHTMLRenderer from '@/components/ai/AIHTMLRenderer';
 
 const Home = () => {
@@ -57,11 +57,15 @@ const Home = () => {
           // Common company variables
           company_name: companySettings.business_name || '',
           business_name: companySettings.business_name || '', // support both keys
-          company_phone: companySettings.phone || '',
+          company_phone: formatPhone(companySettings.phone || ''),
           company_email: companySettings.email || '',
           company_address: companySettings.address || '',
           company_website: companySettings.website_url || '',
-          years_experience: companySettings.years_experience || 0,
+          company_years_in_business: companySettings.years_experience || 0,
+          years_experience: companySettings.years_experience || 0, // support both keys
+          company_city: companySettings.address_city || '',
+          company_state: companySettings.address_state || '',
+          company_zip: companySettings.address_zip || '',
           license_number: companySettings.license_numbers || '',
           business_slogan: companySettings.business_slogan || '',
           logo_url: companySettings.logo_url || '',
