@@ -96,36 +96,41 @@ Every page MUST include:
 - Semantic HTML5 structure (`<main>`, `<section>`, `<article>`)
 - Descriptive image alt text with variables
 
-### 7. Footer Guidelines
+### 7. Page Structure Guidelines
 
-**DO:**
-- Create ONE simple footer with basic contact info
-- Use plain HTML entities: `•` for bullets (NOT `{" • "}`)
-- Keep footer minimal and clean
+**CRITICAL - DO NOT INCLUDE:**
+- ❌ NO HEADER/NAVIGATION - The CMS automatically injects headers
+- ❌ NO FOOTER - The CMS automatically injects footers
+- ❌ NO "Final CTA Section" that duplicates footer content
 
-**DON'T:**
-- Create a huge "Final CTA Section" before the footer
-- Duplicate contact information in both pre-footer section AND footer
-- Use JSX syntax like `{" • "}` - this is HTML, not React!
+**DO INCLUDE:**
+- ✅ Start directly with main content sections
+- ✅ End with your last content section (no footer after)
+- ✅ Use semantic HTML5: `<main>`, `<section>`, `<article>`
+- ✅ CTAs throughout the page content as appropriate
 
-**Good Footer Example:**
+**Page Structure:**
 ```html
-<footer class="bg-gray-900 text-gray-300 py-8">
-    <div class="container mx-auto px-4 text-center">
-        <p class="font-bold text-white mb-2">{{company_name}}</p>
-        <p class="text-sm mb-2">
-            {{company_address}}, {{company_city}}, {{company_state}} {{company_zip}}
-        </p>
-        <p class="text-sm">
-            <a href="tel:{{company_phone}}">{{company_phone}}</a>
-            •
-            <a href="mailto:{{company_email}}">{{company_email}}</a>
-        </p>
-        <p class="text-xs text-gray-500 mt-4">
-            © 2025 {{company_name}}. All rights reserved.
-        </p>
-    </div>
-</footer>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{company_name}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <!-- NO HEADER HERE -->
+    
+    <main>
+        <!-- Your content sections here -->
+        <section class="hero">...</section>
+        <section class="features">...</section>
+        <section class="final-cta">...</section>
+    </main>
+    
+    <!-- NO FOOTER HERE -->
+</body>
+</html>
 ```
 
 ---

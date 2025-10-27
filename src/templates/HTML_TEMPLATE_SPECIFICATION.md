@@ -481,12 +481,13 @@ Use generic, company-focused messaging:
 </button>
 ```
 
-**Footer Guidelines for ALL Pages:**
-- Create ONE simple footer at the very end
-- Use plain `•` for separators (NOT `{" • "}` which is JSX)
-- Keep it minimal: company name, address, phone, email, copyright
-- DO NOT create a huge "Final CTA Section" right before the footer
-- DO NOT duplicate contact info in both a pre-footer section AND the footer
+**CRITICAL - Page Structure Requirements for ALL Pages:**
+- ❌ DO NOT include any `<header>` or navigation elements - The CMS automatically injects these
+- ❌ DO NOT include any `<footer>` elements - The CMS automatically injects these
+- ❌ DO NOT create a "Final CTA Section" that looks like footer content
+- ✅ Start directly with your main content sections
+- ✅ End with your last content section only
+- ✅ Pages should contain ONLY the main content area
 
 ---
 
