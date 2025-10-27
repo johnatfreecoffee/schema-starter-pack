@@ -1184,7 +1184,7 @@ ${buildThemeContext(context)}
     
     const requestPayload: any = {
       model: 'claude-sonnet-4-5-20250929',
-      max_tokens: mode === 'build' ? 8192 : 4096, // Claude max: 8192 tokens
+      max_tokens: 8192, // Use full capacity for both chat and build modes
       temperature: 1.0, // Claude default
       system: systemInstructions,
       messages: chatMessages,
