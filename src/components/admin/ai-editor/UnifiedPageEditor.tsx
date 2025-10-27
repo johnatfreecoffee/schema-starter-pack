@@ -568,6 +568,17 @@ const UnifiedPageEditor = ({
       const { data, error } = await Promise.race([invokePromise, timeoutPromise]) as any;
 
       if (error) throw error;
+      
+      // Check if the response contains an error field (backend error returned as 200)
+      if (data?.success === false || data?.error) {
+        const backendError = new Error(data.error || 'Backend error occurred');
+        (backendError as any).backendError = data.error;
+        (backendError as any).backendDetails = data.errorDetails;
+        (backendError as any).backendType = data.errorType;
+        (backendError as any).statusCode = data.statusCode;
+        (backendError as any).backendMetrics = data.metrics;
+        throw backendError;
+      }
 
       // Token tracking removed - now using live input token counter
 
@@ -601,14 +612,21 @@ const UnifiedPageEditor = ({
       let errorDetails = '';
       
       // Try to extract status code and detailed error info
-      if (error?.status) {
+      if (error?.statusCode) {
+        statusCode = error.statusCode;
+      } else if (error?.status) {
         statusCode = error.status;
       } else if (error?.context?.status) {
         statusCode = error.context.status;
       }
       
-      // Build detailed error message
-      if (error?.message) {
+      // Check if we have backend error details
+      if (error?.backendError) {
+        errorMessage = error.backendError;
+        if (error.backendType) {
+          errorTitle = `${error.backendType} Error`;
+        }
+      } else if (error?.message) {
         errorMessage = error.message;
         
         // Check for common error patterns
@@ -637,20 +655,37 @@ const UnifiedPageEditor = ({
         technicalDetails.push(`**Status Code:** ${statusCode}`);
       }
       
+      if (error?.backendDetails) {
+        technicalDetails.push(`**Backend Stack Trace:**\n\`\`\`\n${error.backendDetails}\n\`\`\``);
+      }
+      
+      if (error?.backendMetrics) {
+        technicalDetails.push(`**Performance Metrics:**\n\`\`\`json\n${JSON.stringify(error.backendMetrics, null, 2)}\n\`\`\``);
+      }
+      
       if (error?.context) {
         technicalDetails.push(`**Error Context:**\n\`\`\`json\n${JSON.stringify(error.context, null, 2)}\n\`\`\``);
       }
       
       if (error?.name) {
-        technicalDetails.push(`**Error Type:** ${error.name}`);
+        technicalDetails.push(`**Frontend Error Type:** ${error.name}`);
+      }
+      
+      if (error?.backendType) {
+        technicalDetails.push(`**Backend Error Type:** ${error.backendType}`);
       }
       
       if (error?.stack && process.env.NODE_ENV === 'development') {
-        technicalDetails.push(`**Stack Trace:**\n\`\`\`\n${error.stack}\n\`\`\``);
+        technicalDetails.push(`**Frontend Stack Trace:**\n\`\`\`\n${error.stack}\n\`\`\``);
       }
       
-      // Include the full error object for debugging
-      technicalDetails.push(`**Raw Error Object:**\n\`\`\`json\n${JSON.stringify(error, null, 2)}\n\`\`\``);
+      // Include the full error object for debugging (excluding large fields)
+      const errorCopy = { ...error };
+      // Remove large/circular references
+      delete errorCopy.context?.body;
+      delete errorCopy.backendDetails; // Already shown above
+      delete errorCopy.stack; // Already shown above
+      technicalDetails.push(`**Error Summary:**\n\`\`\`json\n${JSON.stringify(errorCopy, null, 2)}\n\`\`\``);
       
       errorDetails = technicalDetails.join('\n\n');
       

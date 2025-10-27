@@ -1439,16 +1439,19 @@ ${buildThemeContext(context)}
     metrics.duration = metrics.endTime - metrics.startTime;
     logMetrics(metrics);
     
+    // Return 200 with error field so frontend can access full error details
     return new Response(JSON.stringify({ 
+      success: false,
       error: error.message || 'Unknown error occurred',
-      details: error.stack,
-      type: error.constructor.name,
+      errorDetails: error.stack,
+      errorType: error.constructor.name,
+      statusCode: 500,
       metrics: {
         duration: metrics.duration,
         timeoutOccurred: metrics.timeoutOccurred
       }
     }), {
-      status: 500,
+      status: 200, // Return 200 so Supabase client doesn't throw
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
