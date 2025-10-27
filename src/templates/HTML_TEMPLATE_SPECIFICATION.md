@@ -62,6 +62,158 @@ This document provides comprehensive technical specifications for generating HTM
 
 ---
 
+## Brand Theming System
+
+### Dynamic CSS Variables (CRITICAL)
+
+The system uses CSS custom properties for brand colors and styling that users can customize in their Site Settings. **You MUST use these CSS variables instead of hard-coded color classes.**
+
+#### Available CSS Variables
+
+```css
+/* Brand Colors - User customizable via Site Settings */
+--primary      /* Primary brand color (HSL format, e.g., "221.2 83.2% 53.3%") */
+--secondary    /* Secondary brand color (HSL format) */
+--accent       /* Accent brand color (HSL format) */
+
+/* Component Styling */
+--radius       /* Border radius (e.g., "0.5rem", "20px", "8px") */
+
+/* Header/Footer Theming */
+--header-bg    /* Header background (HSL format) */
+--header-text  /* Header text color (HSL format) */
+--footer-bg    /* Footer background (HSL format) */
+--footer-text  /* Footer text color (HSL format) */
+```
+
+#### How to Use CSS Variables in Templates
+
+**CRITICAL RULES:**
+- ❌ **NEVER** use hard-coded Tailwind color classes: `bg-blue-600`, `text-red-500`, `border-green-400`
+- ✅ **ALWAYS** use inline styles with CSS variables for brand colors
+- ✅ Use Tailwind utilities for neutral colors: `bg-white`, `bg-gray-50`, `text-gray-900`
+
+**Color Implementation Patterns:**
+
+```html
+<!-- PRIMARY COLOR (Main CTAs, Hero sections, Primary buttons) -->
+<button 
+    onclick="window.openLeadFormModal('Get Quote', {source: 'hero'})"
+    style="background-color: hsl(var(--primary)); border-radius: var(--radius);"
+    class="text-white px-8 py-4 text-lg font-semibold hover:opacity-90 transition-opacity shadow-lg"
+>
+    Get Free Quote
+</button>
+
+<!-- SECONDARY COLOR (Alternative CTAs, Supporting elements) -->
+<button 
+    onclick="window.openLeadFormModal('Learn More', {source: 'features'})"
+    style="background-color: hsl(var(--secondary)); border-radius: var(--radius);"
+    class="text-white px-6 py-3 font-semibold hover:opacity-90 transition-opacity"
+>
+    Learn More
+</button>
+
+<!-- ACCENT COLOR (Highlights, Borders, Success indicators) -->
+<div style="border-left: 4px solid hsl(var(--accent));" class="pl-6 py-4 bg-gray-50">
+    <h3 class="text-xl font-bold mb-2">Special Offer</h3>
+    <p class="text-gray-700">Limited time discount available!</p>
+</div>
+
+<!-- PRIMARY BACKGROUND SECTION -->
+<section style="background-color: hsl(var(--primary));" class="py-20 text-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-4xl font-bold mb-6">{{company_name}}</h2>
+        <p class="text-xl opacity-90 mb-8">{{company_tagline}}</p>
+        <button 
+            onclick="window.openLeadFormModal('Contact Us', {source: 'cta'})"
+            style="background-color: white; color: hsl(var(--primary)); border-radius: var(--radius);"
+            class="px-10 py-4 text-lg font-bold hover:opacity-90 transition-opacity shadow-xl"
+        >
+            Contact Us Today
+        </button>
+    </div>
+</section>
+
+<!-- GRADIENT WITH PRIMARY COLOR -->
+<section 
+    style="background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.8));"
+    class="py-16 text-white"
+>
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold">Emergency Services</h2>
+    </div>
+</section>
+
+<!-- ACCENT COLOR FOR ICONS/BADGES -->
+<div class="flex items-center gap-3">
+    <div style="background-color: hsl(var(--accent) / 0.1);" class="p-3 rounded-full">
+        <svg class="w-6 h-6" style="color: hsl(var(--accent));" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+    </div>
+    <span class="text-gray-900 font-semibold">Certified & Licensed</span>
+</div>
+
+<!-- BORDER RADIUS ON CARDS -->
+<div style="border-radius: var(--radius);" class="bg-white shadow-xl p-8">
+    <h3 class="text-2xl font-bold mb-4 text-gray-900">{{service_name}}</h3>
+    <p class="text-gray-600 mb-6">{{service_description}}</p>
+    <button 
+        onclick="window.openLeadFormModal('Request Service', {serviceId: '{{service_id}}'})"
+        style="background-color: hsl(var(--primary)); border-radius: var(--radius);"
+        class="text-white px-6 py-3 font-semibold hover:opacity-90 transition-opacity"
+    >
+        Request Service
+    </button>
+</div>
+
+<!-- PHONE LINK WITH SECONDARY COLOR -->
+<a 
+    href="tel:{{company_phone}}"
+    style="background-color: hsl(var(--secondary)); border-radius: var(--radius);"
+    class="inline-flex items-center gap-3 text-white px-8 py-4 text-xl font-bold hover:opacity-90 transition-opacity shadow-lg"
+>
+    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+    </svg>
+    {{company_phone}}
+</a>
+```
+
+#### Color Usage Guidelines
+
+**When to use each color:**
+
+| Color | Usage | Examples |
+|-------|-------|----------|
+| **Primary** | Main CTAs, hero sections, primary buttons, key highlights | "Get Quote" buttons, hero backgrounds, main section backgrounds |
+| **Secondary** | Alternative CTAs, secondary buttons, supporting elements | "Learn More" buttons, secondary features, alternate CTAs |
+| **Accent** | Success indicators, special highlights, borders, badges | Checkmarks, "24/7 Available" badges, success borders, special callouts |
+
+**Neutral Colors (Use Tailwind):**
+- Text: `text-gray-900`, `text-gray-700`, `text-gray-600`, `text-white`
+- Backgrounds: `bg-white`, `bg-gray-50`, `bg-gray-100`, `bg-gray-900`
+- Borders: `border-gray-200`, `border-gray-300`
+
+#### Common Mistakes to Avoid
+
+❌ **WRONG - Hard-coded colors:**
+```html
+<button class="bg-blue-600 text-white">Get Quote</button>
+<section class="bg-red-500">Emergency</section>
+<div class="border-l-4 border-green-500">Success</div>
+```
+
+✅ **CORRECT - Dynamic CSS variables:**
+```html
+<button style="background-color: hsl(var(--primary));" class="text-white">Get Quote</button>
+<section style="background-color: hsl(var(--primary));">Emergency</section>
+<div style="border-left: 4px solid hsl(var(--accent));">Success</div>
+```
+
+---
+
 ## Technical Stack
 
 ### CRITICAL: HTML Output Format

@@ -67,12 +67,93 @@ This is a **professional, modern, elegant business website** - not a casual or p
 - Phone/email → Professional contact icons
 - Body text emphasis → Emojis OK (sparingly)
 
-### Color Usage
-- Primary CTA buttons: Red (#DC2626) for urgency/emergency
-- Secondary buttons: Blue (#2563EB) for standard actions
-- Accent colors: Green for success indicators
-- Background variations: White, light gray (#F8F9FA), dark (#1F2937)
-- Professional color combinations that convey trust and expertise
+### Brand Theming System
+
+**CRITICAL: Use Dynamic CSS Variables for Colors and Styles**
+
+The system provides dynamic brand colors and styling that users can customize in their site settings. **NEVER use hard-coded Tailwind color classes** like `bg-blue-600`, `text-red-500`, etc.
+
+**Available CSS Custom Properties:**
+```css
+/* Brand Colors (set by user in Site Settings) */
+--primary      /* Primary brand color (HSL format) */
+--secondary    /* Secondary brand color (HSL format) */
+--accent       /* Accent brand color (HSL format) */
+
+/* Component Styling */
+--radius       /* Border radius for buttons/cards (e.g., "0.5rem", "20px") */
+
+/* Header/Footer (if needed) */
+--header-bg    /* Header background color (HSL) */
+--header-text  /* Header text color (HSL) */
+--footer-bg    /* Footer background color (HSL) */
+--footer-text  /* Footer text color (HSL) */
+```
+
+**How to Use CSS Variables in HTML:**
+
+✅ **CORRECT - Use inline styles with CSS variables:**
+```html
+<!-- Primary button -->
+<button 
+    onclick="window.openLeadFormModal('Get Quote', {source: 'hero'})"
+    style="background-color: hsl(var(--primary)); color: white; border-radius: var(--radius);"
+    class="px-8 py-4 font-semibold hover:opacity-90 transition-opacity"
+>
+    Get Free Quote
+</button>
+
+<!-- Secondary button -->
+<a 
+    href="tel:{{company_phone}}"
+    style="background-color: hsl(var(--secondary)); color: white; border-radius: var(--radius);"
+    class="inline-block px-8 py-4 font-semibold hover:opacity-90 transition-opacity"
+>
+    Call Now
+</a>
+
+<!-- Accent color for highlights -->
+<div style="border-left: 4px solid hsl(var(--accent));" class="p-6 bg-gray-50">
+    <h3 class="text-xl font-bold mb-2">Special Offer</h3>
+    <p>Limited time discount available!</p>
+</div>
+
+<!-- Background section with primary color -->
+<section style="background-color: hsl(var(--primary));" class="py-16 text-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold mb-4">{{company_name}}</h2>
+    </div>
+</section>
+```
+
+❌ **WRONG - Never use hard-coded Tailwind colors:**
+```html
+<!-- NEVER DO THIS -->
+<button class="bg-blue-600 text-white">Get Quote</button>
+<section class="bg-red-500 text-white">Emergency</section>
+<div class="border-green-500">Success</div>
+```
+
+**Color Usage Guidelines:**
+- **Primary color**: Main CTAs, hero sections, primary buttons, important highlights
+- **Secondary color**: Secondary buttons, alternative CTAs, supporting elements
+- **Accent color**: Success indicators, highlights, special callouts, borders
+- **Text colors**: Use standard Tailwind text utilities (`text-gray-900`, `text-gray-600`, `text-white`)
+- **Backgrounds**: Use CSS variables for brand colors, Tailwind utilities for neutrals (`bg-gray-50`, `bg-white`)
+
+**Border Radius Usage:**
+```html
+<!-- Buttons -->
+<button style="border-radius: var(--radius);" class="px-6 py-3">Click Me</button>
+
+<!-- Cards -->
+<div style="border-radius: var(--radius);" class="p-6 bg-white shadow-lg">
+    Card content
+</div>
+
+<!-- Images -->
+<img src="..." style="border-radius: var(--radius);" class="w-full" alt="..." />
+```
 
 ### 2. Variable System: Never Hardcode
 
