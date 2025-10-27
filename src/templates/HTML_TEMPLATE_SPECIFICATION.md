@@ -680,41 +680,34 @@ Use descriptive `source` values to track where leads originate:
 - ❌ NO Service Variables
 - ❌ NO Service Area Variables
 
-**Required Structure:**
+**Example Structure:**
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Title | {{company_name}}</title>
-    <meta name="description" content="{{company_description}}">
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-white">
-    <main class="min-h-screen">
-        <section class="py-12 md:py-20">
-            <div class="container mx-auto px-4 max-w-4xl">
-                <h1 class="text-4xl md:text-5xl font-bold mb-6">
-                    Page Heading - {{company_name}}
-                </h1>
-                
-                <p class="text-xl text-gray-600 mb-8">
-                    {{company_description}}
-                </p>
-                
-                <!-- Content sections -->
-            </div>
-        </section>
-    </main>
-</body>
-</html>
+<main>
+    <section class="py-12 md:py-20">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
+                Page Heading - {{company_name}}
+            </h1>
+            
+            <p class="text-xl text-gray-600 mb-8">
+                {{company_description}}
+            </p>
+            
+            <!-- Content sections -->
+        </div>
+    </section>
+</main>
 ```
 
 **CTA Integration:**
 Use generic, company-focused messaging:
 ```html
-<button onclick="window.openLeadFormModal('Contact {{company_name}}', {source: 'about_cta'})">
+<button 
+    onclick="window.openLeadFormModal('Contact {{company_name}}', {source: 'about_cta'})"
+    style="background-color: hsl(var(--primary)); border-radius: var(--radius);"
+    class="text-white px-8 py-4 font-semibold hover:opacity-90"
+>
+    <i data-lucide="mail" class="w-5 h-5 inline-block mr-2"></i>
     Get In Touch
 </button>
 ```
@@ -764,65 +757,52 @@ The CMS renders your HTML inside a React app that already has complete document 
 - ✅ ALL Service Variables
 - ✅ ALL Service Area Variables
 
-**Required Structure:**
+**Example Structure:**
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{service_meta_title}}</title>
-    <meta name="description" content="{{service_meta_description}}">
+<main>
+    <!-- Hero with service + location -->
+    <section class="py-16 md:py-24">
+        <div class="container mx-auto px-4">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-gray-900">
+                {{service_name}} in {{city_name}}, {{city_state}}
+            </h1>
+            
+            <p class="text-xl text-gray-600 mb-8">
+                {{service_description}}
+            </p>
+            
+            <button 
+                onclick="window.openLeadFormModal('Request {{service_name}} quote', {
+                    serviceId: '{{service_id}}',
+                    cityId: '{{city_id}}',
+                    source: 'hero_primary'
+                })"
+                style="background-color: hsl(var(--primary)); border-radius: var(--radius);"
+                class="text-white px-8 py-4 text-lg font-semibold hover:opacity-90"
+            >
+                <i data-lucide="calendar" class="w-5 h-5 inline-block mr-2"></i>
+                Get Free Quote
+            </button>
+        </div>
+    </section>
     
-    <!-- Open Graph -->
-    <meta property="og:title" content="{{service_name}} in {{city_name}}, {{city_state}}">
-    <meta property="og:description" content="{{service_description}}">
-    <meta property="og:type" content="website">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-white">
-    <main class="min-h-screen">
-        <!-- Hero with service + location -->
-        <section class="py-16 md:py-24">
-            <div class="container mx-auto px-4">
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-                    {{service_name}} in {{city_name}}, {{city_state}}
-                </h1>
-                
-                <p class="text-xl text-gray-600 mb-8">
-                    {{service_description}}
-                </p>
-                
-                <button 
-                    onclick="window.openLeadForm('Request {{service_name}} quote', {
-                        serviceId: '{{service_id}}',
-                        cityId: '{{city_id}}',
-                        source: 'hero_primary'
-                    })"
-                    class="bg-blue-600 text-white px-8 py-4 rounded-lg"
-                >
-                    Get Free Quote
-                </button>
-            </div>
-        </section>
-        
-        <!-- Multiple content sections -->
-    </main>
-</body>
-</html>
+    <!-- Additional content sections -->
+</main>
 ```
 
 **CTA Integration:**
 Include service and location context:
 ```html
 <button 
-    onclick="window.openLeadForm('Request {{service_name}} quote in {{city_name}}', {
+    onclick="window.openLeadFormModal('Request {{service_name}} quote in {{city_name}}', {
         serviceId: '{{service_id}}',
         cityId: '{{city_id}}',
         source: 'service_card'
     })"
+    style="background-color: hsl(var(--primary)); border-radius: var(--radius);"
+    class="text-white px-6 py-3 font-semibold hover:opacity-90"
 >
+    <i data-lucide="arrow-right" class="w-5 h-5 inline-block mr-2"></i>
     Get {{service_name}} Quote
 </button>
 ```
@@ -857,7 +837,7 @@ Include service and location context:
             <!-- CTA Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                 <button 
-                    onclick="window.openLeadForm('Request {{service_name}} quote', {
+                    onclick="window.openLeadFormModal('Request {{service_name}} quote', {
                         serviceId: '{{service_id}}',
                         cityId: '{{city_id}}',
                         source: 'hero_primary'
@@ -868,7 +848,7 @@ Include service and location context:
                 </button>
                 
                 <button 
-                    onclick="window.openLeadForm('Schedule consultation for {{service_name}}', {
+                    onclick="window.openLeadFormModal('Schedule consultation for {{service_name}}', {
                         source: 'hero_secondary'
                     })"
                     class="border-2 border-blue-600 text-blue-600 px-10 py-5 rounded-lg text-lg font-bold hover:bg-blue-50 transition-colors"
@@ -1021,7 +1001,7 @@ Include service and location context:
                     
                     <!-- CTA Button -->
                     <button 
-                        onclick="window.openLeadForm('Request emergency {{service_name}}', {
+                        onclick="window.openLeadFormModal('Request emergency {{service_name}}', {
                             serviceId: '{{service_id}}',
                             cityId: '{{city_id}}',
                             source: 'emergency_service_card',
@@ -1066,7 +1046,7 @@ Include service and location context:
                     </ul>
                     
                     <button 
-                        onclick="window.openLeadForm('Request {{service_name}} installation quote', {
+                        onclick="window.openLeadFormModal('Request {{service_name}} installation quote', {
                             serviceId: '{{service_id}}',
                             cityId: '{{city_id}}',
                             source: 'installation_service_card'
@@ -1110,7 +1090,7 @@ Include service and location context:
                     </ul>
                     
                     <button 
-                        onclick="window.openLeadForm('Learn about maintenance plans', {
+                        onclick="window.openLeadFormModal('Learn about maintenance plans', {
                             serviceId: '{{service_id}}',
                             source: 'maintenance_service_card'
                         })"
@@ -1166,7 +1146,7 @@ Include service and location context:
                         </p>
                         <div class="mt-4">
                             <button 
-                                onclick="window.openLeadForm('Request pricing for {{service_name}}', {
+                                onclick="window.openLeadFormModal('Request pricing for {{service_name}}', {
                                     serviceId: '{{service_id}}',
                                     cityId: '{{city_id}}',
                                     source: 'faq_pricing_question'
@@ -1212,7 +1192,7 @@ Include service and location context:
                     Our team is ready to answer any questions about {{service_name}} in {{city_name}}.
                 </p>
                 <button 
-                    onclick="window.openLeadForm('I have questions about {{service_name}}', {
+                    onclick="window.openLeadFormModal('I have questions about {{service_name}}', {
                         source: 'faq_footer_cta'
                     })"
                     class="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700"
@@ -1318,7 +1298,7 @@ Include service and location context:
                     
                     <div class="space-y-4">
                         <button 
-                            onclick="window.openLeadForm('Request free consultation', {
+                            onclick="window.openLeadFormModal('Request free consultation', {
                                 source: 'contact_page_cta'
                             })"
                             class="w-full bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-bold hover:bg-gray-100 transition-colors"
@@ -1364,7 +1344,7 @@ Include service and location context:
             <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-10">
                 <!-- Primary CTA -->
                 <button 
-                    onclick="window.openLeadForm('Request immediate quote for {{service_name}}', {
+                    onclick="window.openLeadFormModal('Request immediate quote for {{service_name}}', {
                         serviceId: '{{service_id}}',
                         cityId: '{{city_id}}',
                         source: 'final_cta_primary'
@@ -1777,7 +1757,7 @@ xl:             1280px+        (large desktop)
                     
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
                         <button 
-                            onclick="window.openLeadForm('Contact {{company_name}}', {
+                            onclick="window.openLeadFormModal('Contact {{company_name}}', {
                                 source: 'about_page_cta'
                             })"
                             class="bg-white text-blue-600 px-10 py-5 rounded-lg text-lg font-bold hover:bg-gray-100 transition-colors"
@@ -1839,7 +1819,7 @@ xl:             1280px+        (large desktop)
                     
                     <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                         <button 
-                            onclick="window.openLeadForm('Request {{service_name}} quote', {
+                            onclick="window.openLeadFormModal('Request {{service_name}} quote', {
                                 serviceId: '{{service_id}}',
                                 cityId: '{{city_id}}',
                                 source: 'hero_primary'
@@ -1850,7 +1830,7 @@ xl:             1280px+        (large desktop)
                         </button>
                         
                         <button 
-                            onclick="window.openLeadForm('Schedule consultation for {{service_name}}', {
+                            onclick="window.openLeadFormModal('Schedule consultation for {{service_name}}', {
                                 source: 'hero_secondary'
                             })"
                             class="border-2 border-blue-600 text-blue-600 px-10 py-5 rounded-lg text-lg font-bold hover:bg-blue-50 transition-colors"
@@ -2020,7 +2000,7 @@ xl:             1280px+        (large desktop)
                     
                     <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-10">
                         <button 
-                            onclick="window.openLeadForm('Request immediate quote for {{service_name}}', {
+                            onclick="window.openLeadFormModal('Request immediate quote for {{service_name}}', {
                                 serviceId: '{{service_id}}',
                                 cityId: '{{city_id}}',
                                 source: 'final_cta_primary'

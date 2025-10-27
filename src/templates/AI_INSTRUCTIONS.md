@@ -8,29 +8,37 @@ You are generating **pure HTML templates** for a service business website system
 
 ## Critical Requirements
 
-### 1. Output Format: Pure HTML Only
+### 1. Output Format: Content-Only HTML
 
-**YOU MUST GENERATE:**
+**CRITICAL - YOU MUST GENERATE:**
+Only the main content sections - NO document structure tags.
+
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{company_name}} - Page Title</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
-    <!-- Your content here -->
-</body>
-</html>
+<main>
+    <!-- Hero Section -->
+    <section class="py-20 bg-gradient-to-br from-gray-50 to-white">
+        <div class="container mx-auto px-4">
+            <h1 class="text-5xl font-bold mb-6">{{company_name}}</h1>
+            <!-- Your content here -->
+        </div>
+    </section>
+    
+    <!-- Additional sections... -->
+</main>
 ```
 
 **YOU MUST NOT GENERATE:**
-- React components or JSX
-- TypeScript files
-- Import statements
-- npm package dependencies
+- ❌ NO `<!DOCTYPE html>`, `<html>`, `<head>`, or `<body>` tags
+- ❌ NO `<script src="https://cdn.tailwindcss.com"></script>` (Tailwind already loaded globally)
+- ❌ NO `<meta>` tags, `<title>` tags, or any head elements
+- ❌ NO `<header>` or navigation (CMS injects automatically)
+- ❌ NO `<footer>` (CMS injects automatically)
+- ❌ React components or JSX
+- ❌ TypeScript files
+- ❌ Import statements
+- ❌ npm package dependencies
+
+**WHY:** The CMS renders your HTML inside a React app that already has complete document structure, Tailwind CSS loaded globally, and auto-injected headers/footers.
 
 ## 2. Design System & Visual Standards
 
@@ -346,14 +354,16 @@ When you receive a request to generate a page:
 
 ### Step 4: Self-Validate
 Before submitting, verify:
-- [ ] Starts with `<!DOCTYPE html>`
-- [ ] Includes Tailwind CDN
+- [ ] Starts with `<main>` tag (NO DOCTYPE, html, head, body)
 - [ ] All dynamic content uses `{{variables}}`
 - [ ] No hardcoded company/service/location data
-- [ ] Forms use `onclick="window.openLeadFormModal(...)"`
+- [ ] All CTAs use `onclick="window.openLeadFormModal(...)"`
+- [ ] All icons use `data-lucide="icon-name"` attributes
+- [ ] All brand colors use CSS variables: `style="background-color: hsl(var(--primary));"`
 - [ ] Has one H1 and multiple H2s
 - [ ] Responsive classes applied (`md:`, `lg:`)
 - [ ] No React/TypeScript/imports
+- [ ] No header/footer sections
 
 ---
 
@@ -487,22 +497,23 @@ export default function HomePage() { ... }
 </form>
 ```
 
-✅ **Always generate pure HTML with variables**
+✅ **Always generate content-only HTML with variables**
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{company_name}}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
-    <h1>{{company_name}} in {{city_name}}</h1>
-    <button onclick="window.openLeadFormModal('Get Quote', {source: 'cta'})">
-        Contact Us
-    </button>
-</body>
-</html>
+<main>
+    <section class="py-20">
+        <div class="container mx-auto px-4">
+            <h1 class="text-5xl font-bold mb-6">{{company_name}} in {{city_name}}</h1>
+            <button 
+                onclick="window.openLeadFormModal('Get Quote', {source: 'cta'})"
+                style="background-color: hsl(var(--primary)); border-radius: var(--radius);"
+                class="text-white px-8 py-4 font-semibold hover:opacity-90"
+            >
+                <i data-lucide="phone" class="w-5 h-5 inline-block mr-2"></i>
+                Contact Us
+            </button>
+        </div>
+    </section>
+</main>
 ```
 
 ---
@@ -533,10 +544,12 @@ Every generated template must:
 ## Summary
 
 **Remember:**
-- Generate pure HTML with `<!DOCTYPE html>`
+- Generate content-only HTML starting with `<main>` (NO DOCTYPE, html, head, body, header, footer)
 - Use `{{variables}}` for all dynamic content
 - Use `window.openLeadFormModal()` for all CTAs
-- Include Tailwind CDN for styling
+- Use `data-lucide="icon-name"` for all icons
+- Use CSS variables for brand colors: `hsl(var(--primary))`
+- Use `border-radius: var(--radius)` for rounded corners
 - Check page type to know which variables are available
 - Refer to specification sheet for detailed reference
 
