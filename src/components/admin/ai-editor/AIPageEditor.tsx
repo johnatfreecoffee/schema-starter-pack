@@ -111,6 +111,30 @@ const AIPageEditor = ({
     try {
       setIsLoading(true);
 
+      // AI Verification Layer
+      toast({
+        title: 'Validating page...',
+        description: 'Running quality checks',
+      });
+
+      const { data: validated, error: validateError } = await supabase.functions.invoke(
+        'validate-and-fix-html',
+        {
+          body: {
+            html: currentContent,
+            pageType,
+            pageTitle
+          }
+        }
+      );
+
+      if (validateError) {
+        console.error('Validation error:', validateError);
+        throw new Error('Failed to validate HTML');
+      }
+
+      const finalHtml = validated.fixedHtml;
+
       // Save edit history
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -118,19 +142,23 @@ const AIPageEditor = ({
           page_id: pageId,
           page_type: pageType,
           previous_content: initialContent,
-          new_content: currentContent,
-          ai_command: 'Manual publish',
-          edit_description: 'Published via AI editor',
+          new_content: finalHtml,
+          ai_command: validated.issuesFixed?.length > 0 
+            ? `Auto-fixed: ${validated.issuesFixed.join(', ')}` 
+            : 'Manual publish',
+          edit_description: 'Published via AI editor with validation',
           edited_by: user.id,
         });
       }
 
-      // Save to actual page
-      await onSave(currentContent);
+      // Save validated HTML
+      await onSave(finalHtml);
 
       toast({
         title: 'Published Successfully',
-        description: 'Page changes are now live',
+        description: validated.issuesFixed?.length > 0
+          ? `Fixed ${validated.issuesFixed.length} issues automatically`
+          : 'Page changes are now live',
       });
 
       onClose();
