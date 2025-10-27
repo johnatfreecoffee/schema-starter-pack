@@ -889,7 +889,7 @@ Include service and location context:
             
             <div class="mt-8">
                 <button 
-                    onclick="window.openLeadForm('Contact {{company_name}}', {source: 'about_hero'})"
+                    onclick="window.openLeadFormModal('Contact {{company_name}}', {source: 'about_hero'})"
                     class="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700"
                 >
                     Get In Touch

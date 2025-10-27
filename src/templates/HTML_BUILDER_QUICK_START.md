@@ -84,7 +84,7 @@ const { showLeadForm } = useLeadFormModal();
 ✅ **CORRECT: Global Function**
 ```html
 <button 
-    onclick="window.openLeadForm('Request quote', {
+    onclick="window.openLeadFormModal('Request quote', {
         serviceId: '{{service_id}}',
         source: 'hero_cta'
     })"
@@ -171,7 +171,7 @@ const { showLeadForm } = useLeadFormModal();
 ### Basic CTA Button
 ```html
 <button 
-    onclick="window.openLeadForm('Request {{service_name}} quote', {
+    onclick="window.openLeadFormModal('Request {{service_name}} quote', {
         serviceId: '{{service_id}}',
         cityId: '{{city_id}}',
         source: 'hero_primary'
@@ -187,7 +187,7 @@ const { showLeadForm } = useLeadFormModal();
 <div class="flex gap-4">
     <!-- Primary CTA -->
     <button 
-        onclick="window.openLeadForm('Request quote', {source: 'primary_cta'})"
+        onclick="window.openLeadFormModal('Request quote', {source: 'primary_cta'})"
         class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
     >
         Get Quote
@@ -195,7 +195,7 @@ const { showLeadForm } = useLeadFormModal();
     
     <!-- Secondary CTA -->
     <button 
-        onclick="window.openLeadForm('Schedule consultation', {source: 'secondary_cta'})"
+        onclick="window.openLeadFormModal('Schedule consultation', {source: 'secondary_cta'})"
         class="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50"
     >
         Schedule Call
@@ -225,7 +225,7 @@ const { showLeadForm } = useLeadFormModal();
                 {{service_description}}
             </p>
             <button 
-                onclick="window.openLeadForm('Request {{service_name}} quote', {
+                onclick="window.openLeadFormModal('Request {{service_name}} quote', {
                     serviceId: '{{service_id}}',
                     cityId: '{{city_id}}',
                     source: 'hero'
@@ -295,7 +295,7 @@ const { showLeadForm } = useLeadFormModal();
         </ul>
         
         <button 
-            onclick="window.openLeadForm('Request {{service_name}} quote', {
+            onclick="window.openLeadFormModal('Request {{service_name}} quote', {
                 serviceId: '{{service_id}}',
                 source: 'service_card'
             })"
@@ -377,14 +377,14 @@ const { showLeadForm } = useLeadFormModal();
 - [ ] Do I know which variables I can use?
 - [ ] Will I output pure HTML (not React)?
 - [ ] Will I include Tailwind CDN?
-- [ ] Will I use `window.openLeadForm()` for forms?
+- [ ] Will I use `window.openLeadFormModal()` for forms?
 
 ### After Generating:
 - [ ] Starts with `<!DOCTYPE html>`
 - [ ] Includes `<script src="https://cdn.tailwindcss.com"></script>`
 - [ ] All variables use `{{variable_name}}` syntax
 - [ ] No hardcoded company/service/location data
-- [ ] Forms use `onclick="window.openLeadForm(...)"`
+- [ ] Forms use `onclick="window.openLeadFormModal(...)"`
 - [ ] Responsive with `md:` and `lg:` classes
 - [ ] Has one H1, multiple H2s
 - [ ] No React imports or components
@@ -420,7 +420,7 @@ import { Button } from "@/components/ui/button";
 <p>{{company_name}} has been serving {{company_city}} for {{company_years_in_business}} years!</p>
 
 <!-- Global function for forms -->
-<button onclick="window.openLeadForm('Get Quote', {source: 'cta'})">
+<button onclick="window.openLeadFormModal('Get Quote', {source: 'cta'})">
   Get Quote
 </button>
 
@@ -481,7 +481,7 @@ import { Button } from "@/components/ui/button";
                     {{service_description}}
                 </p>
                 <button 
-                    onclick="window.openLeadForm('Request {{service_name}} quote', {
+                    onclick="window.openLeadFormModal('Request {{service_name}} quote', {
                         serviceId: '{{service_id}}',
                         cityId: '{{city_id}}',
                         source: 'hero'

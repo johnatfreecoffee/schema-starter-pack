@@ -20,7 +20,7 @@
 <body class="bg-white text-gray-900">
     <h1 class="text-4xl font-bold">{{company_name}}</h1>
     <button 
-        onclick="window.openLeadForm('Request Quote', {source: 'hero'})"
+        onclick="window.openLeadFormModal('Request Quote', {source: 'hero'})"
         class="bg-blue-600 text-white px-6 py-3 rounded-lg"
     >
         Get Free Quote
@@ -200,12 +200,12 @@ The system includes a pre-built lead form. Pages trigger it using a global JavaS
 
 #### Triggering the Universal Form
 
-Use the global `window.openLeadForm()` function with onclick handlers:
+Use the global `window.openLeadFormModal()` function with onclick handlers:
 
 ```html
 <!-- Basic button trigger -->
 <button 
-    onclick="window.openLeadForm('Request free quote', {source: 'hero_section'})"
+    onclick="window.openLeadFormModal('Request free quote', {source: 'hero_section'})"
     class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
 >
     Get Free Quote
@@ -213,7 +213,7 @@ Use the global `window.openLeadForm()` function with onclick handlers:
 
 <!-- With dynamic variables -->
 <button 
-    onclick="window.openLeadForm('Request {{service_name}} quote in {{city_name}}', {
+    onclick="window.openLeadFormModal('Request {{service_name}} quote in {{city_name}}', {
         serviceId: '{{service_id}}',
         cityId: '{{city_id}}',
         source: 'service_card'
@@ -225,7 +225,7 @@ Use the global `window.openLeadForm()` function with onclick handlers:
 
 <!-- Emergency CTA -->
 <button 
-    onclick="window.openLeadForm('Emergency service request', {source: 'emergency_cta'})"
+    onclick="window.openLeadFormModal('Emergency service request', {source: 'emergency_cta'})"
     class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold"
 >
     Emergency Service
@@ -328,7 +328,7 @@ Use the global `window.openLeadForm()` function with onclick handlers:
                     {{service_description}}
                 </p>
                 <button 
-                    onclick="window.openLeadForm('Request {{service_name}} quote', {
+                    onclick="window.openLeadFormModal('Request {{service_name}} quote', {
                         serviceId: '{{service_id}}',
                         cityId: '{{city_id}}',
                         source: 'hero_primary'
@@ -372,7 +372,7 @@ Use the global `window.openLeadForm()` function with onclick handlers:
             <!-- CTA Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <button 
-                    onclick="window.openLeadForm('Request {{service_name}} quote', {
+                    onclick="window.openLeadFormModal('Request {{service_name}} quote', {
                         serviceId: '{{service_id}}',
                         cityId: '{{city_id}}',
                         source: 'hero_primary'
@@ -383,7 +383,7 @@ Use the global `window.openLeadForm()` function with onclick handlers:
                 </button>
                 
                 <button 
-                    onclick="window.openLeadForm('Learn more about {{service_name}}', {source: 'hero_secondary'})"
+                    onclick="window.openLeadFormModal('Learn more about {{service_name}}', {source: 'hero_secondary'})"
                     class="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition-colors"
                 >
                     Learn More
@@ -478,7 +478,7 @@ Use the global `window.openLeadForm()` function with onclick handlers:
                     </ul>
                     
                     <button 
-                        onclick="window.openLeadForm('Request {{service_name}} quote', {
+                        onclick="window.openLeadFormModal('Request {{service_name}} quote', {
                             serviceId: '{{service_id}}',
                             cityId: '{{city_id}}',
                             source: 'service_card'
@@ -581,7 +581,7 @@ Use the global `window.openLeadForm()` function with onclick handlers:
                         Ready to get started? Click below to send us a message.
                     </p>
                     <button 
-                        onclick="window.openLeadForm('Contact form submission', {source: 'contact_form'})"
+                        onclick="window.openLeadFormModal('Contact form submission', {source: 'contact_form'})"
                         class="w-full bg-blue-600 text-white px-6 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
                     >
                         Send Message
@@ -698,7 +698,7 @@ Use the global `window.openLeadForm()` function with onclick handlers:
 
 1. **Output Format**: Generate pure HTML with `<!DOCTYPE html>` - NOT React
 2. **Variables**: Use `{{variable_name}}` for ALL dynamic content
-3. **Forms**: Use `onclick="window.openLeadForm(...)"` for all lead capture
+3. **Forms**: Use `onclick="window.openLeadFormModal(...)"` for all lead capture
 4. **Styling**: Include Tailwind CDN in `<head>`
 5. **Responsive**: Mobile-first with `md:` and `lg:` breakpoints
 6. **SEO**: Proper `<head>`, H1, meta tags, semantic HTML5
@@ -709,7 +709,7 @@ Use the global `window.openLeadForm()` function with onclick handlers:
 1. **NO React/JSX**: Never generate React components or JSX
 2. **NO Imports**: Never include `import` statements
 3. **NO Hardcoded Data**: Never hardcode company/service/city names
-4. **NO useLeadFormModal()**: Use `window.openLeadForm()` instead
+4. **NO useLeadFormModal()**: Use `window.openLeadFormModal()` instead
 5. **NO TypeScript**: Pure HTML only
 6. **NO Custom Forms**: Only onclick handlers to trigger global form
 
@@ -721,14 +721,14 @@ Use the global `window.openLeadForm()` function with onclick handlers:
 - [ ] Do I know the page type? (Static vs Service)
 - [ ] Do I know which variables I can use?
 - [ ] Will I output pure HTML (not React)?
-- [ ] Will I use `window.openLeadForm()` for forms?
+- [ ] Will I use `window.openLeadFormModal()` for forms?
 
 ### After Generation:
 - [ ] Starts with `<!DOCTYPE html>`
 - [ ] Includes Tailwind CDN in `<head>`
 - [ ] All variables use `{{variable_name}}` syntax
 - [ ] No hardcoded company/service/location data
-- [ ] Forms use `onclick="window.openLeadForm(...)"`
+- [ ] Forms use `onclick="window.openLeadFormModal(...)"`
 - [ ] Responsive with Tailwind breakpoints
 - [ ] Proper SEO structure (H1, meta tags)
 - [ ] No React imports or components
@@ -767,7 +767,7 @@ Use the global `window.openLeadForm()` function with onclick handlers:
                     
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
                         <button 
-                            onclick="window.openLeadForm('Request {{service_name}} quote', {
+                            onclick="window.openLeadFormModal('Request {{service_name}} quote', {
                                 serviceId: '{{service_id}}',
                                 cityId: '{{city_id}}',
                                 source: 'hero_primary'
@@ -856,7 +856,7 @@ Use the global `window.openLeadForm()` function with onclick handlers:
                         Contact {{company_name}} today for your free {{service_name}} quote
                     </p>
                     <button 
-                        onclick="window.openLeadForm('Request free quote', {source: 'final_cta'})"
+                        onclick="window.openLeadFormModal('Request free quote', {source: 'final_cta'})"
                         class="bg-blue-600 text-white px-10 py-5 rounded-lg text-xl font-bold hover:bg-blue-700 transition-colors shadow-lg"
                     >
                         Get Your Free Quote
