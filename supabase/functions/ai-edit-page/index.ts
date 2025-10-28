@@ -1220,8 +1220,8 @@ ${buildThemeContext(context)}
     } else {
       // Claude (Anthropic) configuration
       requestPayload = {
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 8192,
+        model: 'claude-opus-4-1-20250805',
+        max_tokens: 16384,
         temperature: 1.0,
         system: systemInstructions,
         messages: chatMessages,
