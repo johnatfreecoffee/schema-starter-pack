@@ -1218,10 +1218,10 @@ ${buildThemeContext(context)}
       
       console.log('Calling Grok 4 API...');
     } else {
-      // Claude (Anthropic) configuration
+      // Claude (Anthropic) configuration - Using Sonnet 4.5 for speed
       requestPayload = {
-        model: 'claude-opus-4-1-20250805',
-        max_tokens: 16384,
+        model: 'claude-sonnet-4-5-20250929',
+        max_tokens: 8192,
         temperature: 1.0,
         system: systemInstructions,
         messages: chatMessages,
