@@ -180,12 +180,13 @@ The system provides dynamic brand colors and styling that users can customize in
 
 ### 3. Icon System: Lucide Icons (REQUIRED)
 
-**CRITICAL:** The application has Lucide icons loaded globally. You MUST use Lucide icons for all UI elements.
+**CRITICAL:** The application has Lucide icons loaded globally. You MUST use Lucide icons EXCLUSIVELY for all UI elements, badges, features, and navigation.
 
-**How to Use Lucide Icons:**
+#### How to Use Lucide Icons
+
 ```html
 <!-- Basic icon usage -->
-<i data-lucide="check" class="w-6 h-6"></i>
+<i data-lucide="check-circle" class="w-6 h-6"></i>
 
 <!-- Icon with color (using CSS variables) -->
 <i data-lucide="phone" class="w-6 h-6" style="color: hsl(var(--primary));"></i>
@@ -200,7 +201,7 @@ The system provides dynamic brand colors and styling that users can customize in
     Call Now
 </button>
 
-<!-- Icon in a feature card -->
+<!-- Icon with background badge -->
 <div class="flex items-start gap-4">
     <div style="background-color: hsl(var(--accent) / 0.1); border-radius: var(--radius);" class="p-3">
         <i data-lucide="shield-check" class="w-8 h-8" style="color: hsl(var(--accent));"></i>
@@ -210,28 +211,202 @@ The system provides dynamic brand colors and styling that users can customize in
         <p class="text-gray-600">Your protection is our priority</p>
     </div>
 </div>
+
+<!-- Process steps with icons -->
+<div class="grid md:grid-cols-3 gap-8">
+    <div class="text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 mb-4" style="background-color: hsl(var(--primary) / 0.1); border-radius: var(--radius);">
+            <i data-lucide="calendar" class="w-8 h-8" style="color: hsl(var(--primary));"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2">1. Schedule Inspection</h3>
+        <p class="text-gray-600">Book your free assessment</p>
+    </div>
+    <div class="text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 mb-4" style="background-color: hsl(var(--primary) / 0.1); border-radius: var(--radius);">
+            <i data-lucide="wrench" class="w-8 h-8" style="color: hsl(var(--primary));"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2">2. Expert Service</h3>
+        <p class="text-gray-600">Professional work guaranteed</p>
+    </div>
+    <div class="text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 mb-4" style="background-color: hsl(var(--primary) / 0.1); border-radius: var(--radius);">
+            <i data-lucide="check-circle" class="w-8 h-8" style="color: hsl(var(--primary));"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2">3. Quality Assurance</h3>
+        <p class="text-gray-600">Satisfaction guaranteed</p>
+    </div>
+</div>
 ```
 
-**Common Lucide Icons to Use:**
-- **CTAs & Actions**: `arrow-right`, `phone`, `mail`, `calendar`, `send`
-- **Features & Benefits**: `check`, `check-circle`, `shield-check`, `star`, `award`
-- **Emergency/Alerts**: `alert-triangle`, `alert-circle`, `clock`, `zap`
-- **Trust Indicators**: `shield`, `badge-check`, `users`, `building`
-- **Process Steps**: `clipboard-check`, `wrench`, `truck`, `check-circle-2`
-- **Contact**: `phone`, `mail`, `map-pin`, `message-circle`
+#### Complete Lucide Icon Reference
 
-**Browse all icons:** https://lucide.dev/icons/
+**ONLY use these approved Lucide icon names:**
 
-**Icon Sizing Guidelines:**
-- Inline with text: `w-4 h-4` or `w-5 h-5`
-- Standard UI icons: `w-6 h-6`
-- Feature icons: `w-8 h-8` to `w-12 h-12`
-- Hero section icons: `w-16 h-16` or larger
+**CTAs & Actions:**
+- `arrow-right`, `chevron-right`, `chevron-down`, `plus`, `minus`
+- `phone`, `mail`, `send`, `share-2`, `external-link`, `link`
+- `calendar`, `clock`, `download`, `upload`
+- `play`, `pause`, `stop`, `skip-back`, `skip-forward`
 
-**NEVER:**
-- ❌ Don't use emojis for UI icons (no 📞, ✅, 🚨, etc.)
-- ❌ Don't use inline SVG code (use Lucide instead)
-- ❌ Don't use external icon CDNs (Lucide is already loaded)
+**Features & Benefits:**
+- `check`, `check-circle`, `check-circle-2`, `badge-check`
+- `star`, `award`, `trophy`, `medal`
+- `shield`, `shield-check`, `shield-alert`
+- `heart`, `thumbs-up`, `thumbs-down`
+
+**Emergency & Alerts:**
+- `alert-circle`, `alert-triangle`, `alert-octagon`
+- `zap`, `flame`, `siren`, `activity`
+- `clock`, `timer`, `hourglass`
+
+**Contact & Communication:**
+- `phone`, `phone-call`, `phone-incoming`, `phone-outgoing`
+- `mail`, `message-circle`, `message-square`
+- `headphones`, `mic`, `video`
+- `map-pin`, `map`, `navigation`, `compass`
+
+**Trust & Credentials:**
+- `shield`, `badge`, `award`, `certificate`
+- `users`, `user-check`, `user-plus`
+- `building`, `building-2`, `home`
+- `briefcase`, `handshake`
+
+**Process & Services:**
+- `wrench`, `hammer`, `tool`, `settings`
+- `clipboard-check`, `clipboard-list`
+- `package`, `box`, `archive`
+- `truck`, `car`, `plane`
+- `droplet`, `wind`, `cloud`, `sun`, `moon`
+
+**Business & Commerce:**
+- `shopping-cart`, `credit-card`, `dollar-sign`, `percent`
+- `receipt`, `file-text`, `file`, `folder`
+- `bar-chart`, `pie-chart`, `trending-up`, `activity`
+
+**UI & Navigation:**
+- `menu`, `x`, `search`, `filter`
+- `eye`, `eye-off`, `lock`, `unlock`
+- `edit`, `trash`, `copy`, `save`
+- `refresh-cw`, `rotate-cw`, `repeat`
+- `maximize`, `minimize`, `more-horizontal`, `more-vertical`
+
+**Media & Content:**
+- `image`, `video`, `file`, `folder`
+- `camera`, `film`, `music`
+- `bookmark`, `tag`, `flag`
+
+**Browse complete list:** https://lucide.dev/icons/
+
+#### Icon Sizing Guidelines
+
+- **Inline with text**: `w-4 h-4` or `w-5 h-5`
+- **Standard UI icons**: `w-6 h-6`
+- **Feature/service icons**: `w-8 h-8` to `w-12 h-12`
+- **Hero section icons**: `w-16 h-16` or larger
+- **Always maintain aspect ratio** - use same value for width and height
+
+#### Icon Color Guidelines
+
+```html
+<!-- Primary color icon -->
+<i data-lucide="shield" style="color: hsl(var(--primary));" class="w-6 h-6"></i>
+
+<!-- Accent color icon -->
+<i data-lucide="check-circle" style="color: hsl(var(--accent));" class="w-6 h-6"></i>
+
+<!-- Secondary color icon -->
+<i data-lucide="phone" style="color: hsl(var(--secondary));" class="w-6 h-6"></i>
+
+<!-- White icon (on colored backgrounds) -->
+<i data-lucide="arrow-right" class="w-6 h-6 text-white"></i>
+
+<!-- Gray icon (neutral elements) -->
+<i data-lucide="info" class="w-6 h-6 text-gray-600"></i>
+```
+
+#### Professional Icon Patterns
+
+**Feature List with Icons:**
+```html
+<ul class="space-y-4">
+    <li class="flex items-start gap-3">
+        <i data-lucide="check-circle" class="w-6 h-6 flex-shrink-0 mt-1" style="color: hsl(var(--accent));"></i>
+        <span class="text-gray-700">Licensed and insured professionals</span>
+    </li>
+    <li class="flex items-start gap-3">
+        <i data-lucide="clock" class="w-6 h-6 flex-shrink-0 mt-1" style="color: hsl(var(--accent));"></i>
+        <span class="text-gray-700">24/7 emergency service available</span>
+    </li>
+    <li class="flex items-start gap-3">
+        <i data-lucide="award" class="w-6 h-6 flex-shrink-0 mt-1" style="color: hsl(var(--accent));"></i>
+        <span class="text-gray-700">Industry-leading quality guarantee</span>
+    </li>
+</ul>
+```
+
+**CTA Button with Icon:**
+```html
+<button 
+    onclick="window.openLeadFormModal('Get Quote', {source: 'cta'})"
+    style="background-color: hsl(var(--primary)); border-radius: var(--radius);"
+    class="inline-flex items-center gap-2 text-white px-8 py-4 text-lg font-semibold hover:opacity-90 transition-opacity shadow-lg"
+>
+    <span>Get Free Quote</span>
+    <i data-lucide="arrow-right" class="w-5 h-5"></i>
+</button>
+```
+
+**Contact Card with Icons:**
+```html
+<div style="border-radius: var(--radius);" class="bg-white shadow-lg p-6">
+    <div class="flex items-center gap-3 mb-4">
+        <i data-lucide="phone" class="w-6 h-6" style="color: hsl(var(--primary));"></i>
+        <a href="tel:{{company_phone}}" class="text-lg font-semibold hover:underline">{{company_phone}}</a>
+    </div>
+    <div class="flex items-center gap-3 mb-4">
+        <i data-lucide="mail" class="w-6 h-6" style="color: hsl(var(--primary));"></i>
+        <a href="mailto:{{company_email}}" class="text-lg font-semibold hover:underline">{{company_email}}</a>
+    </div>
+    <div class="flex items-center gap-3">
+        <i data-lucide="map-pin" class="w-6 h-6" style="color: hsl(var(--primary));"></i>
+        <p class="text-lg">{{company_address}}, {{company_city}}, {{company_state}}</p>
+    </div>
+</div>
+```
+
+#### Emoji Guidelines (VERY LIMITED USE)
+
+**✅ Acceptable emoji use (SPARINGLY):**
+- Occasionally within body text for personality: "We're here 24/7 ⚡ to help"
+- In testimonials or quotes for authenticity
+- In casual marketing copy for emphasis (1-2 per page maximum)
+
+**❌ NEVER use emojis for:**
+- Feature icons or badges
+- Process step indicators
+- CTA buttons or navigation
+- Section headers or titles
+- Contact information icons
+- Any UI elements or structural components
+- Checkmarks (use `check-circle` instead)
+- Phone icons (use `phone` instead)
+- Warning/alerts (use `alert-triangle` instead)
+
+#### CRITICAL RULES
+
+**YOU MUST:**
+- ✅ Use ONLY Lucide icons with `data-lucide` attribute
+- ✅ Use professional icon selection appropriate to context
+- ✅ Maintain consistent icon sizing within sections
+- ✅ Color icons using CSS variables for brand consistency
+- ✅ Add icons to ALL feature lists, process steps, and CTAs
+
+**YOU MUST NEVER:**
+- ❌ Use emojis as primary UI icons
+- ❌ Use inline SVG code (use Lucide instead)
+- ❌ Use Font Awesome, Material Icons, or other icon libraries
+- ❌ Use external icon CDNs
+- ❌ Leave sections without icons when icons would enhance clarity
 
 ### 4. Form Integration: Lead Capture
 
