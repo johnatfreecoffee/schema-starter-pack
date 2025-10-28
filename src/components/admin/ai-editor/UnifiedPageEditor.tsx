@@ -848,6 +848,15 @@ const UnifiedPageEditor = ({
   // Publish function - copies draft to live
   const handlePublish = async () => {
     if (isPublishing) return;
+    if (!currentHtml || currentHtml.trim() === '') {
+      console.warn('Publish blocked: empty currentHtml');
+      toast({
+        title: 'Publish blocked',
+        description: 'Draft is empty. Please add content before publishing.',
+        variant: 'destructive'
+      });
+      return;
+    }
     
     console.log('Publishing...', { currentHtml: currentHtml?.substring(0, 100), pageType, pageId, templateId: template?.id });
     setIsPublishing(true);
@@ -944,7 +953,29 @@ const UnifiedPageEditor = ({
   }, [chatMessages, isAiLoading]);
   const closeMutation = useMutation({
     mutationFn: async () => {
-      await onSave(templateHtml);
+      // Ensure latest draft is saved when closing
+      try {
+        if (pageType === 'static' && pageId) {
+          await supabase
+            .from('static_pages')
+            .update({
+              content_html_draft: currentHtml,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', pageId);
+        } else if (template?.id) {
+          await supabase
+            .from('templates')
+            .update({
+              template_html_draft: currentHtml,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', template.id);
+        }
+        setLastSaved(new Date());
+      } catch (e) {
+        console.error('Final save on close failed:', e);
+      }
     },
     onSuccess: () => {
       onClose();
