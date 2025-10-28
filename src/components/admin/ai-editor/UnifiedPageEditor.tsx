@@ -852,77 +852,35 @@ const UnifiedPageEditor = ({
     console.log('Publishing...', { currentHtml: currentHtml?.substring(0, 100), pageType, pageId, templateId: template?.id });
     setIsPublishing(true);
     try {
-      // ✨ AI Verification Layer
-      toast({
-        title: 'Validating page...',
-        description: 'Running quality checks'
-      });
-
-      const { data: validated, error: validateError } = await supabase.functions.invoke(
-        'validate-and-fix-html',
-        {
-          body: {
-            html: currentHtml,
-            pageType,
-            pageTitle
-          }
-        }
-      );
-
-      if (validateError) {
-        console.error('Validation error:', validateError);
-        throw new Error('Failed to validate HTML');
-      }
-
-      const finalHtml = validated.fixedHtml;
-
-      // Save edit history with validation info
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user && pageId && pageType === 'static') {
-        await supabase.from('page_edit_history').insert({
-          page_id: pageId,
-          page_type: pageType,
-          previous_content: publishedHtml,
-          new_content: finalHtml,
-          ai_command: validated.issuesFixed?.length > 0 
-            ? `Auto-fixed: ${validated.issuesFixed.join(', ')}` 
-            : 'Manual publish',
-          edit_description: 'Published via AI editor with validation',
-          edited_by: user.id,
-        });
-      }
-
       if (pageType === 'static' && pageId) {
         const {
           error
         } = await supabase.from('static_pages').update({
-          content_html: finalHtml,
-          content_html_draft: finalHtml,
+          content_html: currentHtml,
+          content_html_draft: currentHtml,
           published_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         }).eq('id', pageId);
         if (error) throw error;
-        setPublishedHtml(finalHtml);
+        setPublishedHtml(currentHtml);
         queryClient.invalidateQueries({
           queryKey: ['static-pages', pageId]
         });
         toast({
-          title: 'Published Successfully',
-          description: validated.issuesFixed?.length > 0
-            ? `Fixed ${validated.issuesFixed.length} issues automatically`
-            : 'Page changes are now live'
+          title: 'Published successfully',
+          description: 'Your changes are now live.'
         });
       } else if (template?.id) {
         const {
           error
         } = await supabase.from('templates').update({
-          template_html: finalHtml,
-          template_html_draft: finalHtml,
+          template_html: currentHtml,
+          template_html_draft: currentHtml,
           published_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         }).eq('id', template.id);
         if (error) throw error;
-        setPublishedHtml(finalHtml);
+        setPublishedHtml(currentHtml);
         if (service) {
           await supabase.from('generated_pages').update({
             needs_regeneration: true
@@ -932,13 +890,11 @@ const UnifiedPageEditor = ({
           queryKey: ['service-template', service?.id]
         });
         toast({
-          title: 'Published Successfully',
-          description: validated.issuesFixed?.length > 0
-            ? `Fixed ${validated.issuesFixed.length} issues automatically`
-            : 'Page changes are now live'
+          title: 'Published successfully',
+          description: 'Your changes are now live.'
         });
       }
-      setOriginalHtml(finalHtml);
+      setOriginalHtml(currentHtml);
     } catch (error: any) {
       console.error('Publish error:', error);
       toast({
