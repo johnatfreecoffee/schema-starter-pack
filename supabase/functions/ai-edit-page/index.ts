@@ -1221,8 +1221,8 @@ ${buildThemeContext(context)}
       // Claude (Anthropic) configuration - Using Sonnet 4.5 for speed
       requestPayload = {
         model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 8192,
-        temperature: 1.0,
+        max_tokens: 4096,
+        temperature: 0.7,
         system: systemInstructions,
         messages: chatMessages,
         stream: true
@@ -1353,6 +1353,9 @@ ${buildThemeContext(context)}
         throw new Error('Response body is not readable');
       }
 
+      // Hard deadline to avoid client timeouts (110s)
+      const hardDeadline = Date.now() + 110000;
+
       let buffer = '';
       let currentEvent = '';
 
@@ -1387,6 +1390,13 @@ ${buildThemeContext(context)}
             // Extract text from Claude streaming response
             if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
               updatedHtml += chunk.delta.text;
+
+              // Early stop if we've reached end of document or hard deadline
+              if (updatedHtml.includes('</html>') || Date.now() > hardDeadline) {
+                console.log('⏹️ Early stop: closing </html> detected or deadline reached');
+                try { await reader.cancel(); } catch {}
+                break;
+              }
             }
             
             // Extract usage metadata from message_delta event
@@ -1462,6 +1472,11 @@ ${buildThemeContext(context)}
       updatedHtml += '\n</html>';
     }
     
+    // Ensure Tailwind CSS is present (for validation + styling)
+    if (!updatedHtml.includes('cdn.tailwindcss.com')) {
+      updatedHtml = updatedHtml.replace('<head>', '<head>\n  <script src="https://cdn.tailwindcss.com"></script>');
+    }
+
     // Validate HTML
     const validation = validateHTML(updatedHtml);
     metrics.validationPassed = validation.valid;
