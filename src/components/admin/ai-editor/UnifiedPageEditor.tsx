@@ -583,9 +583,9 @@ const UnifiedPageEditor = ({
           starting_price: service.starting_price,
           is_active: service.is_active
         } : null,
-        companyInfo: companySettings,
-        aiTraining: aiTraining,
-        siteSettings: siteSettings
+        companyInfo: companySettings || {},
+        aiTraining: aiTraining || {},
+        siteSettings: siteSettings || {}
       },
       userId: user?.id
     };
