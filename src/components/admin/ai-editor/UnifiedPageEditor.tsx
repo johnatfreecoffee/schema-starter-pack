@@ -633,8 +633,28 @@ const UnifiedPageEditor = ({
         setTimeout(() => reject(new Error('AI_EDITOR_TIMEOUT')), 300000);
       });
 
-      const invokePromise = supabase.functions.invoke('ai-edit-page', {
-        body: requestBody,
+      // Use direct fetch with extended timeout instead of supabase.functions.invoke
+      // to bypass Supabase client's 120s timeout limit
+      const controller = new AbortController();
+      const fetchTimeoutId = setTimeout(() => controller.abort(), 360000); // 6 minutes
+
+      const edgeFunctionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-edit-page`;
+      
+      const invokePromise = fetch(edgeFunctionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify(requestBody),
+        signal: controller.signal
+      }).then(async (response) => {
+        clearTimeout(fetchTimeoutId);
+        const data = await response.json();
+        return { data, error: null };
+      }).catch((error) => {
+        clearTimeout(fetchTimeoutId);
+        return { data: null, error };
       });
 
       const { data, error } = await Promise.race([invokePromise, timeoutPromise]) as any;
@@ -759,7 +779,7 @@ const UnifiedPageEditor = ({
           
           const assistantError: ChatMessage = {
             role: 'assistant',
-            content: `## ⏱️ Network Timeout\n\n**The request timed out before completion.**\n\nThe 4-stage AI pipeline takes 2-3 minutes for complex pages. This timeout occurred because:\n\n- The backend process exceeded the browser/client timeout limit\n- Network latency is higher than normal\n\n**Solutions:**\n1. **Try again** - the timeout may have been temporary\n2. **Simplify your request** - ask for smaller, incremental changes\n3. **Break it down** - make one change at a time instead of multiple changes\n\n**Technical Note:** The multi-stage pipeline is still being optimized for speed.`
+            content: `## ⏱️ Network Timeout\n\n**The Supabase client timed out before the pipeline completed.**\n\nThe 4-stage AI pipeline takes 3-4 minutes for complex pages. This timeout occurred because the network connection closed before completion.\n\n**The generation may have succeeded!** Check the page preview to see if it updated.\n\n**Solutions:**\n1. **Refresh and check** - the page may have been generated successfully\n2. **Try again** - the pipeline should work now with increased timeout\n3. **Simplify your request** - ask for smaller, incremental changes\n\n**Technical Note:** We've increased the client timeout to 6 minutes to accommodate the multi-stage pipeline.`
           };
           setChatMessages(prev => [...prev, assistantError]);
           return;
