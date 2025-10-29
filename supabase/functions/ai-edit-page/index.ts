@@ -935,6 +935,13 @@ serve(async (req) => {
       htmlLength: context?.currentPage?.html?.length || 0
     });
     
+    // DEBUG: Log context data
+    console.log('\n🔍 CONTEXT DEBUG:');
+    console.log('companyInfo received:', context?.companyInfo ? Object.keys(context.companyInfo) : 'MISSING');
+    console.log('companyInfo values:', JSON.stringify(context?.companyInfo, null, 2));
+    console.log('aiTraining received:', context?.aiTraining ? Object.keys(context.aiTraining) : 'MISSING');
+    console.log('siteSettings received:', context?.siteSettings ? Object.keys(context.siteSettings) : 'MISSING');
+    
     // Log full command for debugging
     console.log('=== FULL COMMAND START ===');
     console.log(command);
