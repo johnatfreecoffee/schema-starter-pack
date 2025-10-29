@@ -553,9 +553,11 @@ const UnifiedPageEditor = ({
 
     // Prepare request context for debug display
     const requestContext = {
-      command: currentCommand,
-      mode: editorMode,
-      model: aiModel,
+      command: {
+        text: currentCommand,
+        mode: editorMode,
+        model: aiModel
+      },
       conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
       context: {
         currentPage: {

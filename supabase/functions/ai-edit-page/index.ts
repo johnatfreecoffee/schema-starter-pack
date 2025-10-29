@@ -875,7 +875,13 @@ serve(async (req) => {
 
   try {
     const requestBody = await req.json();
-    const { command, mode = 'build', conversationHistory = [], context, model = 'claude', userId } = requestBody;
+    
+    // Handle new nested command structure
+    const commandObj = requestBody.command;
+    const command = typeof commandObj === 'string' ? commandObj : commandObj.text;
+    const mode = typeof commandObj === 'object' ? commandObj.mode : (requestBody.mode || 'build');
+    const model = typeof commandObj === 'object' ? commandObj.model : (requestBody.model || 'claude');
+    const { conversationHistory = [], context, userId } = requestBody;
     
     // Update metrics
     metrics.command = command.substring(0, 100);
