@@ -634,10 +634,7 @@ const UnifiedPageEditor = ({
       });
 
       const invokePromise = supabase.functions.invoke('ai-edit-page', {
-        body: { 
-          ...requestContext,
-          userId: user?.id
-        }
+        body: requestBody,
       });
 
       const { data, error } = await Promise.race([invokePromise, timeoutPromise]) as any;
