@@ -817,54 +817,6 @@ async function executeMultiStagePipeline(
   }
 }
 
-function buildProperChatHistory(
-  history: ConversationTurn[],
-  currentRequest: string,
-  currentPageHtml?: string,
-  pageType?: string
-): Array<{ role: 'user' | 'assistant'; content: string }> {
-  const messages: Array<{ role: 'user' | 'assistant'; content: string }> = [];
-  
-  // Add previous conversation turns in proper alternating format
-  for (const turn of history) {
-    // Add user's message/command
-    const userMessage = turn.userMessage || turn.command;
-    if (userMessage) {
-      messages.push({
-        role: 'user',
-        content: userMessage
-      });
-    }
-    
-    // Add assistant's response (if available)
-    if (turn.modelResponse || turn.html) {
-      const response = turn.modelResponse || `Generated HTML (${(turn.html || '').length} chars)`;
-      messages.push({
-        role: 'assistant',
-        content: response
-      });
-    }
-  }
-  
-  // Add current request with context
-  let currentMessage = `USER REQUEST: ${currentRequest}\n`;
-  
-  if (currentPageHtml) {
-    const htmlPreview = currentPageHtml.substring(0, 3000);
-    currentMessage += `\nCURRENT PAGE HTML (first 3000 chars):\n${htmlPreview}\n`;
-  }
-  
-  if (pageType) {
-    currentMessage += `\nPAGE TYPE: ${pageType}\n`;
-  }
-  
-  messages.push({
-    role: 'user',
-    content: currentMessage
-  });
-  
-  return messages;
-}
 
 serve(async (req) => {
   console.log('=== AI-EDIT-PAGE FUNCTION CALLED ===');
