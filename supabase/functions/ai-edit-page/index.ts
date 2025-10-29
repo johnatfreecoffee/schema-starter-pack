@@ -16,14 +16,17 @@ function validateHTML(html: string): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
   const trimmed = html.trim();
 
-  // Check DOCTYPE
-  if (!trimmed.startsWith('<!DOCTYPE html>')) {
-    errors.push('Missing or incorrect DOCTYPE declaration');
+  // Must be content-only HTML starting with <main>
+  if (!/^<main[\s>]/i.test(trimmed)) {
+    errors.push('Output must start with <main> and be content-only HTML');
   }
 
-  // Check closing html tag
-  if (!trimmed.endsWith('</html>')) {
-    errors.push('Missing closing </html> tag');
+  // Must NOT include full document or site-level tags
+  const forbidden = ['<!DOCTYPE', '<html', '<head', '<body', '<header', '<footer'];
+  for (const tag of forbidden) {
+    if (trimmed.toLowerCase().includes(tag)) {
+      errors.push(`Forbidden tag present: ${tag}`);
+    }
   }
 
   // Check for markdown code blocks
@@ -31,12 +34,7 @@ function validateHTML(html: string): { valid: boolean; errors: string[] } {
     errors.push('Contains markdown code blocks (should be pure HTML)');
   }
 
-  // Check for Tailwind CSS
-  if (!trimmed.includes('tailwindcss')) {
-    errors.push('Missing Tailwind CSS CDN');
-  }
-
-  // Check for unclosed Handlebars
+  // Handlebars balance check
   const openBraces = (trimmed.match(/\{\{/g) || []).length;
   const closeBraces = (trimmed.match(/\}\}/g) || []).length;
   if (openBraces !== closeBraces) {
@@ -44,14 +42,11 @@ function validateHTML(html: string): { valid: boolean; errors: string[] } {
   }
 
   // Check for incomplete Handlebars at end
-  if (trimmed.match(/\{\{[^}]*$/)) {
-    errors.push('Incomplete Handlebars expression at end of file');
+  if (/\{\{[^}]*$/.test(trimmed)) {
+    errors.push('Incomplete Handlebars expression at end of output');
   }
 
-  return {
-    valid: errors.length === 0,
-    errors
-  };
+  return { valid: errors.length === 0, errors };
 }
 
 function performAutomatedChecks(html: string, companyName: string): string[] {
@@ -537,27 +532,21 @@ interface StageResult {
 function buildPlanningStage(userRequest: string, context: any): PipelineStage {
   const prompt = `${userRequest}
 
-TASK: Create a detailed PLAN and OUTLINE for this webpage.
+You are creating a plan that will be used by later stages. STRICTLY use the company/site context provided above (companyInfo, aiTraining, siteSettings). Reflect brand voice, services, service areas, phone, and guarantees. Do not invent facts.
 
-OUTPUT EXACTLY THIS JSON STRUCTURE (no markdown, no code blocks):
+TASK: Create a detailed PLAN and OUTLINE for this webpage tailored to the company.
+
+OUTPUT EXACTLY THIS JSON (no markdown, no code fences):
 {
-  "pageGoal": "One sentence describing the page's primary purpose",
-  "targetAudience": "Who is this page for?",
-  "keyMessage": "Main message to convey",
+  "pageGoal": "One sentence describing the page's primary purpose using company positioning",
+  "targetAudience": "Who this page targets based on service areas and audience",
+  "keyMessage": "Main brand message aligned to aiTraining.voice and USPs",
   "sections": [
-    {
-      "name": "Hero Section",
-      "purpose": "Grab attention and communicate value",
-      "content": "What specifically goes here"
-    },
-    {
-      "name": "Features/Benefits",
-      "purpose": "Show value propositions",
-      "content": "List key features or benefits"
-    }
+    { "name": "Hero", "purpose": "Immediate value + credibility", "content": "Key points to include" },
+    { "name": "Core Services", "purpose": "What we do", "content": "Bulleted list of services to feature" }
   ],
-  "ctaStrategy": "Where and how to place calls-to-action",
-  "visualStyle": "Describe the intended look and feel"
+  "ctaStrategy": "Where CTAs go and what they say (use openLeadFormModal)",
+  "visualStyle": "Intended look/feel consistent with siteSettings/theme"
 }`;
 
   return {
@@ -573,34 +562,19 @@ function buildContentStage(planResult: string, context: any): PipelineStage {
   const prompt = `Based on this PLAN:
 ${planResult}
 
+Use the full company/site context provided above (companyInfo, aiTraining, siteSettings). Write ALL copy in the brand voice. Use Handlebars variables for dynamic fields (e.g., {{company_name}}, {{phone}}, {{address_city}}).
+
 TASK: Write ALL the CONTENT and COPY for this webpage.
-
-Generate compelling, professional copy for:
-- Headlines and subheadlines
-- Body paragraphs
-- Feature descriptions
-- Call-to-action text
-- Any other text content
-
-Use the company information:
-- Business: ${context?.companyInfo?.business_name || 'N/A'}
-- Slogan: ${context?.companyInfo?.business_slogan || 'N/A'}
-- Location: ${context?.companyInfo?.address_city || 'N/A'}, ${context?.companyInfo?.address_state || 'N/A'}
 
 OUTPUT EXACTLY THIS JSON STRUCTURE:
 {
   "hero": {
-    "headline": "Main headline",
+    "headline": "Main headline with value",
     "subheadline": "Supporting text",
-    "ctaText": "Button text"
+    "ctaText": "Primary CTA"
   },
   "sections": [
-    {
-      "name": "Section name",
-      "headline": "Section headline",
-      "body": "Section body text",
-      "items": ["Item 1", "Item 2"]
-    }
+    { "name": "Section name", "headline": "Section headline", "body": "Section body text", "items": ["Item 1", "Item 2"] }
   ],
   "ctas": ["Primary CTA", "Secondary CTA"]
 }`;
@@ -621,20 +595,19 @@ ${planResult}
 And this CONTENT:
 ${contentResult}
 
-TASK: Create the COMPLETE HTML STRUCTURE with all the content integrated.
+TASK: Produce CONTENT-ONLY HTML that will be embedded inside the site shell.
 
 REQUIREMENTS:
-- Start with <!DOCTYPE html>
-- Include proper <head> with <meta> tags and <title>
-- Include Tailwind CSS: <script src="https://cdn.tailwindcss.com"></script>
-- Use semantic HTML5 tags: <header>, <main>, <section>, <article>, <footer>
-- Add placeholder images from Unsplash (use real photo IDs relevant to the industry)
-- Use Handlebars variables for dynamic content: {{business_name}}, {{phone}}, {{email}}, etc.
-- Add onclick="if(window.openLeadFormModal) window.openLeadFormModal('Form Title')" to CTA buttons
-- NO inline styles yet - just structure and Tailwind classes
-- Must be valid, complete HTML
+- Output MUST start with <main> and include only page content (no <!DOCTYPE>, <html>, <head>, <body>, <header>, <footer>, or <nav>)
+- Use semantic HTML5 inside <main> with <section>, <article>, etc.
+- Use Tailwind CSS utility classes only (no inline <style> or external CDNs)
+- Use Handlebars variables for all dynamic values (company, phone, service areas)
+- Use Lucide icons with data-lucide="icon-name"
+- All CTAs must call: onclick="if(window.openLeadFormModal) window.openLeadFormModal('...')"
+- All images must have descriptive alt text and loading="lazy"
+- Follow the design system via CSS variables where applicable
 
-OUTPUT: Raw HTML only, no markdown, no code blocks, no explanations.`;
+OUTPUT: Raw HTML snippet only, starting with <main>.`;
 
   return {
     name: 'HTML',
@@ -646,42 +619,19 @@ OUTPUT: Raw HTML only, no markdown, no code blocks, no explanations.`;
 
 // Stage 4: Styling & Polish - Add advanced CSS and visual effects
 function buildStylingStage(htmlResult: string, context: any): PipelineStage {
-  const themeColors = {
-    primary: context.theme?.primaryColor || '#4A90E2',
-    secondary: context.theme?.secondaryColor || '#50E3C2',
-    accent: context.theme?.accentColor || '#F5A623'
-  };
-
-  const prompt = `Given this HTML:
+  const prompt = `Given this CONTENT-ONLY HTML (starting with <main>):
 ${htmlResult.substring(0, 5000)}... (truncated)
 
-TASK: Enhance it with ADVANCED STYLING to make it look EXPENSIVE and PROFESSIONAL.
+TASK: Polish and enhance visual design using Tailwind utility classes ONLY.
 
-Add to the <head> section (before closing </head>):
-<style>
-  /* Custom styles here */
-  /* Use these brand colors: */
-  /* Primary: ${themeColors.primary} */
-  /* Secondary: ${themeColors.secondary} */
-  /* Accent: ${themeColors.accent} */
-  
-  /* Add: */
-  /* - Gradient backgrounds on hero sections */
-  /* - Box shadows on cards (0 10px 40px rgba(0,0,0,0.1)) */
-  /* - Hover effects with transforms and shadow changes */
-  /* - Smooth transitions (all 0.3s ease) */
-  /* - Border radius on all elements (16px minimum) */
-  /* - Responsive breakpoints (@media queries) */
-</style>
+RULES:
+- Do NOT add <!DOCTYPE>, <html>, <head>, <body>, <header>, <footer>, <style>, or external links
+- Keep the structure content-only and continue to start with <main>
+- Improve visual hierarchy, spacing, responsiveness, and accessibility
+- Use gradients, shadows, and rounded corners via Tailwind classes
+- Ensure all icons use data-lucide, all CTAs call openLeadFormModal, and all images have loading="lazy" with descriptive alt
 
-CRITICAL RULES:
-- Keep ALL existing HTML structure and content
-- Only add or enhance the <style> block in <head>
-- Make it look premium with gradients, shadows, animations
-- Ensure text has proper contrast
-- Add hover states to all interactive elements
-
-OUTPUT: Complete HTML with enhanced styles, no markdown, no code blocks.`;
+OUTPUT: The improved content-only HTML snippet (starting with <main>), no markdown.`;
 
   return {
     name: 'Styling',
@@ -715,7 +665,7 @@ async function executePipelineStage(
     model: 'claude-sonnet-4-5-20250929',
     max_tokens: stage.maxTokens,
     temperature: stage.temperature,
-    system: `You are an expert web designer. Follow instructions exactly. Be concise and precise.`,
+    system: `You are an expert web designer. Always return content-only HTML starting with <main> (no doctype/html/head/body/header/footer). Use Tailwind utilities, Lucide icons (data-lucide), and Handlebars variables.`,
     messages,
     stream: false
   };
