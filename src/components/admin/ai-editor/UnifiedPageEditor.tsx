@@ -558,6 +558,16 @@ const UnifiedPageEditor = ({
         mode: editorMode,
         model: aiModel
       },
+      pipeline: {
+        enabled: true,
+        stages: [
+          { stage: 1, name: "Planning", description: "Analyze requirements and create content strategy" },
+          { stage: 2, name: "Building Content", description: "Generate comprehensive page content" },
+          { stage: 3, name: "Creating HTML", description: "Convert content to structured HTML" },
+          { stage: 4, name: "Styling & Polish", description: "Apply design system and final refinements" }
+        ],
+        totalStages: 4
+      },
       conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
       context: {
         currentPage: {
