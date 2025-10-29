@@ -876,12 +876,23 @@ serve(async (req) => {
   try {
     const requestBody = await req.json();
     
-    // Handle new nested command structure
+    // Handle new nested command structure with proper fallbacks
     const commandObj = requestBody.command;
-    const command = typeof commandObj === 'string' ? commandObj : commandObj.text;
-    const mode = typeof commandObj === 'object' ? commandObj.mode : (requestBody.mode || 'build');
-    const model = typeof commandObj === 'object' ? commandObj.model : (requestBody.model || 'claude');
-    const { conversationHistory = [], context, userId } = requestBody;
+    const command = typeof commandObj === 'string' 
+      ? commandObj 
+      : (commandObj?.text || '');
+    const mode = commandObj?.mode || requestBody.mode || 'build';
+    const model = commandObj?.model || requestBody.model || 'claude';
+    const { conversationHistory = [], context, userId, pipeline } = requestBody;
+    
+    // Log pipeline info if present
+    if (pipeline?.enabled) {
+      console.log('🔄 Multi-stage Pipeline:', {
+        enabled: true,
+        totalStages: pipeline.totalStages,
+        stages: pipeline.stages?.map((s: any) => `${s.stage}. ${s.name}`)
+      });
+    }
     
     // Update metrics
     metrics.command = command.substring(0, 100);
