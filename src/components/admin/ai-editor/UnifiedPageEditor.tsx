@@ -5,7 +5,7 @@ import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
@@ -606,6 +606,7 @@ const UnifiedPageEditor = ({
       };
       
       setChatMessages(prev => [...prev, assistantMessage]);
+      setIsAiLoading(false);
     } catch (error: any) {
       console.error('AI Editor Error:', error);
       
@@ -1324,7 +1325,84 @@ const UnifiedPageEditor = ({
                         <div className="text-center text-muted-foreground py-12">
                           <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
                           <p className="text-lg font-medium">No Debug Data Yet</p>
-                          <p className="text-sm mt-2">Send a command to Claude to see the full request and response</p>
+                          <p className="text-sm mt-2">Send a command to the AI to see the full request and response</p>
+                        </div>
+                      ) : Array.isArray((debugData as any)?.stages) && (debugData as any).stages.length > 0 ? (
+                        <div className="space-y-4">
+                          <Tabs defaultValue={"0"}>
+                            <TabsList className="flex flex-wrap gap-2">
+                              {(debugData as any).stages.map((stage: any, idx: number) => (
+                                <TabsTrigger key={idx} value={String(idx)}>
+                                  {stage?.name || stage?.title || `Stage ${idx + 1}`}
+                                </TabsTrigger>
+                              ))}
+                            </TabsList>
+
+                            {(debugData as any).stages.map((stage: any, idx: number) => (
+                              <TabsContent key={idx} value={String(idx)}>
+                                <Accordion type="multiple" className="space-y-4 max-w-full">
+                                  <AccordionItem value={`prompt-${idx}`} className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
+                                    <AccordionTrigger className="px-4 hover:no-underline">
+                                      <div className="flex items-center gap-2">
+                                        <div className="h-6 w-1 bg-primary rounded-full" />
+                                        <h3 className="font-semibold">Full Prompt ({stage?.name || `Stage ${idx + 1}`})</h3>
+                                        {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                      <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
+{stage?.fullPrompt || stage?.prompt || ''}
+                                      </pre>
+                                    </AccordionContent>
+                                  </AccordionItem>
+
+                                  <AccordionItem value={`request-${idx}`} className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
+                                    <AccordionTrigger className="px-4 hover:no-underline">
+                                      <div className="flex items-center gap-2">
+                                        <div className="h-6 w-1 bg-blue-500 rounded-full" />
+                                        <h3 className="font-semibold">Request Context</h3>
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                      <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
+{JSON.stringify(stage?.requestPayload ?? stage?.request ?? {}, null, 2)}
+                                      </pre>
+                                    </AccordionContent>
+                                  </AccordionItem>
+
+                                  <AccordionItem value={`response-${idx}`} className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
+                                    <AccordionTrigger className="px-4 hover:no-underline">
+                                      <div className="flex items-center gap-2">
+                                        <div className="h-6 w-1 bg-green-500 rounded-full" />
+                                        <h3 className="font-semibold">Raw Response</h3>
+                                        {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                      <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
+{typeof stage?.responseData === 'string' ? stage?.responseData : JSON.stringify(stage?.responseData ?? stage?.response ?? {}, null, 2)}
+                                      </pre>
+                                    </AccordionContent>
+                                  </AccordionItem>
+
+                                  <AccordionItem value={`html-${idx}`} className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
+                                    <AccordionTrigger className="px-4 hover:no-underline">
+                                      <div className="flex items-center gap-2">
+                                        <div className="h-6 w-1 bg-orange-500 rounded-full" />
+                                        <h3 className="font-semibold">Generated HTML</h3>
+                                        {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
+                                      </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                      <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
+{stage?.generatedHtml || stage?.html || ''}
+                                      </pre>
+                                    </AccordionContent>
+                                  </AccordionItem>
+                                </Accordion>
+                              </TabsContent>
+                            ))}
+                          </Tabs>
                         </div>
                       ) : (
                         <Accordion 
