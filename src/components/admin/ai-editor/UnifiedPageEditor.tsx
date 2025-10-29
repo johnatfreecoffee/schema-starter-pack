@@ -611,12 +611,29 @@ const UnifiedPageEditor = ({
       console.error('AI Editor Error:', error);
       
       // Check for browser extension blocking the request
+      // Only flag as extension if we see actual evidence (chrome-extension://, frame_ant, etc.)
+      const stackTrace = error?.stack || '';
+      const contextStack = error?.context?.stack || '';
+      const errorMsg = error?.message || '';
+      const contextMessage = error?.context?.message || '';
+      
+      const hasExtensionEvidence = 
+        stackTrace.includes('chrome-extension://') ||
+        stackTrace.includes('moz-extension://') ||
+        stackTrace.includes('frame_ant') ||
+        contextStack.includes('chrome-extension://') ||
+        contextStack.includes('moz-extension://') ||
+        contextStack.includes('frame_ant') ||
+        errorMsg.includes('chrome-extension://') ||
+        contextMessage.includes('chrome-extension://');
+      
       if (
         error?.name === 'FunctionsFetchError' && 
         error?.context?.name === 'TypeError' && 
-        error?.context?.message === 'Failed to fetch'
+        error?.context?.message === 'Failed to fetch' &&
+        hasExtensionEvidence
       ) {
-        // This is likely a browser extension/ad-blocker interfering
+        // Confirmed browser extension/ad-blocker interfering
         toast({
           title: 'Request Blocked by Browser Extension',
           description: 'An ad-blocker or privacy extension is blocking this request. Please disable extensions for this site or try Incognito mode, then resend your message.',
