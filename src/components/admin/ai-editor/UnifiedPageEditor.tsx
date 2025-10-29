@@ -728,43 +728,22 @@ const UnifiedPageEditor = ({
         const errorMsg = error?.message || '';
         const contextMessage = error?.context?.message || '';
         
-        const hasExtensionEvidence = 
-          stackTrace.includes('chrome-extension://') ||
-          stackTrace.includes('moz-extension://') ||
-          contextStack.includes('chrome-extension://') ||
-          contextStack.includes('moz-extension://') ||
-          errorMsg.includes('chrome-extension://') ||
-          contextMessage.includes('chrome-extension://');
+        const hasExtensionEvidence = false; // Disabled unreliable extension detection
 
-        if (hasExtensionEvidence) {
-          // Actual browser extension interference
-          toast({
-            title: 'Request Blocked by Browser Extension',
-            description: 'A browser extension is blocking this request. Please disable extensions and try again.',
-            variant: 'destructive'
-          });
-          
-          const assistantError: ChatMessage = {
-            role: 'assistant',
-            content: `## 🚫 Request Blocked by Browser Extension\n\n**A browser extension is blocking the AI request.**\n\n**Quick fixes:**\n1. Disable browser extensions for this site\n2. Try Incognito/Private mode\n3. Whitelist this domain in your extension settings`
-          };
-          setChatMessages(prev => [...prev, assistantError]);
-          return;
-        } else {
-          // Network timeout without extension evidence - likely backend taking too long
-          toast({
-            title: 'Network Timeout',
-            description: 'The AI generation is taking too long. The multi-stage pipeline can take 2-3 minutes. Please try again.',
-            variant: 'destructive'
-          });
-          
-          const assistantError: ChatMessage = {
-            role: 'assistant',
-            content: `## ⏱️ Pipeline Timeout\n\n**The 4-stage generation pipeline exceeded the 5-minute timeout.**\n\nThe AI pipeline takes 3-4 minutes for complex pages. This timeout may occur due to:\n\n- High server load\n- Very complex page requirements\n- Network latency\n\n**Solutions:**\n1. **Try again** - server load may be lower\n2. **Simplify your request** - ask for smaller, incremental changes\n3. **Break it down** - make one section at a time\n\n**Note:** The pipeline runs 4 stages: Planning → Content → HTML → Styling`
-          };
-          setChatMessages(prev => [...prev, assistantError]);
-          return;
-        }
+        // Always treat as network timeout without blaming extensions
+        toast({
+          title: 'Network Timeout',
+          description: 'The AI generation took too long or the network dropped. Retrying often works; we’re improving reliability.',
+          variant: 'destructive'
+        });
+        
+        const assistantError: ChatMessage = {
+          role: 'assistant',
+          content: `## ⏱️ Pipeline Timeout\n\nThe generation likely exceeded the client timeout or the network dropped. Technical details are included below.`
+        };
+        setChatMessages(prev => [...prev, assistantError]);
+        // Note: do NOT return here so we can include full technical details below
+
       }
       
       // Extract detailed error information
