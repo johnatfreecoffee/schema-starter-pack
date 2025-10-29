@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { callEdgeFunction } from '@/utils/callEdgeFunction';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -151,7 +152,8 @@ Generate the following in JSON format:
 
 Return ONLY valid JSON, no markdown or explanations.`;
 
-      const { data, error } = await supabase.functions.invoke('ai-edit-page', {
+      const data = await callEdgeFunction<{ updatedHtml?: string }>({
+        name: 'ai-edit-page',
         body: {
           command: prompt,
           context: {
@@ -160,9 +162,8 @@ Return ONLY valid JSON, no markdown or explanations.`;
             aiTraining: aiTraining,
           },
         },
+        timeoutMs: 180000,
       });
-
-      if (error) throw error;
 
       // Try to parse AI response as JSON
       try {

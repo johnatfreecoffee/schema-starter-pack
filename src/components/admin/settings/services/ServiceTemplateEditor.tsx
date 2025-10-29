@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { callEdgeFunction } from '@/utils/callEdgeFunction';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -196,7 +197,8 @@ const ServiceTemplateEditor = ({ service, onClose }: ServiceTemplateEditorProps)
     setAiPrompt('');
 
     try {
-      const { data, error } = await supabase.functions.invoke('ai-edit-page', {
+      const data = await callEdgeFunction<{ updatedHtml?: string; explanation?: string }>({
+        name: 'ai-edit-page',
         body: {
           command: aiPrompt,
           context: {
@@ -209,14 +211,13 @@ const ServiceTemplateEditor = ({ service, onClose }: ServiceTemplateEditorProps)
             aiTraining: aiTraining,
           },
         },
+        timeoutMs: 180000,
       });
-
-      if (error) throw error;
 
       const assistantMessage: ChatMessage = {
         role: 'assistant',
-        content: data.explanation || 'I\'ve updated the template based on your request.',
-        suggestion: data.updatedHtml,
+        content: (data as any).explanation || 'I\'ve updated the template based on your request.',
+        suggestion: (data as any).updatedHtml,
       };
       setChatMessages(prev => [...prev, assistantMessage]);
     } catch (error: any) {

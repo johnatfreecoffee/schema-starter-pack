@@ -8,6 +8,7 @@ import PagePreview from './PagePreview';
 import EditHistory from './EditHistory';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
+import { callEdgeFunction } from '@/utils/callEdgeFunction';
 
 interface AIPageEditorProps {
   open: boolean;
@@ -62,11 +63,11 @@ const AIPageEditor = ({
       };
 
       // Call AI edit function
-      const { data, error } = await supabase.functions.invoke('ai-edit-page', {
-        body: { command, context }
+      const data = await callEdgeFunction<{ updatedHtml: string; explanation?: string }>({
+        name: 'ai-edit-page',
+        body: { command, context },
+        timeoutMs: 180000,
       });
-
-      if (error) throw error;
 
       const { updatedHtml } = data;
       setPreviewContent(updatedHtml);
@@ -117,21 +118,15 @@ const AIPageEditor = ({
         description: 'Running quality checks',
       });
 
-      const { data: validated, error: validateError } = await supabase.functions.invoke(
-        'validate-and-fix-html',
-        {
-          body: {
-            html: currentContent,
-            pageType,
-            pageTitle
-          }
-        }
-      );
-
-      if (validateError) {
-        console.error('Validation error:', validateError);
-        throw new Error('Failed to validate HTML');
-      }
+      const validated = await callEdgeFunction<{ fixedHtml: string; issuesFixed?: string[] }>({
+        name: 'validate-and-fix-html',
+        body: {
+          html: currentContent,
+          pageType,
+          pageTitle,
+        },
+        timeoutMs: 120000,
+      });
 
       const finalHtml = validated.fixedHtml;
 
