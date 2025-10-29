@@ -525,6 +525,12 @@ interface StageResult {
   content: string;
   tokens: { input: number; output: number };
   duration: number;
+  debug: {
+    fullPrompt: string;
+    requestPayload: any;
+    responseData: any;
+    generatedHtml: string;
+  };
 }
 
 // Stage 1: Planning - Create structure and outline
@@ -699,10 +705,20 @@ async function executePipelineStage(
   console.log(`Max tokens: ${stage.maxTokens}`);
   console.log(`Temperature: ${stage.temperature}`);
   
+  const fullPrompt = staticContext + '\n\n' + stage.prompt;
   const messages = [{
     role: 'user' as const,
-    content: staticContext + '\n\n' + stage.prompt
+    content: fullPrompt
   }];
+  
+  const requestPayload = {
+    model: 'claude-sonnet-4-5-20250929',
+    max_tokens: stage.maxTokens,
+    temperature: stage.temperature,
+    system: `You are an expert web designer. Follow instructions exactly. Be concise and precise.`,
+    messages,
+    stream: false
+  };
   
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -711,14 +727,7 @@ async function executePipelineStage(
       'anthropic-version': '2023-06-01',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-5-20250929',
-      max_tokens: stage.maxTokens,
-      temperature: stage.temperature,
-      system: `You are an expert web designer. Follow instructions exactly. Be concise and precise.`,
-      messages,
-      stream: false
-    })
+    body: JSON.stringify(requestPayload)
   });
   
   if (!response.ok) {
@@ -741,7 +750,13 @@ async function executePipelineStage(
       input: data.usage.input_tokens,
       output: data.usage.output_tokens
     },
-    duration
+    duration,
+    debug: {
+      fullPrompt,
+      requestPayload,
+      responseData: data,
+      generatedHtml: content
+    }
   };
 }
 
@@ -765,28 +780,44 @@ async function executeMultiStagePipeline(
     // Stage 1: Planning
     const planStage = buildPlanningStage(userRequest, context);
     const planResult = await executePipelineStage(planStage, staticContext, apiKey);
-    stagesData.push({ stage: 'Planning', ...planResult });
+    stagesData.push({ 
+      name: 'Planning', 
+      stage: 'Planning', 
+      ...planResult 
+    });
     totalInputTokens += planResult.tokens.input;
     totalOutputTokens += planResult.tokens.output;
     
     // Stage 2: Content
     const contentStage = buildContentStage(planResult.content, context);
     const contentResult = await executePipelineStage(contentStage, staticContext, apiKey);
-    stagesData.push({ stage: 'Content', ...contentResult });
+    stagesData.push({ 
+      name: 'Building Content', 
+      stage: 'Content', 
+      ...contentResult 
+    });
     totalInputTokens += contentResult.tokens.input;
     totalOutputTokens += contentResult.tokens.output;
     
     // Stage 3: HTML Structure
     const htmlStage = buildHTMLStage(planResult.content, contentResult.content, context);
     const htmlResult = await executePipelineStage(htmlStage, staticContext, apiKey);
-    stagesData.push({ stage: 'HTML', ...htmlResult });
+    stagesData.push({ 
+      name: 'Creating HTML', 
+      stage: 'HTML', 
+      ...htmlResult 
+    });
     totalInputTokens += htmlResult.tokens.input;
     totalOutputTokens += htmlResult.tokens.output;
     
     // Stage 4: Styling & Polish
     const stylingStage = buildStylingStage(htmlResult.content, context);
     const stylingResult = await executePipelineStage(stylingStage, staticContext, apiKey);
-    stagesData.push({ stage: 'Styling', ...stylingResult });
+    stagesData.push({ 
+      name: 'Styling & Polish', 
+      stage: 'Styling', 
+      ...stylingResult 
+    });
     totalInputTokens += stylingResult.tokens.input;
     totalOutputTokens += stylingResult.tokens.output;
     
@@ -1833,7 +1864,15 @@ ${buildThemeContext(context)}
         })) : undefined
       },
       mode,
-      debug: {
+      debug: pipelineStages.length > 0 ? {
+        stages: pipelineStages.map(s => ({
+          name: s.name || s.stage,
+          fullPrompt: s.debug.fullPrompt,
+          requestPayload: s.debug.requestPayload,
+          responseData: s.debug.responseData,
+          generatedHtml: s.debug.generatedHtml
+        }))
+      } : {
         commandLength: command.length,
         htmlLength: updatedHtml.length,
         stopReason: metrics.stopReason
