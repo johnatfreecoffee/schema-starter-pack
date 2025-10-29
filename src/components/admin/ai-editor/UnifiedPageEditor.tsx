@@ -17,6 +17,7 @@ import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
 import TruncatedMessage from './TruncatedMessage';
 import PreviewIframe from './PreviewIframe';
+import { PipelineProgressIndicator } from './PipelineProgressIndicator';
 interface UnifiedPageEditorProps {
   open: boolean;
   onClose: () => void;
@@ -1156,10 +1157,11 @@ const UnifiedPageEditor = ({
                   </div> : chatMessages.map((msg, idx) => <div key={idx} className={`p-3 rounded-lg max-w-full overflow-hidden break-words ${msg.role === 'user' ? 'bg-primary text-primary-foreground ml-8' : 'bg-muted mr-8'}`}>
                       <TruncatedMessage content={msg.content} isUser={msg.role === 'user'} />
                     </div>)}
-                {isAiLoading && <div className="flex items-center gap-2 text-muted-foreground p-3">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="text-sm">AI is working...</span>
-                  </div>}
+                {isAiLoading && (
+                  <div className="p-3">
+                    <PipelineProgressIndicator isProcessing={isAiLoading} />
+                  </div>
+                )}
                 <div ref={chatEndRef} className="h-1" />
               </div>
             </ScrollArea>
