@@ -743,6 +743,10 @@ async function executePipelineStage(
   console.log(`📊 Input tokens: ${data.usage.input_tokens}`);
   console.log(`📊 Output tokens: ${data.usage.output_tokens}`);
   console.log(`📝 Output length: ${content.length} chars`);
+  console.log('\n📄 STAGE OUTPUT PREVIEW:');
+  console.log('─'.repeat(60));
+  console.log(content.substring(0, 800) + (content.length > 800 ? '\n... (truncated, full output is ' + content.length + ' chars)' : ''));
+  console.log('─'.repeat(60));
   
   return {
     content,
@@ -778,6 +782,7 @@ async function executeMultiStagePipeline(
   
   try {
     // Stage 1: Planning
+    console.log('\n🎯 STAGE 1: Planning');
     const planStage = buildPlanningStage(userRequest, context);
     const planResult = await executePipelineStage(planStage, staticContext, apiKey);
     stagesData.push({ 
@@ -789,6 +794,12 @@ async function executeMultiStagePipeline(
     totalOutputTokens += planResult.tokens.output;
     
     // Stage 2: Content
+    console.log('\n📝 STAGE 2: Building Content');
+    console.log('📥 INPUT FROM PLANNING STAGE:');
+    console.log('─'.repeat(60));
+    console.log(planResult.content.substring(0, 600) + (planResult.content.length > 600 ? '...' : ''));
+    console.log('─'.repeat(60));
+    
     const contentStage = buildContentStage(planResult.content, context);
     const contentResult = await executePipelineStage(contentStage, staticContext, apiKey);
     stagesData.push({ 
@@ -800,6 +811,12 @@ async function executeMultiStagePipeline(
     totalOutputTokens += contentResult.tokens.output;
     
     // Stage 3: HTML Structure
+    console.log('\n🏗️ STAGE 3: Creating HTML');
+    console.log('📥 INPUT FROM CONTENT STAGE:');
+    console.log('─'.repeat(60));
+    console.log(contentResult.content.substring(0, 600) + (contentResult.content.length > 600 ? '...' : ''));
+    console.log('─'.repeat(60));
+    
     const htmlStage = buildHTMLStage(planResult.content, contentResult.content, context);
     const htmlResult = await executePipelineStage(htmlStage, staticContext, apiKey);
     stagesData.push({ 
@@ -811,6 +828,12 @@ async function executeMultiStagePipeline(
     totalOutputTokens += htmlResult.tokens.output;
     
     // Stage 4: Styling & Polish
+    console.log('\n🎨 STAGE 4: Styling & Polish');
+    console.log('📥 INPUT FROM HTML STAGE:');
+    console.log('─'.repeat(60));
+    console.log(htmlResult.content.substring(0, 600) + (htmlResult.content.length > 600 ? '...' : ''));
+    console.log('─'.repeat(60));
+    
     const stylingStage = buildStylingStage(htmlResult.content, context);
     const stylingResult = await executePipelineStage(stylingStage, staticContext, apiKey);
     stagesData.push({ 
