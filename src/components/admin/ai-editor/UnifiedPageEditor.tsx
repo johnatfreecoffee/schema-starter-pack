@@ -552,7 +552,7 @@ const UnifiedPageEditor = ({
     setIsAiLoading(true);
 
     // Prepare request context for debug display
-    const requestContext = {
+    const requestBody = {
       command: {
         text: currentCommand,
         mode: editorMode,
@@ -576,6 +576,28 @@ const UnifiedPageEditor = ({
         companyInfo: companySettings,
         aiTraining: aiTraining,
         siteSettings: siteSettings
+      },
+      userId: user?.id
+    };
+
+    // Capture complete HTTP request details
+    const requestContext = {
+      http: {
+        method: 'POST',
+        endpoint: `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-edit-page`,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': session?.access_token ? `Bearer [REDACTED - Token Present]` : '[NOT PRESENT]',
+          'apikey': '[REDACTED - Anon Key Present]'
+        },
+        timeout: '300000ms (5 minutes)'
+      },
+      body: requestBody,
+      metadata: {
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        pageUrl: window.location.href,
+        editorVersion: '4.0 (Multi-stage Pipeline)'
       }
     };
 
