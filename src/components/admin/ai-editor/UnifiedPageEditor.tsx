@@ -606,7 +606,6 @@ const UnifiedPageEditor = ({
       };
       
       setChatMessages(prev => [...prev, assistantMessage]);
-      setIsAiLoading(false);
     } catch (error: any) {
       console.error('AI Editor Error:', error);
       
@@ -645,7 +644,6 @@ const UnifiedPageEditor = ({
           content: `## 🚫 Request Blocked by Browser Extension\n\n**A browser extension is blocking the AI request.**\n\nThis usually happens when:\n- Ad-blockers are interfering with network requests\n- Privacy extensions are blocking third-party requests\n- Security extensions are filtering connections\n\n**Quick fixes:**\n1. **Disable browser extensions** for this site temporarily\n2. Try using **Incognito/Private mode**\n3. Whitelist this domain in your extension settings\n4. **Resend your message** after adjusting settings\n\nThe backend service is healthy—this is a client-side browser extension issue.`
         };
         setChatMessages(prev => [...prev, assistantError]);
-        setIsAiLoading(false);
         return;
       }
       
