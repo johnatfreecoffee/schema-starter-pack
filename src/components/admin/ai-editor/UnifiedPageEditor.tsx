@@ -149,6 +149,8 @@ const UnifiedPageEditor = ({
       requestPayload?: any;
       responseData?: any;
       generatedHtml?: string;
+      completed?: boolean;
+      current?: boolean;
       debug?: {
         fullPrompt?: string;
         requestPayload?: any;
@@ -161,6 +163,16 @@ const UnifiedPageEditor = ({
     responseData?: any;
     generatedHtml?: string;
   } | null>(null);
+  const [pipelineStages, setPipelineStages] = useState<Array<{
+    name: string;
+    completed: boolean;
+    current: boolean;
+  }>>([
+    { name: 'Planning', completed: false, current: false },
+    { name: 'Building Content', completed: false, current: false },
+    { name: 'Creating HTML', completed: false, current: false },
+    { name: 'Styling & Polish', completed: false, current: false }
+  ]);
   const [inputTokenCount, setInputTokenCount] = useState(0);
   const [debugAccordionValue, setDebugAccordionValue] = useState<string[]>(() => {
     const saved = localStorage.getItem('ai-editor-debug-accordion');
@@ -612,7 +624,7 @@ const UnifiedPageEditor = ({
       }
     };
 
-    // Show request data immediately in debug panel
+    // Show request data immediately in debug panel and reset pipeline stages
     const baseDebug = {
       fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nModel: ${aiModel}\nPage Type: ${pageType}`,
       requestPayload: requestContext,
@@ -622,9 +634,21 @@ const UnifiedPageEditor = ({
     const stageNames = ["Planning","Building Content","Creating HTML","Styling & Polish"];
     const stagedDebug = {
       ...baseDebug,
-      stages: stageNames.map(name => ({ name, debug: baseDebug }))
+      stages: stageNames.map((name, idx) => ({ 
+        name, 
+        debug: baseDebug,
+        completed: false,
+        current: idx === 0
+      }))
     };
     setDebugData(stagedDebug);
+    
+    // Reset pipeline stages to show first stage as current
+    setPipelineStages(stageNames.map((name, idx) => ({
+      name,
+      completed: false,
+      current: idx === 0
+    })));
     
     try {
       
@@ -665,7 +689,7 @@ const UnifiedPageEditor = ({
         setIsShowingPrevious(false);
       }
 
-      // Store debug data - ensure stages for UI
+      // Store debug data - ensure stages for UI with completion tracking
       if (data?.debug) {
         const incoming: any = data.debug;
         const hasStages = Array.isArray(incoming?.stages) && incoming.stages.length > 0;
@@ -676,16 +700,35 @@ const UnifiedPageEditor = ({
           generatedHtml: incoming.generatedHtml ?? incoming?.debug?.generatedHtml,
         };
         const stageNames = ["Planning","Building Content","Creating HTML","Styling & Polish"];
-        const normalized = hasStages ? incoming : {
+        const normalized = hasStages ? {
+          ...incoming,
+          stages: incoming.stages.map((stage: any, idx: number) => ({
+            ...stage,
+            completed: true,
+            current: false
+          }))
+        } : {
           ...incoming,
           ...baseDebug,
           stages: stageNames.map((name: string, idx: number) => {
             const stage = incoming?.stages?.[idx];
-            return stage ? stage : { name, debug: baseDebug };
+            return stage ? { 
+              ...stage, 
+              completed: true, 
+              current: false 
+            } : { 
+              name, 
+              debug: baseDebug,
+              completed: false,
+              current: false
+            };
           }),
         };
         setDebugData(normalized);
         saveDebugData(normalized, pageType, pageId);
+        
+        // Mark all stages as completed in pipeline tracker
+        setPipelineStages(prev => prev.map(s => ({ ...s, completed: true, current: false })));
       }
       
       const assistantMessage: ChatMessage = {
@@ -1296,7 +1339,7 @@ const UnifiedPageEditor = ({
                     </div>)}
                 {isAiLoading && (
                   <div className="p-3">
-                    <PipelineProgressIndicator isProcessing={isAiLoading} />
+                    <PipelineProgressIndicator isProcessing={isAiLoading} stages={pipelineStages} />
                   </div>
                 )}
                 <div ref={chatEndRef} className="h-1" />
@@ -1489,7 +1532,7 @@ const UnifiedPageEditor = ({
                                     </AccordionContent>
                                   </AccordionItem>
 
-                                  <AccordionItem value={`response-${idx}`} className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
+                                   <AccordionItem value={`response-${idx}`} className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
                                     <AccordionTrigger className="px-4 hover:no-underline">
                                       <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center gap-2">
@@ -1519,9 +1562,27 @@ const UnifiedPageEditor = ({
                                       </div>
                                     </AccordionTrigger>
                                     <AccordionContent>
-                                      <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
+                                      <div className="space-y-4 p-4">
+                                        <div>
+                                          <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Response Data:</h4>
+                                          <pre className="overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[200px] bg-muted/30 rounded p-3">
 {typeof (stage?.debug?.responseData ?? stage?.responseData) === 'string' ? (stage?.debug?.responseData ?? stage?.responseData) : JSON.stringify(stage?.debug?.responseData ?? stage?.responseData ?? stage?.response ?? {}, null, 2)}
-                                      </pre>
+                                          </pre>
+                                        </div>
+                                        {(stage?.debug?.generatedHtml ?? stage?.generatedHtml) && (
+                                          <div>
+                                            <h4 className="text-sm font-semibold mb-2 text-muted-foreground">
+                                              {idx === 0 ? 'Generated Plan:' : 
+                                               idx === 1 ? 'Generated Content:' :
+                                               idx === 2 ? 'Generated HTML:' :
+                                               'Styled HTML:'}
+                                            </h4>
+                                            <pre className="overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded p-3">
+{stage?.debug?.generatedHtml ?? stage?.generatedHtml}
+                                            </pre>
+                                          </div>
+                                        )}
+                                      </div>
                                     </AccordionContent>
                                   </AccordionItem>
                                 </Accordion>

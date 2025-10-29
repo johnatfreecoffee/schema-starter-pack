@@ -1,53 +1,28 @@
 import { Loader2, CheckCircle2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 interface PipelineProgressIndicatorProps {
   isProcessing: boolean;
+  stages?: Array<{
+    name: string;
+    completed?: boolean;
+    current?: boolean;
+  }>;
 }
 
-const STAGES = [
-  { id: 1, name: 'Planning', duration: 8000 },
-  { id: 2, name: 'Building Content', duration: 12000 },
-  { id: 3, name: 'Creating HTML', duration: 10000 },
-  { id: 4, name: 'Styling & Polish', duration: 10000 }
+const DEFAULT_STAGES = [
+  { id: 1, name: 'Planning' },
+  { id: 2, name: 'Building Content' },
+  { id: 3, name: 'Creating HTML' },
+  { id: 4, name: 'Styling & Polish' }
 ];
 
-export function PipelineProgressIndicator({ isProcessing }: PipelineProgressIndicatorProps) {
-  const [currentStage, setCurrentStage] = useState(0);
-  const [completedStages, setCompletedStages] = useState<number[]>([]);
-
-  useEffect(() => {
-    if (!isProcessing) {
-      setCurrentStage(0);
-      setCompletedStages([]);
-      return;
-    }
-
-    // Start from stage 0
-    setCurrentStage(0);
-    setCompletedStages([]);
-
-    let cumulativeTime = 0;
-    const timeouts: NodeJS.Timeout[] = [];
-
-    STAGES.forEach((stage, index) => {
-      cumulativeTime += stage.duration;
-      
-      const timeout = setTimeout(() => {
-        setCompletedStages(prev => [...prev, stage.id]);
-        
-        if (index < STAGES.length - 1) {
-          setCurrentStage(index + 1);
-        }
-      }, cumulativeTime);
-      
-      timeouts.push(timeout);
-    });
-
-    return () => {
-      timeouts.forEach(timeout => clearTimeout(timeout));
-    };
-  }, [isProcessing]);
+export function PipelineProgressIndicator({ isProcessing, stages: customStages }: PipelineProgressIndicatorProps) {
+  // Use custom stages if provided, otherwise use defaults
+  const stages = customStages || DEFAULT_STAGES.map(s => ({ 
+    name: s.name, 
+    completed: false, 
+    current: false 
+  }));
 
   if (!isProcessing) return null;
 
@@ -59,14 +34,13 @@ export function PipelineProgressIndicator({ isProcessing }: PipelineProgressIndi
       </div>
       
       <div className="space-y-2">
-        {STAGES.map((stage, index) => {
-          const isCompleted = completedStages.includes(stage.id);
-          const isCurrent = currentStage === index;
-          const isPending = !isCompleted && !isCurrent;
+        {stages.map((stage, index) => {
+          const isCompleted = stage.completed || false;
+          const isCurrent = stage.current || false;
 
           return (
             <div
-              key={stage.id}
+              key={index}
               className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 ${
                 isCurrent 
                   ? 'bg-primary/10 border border-primary/20 scale-[1.02]' 
@@ -82,7 +56,7 @@ export function PipelineProgressIndicator({ isProcessing }: PipelineProgressIndi
                   <Loader2 className="h-5 w-5 text-primary animate-spin" />
                 ) : (
                   <div className="h-5 w-5 rounded-full border-2 border-muted-foreground/30 flex items-center justify-center">
-                    <span className="text-xs text-muted-foreground/60">{stage.id}</span>
+                    <span className="text-xs text-muted-foreground/60">{index + 1}</span>
                   </div>
                 )}
               </div>
