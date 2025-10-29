@@ -398,7 +398,20 @@ const UnifiedPageEditor = ({
       }
       
       if (savedDebug) {
-        setDebugData(savedDebug);
+        const hasStages = Array.isArray((savedDebug as any)?.stages) && (savedDebug as any).stages.length > 0;
+        const baseDebug: any = {
+          fullPrompt: (savedDebug as any).fullPrompt,
+          requestPayload: (savedDebug as any).requestPayload,
+          responseData: (savedDebug as any).responseData,
+          generatedHtml: (savedDebug as any).generatedHtml,
+        };
+        const stageNames = ["Planning","Building Content","Creating HTML","Styling & Polish"];
+        const normalized = hasStages ? savedDebug : {
+          ...(savedDebug as any),
+          ...baseDebug,
+          stages: stageNames.map((name: string) => ({ name, debug: baseDebug })),
+        };
+        setDebugData(normalized);
       }
       
       hasLoadedHistory.current = true;
@@ -564,12 +577,18 @@ const UnifiedPageEditor = ({
     };
 
     // Show request data immediately in debug panel
-    setDebugData({
+    const baseDebug = {
       fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nModel: ${aiModel}\nPage Type: ${pageType}`,
       requestPayload: requestContext,
       responseData: { status: `Waiting for ${aiModel === 'grok' ? 'Grok' : 'Claude'} response...` },
       generatedHtml: 'Waiting for response...'
-    });
+    };
+    const stageNames = ["Planning","Building Content","Creating HTML","Styling & Polish"];
+    const stagedDebug = {
+      ...baseDebug,
+      stages: stageNames.map(name => ({ name, debug: baseDebug }))
+    };
+    setDebugData(stagedDebug);
     
     try {
       
@@ -607,10 +626,27 @@ const UnifiedPageEditor = ({
         setIsShowingPrevious(false);
       }
 
-      // Store debug data
+      // Store debug data - ensure stages for UI
       if (data?.debug) {
-        setDebugData(data.debug);
-        saveDebugData(data.debug, pageType, pageId);
+        const incoming: any = data.debug;
+        const hasStages = Array.isArray(incoming?.stages) && incoming.stages.length > 0;
+        const baseDebug = {
+          fullPrompt: incoming.fullPrompt ?? incoming?.debug?.fullPrompt,
+          requestPayload: incoming.requestPayload ?? incoming?.debug?.requestPayload,
+          responseData: incoming.responseData ?? incoming?.debug?.responseData,
+          generatedHtml: incoming.generatedHtml ?? incoming?.debug?.generatedHtml,
+        };
+        const stageNames = ["Planning","Building Content","Creating HTML","Styling & Polish"];
+        const normalized = hasStages ? incoming : {
+          ...incoming,
+          ...baseDebug,
+          stages: stageNames.map((name: string, idx: number) => {
+            const stage = incoming?.stages?.[idx];
+            return stage ? stage : { name, debug: baseDebug };
+          }),
+        };
+        setDebugData(normalized);
+        saveDebugData(normalized, pageType, pageId);
       }
       
       const assistantMessage: ChatMessage = {
@@ -1388,7 +1424,7 @@ const UnifiedPageEditor = ({
                                     <AccordionTrigger className="px-4 hover:no-underline">
                                       <div className="flex items-center gap-2">
                                         <div className="h-6 w-1 bg-blue-500 rounded-full" />
-                                        <h3 className="font-semibold">Request content</h3>
+                                        <h3 className="font-semibold">Request Context</h3>
                                       </div>
                                     </AccordionTrigger>
                                     <AccordionContent>
@@ -1447,7 +1483,7 @@ const UnifiedPageEditor = ({
                               <div className="flex items-center justify-between w-full">
                                 <div className="flex items-center gap-2">
                                   <div className="h-6 w-1 bg-primary rounded-full" />
-                                  <h3 className="font-semibold">Full Prompt Sent to Claude</h3>
+                                  <h3 className="font-semibold">Prompt Sent</h3>
                                   {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
                                 </div>
                                 <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
@@ -1522,7 +1558,7 @@ const UnifiedPageEditor = ({
                               <div className="flex items-center justify-between w-full">
                                 <div className="flex items-center gap-2">
                                   <div className="h-6 w-1 bg-green-500 rounded-full" />
-                                  <h3 className="font-semibold">Claude's Raw Response</h3>
+                                  <h3 className="font-semibold">AI Response</h3>
                                   {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
                                 </div>
                                 <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
