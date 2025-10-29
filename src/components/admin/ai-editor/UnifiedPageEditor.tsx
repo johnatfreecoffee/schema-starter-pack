@@ -996,7 +996,7 @@ const UnifiedPageEditor = ({
       </Dialog>;
   }
   return <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] h-[90vh] p-0 overflow-hidden">
+      <DialogContent className="max-w-[95vw] h-[90vh] p-0 overflow-hidden flex flex-col">
         <DialogHeader className="px-6 py-4 border-b">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 flex-1">
@@ -1044,7 +1044,7 @@ const UnifiedPageEditor = ({
           </div>
         </DialogHeader>
 
-        <div className="flex h-[calc(100%-80px)] overflow-hidden">
+        <div className="flex flex-1 overflow-hidden">
           {/* Left Panel - AI Chat */}
           <div className="w-2/5 border-r flex flex-col min-h-0">
             <div className="p-4 border-b flex-shrink-0 overflow-y-auto max-h-[40vh]">
@@ -1166,7 +1166,7 @@ const UnifiedPageEditor = ({
               </div>
             </ScrollArea>
 
-            <div className="p-4 border-t space-y-2 flex-shrink-0 bg-background">
+            <div className="p-4 border-t space-y-2 flex-shrink-0 bg-background pb-2">
               <div className="flex gap-2 mb-2">
                 <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
               </div>
