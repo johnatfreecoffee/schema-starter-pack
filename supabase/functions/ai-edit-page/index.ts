@@ -583,9 +583,9 @@ Generate compelling, professional copy for:
 - Any other text content
 
 Use the company information:
-- Business: ${context.companyInfo?.business_name || 'N/A'}
-- Slogan: ${context.companyInfo?.business_slogan || 'N/A'}
-- Location: ${context.companyInfo?.address_city || 'N/A'}, ${context.companyInfo?.address_state || 'N/A'}
+- Business: ${context?.companyInfo?.business_name || 'N/A'}
+- Slogan: ${context?.companyInfo?.business_slogan || 'N/A'}
+- Location: ${context?.companyInfo?.address_city || 'N/A'}, ${context?.companyInfo?.address_state || 'N/A'}
 
 OUTPUT EXACTLY THIS JSON STRUCTURE:
 {
@@ -1105,7 +1105,7 @@ serve(async (req) => {
     // System instructions = Rules and guidelines (not counted in tokens)
     // ========================================================================
     
-    const companyId = context.companyInfo?.id || 'default';
+    const companyId = context?.companyInfo?.id || 'default';
     
     // PHASE 1: System instructions (FREE - not counted in token usage)
 const systemInstructions = `
@@ -1461,20 +1461,20 @@ Remember: Create STUNNING, IMPRESSIVE pages that look like they cost $10,000 to 
 ${buildCriticalContext(context)}
 ${buildImportantContext(context)}
 ${buildSupplementaryContext(context)}
-${buildServiceContext(context.serviceInfo)}
-${buildThemeContext(context)}
+${buildServiceContext(context?.serviceInfo)}
+${buildThemeContext(context || {})}
 `.trim();
 
     // Build dynamic context (current request, not cached)
     // PHASE 2: No longer concatenate history as text - will use proper multi-turn format
     let dynamicContext = `\nUSER REQUEST: ${command}\n`;
     
-    if (context.currentPage?.html) {
+    if (context?.currentPage?.html) {
       const htmlPreview = context.currentPage.html.substring(0, 3000);
       dynamicContext += `\nCURRENT PAGE HTML (first 3000 chars):\n${htmlPreview}\n`;
     }
     
-    if (context.currentPage?.pageType) {
+    if (context?.currentPage?.pageType) {
       dynamicContext += `\nPAGE TYPE: ${context.currentPage.pageType}\n`;
     }
 
