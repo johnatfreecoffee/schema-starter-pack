@@ -652,19 +652,34 @@ const UnifiedPageEditor = ({
     
     try {
       
-      // Add timeout to the edge function call (5 minutes for multi-stage pipeline)
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('AI_EDITOR_TIMEOUT')), 300000);
+      // Create AbortController for custom timeout (2 minutes - edge function takes ~70s)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000);
+
+      // Make direct HTTP call to bypass Supabase client's 120s timeout limitation
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tkrcdxkdfjeupbdlbcfz.supabase.co';
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      
+      const response = await fetch(`${supabaseUrl}/functions/v1/ai-edit-page`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': supabaseAnonKey
+        },
+        body: JSON.stringify(requestBody),
+        signal: controller.signal
       });
 
-      // Create a promise that invokes the edge function
-      // Note: Supabase client has built-in 120s timeout, but the 4-stage pipeline needs more time
-      // We'll let it run and handle timeout at the Promise.race level below
-      const invokePromise = supabase.functions.invoke('ai-edit-page', {
-        body: requestBody,
-      });
+      clearTimeout(timeoutId);
 
-      const { data, error } = await Promise.race([invokePromise, timeoutPromise]) as any;
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Edge function error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      const error = null;
 
       if (error) throw error;
       
