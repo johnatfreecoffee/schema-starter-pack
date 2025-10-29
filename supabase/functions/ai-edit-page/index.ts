@@ -471,18 +471,350 @@ interface ConversationTurn {
   html?: string;
 }
 
-// PHASE 5: Conversation pruning to prevent token bloat
-function pruneConversationHistory(
-  history: ConversationTurn[], 
-  maxTurns: number = 5
-): ConversationTurn[] {
-  if (history.length <= maxTurns) {
-    return history;
+// ========================================================================
+// MULTI-STAGE PIPELINE: Sequential AI Calls for Better Quality
+// ========================================================================
+
+function buildProperChatHistory(
+  history: ConversationTurn[],
+  currentRequest: string,
+  currentPageHtml?: string,
+  pageType?: string
+): Array<{ role: 'user' | 'assistant'; content: string }> {
+  const messages: Array<{ role: 'user' | 'assistant'; content: string }> = [];
+  
+  for (const turn of history) {
+    const userMessage = turn.userMessage || turn.command;
+    if (userMessage) {
+      messages.push({ role: 'user', content: userMessage });
+    }
+    
+    if (turn.modelResponse || turn.html) {
+      const response = turn.modelResponse || `Generated HTML (${(turn.html || '').length} chars)`;
+      messages.push({ role: 'assistant', content: response });
+    }
   }
   
+  let currentMessage = `USER REQUEST: ${currentRequest}\n`;
+  if (currentPageHtml) {
+    currentMessage += `\nCURRENT PAGE HTML (first 3000 chars):\n${currentPageHtml.substring(0, 3000)}\n`;
+  }
+  if (pageType) {
+    currentMessage += `\nPAGE TYPE: ${pageType}\n`;
+  }
+  
+  messages.push({ role: 'user', content: currentMessage });
+  return messages;
+}
+
+function pruneConversationHistory(history: ConversationTurn[], maxTurns: number = 5): ConversationTurn[] {
+  if (history.length <= maxTurns) return history;
   const pruned = history.slice(-maxTurns);
-  console.log(`🔄 Pruned conversation history: ${history.length} turns → ${pruned.length} turns (kept last ${maxTurns})`);
+  console.log(`🔄 Pruned: ${history.length} → ${pruned.length} turns`);
   return pruned;
+}
+
+interface PipelineStage {
+  name: string;
+  prompt: string;
+  maxTokens: number;
+  temperature: number;
+}
+
+interface StageResult {
+  content: string;
+  tokens: { input: number; output: number };
+  duration: number;
+}
+
+// Stage 1: Planning - Create structure and outline
+function buildPlanningStage(userRequest: string, context: any): PipelineStage {
+  const prompt = `${userRequest}
+
+TASK: Create a detailed PLAN and OUTLINE for this webpage.
+
+OUTPUT EXACTLY THIS JSON STRUCTURE (no markdown, no code blocks):
+{
+  "pageGoal": "One sentence describing the page's primary purpose",
+  "targetAudience": "Who is this page for?",
+  "keyMessage": "Main message to convey",
+  "sections": [
+    {
+      "name": "Hero Section",
+      "purpose": "Grab attention and communicate value",
+      "content": "What specifically goes here"
+    },
+    {
+      "name": "Features/Benefits",
+      "purpose": "Show value propositions",
+      "content": "List key features or benefits"
+    }
+  ],
+  "ctaStrategy": "Where and how to place calls-to-action",
+  "visualStyle": "Describe the intended look and feel"
+}`;
+
+  return {
+    name: 'Planning',
+    prompt,
+    maxTokens: 1500,
+    temperature: 0.7
+  };
+}
+
+// Stage 2: Content - Generate all copy and text
+function buildContentStage(planResult: string, context: any): PipelineStage {
+  const prompt = `Based on this PLAN:
+${planResult}
+
+TASK: Write ALL the CONTENT and COPY for this webpage.
+
+Generate compelling, professional copy for:
+- Headlines and subheadlines
+- Body paragraphs
+- Feature descriptions
+- Call-to-action text
+- Any other text content
+
+Use the company information:
+- Business: ${context.companyInfo?.business_name || 'N/A'}
+- Slogan: ${context.companyInfo?.business_slogan || 'N/A'}
+- Location: ${context.companyInfo?.address_city || 'N/A'}, ${context.companyInfo?.address_state || 'N/A'}
+
+OUTPUT EXACTLY THIS JSON STRUCTURE:
+{
+  "hero": {
+    "headline": "Main headline",
+    "subheadline": "Supporting text",
+    "ctaText": "Button text"
+  },
+  "sections": [
+    {
+      "name": "Section name",
+      "headline": "Section headline",
+      "body": "Section body text",
+      "items": ["Item 1", "Item 2"]
+    }
+  ],
+  "ctas": ["Primary CTA", "Secondary CTA"]
+}`;
+
+  return {
+    name: 'Content',
+    prompt,
+    maxTokens: 2000,
+    temperature: 0.8
+  };
+}
+
+// Stage 3: HTML Structure - Build semantic HTML with content
+function buildHTMLStage(planResult: string, contentResult: string, context: any): PipelineStage {
+  const prompt = `Using this PLAN:
+${planResult}
+
+And this CONTENT:
+${contentResult}
+
+TASK: Create the COMPLETE HTML STRUCTURE with all the content integrated.
+
+REQUIREMENTS:
+- Start with <!DOCTYPE html>
+- Include proper <head> with <meta> tags and <title>
+- Include Tailwind CSS: <script src="https://cdn.tailwindcss.com"></script>
+- Use semantic HTML5 tags: <header>, <main>, <section>, <article>, <footer>
+- Add placeholder images from Unsplash (use real photo IDs relevant to the industry)
+- Use Handlebars variables for dynamic content: {{business_name}}, {{phone}}, {{email}}, etc.
+- Add onclick="if(window.openLeadFormModal) window.openLeadFormModal('Form Title')" to CTA buttons
+- NO inline styles yet - just structure and Tailwind classes
+- Must be valid, complete HTML
+
+OUTPUT: Raw HTML only, no markdown, no code blocks, no explanations.`;
+
+  return {
+    name: 'HTML',
+    prompt,
+    maxTokens: 4000,
+    temperature: 0.5
+  };
+}
+
+// Stage 4: Styling & Polish - Add advanced CSS and visual effects
+function buildStylingStage(htmlResult: string, context: any): PipelineStage {
+  const themeColors = {
+    primary: context.theme?.primaryColor || '#4A90E2',
+    secondary: context.theme?.secondaryColor || '#50E3C2',
+    accent: context.theme?.accentColor || '#F5A623'
+  };
+
+  const prompt = `Given this HTML:
+${htmlResult.substring(0, 5000)}... (truncated)
+
+TASK: Enhance it with ADVANCED STYLING to make it look EXPENSIVE and PROFESSIONAL.
+
+Add to the <head> section (before closing </head>):
+<style>
+  /* Custom styles here */
+  /* Use these brand colors: */
+  /* Primary: ${themeColors.primary} */
+  /* Secondary: ${themeColors.secondary} */
+  /* Accent: ${themeColors.accent} */
+  
+  /* Add: */
+  /* - Gradient backgrounds on hero sections */
+  /* - Box shadows on cards (0 10px 40px rgba(0,0,0,0.1)) */
+  /* - Hover effects with transforms and shadow changes */
+  /* - Smooth transitions (all 0.3s ease) */
+  /* - Border radius on all elements (16px minimum) */
+  /* - Responsive breakpoints (@media queries) */
+</style>
+
+CRITICAL RULES:
+- Keep ALL existing HTML structure and content
+- Only add or enhance the <style> block in <head>
+- Make it look premium with gradients, shadows, animations
+- Ensure text has proper contrast
+- Add hover states to all interactive elements
+
+OUTPUT: Complete HTML with enhanced styles, no markdown, no code blocks.`;
+
+  return {
+    name: 'Styling',
+    prompt,
+    maxTokens: 5000,
+    temperature: 0.3
+  };
+}
+
+// Execute a single pipeline stage
+async function executePipelineStage(
+  stage: PipelineStage,
+  staticContext: string,
+  apiKey: string
+): Promise<StageResult> {
+  const startTime = Date.now();
+  
+  console.log(`\n${'='.repeat(60)}`);
+  console.log(`🚀 STAGE ${stage.name.toUpperCase()}`);
+  console.log(`${'='.repeat(60)}`);
+  console.log(`Max tokens: ${stage.maxTokens}`);
+  console.log(`Temperature: ${stage.temperature}`);
+  
+  const messages = [{
+    role: 'user' as const,
+    content: staticContext + '\n\n' + stage.prompt
+  }];
+  
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-5-20250929',
+      max_tokens: stage.maxTokens,
+      temperature: stage.temperature,
+      system: `You are an expert web designer. Follow instructions exactly. Be concise and precise.`,
+      messages,
+      stream: false
+    })
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(`Stage ${stage.name} failed: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+  }
+  
+  const data = await response.json();
+  const content = data.content[0].text;
+  const duration = Date.now() - startTime;
+  
+  console.log(`✅ Stage completed in ${(duration / 1000).toFixed(1)}s`);
+  console.log(`📊 Input tokens: ${data.usage.input_tokens}`);
+  console.log(`📊 Output tokens: ${data.usage.output_tokens}`);
+  console.log(`📝 Output length: ${content.length} chars`);
+  
+  return {
+    content,
+    tokens: {
+      input: data.usage.input_tokens,
+      output: data.usage.output_tokens
+    },
+    duration
+  };
+}
+
+// Main multi-stage pipeline executor
+async function executeMultiStagePipeline(
+  userRequest: string,
+  context: any,
+  staticContext: string,
+  apiKey: string
+): Promise<{ html: string; stages: any[]; totalTokens: any; totalDuration: number }> {
+  console.log('\n' + '='.repeat(70));
+  console.log('🎯 STARTING MULTI-STAGE PIPELINE');
+  console.log('='.repeat(70));
+  
+  const pipelineStartTime = Date.now();
+  const stagesData: any[] = [];
+  let totalInputTokens = 0;
+  let totalOutputTokens = 0;
+  
+  try {
+    // Stage 1: Planning
+    const planStage = buildPlanningStage(userRequest, context);
+    const planResult = await executePipelineStage(planStage, staticContext, apiKey);
+    stagesData.push({ stage: 'Planning', ...planResult });
+    totalInputTokens += planResult.tokens.input;
+    totalOutputTokens += planResult.tokens.output;
+    
+    // Stage 2: Content
+    const contentStage = buildContentStage(planResult.content, context);
+    const contentResult = await executePipelineStage(contentStage, staticContext, apiKey);
+    stagesData.push({ stage: 'Content', ...contentResult });
+    totalInputTokens += contentResult.tokens.input;
+    totalOutputTokens += contentResult.tokens.output;
+    
+    // Stage 3: HTML Structure
+    const htmlStage = buildHTMLStage(planResult.content, contentResult.content, context);
+    const htmlResult = await executePipelineStage(htmlStage, staticContext, apiKey);
+    stagesData.push({ stage: 'HTML', ...htmlResult });
+    totalInputTokens += htmlResult.tokens.input;
+    totalOutputTokens += htmlResult.tokens.output;
+    
+    // Stage 4: Styling & Polish
+    const stylingStage = buildStylingStage(htmlResult.content, context);
+    const stylingResult = await executePipelineStage(stylingStage, staticContext, apiKey);
+    stagesData.push({ stage: 'Styling', ...stylingResult });
+    totalInputTokens += stylingResult.tokens.input;
+    totalOutputTokens += stylingResult.tokens.output;
+    
+    const totalDuration = Date.now() - pipelineStartTime;
+    
+    console.log('\n' + '='.repeat(70));
+    console.log('✨ PIPELINE COMPLETE');
+    console.log('='.repeat(70));
+    console.log(`⏱️  Total duration: ${(totalDuration / 1000).toFixed(1)}s`);
+    console.log(`📊 Total input tokens: ${totalInputTokens}`);
+    console.log(`📊 Total output tokens: ${totalOutputTokens}`);
+    console.log(`💰 Estimated cost: $${calculateCost(totalInputTokens, totalOutputTokens).toFixed(4)}`);
+    console.log('='.repeat(70) + '\n');
+    
+    return {
+      html: stylingResult.content,
+      stages: stagesData,
+      totalTokens: {
+        input: totalInputTokens,
+        output: totalOutputTokens
+      },
+      totalDuration
+    };
+    
+  } catch (error: any) {
+    console.error('❌ Pipeline failed:', error.message);
+    throw new Error(`Multi-stage pipeline failed at stage: ${error.message}`);
+  }
 }
 
 function buildProperChatHistory(
@@ -1142,312 +1474,316 @@ ${buildThemeContext(context)}
     }
 
     // ========================================================================
-    // Cache functionality disabled for Claude migration
+    // DECIDE: Multi-stage pipeline or single-shot generation
+    // Use multi-stage for 'build' mode (new pages)
+    // Use single-shot for 'edit' mode (modifications)
     // ========================================================================
     
-    const cachedContentName = null;
-
-    // ========================================================================
-    // API REQUEST: Call Gemini with streaming
-    // PHASE 1: Use systemInstruction field for free token optimization
-    // PHASE 2: Use proper multi-turn chat format for better context understanding
-    // PHASE 5: Apply conversation pruning to prevent token bloat
-    // ========================================================================
-    
-    // Build proper multi-turn conversation history (Phase 2 + Phase 5)
-    let chatMessages;
-    
-    if (conversationHistory.length > 0) {
-      // PHASE 5: Prune conversation history to last 5 turns
-      const prunedHistory = pruneConversationHistory(conversationHistory, 5);
-      
-      // Multi-turn conversation exists
-      chatMessages = buildProperChatHistory(
-        prunedHistory,
-        command,
-        context.currentPage?.html,
-        context.currentPage?.pageType
-      );
-    } else {
-      // First message - include context as needed
-      chatMessages = [{
-        role: 'user' as const,
-        content: dynamicContext
-      }];
-    }
-    
-    // If no cached content available, prepend static context to first user message
-    if (!cachedContentName && chatMessages.length > 0) {
-      const firstUserMessage = chatMessages.find(msg => msg.role === 'user');
-      if (firstUserMessage) {
-        firstUserMessage.content = staticContext + '\n\n' + firstUserMessage.content;
-      }
-    }
-    
-    // Prepare API call based on selected model
-    let apiUrl: string;
-    let requestPayload: any;
-    let apiHeaders: Record<string, string>;
-    
-    if (model === 'grok') {
-      // Grok (X.AI) configuration
-      const X_AI_API_KEY = Deno.env.get('X_AI_API_KEY');
-      if (!X_AI_API_KEY) {
-        throw new Error('X_AI_API_KEY is not configured');
-      }
-      
-      apiUrl = 'https://api.x.ai/v1/chat/completions';
-      
-      // Convert system instructions to first message for Grok
-      const grokMessages = [
-        { role: 'system', content: systemInstructions },
-        ...chatMessages
-      ];
-      
-      requestPayload = {
-        model: 'grok-4-latest',
-        messages: grokMessages,
-        stream: false,
-        temperature: 0
-      };
-      
-      apiHeaders = {
-        'Authorization': `Bearer ${X_AI_API_KEY}`,
-        'Content-Type': 'application/json',
-      };
-      
-      console.log('Calling Grok 4 API...');
-    } else {
-      // Claude (Anthropic) configuration - Using Sonnet 4.5 for speed
-      requestPayload = {
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 4096,
-        temperature: 0.7,
-        system: systemInstructions,
-        messages: chatMessages,
-        stream: true
-      };
-      
-      apiUrl = 'https://api.anthropic.com/v1/messages';
-      apiHeaders = {
-        'x-api-key': CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'Content-Type': 'application/json',
-      };
-      
-      console.log('Calling Claude Sonnet 4.5 API...');
-    }
-    
-    console.log('✅ Phase 1 Optimization: Using system field (efficient context)');
-    console.log('✅ Phase 2 Optimization: Using proper multi-turn chat format');
-    console.log('✅ Phase 5 Optimization: Conversation pruning (max 5 turns, prevents token bloat)');
-    console.log('Request payload structure:', {
-      model: model,
-      hasSystemPrompt: true,
-      mode: mode,
-      conversationTurns: chatMessages.length,
-      latestMessageLength: chatMessages[chatMessages.length - 1]?.content.length || 0,
-      maxTokens: requestPayload.max_tokens || 'default'
-    });
-    
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-      controller.abort();
-      metrics.timeoutOccurred = true;
-    }, 120000); // 120 second timeout
-
-    let response;
-    try {
-      response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: apiHeaders,
-        body: JSON.stringify(requestPayload),
-        signal: controller.signal
-      });
-    } catch (error: any) {
-      clearTimeout(timeoutId);
-      
-      if (error.name === 'AbortError') {
-        console.error('Request timeout after 120 seconds');
-        
-        if (mode === 'build') {
-          const fallbackHtml = getFallbackTemplate(
-            context.currentPage?.pageType || 'homepage',
-            command
-          );
-          
-          metrics.fallbackUsed = true;
-          metrics.endTime = Date.now();
-          metrics.duration = metrics.endTime - metrics.startTime;
-          logMetrics(metrics);
-          
-          return new Response(JSON.stringify({
-            html: fallbackHtml,
-            messages: [{
-              role: 'assistant',
-              content: 'Request timeout - using fallback template. Please try a simpler request.'
-            }],
-            usage: { input_tokens: 0, output_tokens: 0 },
-            mode: 'build',
-            debug: { timeout: true, fallback: true }
-          }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 200
-          });
-        } else {
-          throw new Error('Request timeout - AI took too long to respond. Please try a shorter prompt or reset the chat.');
-        }
-      }
-      throw error;
-    }
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error?.message || 
-                          errorData.message || 
-                          `${model === 'grok' ? 'Grok' : 'Claude'} API error: ${response.status}`;
-      
-      console.error(`❌ ${model === 'grok' ? 'GROK' : 'CLAUDE'} API ERROR:`, {
-        status: response.status,
-        statusText: response.statusText,
-        errorData: JSON.stringify(errorData, null, 2),
-        maxTokens: requestPayload.max_tokens
-      });
-      throw new Error(errorMessage);
-    }
-
-    // ========================================================================
-    // RESPONSE PARSING - STREAMING (Claude) OR NON-STREAMING (Grok)
-    // ========================================================================
-    
+    let useMultiStage = mode === 'build' && !context.currentPage?.html;
     let updatedHtml = '';
     let usageMetadata: any = null;
+    let pipelineStages: any[] = [];
     
-    if (model === 'grok') {
-      // Handle non-streaming Grok response
-      const grokResponse = await response.json();
+    if (useMultiStage) {
+      console.log('🎯 Using MULTI-STAGE PIPELINE for new page generation');
       
-      if (grokResponse.choices && grokResponse.choices[0]) {
-        updatedHtml = grokResponse.choices[0].message.content;
+      try {
+        const pipelineResult = await executeMultiStagePipeline(
+          command,
+          context,
+          staticContext,
+          CLAUDE_API_KEY
+        );
         
-        // Extract usage metadata if available
-        if (grokResponse.usage) {
-          usageMetadata = {
-            input_tokens: grokResponse.usage.prompt_tokens || 0,
-            output_tokens: grokResponse.usage.completion_tokens || 0
-          };
-        }
+        updatedHtml = pipelineResult.html;
+        pipelineStages = pipelineResult.stages;
+        usageMetadata = {
+          input_tokens: pipelineResult.totalTokens.input,
+          output_tokens: pipelineResult.totalTokens.output
+        };
+        
+        metrics.multiPass = true;
+        
+      } catch (pipelineError: any) {
+        console.error('❌ Multi-stage pipeline failed, falling back to single-shot:', pipelineError.message);
+        useMultiStage = false;
+      }
+    }
+    
+    // Single-shot generation (for edits or if multi-stage failed)
+    if (!useMultiStage || !updatedHtml) {
+      console.log('⚡ Using SINGLE-SHOT generation');
+      
+      const cachedContentName = null;
+
+      // Build proper multi-turn conversation history
+      let chatMessages;
+      
+      if (conversationHistory.length > 0) {
+        const prunedHistory = pruneConversationHistory(conversationHistory, 5);
+        
+        chatMessages = buildProperChatHistory(
+          prunedHistory,
+          command,
+          context.currentPage?.html,
+          context.currentPage?.pageType
+        );
       } else {
-        throw new Error('Invalid Grok response format');
+        chatMessages = [{
+          role: 'user' as const,
+          content: dynamicContext
+        }];
       }
       
-      console.log('Grok response complete. HTML length:', updatedHtml.length);
-    } else {
-      // Handle streaming Claude response
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      
-      if (!reader) {
-        throw new Error('Response body is not readable');
+      // Prepend static context to first user message
+      if (!cachedContentName && chatMessages.length > 0) {
+        const firstUserMessage = chatMessages.find(msg => msg.role === 'user');
+        if (firstUserMessage) {
+          firstUserMessage.content = staticContext + '\n\n' + firstUserMessage.content;
+        }
       }
+      
+      // Prepare API call based on selected model
+      let apiUrl: string;
+      let requestPayload: any;
+      let apiHeaders: Record<string, string>;
+      
+      if (model === 'grok') {
+        const X_AI_API_KEY = Deno.env.get('X_AI_API_KEY');
+        if (!X_AI_API_KEY) {
+          throw new Error('X_AI_API_KEY is not configured');
+        }
+        
+        apiUrl = 'https://api.x.ai/v1/chat/completions';
+        
+        const grokMessages = [
+          { role: 'system', content: systemInstructions },
+          ...chatMessages
+        ];
+        
+        requestPayload = {
+          model: 'grok-4-latest',
+          messages: grokMessages,
+          stream: false,
+          temperature: 0
+        };
+        
+        apiHeaders = {
+          'Authorization': `Bearer ${X_AI_API_KEY}`,
+          'Content-Type': 'application/json',
+        };
+        
+        console.log('Calling Grok 4 API...');
+      } else {
+        requestPayload = {
+          model: 'claude-sonnet-4-5-20250929',
+          max_tokens: 4096,
+          temperature: 0.7,
+          system: systemInstructions,
+          messages: chatMessages,
+          stream: true
+        };
+        
+        apiUrl = 'https://api.anthropic.com/v1/messages';
+        apiHeaders = {
+          'x-api-key': CLAUDE_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'Content-Type': 'application/json',
+        };
+        
+        console.log('Calling Claude Sonnet 4.5 API...');
+      }
+      
+      console.log('Request payload structure:', {
+        model: model,
+        mode: mode,
+        conversationTurns: chatMessages.length,
+        maxTokens: requestPayload.max_tokens || 'default'
+      });
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        metrics.timeoutOccurred = true;
+      }, 120000);
 
-      // Hard deadline to avoid client timeouts (110s)
-      const hardDeadline = Date.now() + 110000;
-
-      let buffer = '';
-      let currentEvent = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
+      let response;
+      try {
+        response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: apiHeaders,
+          body: JSON.stringify(requestPayload),
+          signal: controller.signal
+        });
+      } catch (error: any) {
+        clearTimeout(timeoutId);
         
-        if (done) break;
-        
-        buffer += decoder.decode(value, { stream: true });
-        
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-        
-        for (const line of lines) {
-          const trimmedLine = line.trim();
+        if (error.name === 'AbortError') {
+          console.error('Request timeout after 120 seconds');
           
-          if (trimmedLine.startsWith(':') || trimmedLine === '') continue;
-          
-          // Parse event type
-          if (trimmedLine.startsWith('event: ')) {
-            currentEvent = trimmedLine.slice(7).trim();
-            continue;
-          }
-          
-          if (!trimmedLine.startsWith('data: ')) continue;
-          
-          const jsonStr = trimmedLine.slice(6).trim();
-          
-          try {
-            const chunk = JSON.parse(jsonStr);
+          if (mode === 'build') {
+            const fallbackHtml = getFallbackTemplate(
+              context.currentPage?.pageType || 'homepage',
+              command
+            );
             
-            // Extract text from Claude streaming response
-            if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
-              updatedHtml += chunk.delta.text;
+            metrics.fallbackUsed = true;
+            metrics.endTime = Date.now();
+            metrics.duration = metrics.endTime - metrics.startTime;
+            logMetrics(metrics);
+            
+            return new Response(JSON.stringify({
+              html: fallbackHtml,
+              messages: [{
+                role: 'assistant',
+                content: 'Request timeout - using fallback template. Please try a simpler request.'
+              }],
+              usage: { input_tokens: 0, output_tokens: 0 },
+              mode: 'build',
+              debug: { timeout: true, fallback: true }
+            }), {
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              status: 200
+            });
+          } else {
+            throw new Error('Request timeout - AI took too long to respond. Please try a shorter prompt or reset the chat.');
+          }
+        }
+        throw error;
+      }
 
-              // Early stop if we've reached end of document or hard deadline
-              if (updatedHtml.includes('</html>') || Date.now() > hardDeadline) {
-                console.log('⏹️ Early stop: closing </html> detected or deadline reached');
-                try { await reader.cancel(); } catch {}
-                break;
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error?.message || 
+                            errorData.message || 
+                            `${model === 'grok' ? 'Grok' : 'Claude'} API error: ${response.status}`;
+        
+        console.error(`❌ ${model === 'grok' ? 'GROK' : 'CLAUDE'} API ERROR:`, {
+          status: response.status,
+          statusText: response.statusText,
+          errorData: JSON.stringify(errorData, null, 2),
+          maxTokens: requestPayload.max_tokens
+        });
+        throw new Error(errorMessage);
+      }
+
+      // Parse response
+      if (model === 'grok') {
+        const grokResponse = await response.json();
+        
+        if (grokResponse.choices && grokResponse.choices[0]) {
+          updatedHtml = grokResponse.choices[0].message.content;
+          
+          if (grokResponse.usage) {
+            usageMetadata = {
+              input_tokens: grokResponse.usage.prompt_tokens || 0,
+              output_tokens: grokResponse.usage.completion_tokens || 0
+            };
+          }
+        } else {
+          throw new Error('Invalid Grok response format');
+        }
+        
+        console.log('Grok response complete. HTML length:', updatedHtml.length);
+      } else {
+        // Handle streaming Claude response
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        
+        if (!reader) {
+          throw new Error('Response body is not readable');
+        }
+
+        const hardDeadline = Date.now() + 110000;
+        let buffer = '';
+        let currentEvent = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          
+          if (done) break;
+          
+          buffer += decoder.decode(value, { stream: true });
+          
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+          
+          for (const line of lines) {
+            const trimmedLine = line.trim();
+            
+            if (trimmedLine.startsWith(':') || trimmedLine === '') continue;
+            
+            if (trimmedLine.startsWith('event: ')) {
+              currentEvent = trimmedLine.slice(7).trim();
+              continue;
+            }
+            
+            if (!trimmedLine.startsWith('data: ')) continue;
+            
+            const jsonStr = trimmedLine.slice(6).trim();
+            
+            try {
+              const chunk = JSON.parse(jsonStr);
+              
+              if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
+                updatedHtml += chunk.delta.text;
+
+                if (updatedHtml.includes('</html>') || Date.now() > hardDeadline) {
+                  console.log('⏹️ Early stop: closing </html> detected or deadline reached');
+                  try { await reader.cancel(); } catch {}
+                  break;
+                }
               }
+              
+              if (chunk.type === 'message_delta' && chunk.usage) {
+                usageMetadata = {
+                  input_tokens: usageMetadata?.input_tokens || 0,
+                  output_tokens: chunk.usage.output_tokens || 0
+                };
+              }
+              
+              if (chunk.type === 'message_start' && chunk.message?.usage) {
+                usageMetadata = {
+                  input_tokens: chunk.message.usage.input_tokens || 0,
+                  output_tokens: usageMetadata?.output_tokens || 0
+                };
+              }
+              
+              if (chunk.delta?.stop_reason) {
+                metrics.stopReason = chunk.delta.stop_reason;
+              }
+            } catch (parseError) {
+              console.error('Error parsing SSE chunk:', parseError, 'Line:', jsonStr);
             }
-            
-            // Extract usage metadata from message_delta event
-            if (chunk.type === 'message_delta' && chunk.usage) {
-              usageMetadata = {
-                input_tokens: usageMetadata?.input_tokens || 0,
-                output_tokens: chunk.usage.output_tokens || 0
-              };
-            }
-            
-            // Extract input tokens from message_start event
-            if (chunk.type === 'message_start' && chunk.message?.usage) {
-              usageMetadata = {
-                input_tokens: chunk.message.usage.input_tokens || 0,
-                output_tokens: usageMetadata?.output_tokens || 0
-              };
-            }
-            
-            // Check for stop reason
-            if (chunk.delta?.stop_reason) {
-              metrics.stopReason = chunk.delta.stop_reason;
-            }
-          } catch (parseError) {
-            console.error('Error parsing SSE chunk:', parseError, 'Line:', jsonStr);
           }
         }
-      }
-      
-      // Process any remaining buffer
-      if (buffer.trim()) {
-        const trimmedLine = buffer.trim();
-        if (trimmedLine.startsWith('data: ')) {
-          const jsonStr = trimmedLine.slice(6).trim();
-          try {
-            const chunk = JSON.parse(jsonStr);
-            if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
-              updatedHtml += chunk.delta.text;
+        
+        // Process remaining buffer
+        if (buffer.trim()) {
+          const trimmedLine = buffer.trim();
+          if (trimmedLine.startsWith('data: ')) {
+            const jsonStr = trimmedLine.slice(6).trim();
+            try {
+              const chunk = JSON.parse(jsonStr);
+              if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
+                updatedHtml += chunk.delta.text;
+              }
+              if (chunk.type === 'message_delta' && chunk.usage) {
+                usageMetadata = {
+                  ...usageMetadata,
+                  output_tokens: chunk.usage.output_tokens || usageMetadata?.output_tokens || 0
+                };
+              }
+            } catch (parseError) {
+              console.error('Error parsing final chunk:', parseError);
             }
-            if (chunk.type === 'message_delta' && chunk.usage) {
-              usageMetadata = {
-                ...usageMetadata,
-                output_tokens: chunk.usage.output_tokens || usageMetadata?.output_tokens || 0
-              };
-            }
-          } catch (parseError) {
-            console.error('Error parsing final chunk:', parseError);
           }
         }
-      }
 
-      console.log('Claude streaming complete. HTML length:', updatedHtml.length);
+        console.log('Claude streaming complete. HTML length:', updatedHtml.length);
+      }
     }
 
     // ========================================================================
@@ -1536,7 +1872,13 @@ ${buildThemeContext(context)}
         duration: metrics.duration,
         cost: metrics.cost,
         provider: 'claude',
-        cacheHit: false
+        cacheHit: false,
+        multiStage: useMultiStage,
+        stages: pipelineStages.length > 0 ? pipelineStages.map(s => ({
+          stage: s.stage,
+          duration: s.duration,
+          tokens: s.tokens
+        })) : undefined
       },
       mode,
       debug: {
