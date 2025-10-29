@@ -475,7 +475,7 @@ interface ConversationTurn {
 // MULTI-STAGE PIPELINE: Sequential AI Calls for Better Quality
 // ========================================================================
 
-function buildProperChatHistory(
+function formatChatHistoryForLLM(
   history: ConversationTurn[],
   currentRequest: string,
   currentPageHtml?: string,
@@ -1469,12 +1469,12 @@ ${buildThemeContext(context)}
       const cachedContentName = null;
 
       // Build proper multi-turn conversation history
-      let chatMessages;
+      let chatMessages: Array<{ role: 'user' | 'assistant'; content: string }>;
       
       if (conversationHistory.length > 0) {
         const prunedHistory = pruneConversationHistory(conversationHistory, 5);
         
-        chatMessages = buildProperChatHistory(
+        chatMessages = formatChatHistoryForLLM(
           prunedHistory,
           command,
           context.currentPage?.html,
@@ -1489,7 +1489,7 @@ ${buildThemeContext(context)}
       
       // Prepend static context to first user message
       if (!cachedContentName && chatMessages.length > 0) {
-        const firstUserMessage = chatMessages.find(msg => msg.role === 'user');
+        const firstUserMessage = chatMessages.find((msg: { role: 'user' | 'assistant'; content: string }) => msg.role === 'user');
         if (firstUserMessage) {
           firstUserMessage.content = staticContext + '\n\n' + firstUserMessage.content;
         }
