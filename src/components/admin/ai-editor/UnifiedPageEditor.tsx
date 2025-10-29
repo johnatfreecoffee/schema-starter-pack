@@ -1373,7 +1373,7 @@ const UnifiedPageEditor = ({
                                     <AccordionTrigger className="px-4 hover:no-underline">
                                       <div className="flex items-center gap-2">
                                         <div className="h-6 w-1 bg-primary rounded-full" />
-                                        <h3 className="font-semibold">Full prompt sent to Claude</h3>
+                                        <h3 className="font-semibold">Prompt Sent</h3>
                                         {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
                                       </div>
                                     </AccordionTrigger>
@@ -1402,7 +1402,7 @@ const UnifiedPageEditor = ({
                                     <AccordionTrigger className="px-4 hover:no-underline">
                                       <div className="flex items-center gap-2">
                                         <div className="h-6 w-1 bg-green-500 rounded-full" />
-                                        <h3 className="font-semibold">Claude's raw response</h3>
+                                        <h3 className="font-semibold">AI Response</h3>
                                         {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
                                       </div>
                                     </AccordionTrigger>
