@@ -591,10 +591,11 @@ const UnifiedPageEditor = ({
     };
 
     // Capture complete HTTP request details
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tkrcdxkdfjeupbdlbcfz.supabase.co';
     const requestContext = {
       http: {
         method: 'POST',
-        endpoint: `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-edit-page`,
+        endpoint: `${supabaseUrl}/functions/v1/ai-edit-page`,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': session?.access_token ? `Bearer [REDACTED - Token Present]` : '[NOT PRESENT]',
