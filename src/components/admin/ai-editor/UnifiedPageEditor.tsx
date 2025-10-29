@@ -731,13 +731,11 @@ const UnifiedPageEditor = ({
         const hasExtensionEvidence = 
           stackTrace.includes('chrome-extension://') ||
           stackTrace.includes('moz-extension://') ||
-          stackTrace.includes('frame_ant') ||
           contextStack.includes('chrome-extension://') ||
           contextStack.includes('moz-extension://') ||
-          contextStack.includes('frame_ant') ||
           errorMsg.includes('chrome-extension://') ||
           contextMessage.includes('chrome-extension://');
-        
+
         if (hasExtensionEvidence) {
           // Actual browser extension interference
           toast({
