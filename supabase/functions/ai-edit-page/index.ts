@@ -532,28 +532,33 @@ interface StageResult {
 function buildPlanningStage(userRequest: string, context: any): PipelineStage {
   const prompt = `${userRequest}
 
-You are creating a plan that will be used by later stages. STRICTLY use the company/site context provided above (companyInfo, aiTraining, siteSettings). Reflect brand voice, services, service areas, phone, and guarantees. Do not invent facts.
+You are a world-class web design strategist. Using the company context provided above, create a comprehensive plan for a STUNNING, conversion-focused page that showcases this brand's unique value.
 
-TASK: Create a detailed PLAN and OUTLINE for this webpage tailored to the company.
+Design a page structure that:
+- Captivates visitors within 3 seconds with visual impact
+- Tells a compelling brand story using the company's voice and positioning
+- Guides users naturally toward conversion with strategic CTAs
+- Incorporates modern design trends (gradients, micro-interactions, depth)
+- Leverages the company's service areas, guarantees, and differentiators
 
-OUTPUT EXACTLY THIS JSON (no markdown, no code fences):
+OUTPUT EXACTLY THIS JSON (no markdown):
 {
-  "pageGoal": "One sentence describing the page's primary purpose using company positioning",
-  "targetAudience": "Who this page targets based on service areas and audience",
-  "keyMessage": "Main brand message aligned to aiTraining.voice and USPs",
+  "pageGoal": "Primary purpose tied to company positioning",
+  "targetAudience": "Specific audience based on service areas and customer profile",
+  "keyMessage": "Magnetic headline that stops scrollers",
   "sections": [
-    { "name": "Hero", "purpose": "Immediate value + credibility", "content": "Key points to include" },
-    { "name": "Core Services", "purpose": "What we do", "content": "Bulleted list of services to feature" }
+    { "name": "Hero", "purpose": "Emotional hook + credibility", "content": "Key value props, visual elements" },
+    { "name": "Services/Features", "purpose": "Show what we do", "content": "Service highlights with benefits" }
   ],
-  "ctaStrategy": "Where CTAs go and what they say (use openLeadFormModal)",
-  "visualStyle": "Intended look/feel consistent with siteSettings/theme"
+  "ctaStrategy": "Strategic CTA placement with psychological triggers",
+  "visualStyle": "Modern, premium aesthetic aligned with brand (colors, mood, interactions)"
 }`;
 
   return {
     name: 'Planning',
     prompt,
-    maxTokens: 1500,
-    temperature: 0.7
+    maxTokens: 2000,
+    temperature: 0.6
   };
 }
 
@@ -562,19 +567,24 @@ function buildContentStage(planResult: string, context: any): PipelineStage {
   const prompt = `Based on this PLAN:
 ${planResult}
 
-Use the full company/site context provided above (companyInfo, aiTraining, siteSettings). Write ALL copy in the brand voice. Use Handlebars variables for dynamic fields (e.g., {{company_name}}, {{phone}}, {{address_city}}).
+You are an award-winning copywriter. Transform the plan into MAGNETIC, brand-aligned content using the company context above.
 
-TASK: Write ALL the CONTENT and COPY for this webpage.
+Create copy that:
+- Opens with power words that stop scrollers cold
+- Weaves storytelling that builds emotional connection
+- Uses AIDA (Attention-Interest-Desire-Action) framework
+- Incorporates the company's unique voice, guarantees, and differentiators
+- Balances SEO optimization with human appeal
+- Creates urgency without being pushy
+- Uses Handlebars variables: {{company_name}}, {{phone}}, {{years_experience}}, {{address_city}}, etc.
 
-OUTPUT EXACTLY THIS JSON STRUCTURE:
+Make every word earn its place. Write copy that makes visitors think "This company gets me."
+
+OUTPUT EXACTLY THIS JSON:
 {
-  "hero": {
-    "headline": "Main headline with value",
-    "subheadline": "Supporting text",
-    "ctaText": "Primary CTA"
-  },
+  "hero": { "headline": "Magnetic headline", "subheadline": "Compelling promise", "ctaText": "Action-driven CTA" },
   "sections": [
-    { "name": "Section name", "headline": "Section headline", "body": "Section body text", "items": ["Item 1", "Item 2"] }
+    { "name": "Section", "headline": "Benefit-focused headline", "body": "Persuasive body copy", "items": ["Specific benefits"] }
   ],
   "ctas": ["Primary CTA", "Secondary CTA"]
 }`;
@@ -582,8 +592,8 @@ OUTPUT EXACTLY THIS JSON STRUCTURE:
   return {
     name: 'Content',
     prompt,
-    maxTokens: 2000,
-    temperature: 0.8
+    maxTokens: 3000,
+    temperature: 0.7
   };
 }
 
@@ -595,49 +605,64 @@ ${planResult}
 And this CONTENT:
 ${contentResult}
 
-TASK: Produce CONTENT-ONLY HTML that will be embedded inside the site shell.
+You are an expert front-end developer. Transform the content into SEMANTIC, ACCESSIBLE, content-only HTML with Tailwind CSS.
 
-REQUIREMENTS:
-- Output MUST start with <main> and include only page content (no <!DOCTYPE>, <html>, <head>, <body>, <header>, <footer>, or <nav>)
-- Use semantic HTML5 inside <main> with <section>, <article>, etc.
-- Use Tailwind CSS utility classes only (no inline <style> or external CDNs)
-- Use Handlebars variables for all dynamic values (company, phone, service areas)
-- Use Lucide icons with data-lucide="icon-name"
-- All CTAs must call: onclick="if(window.openLeadFormModal) window.openLeadFormModal('...')"
-- All images must have descriptive alt text and loading="lazy"
-- Follow the design system via CSS variables where applicable
+CRITICAL STRUCTURE REQUIREMENT:
+- Output MUST start with <main> (no <!DOCTYPE>, <html>, <head>, <body>, <header>, <footer>, <nav>)
+- This is page content only that will be embedded in the site shell
 
-OUTPUT: Raw HTML snippet only, starting with <main>.`;
+Build HTML that includes:
+- Semantic HTML5 structure inside <main> using <section>, <article>, <aside>
+- ARIA labels and roles for accessibility
+- Tailwind utility classes for responsive, mobile-first design
+- Container structure prepared for visual enhancements (data attributes for animations)
+- Handlebars variables: {{company_name}}, {{phone}}, {{years_experience}}, {{address_city}}, etc.
+- Lucide icons with data-lucide="icon-name"
+- CTAs with onclick="if(window.openLeadFormModal) window.openLeadFormModal('...')"
+- Optimized heading hierarchy (h1 → h2 → h3)
+- Images with descriptive alt text and loading="lazy"
+- Rich Tailwind classes: gradients (bg-gradient-to-r), shadows (shadow-xl), rounded corners (rounded-2xl)
+
+OUTPUT: Clean HTML snippet starting with <main>, no markdown.`;
 
   return {
     name: 'HTML',
     prompt,
-    maxTokens: 4000,
-    temperature: 0.5
+    maxTokens: 6000,
+    temperature: 0.3
   };
 }
 
 // Stage 4: Styling & Polish - Add advanced CSS and visual effects
 function buildStylingStage(htmlResult: string, context: any): PipelineStage {
   const prompt = `Given this CONTENT-ONLY HTML (starting with <main>):
-${htmlResult.substring(0, 5000)}... (truncated)
+${htmlResult.substring(0, 6000)}... (truncated)
 
-TASK: Polish and enhance visual design using Tailwind utility classes ONLY.
+You are a CSS artist and visual designer. Transform this HTML into a VISUALLY STUNNING masterpiece that rivals award-winning web designs.
 
-RULES:
-- Do NOT add <!DOCTYPE>, <html>, <head>, <body>, <header>, <footer>, <style>, or external links
-- Keep the structure content-only and continue to start with <main>
-- Improve visual hierarchy, spacing, responsiveness, and accessibility
-- Use gradients, shadows, and rounded corners via Tailwind classes
-- Ensure all icons use data-lucide, all CTAs call openLeadFormModal, and all images have loading="lazy" with descriptive alt
+CRITICAL: Keep content-only structure (starts with <main>, NO <!DOCTYPE>/<html>/<head>/<body>/<header>/<footer>)
 
-OUTPUT: The improved content-only HTML snippet (starting with <main>), no markdown.`;
+Enhance with ADVANCED Tailwind classes:
+- Sophisticated gradients: bg-gradient-to-br from-primary via-accent to-secondary
+- Deep shadows: shadow-2xl, hover:shadow-[0_20px_60px_rgba(0,0,0,0.3)]
+- Smooth transforms: hover:scale-105 transition-all duration-300 ease-out
+- Rich spacing: py-16 md:py-24 lg:py-32 for luxurious vertical rhythm
+- Premium borders: rounded-3xl border border-white/10 backdrop-blur-sm
+- Micro-interactions: group hover effects, animated underlines
+- Glass morphism: bg-white/10 backdrop-blur-lg
+- Perfect typography: text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight
+- Mobile optimization: responsive breakpoints that shine on all devices
+- Accessibility: focus:ring-4 focus:ring-primary/50 focus:outline-none
+
+Create a page that makes visitors say "WOW!" Make every element delightful to interact with.
+
+OUTPUT: Enhanced content-only HTML starting with <main>, no markdown.`;
 
   return {
     name: 'Styling',
     prompt,
-    maxTokens: 5000,
-    temperature: 0.3
+    maxTokens: 8000,
+    temperature: 0.7
   };
 }
 
