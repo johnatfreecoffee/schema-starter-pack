@@ -142,10 +142,23 @@ const UnifiedPageEditor = ({
   const [previousHtml, setPreviousHtml] = useState('');
   const [isShowingPrevious, setIsShowingPrevious] = useState(false);
   const [debugData, setDebugData] = useState<{
-    fullPrompt: string;
-    requestPayload: any;
-    responseData: any;
-    generatedHtml: string;
+    stages?: Array<{
+      name: string;
+      fullPrompt?: string;
+      requestPayload?: any;
+      responseData?: any;
+      generatedHtml?: string;
+      debug?: {
+        fullPrompt?: string;
+        requestPayload?: any;
+        responseData?: any;
+        generatedHtml?: string;
+      };
+    }>;
+    fullPrompt?: string;
+    requestPayload?: any;
+    responseData?: any;
+    generatedHtml?: string;
   } | null>(null);
   const [inputTokenCount, setInputTokenCount] = useState(0);
   const [debugAccordionValue, setDebugAccordionValue] = useState<string[]>(() => {
@@ -1356,7 +1369,7 @@ const UnifiedPageEditor = ({
                             {(debugData as any).stages.map((stage: any, idx: number) => (
                               <TabsContent key={idx} value={String(idx)}>
                                 <Accordion type="multiple" className="space-y-4 max-w-full">
-                                  <AccordionItem value={`prompt-${idx}`} className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
+                                   <AccordionItem value={`prompt-${idx}`} className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
                                     <AccordionTrigger className="px-4 hover:no-underline">
                                       <div className="flex items-center gap-2">
                                         <div className="h-6 w-1 bg-primary rounded-full" />
@@ -1366,7 +1379,7 @@ const UnifiedPageEditor = ({
                                     </AccordionTrigger>
                                     <AccordionContent>
                                       <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
-{stage?.fullPrompt || stage?.prompt || ''}
+{stage?.debug?.fullPrompt || stage?.fullPrompt || stage?.prompt || 'No prompt data'}
                                       </pre>
                                     </AccordionContent>
                                   </AccordionItem>
@@ -1380,7 +1393,7 @@ const UnifiedPageEditor = ({
                                     </AccordionTrigger>
                                     <AccordionContent>
                                       <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
-{JSON.stringify(stage?.requestPayload ?? stage?.request ?? {}, null, 2)}
+{JSON.stringify(stage?.debug?.requestPayload ?? stage?.requestPayload ?? stage?.request ?? {}, null, 2)}
                                       </pre>
                                     </AccordionContent>
                                   </AccordionItem>
@@ -1395,7 +1408,7 @@ const UnifiedPageEditor = ({
                                     </AccordionTrigger>
                                     <AccordionContent>
                                       <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
-{typeof stage?.responseData === 'string' ? stage?.responseData : JSON.stringify(stage?.responseData ?? stage?.response ?? {}, null, 2)}
+{typeof (stage?.debug?.responseData ?? stage?.responseData) === 'string' ? (stage?.debug?.responseData ?? stage?.responseData) : JSON.stringify(stage?.debug?.responseData ?? stage?.responseData ?? stage?.response ?? {}, null, 2)}
                                       </pre>
                                     </AccordionContent>
                                   </AccordionItem>
@@ -1410,7 +1423,7 @@ const UnifiedPageEditor = ({
                                     </AccordionTrigger>
                                     <AccordionContent>
                                       <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
-{stage?.generatedHtml || stage?.html || ''}
+{stage?.debug?.generatedHtml || stage?.generatedHtml || stage?.html || 'No HTML generated'}
                                       </pre>
                                     </AccordionContent>
                                   </AccordionItem>
