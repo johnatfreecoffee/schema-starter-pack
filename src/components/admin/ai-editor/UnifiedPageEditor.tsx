@@ -1044,10 +1044,10 @@ const UnifiedPageEditor = ({
           </div>
         </DialogHeader>
 
-        <div className="flex h-[calc(100%-80px)]">
+        <div className="flex h-[calc(100%-80px)] overflow-hidden">
           {/* Left Panel - AI Chat */}
-          <div className="w-2/5 border-r flex flex-col overflow-hidden">
-            <div className="p-4 border-b flex-shrink-0">
+          <div className="w-2/5 border-r flex flex-col min-h-0">
+            <div className="p-4 border-b flex-shrink-0 overflow-y-auto max-h-[40vh]">
               {settingsChanged && (
                 <div className="mb-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md flex items-start gap-2">
                   <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
@@ -1140,8 +1140,8 @@ const UnifiedPageEditor = ({
                 </div>}
             </div>
 
-            <ScrollArea className="flex-1 min-h-0">
-              <div className="space-y-4 p-4 pb-4">
+            <ScrollArea className="flex-1 min-h-0 overflow-y-auto">
+              <div className="space-y-4 p-4 pb-4 min-h-full">
                 {chatMessages.length === 0 ? <div className="text-center text-muted-foreground py-12">
                     <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p className="text-sm mb-2">Ask AI to modify your page</p>
