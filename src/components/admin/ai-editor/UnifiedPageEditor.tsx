@@ -594,14 +594,14 @@ const UnifiedPageEditor = ({
     try {
       
       // Add timeout to the edge function call (5 minutes for multi-stage pipeline)
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout - AI took too long to respond. The multi-stage pipeline can take up to 3 minutes. Please wait or try a shorter prompt.')), 300000)
-      );
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('AI_EDITOR_TIMEOUT')), 300000);
+      });
 
       const invokePromise = supabase.functions.invoke('ai-edit-page', {
         body: { 
           ...requestContext,
-          userId: user?.id // Pass user ID for background job tracking
+          userId: user?.id
         }
       });
 
@@ -662,42 +662,76 @@ const UnifiedPageEditor = ({
     } catch (error: any) {
       console.error('AI Editor Error:', error);
       
-      // Check for browser extension blocking the request
-      // Only flag as extension if we see actual evidence (chrome-extension://, frame_ant, etc.)
-      const stackTrace = error?.stack || '';
-      const contextStack = error?.context?.stack || '';
-      const errorMsg = error?.message || '';
-      const contextMessage = error?.context?.message || '';
-      
-      const hasExtensionEvidence = 
-        stackTrace.includes('chrome-extension://') ||
-        stackTrace.includes('moz-extension://') ||
-        stackTrace.includes('frame_ant') ||
-        contextStack.includes('chrome-extension://') ||
-        contextStack.includes('moz-extension://') ||
-        contextStack.includes('frame_ant') ||
-        errorMsg.includes('chrome-extension://') ||
-        contextMessage.includes('chrome-extension://');
-      
-      if (
-        error?.name === 'FunctionsFetchError' && 
-        error?.context?.name === 'TypeError' && 
-        error?.context?.message === 'Failed to fetch' &&
-        hasExtensionEvidence
-      ) {
-        // Confirmed browser extension/ad-blocker interfering
+      // Check for our explicit timeout first
+      if (error?.message === 'AI_EDITOR_TIMEOUT') {
         toast({
-          title: 'Request Blocked by Browser Extension',
-          description: 'An ad-blocker or privacy extension is blocking this request. Please disable extensions for this site or try Incognito mode, then resend your message.',
+          title: 'Generation Timeout',
+          description: 'AI generation is taking longer than expected. The process may still be running. Please wait a moment and check back.',
           variant: 'destructive'
         });
         
         const assistantError: ChatMessage = {
           role: 'assistant',
-          content: `## 🚫 Request Blocked by Browser Extension\n\n**A browser extension is blocking the AI request.**\n\nThis usually happens when:\n- Ad-blockers are interfering with network requests\n- Privacy extensions are blocking third-party requests\n- Security extensions are filtering connections\n\n**Quick fixes:**\n1. **Disable browser extensions** for this site temporarily\n2. Try using **Incognito/Private mode**\n3. Whitelist this domain in your extension settings\n4. **Resend your message** after adjusting settings\n\nThe backend service is healthy—this is a client-side browser extension issue.`
+          content: `## ⏱️ Generation Timeout\n\n**The AI generation is taking longer than expected (>5 minutes).**\n\nThe multi-stage pipeline typically takes 2-3 minutes but can take up to 5 minutes for complex pages.\n\n**What happened:**\n- The 4-stage AI pipeline (Planning → Content → HTML → Styling) is still processing\n- Your request may still complete successfully in the background\n\n**What to do:**\n1. **Wait 1-2 minutes** and try a simpler command to check status\n2. **Simplify your request** - break it into smaller changes\n3. **Contact support** if timeouts persist\n\n**Note:** This is a known limitation of the multi-stage pipeline. We're working on optimization.`
         };
         setChatMessages(prev => [...prev, assistantError]);
         return;
+      }
+      
+      // Check for network timeout (browser/Supabase client timeout before our timeout)
+      const isNetworkTimeout = 
+        error?.message?.includes('timeout') ||
+        error?.message?.includes('timed out') ||
+        (error?.name === 'FunctionsFetchError' && 
+         error?.context?.name === 'TypeError' && 
+         error?.context?.message === 'Failed to fetch');
+      
+      if (isNetworkTimeout) {
+        // Check for actual browser extension evidence
+        const stackTrace = error?.stack || '';
+        const contextStack = error?.context?.stack || '';
+        const errorMsg = error?.message || '';
+        const contextMessage = error?.context?.message || '';
+        
+        const hasExtensionEvidence = 
+          stackTrace.includes('chrome-extension://') ||
+          stackTrace.includes('moz-extension://') ||
+          stackTrace.includes('frame_ant') ||
+          contextStack.includes('chrome-extension://') ||
+          contextStack.includes('moz-extension://') ||
+          contextStack.includes('frame_ant') ||
+          errorMsg.includes('chrome-extension://') ||
+          contextMessage.includes('chrome-extension://');
+        
+        if (hasExtensionEvidence) {
+          // Actual browser extension interference
+          toast({
+            title: 'Request Blocked by Browser Extension',
+            description: 'A browser extension is blocking this request. Please disable extensions and try again.',
+            variant: 'destructive'
+          });
+          
+          const assistantError: ChatMessage = {
+            role: 'assistant',
+            content: `## 🚫 Request Blocked by Browser Extension\n\n**A browser extension is blocking the AI request.**\n\n**Quick fixes:**\n1. Disable browser extensions for this site\n2. Try Incognito/Private mode\n3. Whitelist this domain in your extension settings`
+          };
+          setChatMessages(prev => [...prev, assistantError]);
+          return;
+        } else {
+          // Network timeout without extension evidence - likely backend taking too long
+          toast({
+            title: 'Network Timeout',
+            description: 'The AI generation is taking too long. The multi-stage pipeline can take 2-3 minutes. Please try again.',
+            variant: 'destructive'
+          });
+          
+          const assistantError: ChatMessage = {
+            role: 'assistant',
+            content: `## ⏱️ Network Timeout\n\n**The request timed out before completion.**\n\nThe 4-stage AI pipeline takes 2-3 minutes for complex pages. This timeout occurred because:\n\n- The backend process exceeded the browser/client timeout limit\n- Network latency is higher than normal\n\n**Solutions:**\n1. **Try again** - the timeout may have been temporary\n2. **Simplify your request** - ask for smaller, incremental changes\n3. **Break it down** - make one change at a time instead of multiple changes\n\n**Technical Note:** The multi-stage pipeline is still being optimized for speed.`
+          };
+          setChatMessages(prev => [...prev, assistantError]);
+          return;
+        }
       }
       
       // Extract detailed error information
