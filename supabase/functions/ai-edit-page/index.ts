@@ -1461,8 +1461,8 @@ ${buildThemeContext(context)}
     // Use multi-stage for 'build' mode (new pages)
     // Use single-shot for 'edit' mode (modifications)
     // ========================================================================
-    
-    let useMultiStage = mode === 'build' && !context.currentPage?.html;
+
+    let useMultiStage = mode === 'build';
     let updatedHtml = '';
     let usageMetadata: any = null;
     let pipelineStages: any[] = [];
