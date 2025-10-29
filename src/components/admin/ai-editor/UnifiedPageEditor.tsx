@@ -609,6 +609,28 @@ const UnifiedPageEditor = ({
     } catch (error: any) {
       console.error('AI Editor Error:', error);
       
+      // Check for browser extension blocking the request
+      if (
+        error?.name === 'FunctionsFetchError' && 
+        error?.context?.name === 'TypeError' && 
+        error?.context?.message === 'Failed to fetch'
+      ) {
+        // This is likely a browser extension/ad-blocker interfering
+        toast({
+          title: 'Request Blocked by Browser Extension',
+          description: 'An ad-blocker or privacy extension is blocking this request. Please disable extensions for this site or try Incognito mode, then resend your message.',
+          variant: 'destructive'
+        });
+        
+        const assistantError: ChatMessage = {
+          role: 'assistant',
+          content: `## 🚫 Request Blocked by Browser Extension\n\n**A browser extension is blocking the AI request.**\n\nThis usually happens when:\n- Ad-blockers are interfering with network requests\n- Privacy extensions are blocking third-party requests\n- Security extensions are filtering connections\n\n**Quick fixes:**\n1. **Disable browser extensions** for this site temporarily\n2. Try using **Incognito/Private mode**\n3. Whitelist this domain in your extension settings\n4. **Resend your message** after adjusting settings\n\nThe backend service is healthy—this is a client-side browser extension issue.`
+        };
+        setChatMessages(prev => [...prev, assistantError]);
+        setIsAiLoading(false);
+        return;
+      }
+      
       // Extract detailed error information
       let errorMessage = 'Unknown error occurred';
       let errorTitle = 'AI Error';
