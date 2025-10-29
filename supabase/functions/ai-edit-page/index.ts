@@ -883,7 +883,12 @@ serve(async (req) => {
       : (commandObj?.text || '');
     const mode = commandObj?.mode || requestBody.mode || 'build';
     const model = commandObj?.model || requestBody.model || 'claude';
-    const { conversationHistory = [], context, userId, pipeline } = requestBody;
+    const { conversationHistory = [], context = {}, userId, pipeline } = requestBody;
+    
+    // Validate that context exists
+    if (!context || typeof context !== 'object') {
+      throw new Error('Invalid request: context object is required');
+    }
     
     // Log pipeline info if present
     if (pipeline?.enabled) {
