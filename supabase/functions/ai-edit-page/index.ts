@@ -902,7 +902,7 @@ serve(async (req) => {
     console.log('AI Edit Request:', { 
       command: command.substring(0, 200) + (command.length > 200 ? '...' : ''), 
       mode, 
-      contextKeys: Object.keys(context),
+      contextKeys: context ? Object.keys(context) : [],
       promptLength: command.length,
       htmlLength: context?.currentPage?.html?.length || 0
     });
