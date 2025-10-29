@@ -239,6 +239,51 @@ export type Database = {
           },
         ]
       }
+      ai_page_generation_jobs: {
+        Row: {
+          command: string
+          completed_at: string | null
+          created_at: string
+          debug_data: Json | null
+          error_message: string | null
+          id: string
+          mode: string
+          page_id: string | null
+          result_html: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          command: string
+          completed_at?: string | null
+          created_at?: string
+          debug_data?: Json | null
+          error_message?: string | null
+          id?: string
+          mode: string
+          page_id?: string | null
+          result_html?: string | null
+          status: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          command?: string
+          completed_at?: string | null
+          created_at?: string
+          debug_data?: Json | null
+          error_message?: string | null
+          id?: string
+          mode?: string
+          page_id?: string | null
+          result_html?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_training: {
         Row: {
           brand_voice: string | null

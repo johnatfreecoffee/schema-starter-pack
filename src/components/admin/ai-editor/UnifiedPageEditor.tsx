@@ -125,6 +125,7 @@ const UnifiedPageEditor = ({
   initialHtml,
   pageId
 }: UnifiedPageEditorProps) => {
+  const [user, setUser] = useState<any>(null);
   const [templateHtml, setTemplateHtml] = useState('');
   const [originalHtml, setOriginalHtml] = useState('');
   const [aiPrompt, setAiPrompt] = useState('');
@@ -592,13 +593,16 @@ const UnifiedPageEditor = ({
     
     try {
       
-      // Add timeout to the edge function call (180 seconds)
+      // Add timeout to the edge function call (5 minutes for multi-stage pipeline)
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout - AI took too long to respond. Please try a shorter prompt or reset the chat.')), 180000)
+        setTimeout(() => reject(new Error('Request timeout - AI took too long to respond. The multi-stage pipeline can take up to 3 minutes. Please wait or try a shorter prompt.')), 300000)
       );
 
       const invokePromise = supabase.functions.invoke('ai-edit-page', {
-        body: requestContext
+        body: { 
+          ...requestContext,
+          userId: user?.id // Pass user ID for background job tracking
+        }
       });
 
       const { data, error } = await Promise.race([invokePromise, timeoutPromise]) as any;

@@ -875,7 +875,7 @@ serve(async (req) => {
 
   try {
     const requestBody = await req.json();
-    const { command, mode = 'build', conversationHistory = [], context, model = 'claude' } = requestBody;
+    const { command, mode = 'build', conversationHistory = [], context, model = 'claude', userId } = requestBody;
     
     // Update metrics
     metrics.command = command.substring(0, 100);
