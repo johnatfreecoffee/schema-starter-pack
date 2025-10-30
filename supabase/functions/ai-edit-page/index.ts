@@ -564,7 +564,7 @@ OUTPUT EXACTLY THIS JSON (no markdown):
     name: 'Planning',
     prompt,
     maxTokens: 4096,
-    temperature: 0.4
+    temperature: 0.6
   };
 }
 
@@ -634,8 +634,8 @@ OUTPUT: Clean HTML snippet starting with <main>, no markdown.`;
   return {
     name: 'HTML',
     prompt,
-    maxTokens: 32768,
-    temperature: 0.2
+    maxTokens: 65536,
+    temperature: 0.7
   };
 }
 
@@ -667,8 +667,8 @@ OUTPUT: Enhanced content-only HTML starting with <main>, no markdown.`;
   return {
     name: 'Styling',
     prompt,
-    maxTokens: 65535,
-    temperature: 0.5
+    maxTokens: 32768,
+    temperature: 0.9
   };
 }
 

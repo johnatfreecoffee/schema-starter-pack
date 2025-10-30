@@ -2,12 +2,12 @@
 // Configuration & Constants for AI Edit Page Function
 // ============================================================================
 
-// Token limits for each pipeline stage
+// Token limits for each pipeline stage (Grok optimized)
 export const TOKEN_LIMITS = {
   PLANNING: 4096,
   CONTENT: 16384,
-  HTML: 32768,
-  STYLING: 65535,
+  HTML: 65536,
+  STYLING: 32768,
   SINGLE_SHOT: 8192
 } as const;
 
@@ -25,12 +25,12 @@ export const PRICING = {
   CACHED_INPUT_COST_PER_MILLION: 0.01
 } as const;
 
-// Temperature settings for different stages
+// Temperature settings for different stages (Grok optimized)
 export const TEMPERATURES = {
-  PLANNING: 0.4,
+  PLANNING: 0.6,
   CONTENT: 0.8,
-  HTML: 0.2,
-  STYLING: 0.5,
+  HTML: 0.7,
+  STYLING: 0.9,
   VALIDATION: 0.2
 } as const;
 
