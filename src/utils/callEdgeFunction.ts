@@ -23,11 +23,8 @@ export async function callEdgeFunction<T = any>({
   const { data: sessionData } = await supabase.auth.getSession();
   const accessToken = sessionData.session?.access_token;
 
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-  const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
-  if (!supabaseUrl) {
-    throw new EdgeFunctionError("Missing configuration for backend URL");
-  }
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tkrcdxkdfjeupbdlbcfz.supabase.co';
+  const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrcmNkeGtkZmpldXBiZGxiY2Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3NDkyNTIsImV4cCI6MjA3NTMyNTI1Mn0.PVrTzBkP1sDtxgfWyYNboJTLsJFg-qT5tfCQNZS8sO8';
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
