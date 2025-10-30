@@ -718,6 +718,10 @@ async function executePipelineStage(
   let response: Response | null = null;
   let data: any = null;
 
+  // Grok model fallback list - try in order
+  const grokModelFallbacks = ['grok-beta', 'grok-3-beta', 'grok-4'];
+  let modelIndex = 0;
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       if (model === 'grok') {
@@ -726,7 +730,11 @@ async function executePipelineStage(
         if (!X_AI_API_KEY) {
           throw new Error('X_AI API key not configured');
         }
-        
+
+        // Select model identifier - use fallback if previous attempts failed with 404
+        const grokModel = grokModelFallbacks[modelIndex];
+        console.log(`Calling Grok API with model: ${grokModel}...`);
+
         response = await fetch('https://api.x.ai/v1/chat/completions', {
           method: 'POST',
           headers: {
@@ -734,18 +742,38 @@ async function executePipelineStage(
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'grok-4',
+            model: grokModel,
             temperature: requestPayload.temperature || 0.7,
             max_tokens: requestPayload.max_tokens || 2000,
             messages: requestPayload.messages,
             stream: false
           })
         });
-        
+
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           const errorMessage = errorData.error?.message || 'Unknown error';
-          
+          const errorType = errorData.error?.type || 'unknown';
+
+          // Log detailed error information
+          console.error(`❌ Grok API error (${response.status}):`, JSON.stringify({
+            model: grokModel,
+            status: response.status,
+            type: errorType,
+            message: errorMessage,
+            attempt,
+            maxRetries
+          }));
+
+          // Handle 404 errors by trying different model identifiers
+          if (response.status === 404 && modelIndex < grokModelFallbacks.length - 1) {
+            modelIndex++;
+            const nextModel = grokModelFallbacks[modelIndex];
+            console.log(`⚠️ Model ${grokModel} not found (404). Trying fallback model: ${nextModel}`);
+            continue;
+          }
+
+          // Handle 503 errors with exponential backoff
           if (response.status === 503 && attempt < maxRetries) {
             const backoffMs = RETRIES.BACKOFF_BASE_MS * Math.pow(2, attempt - 1);
             const cappedBackoff = Math.min(backoffMs, RETRIES.BACKOFF_MAX_MS);
@@ -753,11 +781,12 @@ async function executePipelineStage(
             await sleep(cappedBackoff);
             continue;
           }
-          
-          throw new Error(`Stage ${stage.name} failed with Grok: ${response.status} - ${errorMessage}`);
+
+          throw new Error(`Stage ${stage.name} failed with Grok (${grokModel}): ${response.status} - ${errorMessage}`);
         }
-        
+
         data = await response.json();
+        console.log(`✅ Successfully called Grok API with model: ${grokModel}`);
         break;
       } else {
         // Use Google Gemini API (default)
