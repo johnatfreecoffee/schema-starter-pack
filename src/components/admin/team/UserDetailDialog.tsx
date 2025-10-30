@@ -26,6 +26,7 @@ import { PermissionsMatrix } from './PermissionsMatrix';
 import { PasswordResetDialog } from './PasswordResetDialog';
 import { CRUDLogger } from '@/lib/crudLogger';
 import { formatDistanceToNow } from 'date-fns';
+import { callEdgeFunction } from '@/utils/callEdgeFunction';
 
 interface UserDetailDialogProps {
   open: boolean;
@@ -241,15 +242,15 @@ export function UserDetailDialog({ open, onOpenChange, userId, onSuccess }: User
     setResending(true);
     try {
       // Call edge function to resend invitation
-      const { error } = await supabase.functions.invoke('send-team-invitation', {
+      await callEdgeFunction({
+        name: 'send-team-invitation',
         body: {
           email: profile.email,
           full_name: profile.full_name,
           resend: true,
         },
+        timeoutMs: 60000,
       });
-
-      if (error) throw error;
 
       toast({
         title: 'Success',

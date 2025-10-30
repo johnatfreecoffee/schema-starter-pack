@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Bot, Send, Loader2, CheckCircle2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { callEdgeFunction } from '@/utils/callEdgeFunction';
 
 interface AISettingsGuideProps {
   open: boolean;
@@ -51,14 +52,14 @@ export const AISettingsGuide = ({
   const initializeSession = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('company-settings-ai-guide', {
+      const data = await callEdgeFunction<any>({
+        name: 'company-settings-ai-guide',
         body: {
           action: 'start',
           currentSettings,
-        }
+        },
+        timeoutMs: 180000,
       });
-
-      if (error) throw error;
 
       setSessionId(data.sessionId);
       setMessages([{
@@ -86,15 +87,15 @@ export const AISettingsGuide = ({
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('company-settings-ai-guide', {
+      const data = await callEdgeFunction<any>({
+        name: 'company-settings-ai-guide',
         body: {
           message: userMessage,
           sessionId,
           currentSettings,
-        }
+        },
+        timeoutMs: 180000,
       });
-
-      if (error) throw error;
 
       if (data.error) {
         toast({

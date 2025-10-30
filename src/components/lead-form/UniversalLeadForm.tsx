@@ -13,6 +13,7 @@ import { useFormSettings } from '@/hooks/useFormSettings';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { callEdgeFunction } from '@/utils/callEdgeFunction';
 
 const leadFormSchema = z.object({
   first_name: z.string().min(1, 'First name is required').max(100),
@@ -80,16 +81,16 @@ export const UniversalLeadForm = ({
   const onSubmit = async (data: LeadFormData) => {
     setIsSubmitting(true);
     try {
-      const { data: leadData, error } = await supabase.functions.invoke('submit-lead', {
+      const leadData = await callEdgeFunction<any>({
+        name: 'submit-lead',
         body: {
           ...data,
           service_id: context?.serviceId,
           originating_url: context?.originatingUrl || window.location.href,
           lead_source: mode === 'modal' ? 'service_page' : 'homepage',
         },
+        timeoutMs: 60000,
       });
-
-      if (error) throw error;
 
       setShowSuccess(true);
       form.reset();

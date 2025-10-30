@@ -14,6 +14,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from '@/hooks/use-toast';
 import { Loader2, Key, Mail } from 'lucide-react';
 import { CRUDLogger } from '@/lib/crudLogger';
+import { callEdgeFunction } from '@/utils/callEdgeFunction';
 
 interface PasswordResetDialogProps {
   open: boolean;
@@ -64,11 +65,12 @@ export function PasswordResetDialog({
         }
 
         // Call secure edge function to reset password
-        const { data, error: resetError } = await supabase.functions.invoke('reset-user-password', {
-          body: { userId, tempPassword }
+        const data = await callEdgeFunction<any>({
+          name: 'reset-user-password',
+          body: { userId, tempPassword },
+          timeoutMs: 60000,
         });
 
-        if (resetError) throw resetError;
         if (!data?.success) throw new Error('Password reset failed');
 
         await CRUDLogger.logUpdate({

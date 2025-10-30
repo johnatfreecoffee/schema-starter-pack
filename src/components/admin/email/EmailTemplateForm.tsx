@@ -25,6 +25,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { callEdgeFunction } from '@/utils/callEdgeFunction';
 
 interface EmailTemplateFormProps {
   template?: any;
@@ -175,11 +176,11 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
 
     setIsGenerating(true);
     try {
-      const { data, error } = await supabase.functions.invoke('generate-email-template', {
-        body: { prompt: aiPrompt }
+      const data = await callEdgeFunction<any>({
+        name: 'generate-email-template',
+        body: { prompt: aiPrompt },
+        timeoutMs: 120000,
       });
-
-      if (error) throw error;
 
       if (data?.name) setName(data.name);
       if (data?.subject) setSubject(data.subject);

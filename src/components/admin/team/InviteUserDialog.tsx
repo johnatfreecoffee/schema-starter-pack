@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { callEdgeFunction } from '@/utils/callEdgeFunction';
 
 const inviteSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -110,11 +111,11 @@ export function InviteUserDialog({ open, onOpenChange, onSuccess }: InviteUserDi
         job_title: data.job_title,
       };
 
-      const { error } = await supabase.functions.invoke('send-team-invitation', {
+      await callEdgeFunction({
+        name: 'send-team-invitation',
         body: inviteData,
+        timeoutMs: 60000,
       });
-
-      if (error) throw error;
 
       // Log the invitation
       await CRUDLogger.logCreate({

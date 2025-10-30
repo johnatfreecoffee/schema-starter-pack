@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { callEdgeFunction } from '@/utils/callEdgeFunction';
 
 export interface EmailOptions {
   cc?: string;
@@ -32,17 +33,19 @@ export class EmailService {
         .single();
 
       // Call SendGrid edge function
-      const { data, error: sendError } = await supabase.functions.invoke('send-email', {
+      const data = await callEdgeFunction<any>({
+        name: 'send-email',
         body: {
           to,
           subject,
           html: body,
           from: company?.email || options.cc || 'noreply@yourdomain.com'
-        }
+        },
+        timeoutMs: 60000,
       });
 
       const status = data?.success ? 'sent' : 'failed';
-      const errorMessage = data?.success ? null : (sendError?.message || 'Unknown error');
+      const errorMessage = data?.success ? null : 'Unknown error';
 
       // Log to email_queue for tracking
       await supabase

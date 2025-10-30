@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { callEdgeFunction } from '@/utils/callEdgeFunction';
 import NotFound from './NotFound';
 import { ServiceReviews } from '@/components/reviews/ServiceReviews';
 import { Button } from '@/components/ui/button';
@@ -19,11 +20,12 @@ const GeneratedPage = () => {
   const { data: pageResponse, isLoading, error } = useQuery({
     queryKey: ['rendered-page', urlPath],
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke('render-page', {
-        body: { urlPath }
+      const data = await callEdgeFunction<{ content: string; pageData: any }>({
+        name: 'render-page',
+        body: { urlPath },
+        timeoutMs: 120000,
       });
-      if (error) throw error;
-      return data as { content: string; pageData: any };
+      return data;
     },
     retry: 1,
   });

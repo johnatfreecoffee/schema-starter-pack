@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle2, XCircle, Loader2, Upload } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { callEdgeFunction } from '@/utils/callEdgeFunction';
 
 interface TemplateFile {
   fileName: string;
@@ -107,11 +108,11 @@ export default function BulkTemplateUpdater() {
       setCurrentFile(`Processing batch ${Math.floor(i / batchSize) + 1} of ${Math.ceil(templates.length / batchSize)}...`);
 
       try {
-        const { data, error } = await supabase.functions.invoke('bulk-update-templates', {
-          body: { templates: batch }
+        const data = await callEdgeFunction<any>({
+          name: 'bulk-update-templates',
+          body: { templates: batch },
+          timeoutMs: 300000,
         });
-
-        if (error) throw error;
 
         if (data?.results) {
           setResults(prev => [...prev, ...data.results]);
