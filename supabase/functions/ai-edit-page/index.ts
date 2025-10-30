@@ -1,11 +1,13 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.74.0';
+import { validateRequest, validateEnvironment, RequestValidationError } from './validators/request-validator.ts';
+import { CORS_HEADERS, TIMEOUTS, THRESHOLDS } from './config.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const corsHeaders = CORS_HEADERS;
+
+// Validate environment on startup
+validateEnvironment();
 
 const GOOGLE_GEMINI_API_KEY = Deno.env.get('GOOGLE_GEMINI_AI_STUDIO');
 
@@ -1351,20 +1353,32 @@ serve(async (req) => {
 
   try {
     const requestBody = await req.json();
-    
+
+    // Validate request payload
+    let validatedRequest;
+    try {
+      validatedRequest = validateRequest(requestBody);
+    } catch (validationError) {
+      if (validationError instanceof RequestValidationError) {
+        return new Response(JSON.stringify({
+          error: validationError.message,
+          errorType: 'ValidationError'
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      throw validationError;
+    }
+
     // Handle new nested command structure with proper fallbacks
     const commandObj = requestBody.command;
-    const command = typeof commandObj === 'string' 
-      ? commandObj 
+    const command = typeof commandObj === 'string'
+      ? commandObj
       : (commandObj?.text || '');
     const mode = commandObj?.mode || requestBody.mode || 'build';
     const model = commandObj?.model || requestBody.model || 'lovable';
     const { conversationHistory = [], context = {}, userId, pipeline } = requestBody;
-    
-    // Validate that context exists
-    if (!context || typeof context !== 'object') {
-      throw new Error('Invalid request: context object is required');
-    }
     
     // Log pipeline info if present
     if (pipeline?.enabled) {
@@ -1400,20 +1414,11 @@ serve(async (req) => {
     console.log(command);
     console.log('=== FULL COMMAND END ===');
 
-    const GOOGLE_GEMINI_API_KEY = Deno.env.get('GOOGLE_GEMINI_AI_STUDIO');
-    
-    if (!GOOGLE_GEMINI_API_KEY) {
-      throw new Error('GOOGLE_GEMINI_AI_STUDIO is not configured');
-    }
+    // Environment already validated on startup - safe to use without checks
+    const GOOGLE_GEMINI_API_KEY = Deno.env.get('GOOGLE_GEMINI_AI_STUDIO')!;
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    // Initialize Supabase client for database operations (PHASE 3: Persistent cache)
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-      throw new Error('Supabase environment variables not configured');
-    }
-    
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // ========================================================================
@@ -2351,24 +2356,31 @@ ${buildThemeContext(context || {})}
     console.error('Error type:', error.constructor.name);
     console.error('Error message:', error.message);
     console.error('Error stack:', error.stack);
-    
+
     metrics.endTime = Date.now();
     metrics.duration = metrics.endTime - metrics.startTime;
     logMetrics(metrics);
-    
-    // Return 200 with error field so frontend can access full error details
-    return new Response(JSON.stringify({ 
-      success: false,
+
+    // Determine appropriate HTTP status code
+    let statusCode = 500; // Default to internal server error
+
+    if (error instanceof RequestValidationError) {
+      statusCode = 400; // Bad request
+    } else if (error.message?.includes('timeout') || error.message?.includes('Timeout')) {
+      statusCode = 504; // Gateway timeout
+    } else if (error.message?.includes('API') || error.message?.includes('auth')) {
+      statusCode = 502; // Bad gateway (upstream API issue)
+    }
+
+    return new Response(JSON.stringify({
       error: error.message || 'Unknown error occurred',
-      errorDetails: error.stack,
       errorType: error.constructor.name,
-      statusCode: 500,
       metrics: {
         duration: metrics.duration,
         timeoutOccurred: metrics.timeoutOccurred
       }
     }), {
-      status: 200, // Return 200 so Supabase client doesn't throw
+      status: statusCode,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
