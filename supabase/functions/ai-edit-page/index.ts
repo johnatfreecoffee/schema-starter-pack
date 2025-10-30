@@ -1,11 +1,13 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.74.0';
+import { validateRequest, validateEnvironment, RequestValidationError } from './validators/request-validator.ts';
+import { CORS_HEADERS, TIMEOUTS, THRESHOLDS } from './config.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const corsHeaders = CORS_HEADERS;
+
+// Validate environment on startup
+validateEnvironment();
 
 const GOOGLE_GEMINI_API_KEY = Deno.env.get('GOOGLE_GEMINI_AI_STUDIO');
 
@@ -18,9 +20,10 @@ function validateHTML(html: string): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
   const trimmed = html.trim();
 
-  // Must be content-only HTML starting with <main>
-  if (!/^<main[\s>]/i.test(trimmed)) {
-    errors.push('Output must start with <main> and be content-only HTML');
+  // Must be content-only HTML starting with <div id="ai-section-..."> or <main>
+  const validStarts = /^<(div\s+id="ai-section-|main[\s>])/i;
+  if (!validStarts.test(trimmed)) {
+    errors.push('Output must start with <div id="ai-section-..."> or <main> (content-only HTML)');
   }
 
   // Must NOT include full document or site-level tags
@@ -724,12 +727,25 @@ async function executePipelineStage(
   
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(`Stage ${stage.name} failed: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+    const errorMessage = errorData.error?.message || 'Unknown error';
+
+    // Special handling for overloaded API
+    if (response.status === 503) {
+      throw new Error(`Stage ${stage.name} failed: API overloaded (503). Please wait a few minutes and try again. Google's Gemini API is experiencing high traffic.`);
+    }
+
+    throw new Error(`Stage ${stage.name} failed: ${response.status} - ${errorMessage}`);
   }
-  
+
   const data = await response.json();
   const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
   const duration = Date.now() - startTime;
+
+  // Check if we got empty content
+  if (!content || content.trim().length === 0) {
+    console.warn(`⚠️ Stage ${stage.name} returned empty content`);
+    throw new Error(`Stage ${stage.name} failed: API returned empty response. The model may be overloaded.`);
+  }
   
   // Estimate tokens (Gemini doesn't always provide exact counts)
   const estimatedInputTokens = Math.ceil(fullPrompt.length / 4);
@@ -1351,20 +1367,32 @@ serve(async (req) => {
 
   try {
     const requestBody = await req.json();
-    
+
+    // Validate request payload
+    let validatedRequest;
+    try {
+      validatedRequest = validateRequest(requestBody);
+    } catch (validationError) {
+      if (validationError instanceof RequestValidationError) {
+        return new Response(JSON.stringify({
+          error: validationError.message,
+          errorType: 'ValidationError'
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      throw validationError;
+    }
+
     // Handle new nested command structure with proper fallbacks
     const commandObj = requestBody.command;
-    const command = typeof commandObj === 'string' 
-      ? commandObj 
+    const command = typeof commandObj === 'string'
+      ? commandObj
       : (commandObj?.text || '');
     const mode = commandObj?.mode || requestBody.mode || 'build';
     const model = commandObj?.model || requestBody.model || 'lovable';
     const { conversationHistory = [], context = {}, userId, pipeline } = requestBody;
-    
-    // Validate that context exists
-    if (!context || typeof context !== 'object') {
-      throw new Error('Invalid request: context object is required');
-    }
     
     // Log pipeline info if present
     if (pipeline?.enabled) {
@@ -1400,20 +1428,11 @@ serve(async (req) => {
     console.log(command);
     console.log('=== FULL COMMAND END ===');
 
-    const GOOGLE_GEMINI_API_KEY = Deno.env.get('GOOGLE_GEMINI_AI_STUDIO');
-    
-    if (!GOOGLE_GEMINI_API_KEY) {
-      throw new Error('GOOGLE_GEMINI_AI_STUDIO is not configured');
-    }
+    // Environment already validated on startup - safe to use without checks
+    const GOOGLE_GEMINI_API_KEY = Deno.env.get('GOOGLE_GEMINI_AI_STUDIO')!;
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-    // Initialize Supabase client for database operations (PHASE 3: Persistent cache)
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-      throw new Error('Supabase environment variables not configured');
-    }
-    
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // ========================================================================
@@ -2230,10 +2249,16 @@ ${buildThemeContext(context || {})}
       }
     }
 
+    // Check if we got empty HTML from streaming
+    if (!updatedHtml || updatedHtml.trim().length === 0) {
+      console.error('❌ AI returned empty HTML');
+      throw new Error('AI generation failed: No content generated. The API may be overloaded. Please try again in a few minutes.');
+    }
+
     // ========================================================================
     // POST-PROCESSING & VALIDATION
     // ========================================================================
-    
+
     // Clean up the HTML
     updatedHtml = updatedHtml.trim();
     
@@ -2351,24 +2376,41 @@ ${buildThemeContext(context || {})}
     console.error('Error type:', error.constructor.name);
     console.error('Error message:', error.message);
     console.error('Error stack:', error.stack);
-    
+
     metrics.endTime = Date.now();
     metrics.duration = metrics.endTime - metrics.startTime;
     logMetrics(metrics);
-    
-    // Return 200 with error field so frontend can access full error details
-    return new Response(JSON.stringify({ 
-      success: false,
-      error: error.message || 'Unknown error occurred',
-      errorDetails: error.stack,
+
+    // Determine appropriate HTTP status code
+    let statusCode = 500; // Default to internal server error
+    let userMessage = error.message || 'Unknown error occurred';
+
+    if (error instanceof RequestValidationError) {
+      statusCode = 400; // Bad request
+    } else if (error.message?.includes('overloaded') || error.message?.includes('503')) {
+      statusCode = 503; // Service unavailable
+      userMessage = '🔄 Google\'s AI service is temporarily overloaded. Please wait 2-3 minutes and try again. This is not an error with your request.';
+    } else if (error.message?.includes('timeout') || error.message?.includes('Timeout')) {
+      statusCode = 504; // Gateway timeout
+      userMessage = 'Request timed out. The AI took too long to generate content. Please try a simpler request or try again later.';
+    } else if (error.message?.includes('API') || error.message?.includes('auth')) {
+      statusCode = 502; // Bad gateway (upstream API issue)
+      userMessage = 'Upstream API error. ' + error.message;
+    } else if (error.message?.includes('empty') || error.message?.includes('No content generated')) {
+      statusCode = 502; // Bad gateway
+      userMessage = 'AI generated no content. The API may be overloaded. Please try again in a few minutes.';
+    }
+
+    return new Response(JSON.stringify({
+      error: userMessage,
       errorType: error.constructor.name,
-      statusCode: 500,
+      originalError: error.message, // Keep original for debugging
       metrics: {
         duration: metrics.duration,
         timeoutOccurred: metrics.timeoutOccurred
       }
     }), {
-      status: 200, // Return 200 so Supabase client doesn't throw
+      status: statusCode,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
