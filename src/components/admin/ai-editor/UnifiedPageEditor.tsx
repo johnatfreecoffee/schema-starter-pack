@@ -138,7 +138,6 @@ const UnifiedPageEditor = ({
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [editorMode, setEditorMode] = useState<EditorMode>('build');
-  const [aiModel, setAiModel] = useState<'claude' | 'grok'>('claude');
   const [tokenCount, setTokenCount] = useState(0);
   const [currentHtml, setCurrentHtml] = useState('');
   const [previousHtml, setPreviousHtml] = useState('');
@@ -568,8 +567,7 @@ const UnifiedPageEditor = ({
     const requestBody = {
       command: {
         text: currentCommand,
-        mode: editorMode,
-        model: aiModel
+        mode: editorMode
       },
       pipeline: {
         enabled: true,
@@ -627,9 +625,9 @@ const UnifiedPageEditor = ({
 
     // Show request data immediately in debug panel and reset pipeline stages
     const baseDebug = {
-      fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nModel: ${aiModel}\nPage Type: ${pageType}`,
+      fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nModel: Google Gemini 2.5 Pro\nPage Type: ${pageType}`,
       requestPayload: requestContext,
-      responseData: { status: `Waiting for ${aiModel === 'grok' ? 'Grok' : 'Claude'} response...` },
+      responseData: { status: 'Waiting for Google Gemini 2.5 Pro response...' },
       generatedHtml: 'Waiting for response...'
     };
     const stageNames = ["Planning","Building Content","Creating HTML","Styling & Polish"];
@@ -1346,15 +1344,6 @@ const UnifiedPageEditor = ({
                 <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
               </div>
               <div className="flex gap-2 items-start">
-                <Select value={aiModel} onValueChange={(value: 'claude' | 'grok') => setAiModel(value)}>
-                  <SelectTrigger className="w-[110px] h-9 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="claude" className="text-xs">Claude</SelectItem>
-                    <SelectItem value="grok" className="text-xs">Grok</SelectItem>
-                  </SelectContent>
-                </Select>
                 <Textarea ref={textareaRef} placeholder="Ask AI to build something..." value={aiPrompt} onChange={e => setAiPrompt(e.target.value)} onKeyDown={e => {
                 if (sendOnEnter && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                   e.preventDefault();
@@ -1644,7 +1633,7 @@ const UnifiedPageEditor = ({
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "Claude's Raw Response", 'content')}
+                                    onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "AI Raw Response", 'content')}
                                     className="h-7 px-2"
                                     title="Copy content only"
                                   >
@@ -1653,7 +1642,7 @@ const UnifiedPageEditor = ({
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "Claude's Raw Response", 'header')}
+                                    onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "AI Raw Response", 'header')}
                                     className="h-7 px-2 gap-1"
                                     title="Copy header + content (all)"
                                   >

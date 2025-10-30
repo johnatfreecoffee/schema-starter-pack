@@ -7,6 +7,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const GOOGLE_GEMINI_API_KEY = Deno.env.get('GOOGLE_GEMINI_AI_STUDIO');
+
 // ========================================================================
 // PHASE 5: VALIDATION & ERROR HANDLING
 // Ensures output quality, provides fallbacks, graceful degradation
@@ -701,13 +703,23 @@ async function executePipelineStage(
     stream: false
   };
   
-  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(requestPayload)
+    body: JSON.stringify({
+      contents: [
+        {
+          role: 'user',
+          parts: [{ text: requestPayload.messages.map((m: any) => m.content).join('\n\n') }]
+        }
+      ],
+      generationConfig: {
+        temperature: requestPayload.temperature || 0.7,
+        maxOutputTokens: requestPayload.max_tokens || 2000,
+      }
+    })
   });
   
   if (!response.ok) {
@@ -716,12 +728,16 @@ async function executePipelineStage(
   }
   
   const data = await response.json();
-  const content = data.choices[0].message.content;
+  const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
   const duration = Date.now() - startTime;
   
+  // Estimate tokens (Gemini doesn't always provide exact counts)
+  const estimatedInputTokens = Math.ceil(fullPrompt.length / 4);
+  const estimatedOutputTokens = Math.ceil(content.length / 4);
+  
   console.log(`✅ Stage completed in ${(duration / 1000).toFixed(1)}s`);
-  console.log(`📊 Input tokens: ${data.usage.prompt_tokens}`);
-  console.log(`📊 Output tokens: ${data.usage.completion_tokens}`);
+  console.log(`📊 Input tokens (estimated): ${estimatedInputTokens}`);
+  console.log(`📊 Output tokens (estimated): ${estimatedOutputTokens}`);
   console.log(`📝 Output length: ${content.length} chars`);
   console.log('\n📄 STAGE OUTPUT PREVIEW:');
   console.log('─'.repeat(60));
@@ -731,8 +747,8 @@ async function executePipelineStage(
   return {
     content,
     tokens: {
-      input: data.usage.prompt_tokens,
-      output: data.usage.completion_tokens
+      input: estimatedInputTokens,
+      output: estimatedOutputTokens
     },
     duration,
     debug: {
@@ -905,7 +921,7 @@ serve(async (req) => {
     // Update metrics
     metrics.command = command.substring(0, 100);
     metrics.mode = mode;
-    metrics.provider = model === 'grok' ? 'grok' : 'lovable';
+    metrics.provider = 'gemini' as 'lovable' | 'grok';
     
     console.log('AI Edit Request:', { 
       command: command.substring(0, 200) + (command.length > 200 ? '...' : ''), 
@@ -927,10 +943,10 @@ serve(async (req) => {
     console.log(command);
     console.log('=== FULL COMMAND END ===');
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const GOOGLE_GEMINI_API_KEY = Deno.env.get('GOOGLE_GEMINI_AI_STUDIO');
     
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
+    if (!GOOGLE_GEMINI_API_KEY) {
+      throw new Error('GOOGLE_GEMINI_AI_STUDIO is not configured');
     }
 
     // Initialize Supabase client for database operations (PHASE 3: Persistent cache)
@@ -1507,7 +1523,7 @@ ${buildThemeContext(context || {})}
           command,
           context,
           staticContext,
-          LOVABLE_API_KEY
+          GOOGLE_GEMINI_API_KEY
         );
         
         updatedHtml = pipelineResult.html;
@@ -1558,67 +1574,36 @@ ${buildThemeContext(context || {})}
         }
       }
       
-      // Prepare API call based on selected model
-      let apiUrl: string;
-      let requestPayload: any;
-      let apiHeaders: Record<string, string>;
+      // Prepare API call - Google Gemini 2.5 Pro only
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:streamGenerateContent?key=${GOOGLE_GEMINI_API_KEY}`;
       
-      if (model === 'grok') {
-        const X_AI_API_KEY = Deno.env.get('X_AI_API_KEY');
-        if (!X_AI_API_KEY) {
-          throw new Error('X_AI_API_KEY is not configured');
+      const requestPayload = {
+        contents: [
+          {
+            role: 'user',
+            parts: [{
+              text: systemInstructions + '\n\n' + chatMessages.map((m: any) => 
+                `${m.role === 'user' ? 'USER' : 'ASSISTANT'}: ${m.content}`
+              ).join('\n\n')
+            }]
+          }
+        ],
+        generationConfig: {
+          temperature: 1,
+          maxOutputTokens: 8192,
         }
-        
-        apiUrl = 'https://api.x.ai/v1/chat/completions';
-        
-        const grokMessages = [
-          { role: 'system', content: systemInstructions },
-          ...chatMessages
-        ];
-        
-        requestPayload = {
-          model: 'grok-4-latest',
-          messages: grokMessages,
-          stream: false,
-          temperature: 0
-        };
-        
-        apiHeaders = {
-          'Authorization': `Bearer ${X_AI_API_KEY}`,
-          'Content-Type': 'application/json',
-        };
-        
-        console.log('Calling Grok 4 API...');
-      } else {
-        // Lovable AI (default)
-        apiUrl = 'https://ai.gateway.lovable.dev/v1/chat/completions';
-        
-        const lovableMessages = [
-          { role: 'system', content: systemInstructions },
-          ...chatMessages
-        ];
-        
-        requestPayload = {
-          model: 'google/gemini-2.5-flash',
-          messages: lovableMessages,
-          max_tokens: 4096,
-          temperature: 0.7,
-          stream: true
-        };
-        
-        apiHeaders = {
-          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-          'Content-Type': 'application/json',
-        };
-        
-        console.log('Calling Lovable AI (Gemini)...');
-      }
+      };
+      
+      const apiHeaders = {
+        'Content-Type': 'application/json',
+      };
+      
+      console.log('Calling Google Gemini 2.5 Pro API...');
       
       console.log('Request payload structure:', {
-        model: model,
         mode: mode,
         conversationTurns: chatMessages.length,
-        maxTokens: requestPayload.max_tokens || 'default'
+        maxTokens: 8192
       });
       
       const controller = new AbortController();
@@ -1678,13 +1663,13 @@ ${buildThemeContext(context || {})}
         const errorData = await response.json().catch(() => ({}));
         const errorMessage = errorData.error?.message || 
                             errorData.message || 
-                            `${model === 'grok' ? 'Grok' : 'Lovable AI'} API error: ${response.status}`;
+                            `Google Gemini API error: ${response.status}`;
         
-        console.error(`❌ ${model === 'grok' ? 'GROK' : 'LOVABLE AI'} API ERROR:`, {
+        console.error('❌ GOOGLE GEMINI API ERROR:', {
           status: response.status,
           statusText: response.statusText,
           errorData: JSON.stringify(errorData, null, 2),
-          maxTokens: requestPayload.max_tokens
+          maxTokens: 8192
         });
         throw new Error(errorMessage);
       }
@@ -1743,10 +1728,10 @@ ${buildThemeContext(context || {})}
             
             try {
               const chunk = JSON.parse(jsonStr);
+              const text = chunk.candidates?.[0]?.content?.parts?.[0]?.text;
               
-              // OpenAI format: choices[0].delta.content
-              if (chunk.choices && chunk.choices[0]?.delta?.content) {
-                updatedHtml += chunk.choices[0].delta.content;
+              if (text) {
+                updatedHtml += text;
 
                 if (updatedHtml.includes('</html>') || Date.now() > hardDeadline) {
                   console.log('⏹️ Early stop: closing </html> detected or deadline reached');
@@ -1755,17 +1740,9 @@ ${buildThemeContext(context || {})}
                 }
               }
               
-              // Track usage
-              if (chunk.usage) {
-                usageMetadata = {
-                  input_tokens: chunk.usage.prompt_tokens || 0,
-                  output_tokens: chunk.usage.completion_tokens || 0
-                };
-              }
-              
               // Track finish reason
-              if (chunk.choices && chunk.choices[0]?.finish_reason) {
-                metrics.stopReason = chunk.choices[0].finish_reason;
+              if (chunk.candidates?.[0]?.finishReason) {
+                metrics.stopReason = chunk.candidates[0].finishReason;
               }
             } catch (parseError) {
               console.error('Error parsing SSE chunk:', parseError, 'Line:', jsonStr);
@@ -1781,15 +1758,9 @@ ${buildThemeContext(context || {})}
             if (jsonStr !== '[DONE]') {
               try {
                 const chunk = JSON.parse(jsonStr);
-                if (chunk.choices && chunk.choices[0]?.delta?.content) {
-                  updatedHtml += chunk.choices[0].delta.content;
-                }
-                if (chunk.usage) {
-                  usageMetadata = {
-                    ...usageMetadata,
-                    input_tokens: chunk.usage.prompt_tokens || usageMetadata?.input_tokens || 0,
-                    output_tokens: chunk.usage.completion_tokens || usageMetadata?.output_tokens || 0
-                  };
+                const text = chunk.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (text) {
+                  updatedHtml += text;
                 }
               } catch (parseError) {
                 console.error('Error parsing final chunk:', parseError);
