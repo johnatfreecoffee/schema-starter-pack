@@ -65,7 +65,7 @@ export const API_ENDPOINTS = {
 export const MODELS = {
   GEMINI_PRO: 'gemini-2.5-pro',
   GEMINI_FLASH: 'google/gemini-2.5-flash',
-  GROK: 'grok-4' // xAI's most intelligent reasoning model with native tool use and real-time search
+  GROK: 'grok-4-0709' // xAI's most intelligent reasoning model with native tool use and real-time search (released July 9, 2025)
 } as const;
 
 // Validation thresholds
