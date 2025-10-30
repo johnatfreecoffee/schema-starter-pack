@@ -65,7 +65,7 @@ export const API_ENDPOINTS = {
 export const MODELS = {
   GEMINI_PRO: 'gemini-2.5-pro',
   GEMINI_FLASH: 'google/gemini-2.5-flash',
-  GROK: 'grok-4'
+  GROK: 'grok-2-1212' // Using stable grok-2-1212 for production (improved accuracy, instruction-following, and multi-lingual capabilities)
 } as const;
 
 // Validation thresholds
@@ -86,6 +86,7 @@ export const TABLES = {
 // Environment variable keys
 export const ENV_KEYS = {
   GEMINI_API_KEY: 'GOOGLE_GEMINI_AI_STUDIO',
+  GROK_API_KEY: 'X_AI',
   LOVABLE_API_KEY: 'LOVABLE_API_KEY',
   SUPABASE_URL: 'SUPABASE_URL',
   SUPABASE_SERVICE_KEY: 'SUPABASE_SERVICE_ROLE_KEY'
