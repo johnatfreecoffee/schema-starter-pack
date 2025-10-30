@@ -217,7 +217,7 @@ interface GenerationMetrics {
   duration?: number;
   command: string;
   mode: string;
-  provider: 'claude' | 'grok';
+  provider: 'lovable' | 'grok';
   inputTokens: number;
   outputTokens: number;
   staticTokens?: number;
@@ -243,10 +243,11 @@ function calculateCost(
   outputTokens: number, 
   cachedTokens: number = 0
 ): number {
-  // Claude Sonnet 4.5 pricing
-  const inputCostPerMillion = 3.00;
-  const outputCostPerMillion = 15.00;
-  const cachedInputCostPerMillion = 0.30; // 90% discount for prompt caching
+  // Lovable AI (Gemini 2.5 Flash) pricing estimation
+  // Note: Actual pricing may vary, these are approximate values
+  const inputCostPerMillion = 0.075; // Gemini 2.5 Flash input cost
+  const outputCostPerMillion = 0.30; // Gemini 2.5 Flash output cost
+  const cachedInputCostPerMillion = 0.01; // Estimated cache discount
   
   const regularInputCost = ((inputTokens - cachedTokens) / 1_000_000) * inputCostPerMillion;
   const cachedCost = (cachedTokens / 1_000_000) * cachedInputCostPerMillion;
@@ -259,7 +260,7 @@ function logMetrics(metrics: GenerationMetrics) {
   console.log('=== GENERATION METRICS ===');
   console.log(JSON.stringify(metrics, null, 2));
   
-  const providerName = metrics.provider === 'grok' ? 'Grok 4' : 'Claude Sonnet 4.5';
+  const providerName = metrics.provider === 'grok' ? 'Grok 4' : 'Lovable AI (Gemini)';
   console.log(`Using AI Provider: ${providerName}`);
   
   // Warnings based on thresholds
@@ -687,19 +688,23 @@ async function executePipelineStage(
   }];
   
   const requestPayload = {
-    model: 'claude-sonnet-4-5-20250929',
+    model: 'google/gemini-2.5-flash',
     max_tokens: stage.maxTokens,
     temperature: stage.temperature,
-    system: `You are an expert web designer. Always return content-only HTML starting with <main> (no doctype/html/head/body/header/footer). Use Tailwind utilities, Lucide icons (data-lucide), and Handlebars variables.`,
-    messages,
+    messages: [
+      {
+        role: 'system',
+        content: `You are an expert web designer. Always return content-only HTML starting with <main> (no doctype/html/head/body/header/footer). Use Tailwind utilities, Lucide icons (data-lucide), and Handlebars variables.`
+      },
+      ...messages
+    ],
     stream: false
   };
   
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
+      'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(requestPayload)
@@ -711,12 +716,12 @@ async function executePipelineStage(
   }
   
   const data = await response.json();
-  const content = data.content[0].text;
+  const content = data.choices[0].message.content;
   const duration = Date.now() - startTime;
   
   console.log(`✅ Stage completed in ${(duration / 1000).toFixed(1)}s`);
-  console.log(`📊 Input tokens: ${data.usage.input_tokens}`);
-  console.log(`📊 Output tokens: ${data.usage.output_tokens}`);
+  console.log(`📊 Input tokens: ${data.usage.prompt_tokens}`);
+  console.log(`📊 Output tokens: ${data.usage.completion_tokens}`);
   console.log(`📝 Output length: ${content.length} chars`);
   console.log('\n📄 STAGE OUTPUT PREVIEW:');
   console.log('─'.repeat(60));
@@ -726,8 +731,8 @@ async function executePipelineStage(
   return {
     content,
     tokens: {
-      input: data.usage.input_tokens,
-      output: data.usage.output_tokens
+      input: data.usage.prompt_tokens,
+      output: data.usage.completion_tokens
     },
     duration,
     debug: {
@@ -861,7 +866,7 @@ serve(async (req) => {
     startTime: Date.now(),
     command: '',
     mode: 'build',
-    provider: 'claude',
+    provider: 'lovable',
     inputTokens: 0,
     outputTokens: 0,
     cacheEnabled: false,
@@ -880,7 +885,7 @@ serve(async (req) => {
       ? commandObj 
       : (commandObj?.text || '');
     const mode = commandObj?.mode || requestBody.mode || 'build';
-    const model = commandObj?.model || requestBody.model || 'claude';
+    const model = commandObj?.model || requestBody.model || 'lovable';
     const { conversationHistory = [], context = {}, userId, pipeline } = requestBody;
     
     // Validate that context exists
@@ -900,7 +905,7 @@ serve(async (req) => {
     // Update metrics
     metrics.command = command.substring(0, 100);
     metrics.mode = mode;
-    metrics.provider = model === 'grok' ? 'grok' : 'claude';
+    metrics.provider = model === 'grok' ? 'grok' : 'lovable';
     
     console.log('AI Edit Request:', { 
       command: command.substring(0, 200) + (command.length > 200 ? '...' : ''), 
@@ -922,10 +927,10 @@ serve(async (req) => {
     console.log(command);
     console.log('=== FULL COMMAND END ===');
 
-    const CLAUDE_API_KEY = Deno.env.get('CLAUDE');
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
-    if (!CLAUDE_API_KEY) {
-      throw new Error('CLAUDE API key is not configured');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY is not configured');
     }
 
     // Initialize Supabase client for database operations (PHASE 3: Persistent cache)
@@ -1502,7 +1507,7 @@ ${buildThemeContext(context || {})}
           command,
           context,
           staticContext,
-          CLAUDE_API_KEY
+          LOVABLE_API_KEY
         );
         
         updatedHtml = pipelineResult.html;
@@ -1585,23 +1590,28 @@ ${buildThemeContext(context || {})}
         
         console.log('Calling Grok 4 API...');
       } else {
+        // Lovable AI (default)
+        apiUrl = 'https://ai.gateway.lovable.dev/v1/chat/completions';
+        
+        const lovableMessages = [
+          { role: 'system', content: systemInstructions },
+          ...chatMessages
+        ];
+        
         requestPayload = {
-          model: 'claude-sonnet-4-5-20250929',
+          model: 'google/gemini-2.5-flash',
+          messages: lovableMessages,
           max_tokens: 4096,
           temperature: 0.7,
-          system: systemInstructions,
-          messages: chatMessages,
           stream: true
         };
         
-        apiUrl = 'https://api.anthropic.com/v1/messages';
         apiHeaders = {
-          'x-api-key': CLAUDE_API_KEY,
-          'anthropic-version': '2023-06-01',
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
           'Content-Type': 'application/json',
         };
         
-        console.log('Calling Claude Sonnet 4.5 API...');
+        console.log('Calling Lovable AI (Gemini)...');
       }
       
       console.log('Request payload structure:', {
@@ -1668,9 +1678,9 @@ ${buildThemeContext(context || {})}
         const errorData = await response.json().catch(() => ({}));
         const errorMessage = errorData.error?.message || 
                             errorData.message || 
-                            `${model === 'grok' ? 'Grok' : 'Claude'} API error: ${response.status}`;
+                            `${model === 'grok' ? 'Grok' : 'Lovable AI'} API error: ${response.status}`;
         
-        console.error(`❌ ${model === 'grok' ? 'GROK' : 'CLAUDE'} API ERROR:`, {
+        console.error(`❌ ${model === 'grok' ? 'GROK' : 'LOVABLE AI'} API ERROR:`, {
           status: response.status,
           statusText: response.statusText,
           errorData: JSON.stringify(errorData, null, 2),
@@ -1698,7 +1708,7 @@ ${buildThemeContext(context || {})}
         
         console.log('Grok response complete. HTML length:', updatedHtml.length);
       } else {
-        // Handle streaming Claude response
+        // Handle streaming OpenAI-compatible response (Lovable AI / Gemini)
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
         
@@ -1708,7 +1718,6 @@ ${buildThemeContext(context || {})}
 
         const hardDeadline = Date.now() + 110000;
         let buffer = '';
-        let currentEvent = '';
 
         while (true) {
           const { done, value } = await reader.read();
@@ -1724,21 +1733,20 @@ ${buildThemeContext(context || {})}
             const trimmedLine = line.trim();
             
             if (trimmedLine.startsWith(':') || trimmedLine === '') continue;
-            
-            if (trimmedLine.startsWith('event: ')) {
-              currentEvent = trimmedLine.slice(7).trim();
-              continue;
-            }
-            
             if (!trimmedLine.startsWith('data: ')) continue;
             
             const jsonStr = trimmedLine.slice(6).trim();
             
+            if (jsonStr === '[DONE]') {
+              break;
+            }
+            
             try {
               const chunk = JSON.parse(jsonStr);
               
-              if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
-                updatedHtml += chunk.delta.text;
+              // OpenAI format: choices[0].delta.content
+              if (chunk.choices && chunk.choices[0]?.delta?.content) {
+                updatedHtml += chunk.choices[0].delta.content;
 
                 if (updatedHtml.includes('</html>') || Date.now() > hardDeadline) {
                   console.log('⏹️ Early stop: closing </html> detected or deadline reached');
@@ -1747,22 +1755,17 @@ ${buildThemeContext(context || {})}
                 }
               }
               
-              if (chunk.type === 'message_delta' && chunk.usage) {
+              // Track usage
+              if (chunk.usage) {
                 usageMetadata = {
-                  input_tokens: usageMetadata?.input_tokens || 0,
-                  output_tokens: chunk.usage.output_tokens || 0
+                  input_tokens: chunk.usage.prompt_tokens || 0,
+                  output_tokens: chunk.usage.completion_tokens || 0
                 };
               }
               
-              if (chunk.type === 'message_start' && chunk.message?.usage) {
-                usageMetadata = {
-                  input_tokens: chunk.message.usage.input_tokens || 0,
-                  output_tokens: usageMetadata?.output_tokens || 0
-                };
-              }
-              
-              if (chunk.delta?.stop_reason) {
-                metrics.stopReason = chunk.delta.stop_reason;
+              // Track finish reason
+              if (chunk.choices && chunk.choices[0]?.finish_reason) {
+                metrics.stopReason = chunk.choices[0].finish_reason;
               }
             } catch (parseError) {
               console.error('Error parsing SSE chunk:', parseError, 'Line:', jsonStr);
@@ -1775,24 +1778,27 @@ ${buildThemeContext(context || {})}
           const trimmedLine = buffer.trim();
           if (trimmedLine.startsWith('data: ')) {
             const jsonStr = trimmedLine.slice(6).trim();
-            try {
-              const chunk = JSON.parse(jsonStr);
-              if (chunk.type === 'content_block_delta' && chunk.delta?.text) {
-                updatedHtml += chunk.delta.text;
+            if (jsonStr !== '[DONE]') {
+              try {
+                const chunk = JSON.parse(jsonStr);
+                if (chunk.choices && chunk.choices[0]?.delta?.content) {
+                  updatedHtml += chunk.choices[0].delta.content;
+                }
+                if (chunk.usage) {
+                  usageMetadata = {
+                    ...usageMetadata,
+                    input_tokens: chunk.usage.prompt_tokens || usageMetadata?.input_tokens || 0,
+                    output_tokens: chunk.usage.completion_tokens || usageMetadata?.output_tokens || 0
+                  };
+                }
+              } catch (parseError) {
+                console.error('Error parsing final chunk:', parseError);
               }
-              if (chunk.type === 'message_delta' && chunk.usage) {
-                usageMetadata = {
-                  ...usageMetadata,
-                  output_tokens: chunk.usage.output_tokens || usageMetadata?.output_tokens || 0
-                };
-              }
-            } catch (parseError) {
-              console.error('Error parsing final chunk:', parseError);
             }
           }
         }
 
-        console.log('Claude streaming complete. HTML length:', updatedHtml.length);
+        console.log('Lovable AI streaming complete. HTML length:', updatedHtml.length);
       }
     }
 
@@ -1839,7 +1845,7 @@ ${buildThemeContext(context || {})}
     if (usageMetadata) {
       metrics.inputTokens = usageMetadata.input_tokens || 0;
       metrics.outputTokens = usageMetadata.output_tokens || 0;
-      metrics.cachedTokens = 0; // Claude caching handled differently
+      metrics.cachedTokens = 0; // Lovable AI caching handled differently
       
       metrics.cost = calculateCost(
         metrics.inputTokens,
@@ -1881,7 +1887,7 @@ ${buildThemeContext(context || {})}
       metrics: {
         duration: metrics.duration,
         cost: metrics.cost,
-        provider: 'claude',
+        provider: metrics.provider,
         cacheHit: false,
         multiStage: useMultiStage,
         stages: pipelineStages.length > 0 ? pipelineStages.map(s => ({
