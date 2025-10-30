@@ -65,7 +65,7 @@ export const API_ENDPOINTS = {
 export const MODELS = {
   GEMINI_PRO: 'gemini-2.5-pro',
   GEMINI_FLASH: 'google/gemini-2.5-flash',
-  GROK: 'grok-2-1212' // Using stable grok-2-1212 for production (improved accuracy, instruction-following, and multi-lingual capabilities)
+  GROK: 'grok-4' // xAI's most intelligent reasoning model with native tool use and real-time search
 } as const;
 
 // Validation thresholds
