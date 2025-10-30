@@ -66,7 +66,7 @@ const AIPageEditor = ({
       const data = await callEdgeFunction<{ updatedHtml: string; explanation?: string }>({
         name: 'ai-edit-page',
         body: { command, context },
-        timeoutMs: 180000,
+        timeoutMs: 300000,
       });
 
       const { updatedHtml } = data;
@@ -125,7 +125,7 @@ const AIPageEditor = ({
           pageType,
           pageTitle,
         },
-        timeoutMs: 120000,
+        timeoutMs: 180000,
       });
 
       const finalHtml = validated.fixedHtml;

@@ -18,6 +18,7 @@ import Editor from '@monaco-editor/react';
 import TruncatedMessage from './TruncatedMessage';
 import PreviewIframe from './PreviewIframe';
 import { PipelineProgressIndicator } from './PipelineProgressIndicator';
+import { callEdgeFunction } from '@/utils/callEdgeFunction';
 interface UnifiedPageEditorProps {
   open: boolean;
   onClose: () => void;
@@ -652,33 +653,12 @@ const UnifiedPageEditor = ({
     
     try {
       
-      // Create AbortController for custom timeout (2 minutes - edge function takes ~70s)
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 120000);
-
-      // Make direct HTTP call to bypass Supabase client's 120s timeout limitation
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tkrcdxkdfjeupbdlbcfz.supabase.co';
-      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-      
-      const response = await fetch(`${supabaseUrl}/functions/v1/ai-edit-page`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-          'apikey': supabaseAnonKey
-        },
-        body: JSON.stringify(requestBody),
-        signal: controller.signal
+      // Call edge function with extended timeout (5 minutes)
+      const data = await callEdgeFunction<any>({
+        name: 'ai-edit-page',
+        body: requestBody,
+        timeoutMs: 300000,
       });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Edge function error: ${response.status} - ${errorText}`);
-      }
-
-      const data = await response.json();
       const error = null;
 
       if (error) throw error;

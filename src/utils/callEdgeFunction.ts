@@ -25,8 +25,8 @@ export async function callEdgeFunction<T = any>({
 
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
   const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
-  if (!supabaseUrl || !supabasePublishableKey) {
-    throw new EdgeFunctionError("Missing configuration for backend URL or key");
+  if (!supabaseUrl) {
+    throw new EdgeFunctionError("Missing configuration for backend URL");
   }
 
   const controller = new AbortController();
@@ -38,7 +38,7 @@ export async function callEdgeFunction<T = any>({
       headers: {
         "Content-Type": "application/json",
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-        apikey: supabasePublishableKey,
+        ...(supabasePublishableKey ? { apikey: supabasePublishableKey } : {}),
       },
       body: body ? JSON.stringify(body) : undefined,
       signal: controller.signal,
