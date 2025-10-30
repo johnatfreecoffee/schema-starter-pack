@@ -19,6 +19,8 @@ import TruncatedMessage from './TruncatedMessage';
 import PreviewIframe from './PreviewIframe';
 import { PipelineProgressIndicator } from './PipelineProgressIndicator';
 import { callEdgeFunction } from '@/utils/callEdgeFunction';
+import { WorkflowVisualizer } from './WorkflowVisualizer';
+
 interface UnifiedPageEditorProps {
   open: boolean;
   onClose: () => void;
@@ -132,7 +134,7 @@ const UnifiedPageEditor = ({
   const [aiPrompt, setAiPrompt] = useState('');
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [viewMode, setViewMode] = useState<'preview' | 'code' | 'published' | 'debug'>('preview');
+  const [viewMode, setViewMode] = useState<'preview' | 'code' | 'published' | 'debug' | 'workflow'>('preview');
   const [publishedHtml, setPublishedHtml] = useState('');
   const [renderedPreview, setRenderedPreview] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -1371,8 +1373,8 @@ const UnifiedPageEditor = ({
           {/* Right Panel - Preview/Code */}
           <div className="w-3/5 flex flex-col min-h-0">
             <div className="p-4 border-b">
-              {/* Preview/Code/Published/Debug Tabs */}
-              <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'preview' | 'code' | 'published' | 'debug')}>
+              {/* Preview/Code/Published/Debug/Workflow Tabs */}
+              <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'preview' | 'code' | 'published' | 'debug' | 'workflow')}>
                 <TabsList>
                   <TabsTrigger value="preview">
                     <Eye className="mr-2 h-4 w-4" />
@@ -1389,6 +1391,10 @@ const UnifiedPageEditor = ({
                   <TabsTrigger value="debug">
                     <Sparkles className="mr-2 h-4 w-4" />
                     Debug
+                  </TabsTrigger>
+                  <TabsTrigger value="workflow">
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Workflow
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -1457,6 +1463,10 @@ const UnifiedPageEditor = ({
                       </div>
                     )}
                   </div>
+                </div>
+              ) : viewMode === 'workflow' ? (
+                <div className="flex-1 min-h-0 overflow-y-auto max-h-[80vh] p-6">
+                  <WorkflowVisualizer />
                 </div>
               ) : (
                 <div className="flex-1 min-h-0 overflow-y-auto max-h-[80vh] max-w-full">

@@ -1219,6 +1219,121 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Handle GET request for pipeline configuration
+  if (req.method === 'GET') {
+    const url = new URL(req.url);
+    const action = url.searchParams.get('action');
+    
+    if (action === 'get-pipeline-config') {
+      // Return pipeline configuration metadata
+      const pipelineConfig = {
+        version: '1.0.0',
+        stages: [
+          {
+            id: 'stage-1',
+            name: 'Planning',
+            description: 'Create structure and outline',
+            model: 'google/gemini-2.5-pro',
+            temperature: 0.4,
+            maxTokens: 4096,
+            validation: {
+              enabled: true,
+              model: 'google/gemini-2.5-flash',
+              maxRetries: 3,
+              checks: [
+                'All required JSON fields present',
+                'At least 3-5 sections defined',
+                'No placeholder text',
+                'Valid JSON structure'
+              ]
+            }
+          },
+          {
+            id: 'stage-2',
+            name: 'Content Creation',
+            description: 'Generate all copy and text',
+            model: 'google/gemini-2.5-pro',
+            temperature: 0.8,
+            maxTokens: 16384,
+            validation: {
+              enabled: true,
+              model: 'google/gemini-2.5-flash',
+              maxRetries: 3,
+              checks: [
+                'Hero section complete',
+                'All planned sections present',
+                'No placeholder text',
+                'Proper Handlebars usage',
+                'Valid JSON structure'
+              ]
+            }
+          },
+          {
+            id: 'stage-3',
+            name: 'HTML Structure',
+            description: 'Build semantic HTML with content',
+            model: 'google/gemini-2.5-pro',
+            temperature: 0.2,
+            maxTokens: 32768,
+            validation: {
+              enabled: true,
+              model: 'google/gemini-2.5-flash',
+              maxRetries: 3,
+              checks: [
+                'Starts with <main> tag',
+                'All content sections present',
+                'Closing </main> tag present',
+                'Handlebars variables used',
+                'Lucide icons present',
+                'CTA modals integrated',
+                'No Lorem Ipsum text'
+              ],
+              features: {
+                contentAccumulation: true,
+                continueFromLastComplete: true
+              }
+            }
+          },
+          {
+            id: 'stage-4',
+            name: 'Styling & Polish',
+            description: 'Add advanced CSS and visual effects',
+            model: 'google/gemini-2.5-pro',
+            temperature: 0.5,
+            maxTokens: 65535,
+            validation: {
+              enabled: true,
+              model: 'google/gemini-2.5-flash',
+              maxRetries: 2,
+              checks: [
+                '<main> tags intact',
+                'Advanced Tailwind classes',
+                'Hover states present',
+                'All sections preserved',
+                'Valid HTML structure'
+              ]
+            }
+          }
+        ],
+        features: {
+          selfHealing: true,
+          intelligentRetries: true,
+          contextPreservation: true,
+          tokenLimitHandling: true
+        }
+      };
+      
+      return new Response(JSON.stringify(pipelineConfig), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    return new Response(JSON.stringify({ error: 'Invalid action' }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
   // Initialize metrics tracking
   const metrics: GenerationMetrics = {
     startTime: Date.now(),
