@@ -734,7 +734,7 @@ async function executePipelineStage(
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'grok-4',
+            model: 'grok-beta',
             temperature: requestPayload.temperature || 0.7,
             max_tokens: requestPayload.max_tokens || 2000,
             messages: requestPayload.messages,
