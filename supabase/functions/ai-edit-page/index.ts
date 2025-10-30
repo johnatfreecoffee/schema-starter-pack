@@ -672,7 +672,12 @@ OUTPUT: Enhanced content-only HTML starting with <main>, no markdown.`;
   };
 }
 
-// Execute a single pipeline stage
+// Helper function for exponential backoff delay
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Execute a single pipeline stage with retry logic for 503 errors
 async function executePipelineStage(
   stage: PipelineStage,
   staticContext: string,
@@ -705,39 +710,75 @@ async function executePipelineStage(
     ],
     stream: false
   };
-  
-  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: requestPayload.messages.map((m: any) => m.content).join('\n\n') }]
+
+  // Retry logic for 503 errors with exponential backoff
+  const maxRetries = 3;
+  let lastError: Error | null = null;
+  let response: Response | null = null;
+  let data: any = null;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: 'user',
+              parts: [{ text: requestPayload.messages.map((m: any) => m.content).join('\n\n') }]
+            }
+          ],
+          generationConfig: {
+            temperature: requestPayload.temperature || 0.7,
+            maxOutputTokens: requestPayload.max_tokens || 2000,
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error?.message || 'Unknown error';
+
+        // Special handling for overloaded API - retry with exponential backoff
+        if (response.status === 503) {
+          if (attempt < maxRetries) {
+            const backoffMs = RETRIES.BACKOFF_BASE_MS * Math.pow(2, attempt - 1);
+            const cappedBackoff = Math.min(backoffMs, RETRIES.BACKOFF_MAX_MS);
+            console.log(`⚠️ API overloaded (503) on attempt ${attempt}/${maxRetries}. Retrying in ${cappedBackoff}ms...`);
+            await sleep(cappedBackoff);
+            continue; // Retry
+          } else {
+            throw new Error(`Stage ${stage.name} failed: API overloaded (503) after ${maxRetries} attempts. Please wait a few minutes and try again. Google's Gemini API is experiencing high traffic.`);
+          }
         }
-      ],
-      generationConfig: {
-        temperature: requestPayload.temperature || 0.7,
-        maxOutputTokens: requestPayload.max_tokens || 2000,
+
+        throw new Error(`Stage ${stage.name} failed: ${response.status} - ${errorMessage}`);
       }
-    })
-  });
-  
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    const errorMessage = errorData.error?.message || 'Unknown error';
 
-    // Special handling for overloaded API
-    if (response.status === 503) {
-      throw new Error(`Stage ${stage.name} failed: API overloaded (503). Please wait a few minutes and try again. Google's Gemini API is experiencing high traffic.`);
+      // Success! Parse response and break out of retry loop
+      data = await response.json();
+      break;
+
+    } catch (error) {
+      lastError = error as Error;
+
+      // If it's a 503 error and we have retries left, continue to next iteration
+      if (error.message?.includes('503') && attempt < maxRetries) {
+        continue;
+      }
+
+      // For other errors or if we're out of retries, throw
+      throw error;
     }
-
-    throw new Error(`Stage ${stage.name} failed: ${response.status} - ${errorMessage}`);
   }
 
-  const data = await response.json();
+  // If we exhausted all retries without success
+  if (!data) {
+    throw lastError || new Error(`Stage ${stage.name} failed after ${maxRetries} attempts`);
+  }
   const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
   const duration = Date.now() - startTime;
 
@@ -2075,79 +2116,120 @@ ${buildThemeContext(context || {})}
       };
       
       console.log('Calling Google Gemini 2.5 Pro API...');
-      
+
       console.log('Request payload structure:', {
         mode: mode,
         conversationTurns: chatMessages.length,
         maxTokens: 8192
       });
-      
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => {
-        controller.abort();
-        metrics.timeoutOccurred = true;
-      }, 120000);
 
-      let response;
-      try {
-        response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: apiHeaders,
-          body: JSON.stringify(requestPayload),
-          signal: controller.signal
-        });
-      } catch (error: any) {
-        clearTimeout(timeoutId);
-        
-        if (error.name === 'AbortError') {
-          console.error('Request timeout after 120 seconds');
-          
-          if (mode === 'build') {
-            const fallbackHtml = getFallbackTemplate(
-              context.currentPage?.pageType || 'homepage',
-              command
-            );
-            
-            metrics.fallbackUsed = true;
-            metrics.endTime = Date.now();
-            metrics.duration = metrics.endTime - metrics.startTime;
-            logMetrics(metrics);
-            
-            return new Response(JSON.stringify({
-              html: fallbackHtml,
-              messages: [{
-                role: 'assistant',
-                content: 'Request timeout - using fallback template. Please try a simpler request.'
-              }],
-              usage: { input_tokens: 0, output_tokens: 0 },
-              mode: 'build',
-              debug: { timeout: true, fallback: true }
-            }), {
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-              status: 200
+      // Retry logic for 503 errors with exponential backoff
+      const maxRetries = 3;
+      let response: Response | null = null;
+      let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        const controller = new AbortController();
+        timeoutId = setTimeout(() => {
+          controller.abort();
+          metrics.timeoutOccurred = true;
+        }, 120000);
+
+        try {
+          response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: apiHeaders,
+            body: JSON.stringify(requestPayload),
+            signal: controller.signal
+          });
+
+          clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const errorMessage = errorData.error?.message ||
+                                errorData.message ||
+                                `Google Gemini API error: ${response.status}`;
+
+            // Special handling for overloaded API - retry with exponential backoff
+            if (response.status === 503) {
+              if (attempt < maxRetries) {
+                const backoffMs = RETRIES.BACKOFF_BASE_MS * Math.pow(2, attempt - 1);
+                const cappedBackoff = Math.min(backoffMs, RETRIES.BACKOFF_MAX_MS);
+                console.log(`⚠️ API overloaded (503) on attempt ${attempt}/${maxRetries}. Retrying in ${cappedBackoff}ms...`);
+                await sleep(cappedBackoff);
+                continue; // Retry
+              } else {
+                console.error('❌ GOOGLE GEMINI API ERROR:', {
+                  status: response.status,
+                  statusText: response.statusText,
+                  errorData: JSON.stringify(errorData, null, 2),
+                  maxTokens: 8192
+                });
+                throw new Error(`${errorMessage} (after ${maxRetries} attempts)`);
+              }
+            }
+
+            console.error('❌ GOOGLE GEMINI API ERROR:', {
+              status: response.status,
+              statusText: response.statusText,
+              errorData: JSON.stringify(errorData, null, 2),
+              maxTokens: 8192
             });
-          } else {
-            throw new Error('Request timeout - AI took too long to respond. Please try a shorter prompt or reset the chat.');
+            throw new Error(errorMessage);
           }
+
+          // Success! Break out of retry loop
+          break;
+
+        } catch (error: any) {
+          if (timeoutId) clearTimeout(timeoutId);
+
+          if (error.name === 'AbortError') {
+            console.error('Request timeout after 120 seconds');
+
+            if (mode === 'build') {
+              const fallbackHtml = getFallbackTemplate(
+                context.currentPage?.pageType || 'homepage',
+                command
+              );
+
+              metrics.fallbackUsed = true;
+              metrics.endTime = Date.now();
+              metrics.duration = metrics.endTime - metrics.startTime;
+              logMetrics(metrics);
+
+              return new Response(JSON.stringify({
+                html: fallbackHtml,
+                messages: [{
+                  role: 'assistant',
+                  content: 'Request timeout - using fallback template. Please try a simpler request.'
+                }],
+                usage: { input_tokens: 0, output_tokens: 0 },
+                mode: 'build',
+                debug: { timeout: true, fallback: true }
+              }), {
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                status: 200
+              });
+            } else {
+              throw new Error('Request timeout - AI took too long to respond. Please try a shorter prompt or reset the chat.');
+            }
+          }
+
+          // If it's a 503 error and we have retries left, continue to next iteration
+          if (error.message?.includes('503') && attempt < maxRetries) {
+            continue;
+          }
+
+          // For other errors or if we're out of retries, throw
+          throw error;
         }
-        throw error;
       }
 
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error?.message || 
-                            errorData.message || 
-                            `Google Gemini API error: ${response.status}`;
-        
-        console.error('❌ GOOGLE GEMINI API ERROR:', {
-          status: response.status,
-          statusText: response.statusText,
-          errorData: JSON.stringify(errorData, null, 2),
-          maxTokens: 8192
-        });
-        throw new Error(errorMessage);
+      // If we exhausted all retries without success
+      if (!response || !response.ok) {
+        throw new Error('Failed to get valid response after all retry attempts');
       }
 
       // Parse response
