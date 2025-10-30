@@ -20,9 +20,10 @@ function validateHTML(html: string): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
   const trimmed = html.trim();
 
-  // Must be content-only HTML starting with <main>
-  if (!/^<main[\s>]/i.test(trimmed)) {
-    errors.push('Output must start with <main> and be content-only HTML');
+  // Must be content-only HTML starting with <div id="ai-section-..."> or <main>
+  const validStarts = /^<(div\s+id="ai-section-|main[\s>])/i;
+  if (!validStarts.test(trimmed)) {
+    errors.push('Output must start with <div id="ai-section-..."> or <main> (content-only HTML)');
   }
 
   // Must NOT include full document or site-level tags
@@ -726,12 +727,25 @@ async function executePipelineStage(
   
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(`Stage ${stage.name} failed: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+    const errorMessage = errorData.error?.message || 'Unknown error';
+
+    // Special handling for overloaded API
+    if (response.status === 503) {
+      throw new Error(`Stage ${stage.name} failed: API overloaded (503). Please wait a few minutes and try again. Google's Gemini API is experiencing high traffic.`);
+    }
+
+    throw new Error(`Stage ${stage.name} failed: ${response.status} - ${errorMessage}`);
   }
-  
+
   const data = await response.json();
   const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
   const duration = Date.now() - startTime;
+
+  // Check if we got empty content
+  if (!content || content.trim().length === 0) {
+    console.warn(`⚠️ Stage ${stage.name} returned empty content`);
+    throw new Error(`Stage ${stage.name} failed: API returned empty response. The model may be overloaded.`);
+  }
   
   // Estimate tokens (Gemini doesn't always provide exact counts)
   const estimatedInputTokens = Math.ceil(fullPrompt.length / 4);
@@ -2235,10 +2249,16 @@ ${buildThemeContext(context || {})}
       }
     }
 
+    // Check if we got empty HTML from streaming
+    if (!updatedHtml || updatedHtml.trim().length === 0) {
+      console.error('❌ AI returned empty HTML');
+      throw new Error('AI generation failed: No content generated. The API may be overloaded. Please try again in a few minutes.');
+    }
+
     // ========================================================================
     // POST-PROCESSING & VALIDATION
     // ========================================================================
-    
+
     // Clean up the HTML
     updatedHtml = updatedHtml.trim();
     
@@ -2363,18 +2383,28 @@ ${buildThemeContext(context || {})}
 
     // Determine appropriate HTTP status code
     let statusCode = 500; // Default to internal server error
+    let userMessage = error.message || 'Unknown error occurred';
 
     if (error instanceof RequestValidationError) {
       statusCode = 400; // Bad request
+    } else if (error.message?.includes('overloaded') || error.message?.includes('503')) {
+      statusCode = 503; // Service unavailable
+      userMessage = '🔄 Google\'s AI service is temporarily overloaded. Please wait 2-3 minutes and try again. This is not an error with your request.';
     } else if (error.message?.includes('timeout') || error.message?.includes('Timeout')) {
       statusCode = 504; // Gateway timeout
+      userMessage = 'Request timed out. The AI took too long to generate content. Please try a simpler request or try again later.';
     } else if (error.message?.includes('API') || error.message?.includes('auth')) {
       statusCode = 502; // Bad gateway (upstream API issue)
+      userMessage = 'Upstream API error. ' + error.message;
+    } else if (error.message?.includes('empty') || error.message?.includes('No content generated')) {
+      statusCode = 502; // Bad gateway
+      userMessage = 'AI generated no content. The API may be overloaded. Please try again in a few minutes.';
     }
 
     return new Response(JSON.stringify({
-      error: error.message || 'Unknown error occurred',
+      error: userMessage,
       errorType: error.constructor.name,
+      originalError: error.message, // Keep original for debugging
       metrics: {
         duration: metrics.duration,
         timeoutOccurred: metrics.timeoutOccurred
