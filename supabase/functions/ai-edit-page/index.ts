@@ -760,6 +760,303 @@ async function executePipelineStage(
   };
 }
 
+// ========================================================================
+// VALIDATION & RETRY SYSTEM
+// Uses Lovable AI (Gemini Flash) to validate each stage and retry if needed
+// ========================================================================
+
+interface ValidationResult {
+  complete: boolean;
+  issues: string[];
+  needsRetry: boolean;
+  missingSection?: string;
+  lastCompleteSection?: string;
+}
+
+// Build validation prompt based on stage
+function buildValidationPrompt(
+  stageName: string,
+  content: string,
+  previousStageResult?: string
+): string {
+  if (stageName === 'Planning') {
+    return `Analyze this JSON planning output and determine if it's complete:
+
+${content.substring(0, 3000)}
+
+Check if it contains:
+- All required fields: pageGoal, targetAudience, keyMessage, sections[], ctaStrategy, visualStyle
+- At least 3-5 sections defined
+- Each section has name, purpose, and content
+- No placeholder text like "TODO" or "[fill in]"
+- Valid JSON structure (no truncation)
+
+Return ONLY this JSON (no other text):
+{
+  "complete": true/false,
+  "issues": ["list of any issues found"],
+  "needsRetry": true/false
+}`;
+  }
+  
+  if (stageName === 'Content') {
+    return `Analyze this JSON content output and determine if it's complete:
+
+${content.substring(0, 3000)}
+
+Check if it contains:
+- Hero section with headline, subheadline, ctaText
+- All sections from planning stage are present
+- Each section has headline, body, and items array
+- No placeholder text or empty strings
+- Proper use of Handlebars variables
+- Valid JSON structure (no truncation at end)
+
+Return ONLY this JSON (no other text):
+{
+  "complete": true/false,
+  "issues": ["list of any issues found"],
+  "needsRetry": true/false,
+  "missingSection": "name of missing section if any"
+}`;
+  }
+  
+  if (stageName === 'HTML') {
+    return `Analyze this HTML output and determine if it's complete:
+
+${content.substring(0, 5000)}
+... [end preview]
+
+Check if the HTML:
+- Starts with <main> tag
+- Contains all sections from content stage
+- Has closing </main> tag (not truncated)
+- Uses Handlebars variables ({{company_name}}, etc.)
+- Contains data-lucide icons
+- Has CTA buttons with openLeadFormModal
+- No placeholder Lorem Ipsum text
+- Valid HTML structure
+
+Return ONLY this JSON (no other text):
+{
+  "complete": true/false,
+  "issues": ["list of any issues found"],
+  "needsRetry": true/false,
+  "lastCompleteSection": "name of last complete section"
+}`;
+  }
+  
+  if (stageName === 'Styling') {
+    return `Analyze this styled HTML output and determine if it's complete:
+
+${content.substring(0, 5000)}
+... [end preview]
+
+Check if the styled HTML:
+- Still starts with <main> and ends with </main>
+- Contains advanced Tailwind classes (gradients, shadows, transforms)
+- Has hover states and animations
+- All sections are still present
+- No content was accidentally removed
+- Valid HTML structure maintained
+
+Return ONLY this JSON (no other text):
+{
+  "complete": true/false,
+  "issues": ["list of any issues found"],
+  "needsRetry": true/false
+}`;
+  }
+  
+  return '';
+}
+
+// Validate stage output using Lovable AI
+async function validateStageOutput(
+  stageName: string,
+  content: string,
+  previousStageResult?: string
+): Promise<ValidationResult> {
+  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+  
+  if (!LOVABLE_API_KEY) {
+    console.warn('⚠️ Lovable AI not configured, skipping validation');
+    return { complete: true, issues: [], needsRetry: false };
+  }
+  
+  const validationPrompt = buildValidationPrompt(stageName, content, previousStageResult);
+  
+  if (!validationPrompt) {
+    return { complete: true, issues: [], needsRetry: false };
+  }
+  
+  try {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        temperature: 0.2,
+        max_tokens: 1000,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a quality assurance validator. Analyze the provided output and return a JSON response with validation results.'
+          },
+          {
+            role: 'user',
+            content: validationPrompt
+          }
+        ]
+      })
+    });
+    
+    if (!response.ok) {
+      console.error('Validation API call failed:', response.status);
+      return { complete: true, issues: [], needsRetry: false };
+    }
+    
+    const data = await response.json();
+    const resultText = data.choices?.[0]?.message?.content || '{"complete": true, "issues": [], "needsRetry": false}';
+    
+    // Extract JSON from response (handle cases where there's extra text)
+    const jsonMatch = resultText.match(/\{[\s\S]*\}/);
+    const jsonStr = jsonMatch ? jsonMatch[0] : resultText;
+    
+    const validationResult = JSON.parse(jsonStr);
+    
+    return validationResult;
+  } catch (error) {
+    console.error('Validation error:', error);
+    return { complete: true, issues: [], needsRetry: false };
+  }
+}
+
+// Build continuation prompt for retries
+function buildContinuationPrompt(
+  stageName: string,
+  validation: ValidationResult,
+  partialContent: string,
+  previousStageResult?: string
+): string {
+  if (stageName === 'Planning') {
+    return `The previous planning attempt was incomplete. Here's what we have so far:
+${partialContent}
+
+Please complete the remaining sections of the JSON plan. Focus on: ${validation.issues.join(', ')}
+Make sure to include all required fields.`;
+  }
+  
+  if (stageName === 'Content') {
+    return `The previous content generation was incomplete. Here's what we have so far:
+${partialContent}
+
+Please complete the missing sections: ${validation.missingSection || validation.issues.join(', ')}
+Use the same style and tone as the existing content.`;
+  }
+  
+  if (stageName === 'HTML') {
+    return `The previous HTML generation was incomplete or truncated. Here's what we have so far:
+${partialContent.substring(0, 5000)}... [truncated for brevity]
+
+Please CONTINUE the HTML from where it left off. The last complete section was: ${validation.lastCompleteSection}
+Complete the remaining sections and ensure the HTML ends with </main>`;
+  }
+  
+  if (stageName === 'Styling') {
+    return `The previous styling attempt was incomplete. Here's the HTML we're enhancing:
+${partialContent.substring(0, 5000)}... [truncated for brevity]
+
+Please complete the styling enhancements for all sections, especially: ${validation.issues.join(', ')}`;
+  }
+  
+  return partialContent;
+}
+
+// Execute stage with validation and retry logic
+async function executeStageWithValidation(
+  stage: PipelineStage,
+  staticContext: string,
+  apiKey: string,
+  previousStageResult?: string,
+  maxRetries: number = 3
+): Promise<StageResult & { validationAttempts: number; validationPassed: boolean }> {
+  let attempt = 0;
+  let lastResult: StageResult | null = null;
+  let accumulatedContent = '';
+  
+  while (attempt < maxRetries) {
+    attempt++;
+    console.log(`\n🔄 Stage ${stage.name} - Attempt ${attempt}/${maxRetries}`);
+    
+    // Execute the stage
+    const result = await executePipelineStage(stage, staticContext, apiKey);
+    lastResult = result;
+    
+    // For HTML/Styling stages, accumulate content if previous attempt was incomplete
+    if (attempt > 1 && (stage.name === 'HTML' || stage.name === 'Styling')) {
+      accumulatedContent += result.content;
+      result.content = accumulatedContent;
+    } else {
+      accumulatedContent = result.content;
+    }
+    
+    // Validate the output
+    console.log(`🔍 Validating stage ${stage.name} output...`);
+    const validation = await validateStageOutput(
+      stage.name,
+      result.content,
+      previousStageResult
+    );
+    
+    console.log(`✅ Validation result:`, validation);
+    
+    if (validation.complete) {
+      console.log(`✨ Stage ${stage.name} completed successfully with validation`);
+      return {
+        ...result,
+        validationAttempts: attempt,
+        validationPassed: true
+      };
+    }
+    
+    // If validation failed but doesn't need retry, throw error
+    if (!validation.needsRetry) {
+      console.error(`❌ Stage ${stage.name} failed validation (no retry): ${validation.issues.join(', ')}`);
+      return {
+        ...result,
+        validationAttempts: attempt,
+        validationPassed: false
+      };
+    }
+    
+    // Prepare for retry with continuation prompt
+    if (attempt < maxRetries) {
+      console.log(`⚠️ Stage incomplete, retrying with continuation...`);
+      console.log(`Issues: ${validation.issues.join(', ')}`);
+      
+      // Update the stage prompt to continue from where it left off
+      stage.prompt = buildContinuationPrompt(
+        stage.name,
+        validation,
+        result.content,
+        previousStageResult
+      );
+    }
+  }
+  
+  // If we exhausted retries, return the last attempt
+  console.log(`⚠️ Max retries reached for stage ${stage.name}, using last attempt`);
+  return {
+    ...lastResult!,
+    validationAttempts: attempt,
+    validationPassed: false
+  };
+}
+
 // Main multi-stage pipeline executor
 async function executeMultiStagePipeline(
   userRequest: string,
@@ -777,19 +1074,27 @@ async function executeMultiStagePipeline(
   let totalOutputTokens = 0;
   
   try {
-    // Stage 1: Planning
+    // Stage 1: Planning with validation
     console.log('\n🎯 STAGE 1: Planning');
     const planStage = buildPlanningStage(userRequest, context);
-    const planResult = await executePipelineStage(planStage, staticContext, apiKey);
+    const planResult = await executeStageWithValidation(
+      planStage,
+      staticContext,
+      apiKey,
+      undefined,
+      3
+    );
     stagesData.push({ 
       name: 'Planning', 
       stage: 'Planning', 
-      ...planResult 
+      ...planResult,
+      validationAttempts: planResult.validationAttempts,
+      validationPassed: planResult.validationPassed
     });
     totalInputTokens += planResult.tokens.input;
     totalOutputTokens += planResult.tokens.output;
     
-    // Stage 2: Content
+    // Stage 2: Content with validation
     console.log('\n📝 STAGE 2: Building Content');
     console.log('📥 INPUT FROM PLANNING STAGE:');
     console.log('─'.repeat(60));
@@ -797,16 +1102,24 @@ async function executeMultiStagePipeline(
     console.log('─'.repeat(60));
     
     const contentStage = buildContentStage(planResult.content, context);
-    const contentResult = await executePipelineStage(contentStage, staticContext, apiKey);
+    const contentResult = await executeStageWithValidation(
+      contentStage,
+      staticContext,
+      apiKey,
+      planResult.content,
+      3
+    );
     stagesData.push({ 
       name: 'Building Content', 
       stage: 'Content', 
-      ...contentResult 
+      ...contentResult,
+      validationAttempts: contentResult.validationAttempts,
+      validationPassed: contentResult.validationPassed
     });
     totalInputTokens += contentResult.tokens.input;
     totalOutputTokens += contentResult.tokens.output;
     
-    // Stage 3: HTML Structure
+    // Stage 3: HTML Structure with validation
     console.log('\n🏗️ STAGE 3: Creating HTML');
     console.log('📥 INPUT FROM CONTENT STAGE:');
     console.log('─'.repeat(60));
@@ -814,16 +1127,24 @@ async function executeMultiStagePipeline(
     console.log('─'.repeat(60));
     
     const htmlStage = buildHTMLStage(planResult.content, contentResult.content, context);
-    const htmlResult = await executePipelineStage(htmlStage, staticContext, apiKey);
+    const htmlResult = await executeStageWithValidation(
+      htmlStage,
+      staticContext,
+      apiKey,
+      contentResult.content,
+      3
+    );
     stagesData.push({ 
       name: 'Creating HTML', 
       stage: 'HTML', 
-      ...htmlResult 
+      ...htmlResult,
+      validationAttempts: htmlResult.validationAttempts,
+      validationPassed: htmlResult.validationPassed
     });
     totalInputTokens += htmlResult.tokens.input;
     totalOutputTokens += htmlResult.tokens.output;
     
-    // Stage 4: Styling & Polish
+    // Stage 4: Styling & Polish with validation
     console.log('\n🎨 STAGE 4: Styling & Polish');
     console.log('📥 INPUT FROM HTML STAGE:');
     console.log('─'.repeat(60));
@@ -831,16 +1152,28 @@ async function executeMultiStagePipeline(
     console.log('─'.repeat(60));
     
     const stylingStage = buildStylingStage(htmlResult.content, context);
-    const stylingResult = await executePipelineStage(stylingStage, staticContext, apiKey);
+    const stylingResult = await executeStageWithValidation(
+      stylingStage,
+      staticContext,
+      apiKey,
+      htmlResult.content,
+      2
+    );
     stagesData.push({ 
       name: 'Styling & Polish', 
       stage: 'Styling', 
-      ...stylingResult 
+      ...stylingResult,
+      validationAttempts: stylingResult.validationAttempts,
+      validationPassed: stylingResult.validationPassed
     });
     totalInputTokens += stylingResult.tokens.input;
     totalOutputTokens += stylingResult.tokens.output;
     
     const totalDuration = Date.now() - pipelineStartTime;
+    
+    // Calculate validation metrics
+    const totalValidationAttempts = stagesData.reduce((sum, stage) => sum + (stage.validationAttempts || 0), 0);
+    const allStagesPassed = stagesData.every(stage => stage.validationPassed !== false);
     
     console.log('\n' + '='.repeat(70));
     console.log('✨ PIPELINE COMPLETE');
@@ -849,6 +1182,15 @@ async function executeMultiStagePipeline(
     console.log(`📊 Total input tokens: ${totalInputTokens}`);
     console.log(`📊 Total output tokens: ${totalOutputTokens}`);
     console.log(`💰 Estimated cost: $${calculateCost(totalInputTokens, totalOutputTokens).toFixed(4)}`);
+    console.log(`🔍 Total validation attempts: ${totalValidationAttempts}`);
+    console.log(`✅ All stages passed validation: ${allStagesPassed ? 'Yes' : 'No'}`);
+    
+    // Log individual stage validation results
+    stagesData.forEach(stage => {
+      const status = stage.validationPassed ? '✅' : '⚠️';
+      console.log(`   ${status} ${stage.name}: ${stage.validationAttempts || 1} attempt(s)`);
+    });
+    
     console.log('='.repeat(70) + '\n');
     
     return {
@@ -1864,7 +2206,9 @@ ${buildThemeContext(context || {})}
         stages: pipelineStages.length > 0 ? pipelineStages.map(s => ({
           stage: s.stage,
           duration: s.duration,
-          tokens: s.tokens
+          tokens: s.tokens,
+          validationAttempts: s.validationAttempts,
+          validationPassed: s.validationPassed
         })) : undefined
       },
       mode,
@@ -1874,7 +2218,9 @@ ${buildThemeContext(context || {})}
           fullPrompt: s.debug.fullPrompt,
           requestPayload: s.debug.requestPayload,
           responseData: s.debug.responseData,
-          generatedHtml: s.debug.generatedHtml
+          generatedHtml: s.debug.generatedHtml,
+          validationAttempts: s.validationAttempts,
+          validationPassed: s.validationPassed
         }))
       } : {
         commandLength: command.length,
