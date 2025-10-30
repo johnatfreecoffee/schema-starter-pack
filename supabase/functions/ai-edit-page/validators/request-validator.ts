@@ -63,8 +63,16 @@ export function validateRequest(body: unknown): RequestPayload {
     throw new RequestValidationError('Invalid mode: must be "build" or "edit"');
   }
 
-  // Return validated payload
-  return requestBody as RequestPayload;
+  // Return validated payload - build it explicitly for type safety
+  return {
+    command: commandObj,
+    mode: mode as string,
+    model: requestBody.model as string | undefined,
+    conversationHistory: requestBody.conversationHistory as any[] | undefined,
+    context: contextObj as any,
+    userId: requestBody.userId as string | undefined,
+    pipeline: requestBody.pipeline as any
+  } as RequestPayload;
 }
 
 export function validateEnvironment() {

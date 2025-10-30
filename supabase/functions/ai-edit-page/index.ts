@@ -2,7 +2,7 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.74.0';
 import { validateRequest, validateEnvironment, RequestValidationError } from './validators/request-validator.ts';
-import { CORS_HEADERS, TIMEOUTS, THRESHOLDS } from './config.ts';
+import { CORS_HEADERS, TIMEOUTS, THRESHOLDS, RETRIES } from './config.ts';
 
 const corsHeaders = CORS_HEADERS;
 
@@ -222,7 +222,7 @@ interface GenerationMetrics {
   duration?: number;
   command: string;
   mode: string;
-  provider: 'lovable' | 'grok';
+  provider: 'lovable' | 'grok' | 'gemini';
   inputTokens: number;
   outputTokens: number;
   staticTokens?: number;
@@ -681,7 +681,8 @@ function sleep(ms: number): Promise<void> {
 async function executePipelineStage(
   stage: PipelineStage,
   staticContext: string,
-  apiKey: string
+  apiKey: string,
+  model: 'gemini' | 'grok' = 'gemini'
 ): Promise<StageResult> {
   const startTime = Date.now();
   
@@ -719,7 +720,48 @@ async function executePipelineStage(
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`, {
+      if (model === 'grok') {
+        // Use X.AI Grok API
+        const X_AI_API_KEY = Deno.env.get('X_AI');
+        if (!X_AI_API_KEY) {
+          throw new Error('X_AI API key not configured');
+        }
+        
+        response = await fetch('https://api.x.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${X_AI_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'grok-beta',
+            temperature: requestPayload.temperature || 0.7,
+            max_tokens: requestPayload.max_tokens || 2000,
+            messages: requestPayload.messages,
+            stream: false
+          })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          const errorMessage = errorData.error?.message || 'Unknown error';
+          
+          if (response.status === 503 && attempt < maxRetries) {
+            const backoffMs = RETRIES.BACKOFF_BASE_MS * Math.pow(2, attempt - 1);
+            const cappedBackoff = Math.min(backoffMs, RETRIES.BACKOFF_MAX_MS);
+            console.log(`⚠️ Grok API overloaded (503) on attempt ${attempt}/${maxRetries}. Retrying in ${cappedBackoff}ms...`);
+            await sleep(cappedBackoff);
+            continue;
+          }
+          
+          throw new Error(`Stage ${stage.name} failed with Grok: ${response.status} - ${errorMessage}`);
+        }
+        
+        data = await response.json();
+        break;
+      } else {
+        // Use Google Gemini API (default)
+        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -761,12 +803,12 @@ async function executePipelineStage(
       // Success! Parse response and break out of retry loop
       data = await response.json();
       break;
-
+      }
     } catch (error) {
       lastError = error as Error;
 
       // If it's a 503 error and we have retries left, continue to next iteration
-      if (error.message?.includes('503') && attempt < maxRetries) {
+      if ((error as Error).message?.includes('503') && attempt < maxRetries) {
         continue;
       }
 
@@ -779,7 +821,15 @@ async function executePipelineStage(
   if (!data) {
     throw lastError || new Error(`Stage ${stage.name} failed after ${maxRetries} attempts`);
   }
-  const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  
+  // Parse response based on model
+  let content = '';
+  if (model === 'grok') {
+    content = data.choices?.[0]?.message?.content || '';
+  } else {
+    content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  }
+  
   const duration = Date.now() - startTime;
 
   // Check if we got empty content
@@ -1039,7 +1089,8 @@ async function executeStageWithValidation(
   staticContext: string,
   apiKey: string,
   previousStageResult?: string,
-  maxRetries: number = 3
+  maxRetries: number = 3,
+  model: 'gemini' | 'grok' = 'gemini'
 ): Promise<StageResult & { validationAttempts: number; validationPassed: boolean }> {
   let attempt = 0;
   let lastResult: StageResult | null = null;
@@ -1050,7 +1101,7 @@ async function executeStageWithValidation(
     console.log(`\n🔄 Stage ${stage.name} - Attempt ${attempt}/${maxRetries}`);
     
     // Execute the stage
-    const result = await executePipelineStage(stage, staticContext, apiKey);
+    const result = await executePipelineStage(stage, staticContext, apiKey, model);
     lastResult = result;
     
     // For HTML/Styling stages, accumulate content if previous attempt was incomplete
@@ -1119,7 +1170,8 @@ async function executeMultiStagePipeline(
   userRequest: string,
   context: any,
   staticContext: string,
-  apiKey: string
+  apiKey: string,
+  model: 'gemini' | 'grok' = 'gemini'
 ): Promise<{ html: string; stages: any[]; totalTokens: any; totalDuration: number }> {
   console.log('\n' + '='.repeat(70));
   console.log('🎯 STARTING MULTI-STAGE PIPELINE');
@@ -1139,7 +1191,8 @@ async function executeMultiStagePipeline(
       staticContext,
       apiKey,
       undefined,
-      3
+      3,
+      model
     );
     stagesData.push({ 
       name: 'Planning', 
@@ -1164,7 +1217,8 @@ async function executeMultiStagePipeline(
       staticContext,
       apiKey,
       planResult.content,
-      3
+      3,
+      model
     );
     stagesData.push({ 
       name: 'Building Content', 
@@ -1189,7 +1243,8 @@ async function executeMultiStagePipeline(
       staticContext,
       apiKey,
       contentResult.content,
-      3
+      3,
+      model
     );
     stagesData.push({ 
       name: 'Creating HTML', 
@@ -1214,7 +1269,8 @@ async function executeMultiStagePipeline(
       staticContext,
       apiKey,
       htmlResult.content,
-      2
+      2,
+      model
     );
     stagesData.push({ 
       name: 'Styling & Polish', 
@@ -1447,7 +1503,7 @@ serve(async (req) => {
     // Update metrics
     metrics.command = command.substring(0, 100);
     metrics.mode = mode;
-    metrics.provider = 'gemini' as 'lovable' | 'grok';
+    metrics.provider = model === 'grok' ? 'grok' : 'gemini';
     
     console.log('AI Edit Request:', { 
       command: command.substring(0, 200) + (command.length > 200 ? '...' : ''), 
@@ -2040,7 +2096,8 @@ ${buildThemeContext(context || {})}
           command,
           context,
           staticContext,
-          GOOGLE_GEMINI_API_KEY
+          GOOGLE_GEMINI_API_KEY,
+          model
         );
         
         updatedHtml = pipelineResult.html;

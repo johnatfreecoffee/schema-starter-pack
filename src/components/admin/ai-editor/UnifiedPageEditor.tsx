@@ -187,6 +187,10 @@ const UnifiedPageEditor = ({
   });
   const [isPublishing, setIsPublishing] = useState(false);
   const [settingsChanged, setSettingsChanged] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<'gemini' | 'grok'>(() => {
+    const saved = localStorage.getItem('ai-editor-model');
+    return (saved === 'grok' || saved === 'gemini') ? saved : 'gemini';
+  });
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -569,7 +573,8 @@ const UnifiedPageEditor = ({
     const requestBody = {
       command: {
         text: currentCommand,
-        mode: editorMode
+        mode: editorMode,
+        model: selectedModel
       },
       pipeline: {
         enabled: true,
@@ -626,8 +631,9 @@ const UnifiedPageEditor = ({
     };
 
     // Show request data immediately in debug panel and reset pipeline stages
+    const modelName = selectedModel === 'grok' ? 'Grok' : 'Google Gemini 2.5 Pro';
     const baseDebug = {
-      fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nModel: Google Gemini 2.5 Pro\nPage Type: ${pageType}`,
+      fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nModel: ${modelName}\nPage Type: ${pageType}`,
       requestPayload: requestContext,
       responseData: { status: 'Waiting for Google Gemini 2.5 Pro response...' },
       generatedHtml: 'Waiting for response...'
@@ -1342,8 +1348,25 @@ const UnifiedPageEditor = ({
             </ScrollArea>
 
             <div className="p-4 border-t space-y-2 flex-shrink-0 bg-background pb-2">
-              <div className="flex gap-2 mb-2">
+              <div className="flex gap-2 mb-2 items-center justify-between">
                 <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="model-select" className="text-xs text-muted-foreground whitespace-nowrap">
+                    AI Model:
+                  </Label>
+                  <Select value={selectedModel} onValueChange={(value: 'gemini' | 'grok') => {
+                    setSelectedModel(value);
+                    localStorage.setItem('ai-editor-model', value);
+                  }}>
+                    <SelectTrigger id="model-select" className="w-[140px] h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gemini">Gemini 2.5 Pro</SelectItem>
+                      <SelectItem value="grok">Grok</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <div className="flex gap-2 items-start">
                 <Textarea ref={textareaRef} placeholder="Ask AI to build something..." value={aiPrompt} onChange={e => setAiPrompt(e.target.value)} onKeyDown={e => {
