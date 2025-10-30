@@ -87,4 +87,9 @@ export function validateEnvironment() {
   if (missing.length > 0) {
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
   }
+
+  // X_AI is optional but recommended if users want to use Grok
+  if (!Deno.env.get('X_AI')) {
+    console.warn('⚠️ X_AI environment variable not set. Grok model will not be available.');
+  }
 }
