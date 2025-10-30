@@ -58,23 +58,28 @@ export function WorkflowVisualizer() {
       setIsLoading(true);
       setError(null);
 
-      const { data, error } = await supabase.functions.invoke('ai-edit-page', {
-        method: 'GET',
-        body: null,
-      });
+      // Get the current session for auth token
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Not authenticated');
+      }
 
-      // Construct the URL with query params
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-edit-page?action=get-pipeline-config`;
+      // Construct the URL with query params using environment variables
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const url = `${supabaseUrl}/functions/v1/ai-edit-page?action=get-pipeline-config`;
       
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
         },
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch pipeline config: ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to fetch pipeline config: ${response.statusText}`);
       }
 
       const pipelineConfig = await response.json();
