@@ -893,7 +893,7 @@ function buildValidationPrompt(
   if (stageName === 'Planning') {
     return `Analyze this JSON planning output and determine if it's complete:
 
-${content.substring(0, 3000)}
+${content}
 
 Check if it contains:
 - All required fields: pageGoal, targetAudience, keyMessage, sections[], ctaStrategy, visualStyle
@@ -913,7 +913,7 @@ Return ONLY this JSON (no other text):
   if (stageName === 'Content') {
     return `Analyze this JSON content output and determine if it's complete:
 
-${content.substring(0, 3000)}
+${content}
 
 Check if it contains:
 - Hero section with headline, subheadline, ctaText
@@ -935,8 +935,7 @@ Return ONLY this JSON (no other text):
   if (stageName === 'HTML') {
     return `Analyze this HTML output and determine if it's complete:
 
-${content.substring(0, 5000)}
-... [end preview]
+${content}
 
 Check if the HTML:
 - Starts with <main> tag
@@ -1105,7 +1104,7 @@ async function executeStageWithValidation(
     console.log(`\n🔄 Stage ${stage.name} - Attempt ${attempt}/${maxRetries}`);
     
     // Execute the stage
-    const result = await executePipelineStage(stage, staticContext, apiKey, model, getSystemInstructions());
+    const result = await executePipelineStage(stage, staticContext, apiKey, model, getStageSystemInstructions(stage.name));
     lastResult = result;
     
     // For HTML/Styling stages, accumulate content if previous attempt was incomplete
@@ -1233,6 +1232,30 @@ Scoped <style> for interactions:
 
 Remember: Create STUNNING, IMPRESSIVE pages that look like they cost $10,000 to design. Use real images, rich gradients, deep shadows, and generous spacing. Never create plain or boring designs.
 `;
+}
+
+// Stage-specific system instructions to avoid HTML in JSON stages
+function getStageSystemInstructions(stageName: string): string {
+  if (stageName === 'Planning' || stageName === 'Content') {
+    return `You are a rigorous planning/copy assistant.
+- Output ONLY valid minified JSON.
+- Do not include markdown, code fences, or HTML.
+- If asked for HTML, ignore it and return JSON as specified.`;
+  }
+  if (stageName === 'HTML') {
+    return `You are an expert front-end developer.
+- Output ONLY content-only HTML starting with <main>.
+- No <!DOCTYPE>, <html>, <head>, <body> tags.
+- No external links or frameworks.
+- Use semantic tags and keep structure accessible.`;
+  }
+  if (stageName === 'Styling') {
+    return `You are a CSS artist.
+- Enhance the provided HTML while keeping the content-only structure starting with <main>.
+- Do NOT wrap in extra containers.
+- Focus on gradients, depth, rounded corners, and smooth interactions.`;
+  }
+  return getSystemInstructions();
 }
 
 // Main multi-stage pipeline executor
