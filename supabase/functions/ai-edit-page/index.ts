@@ -563,7 +563,7 @@ OUTPUT EXACTLY THIS JSON (no markdown):
   return {
     name: 'Planning',
     prompt,
-    maxTokens: 4096,
+    maxTokens: 40960,
     temperature: 0.6
   };
 }
@@ -598,7 +598,7 @@ OUTPUT EXACTLY THIS JSON:
   return {
     name: 'Content',
     prompt,
-    maxTokens: 16384,
+    maxTokens: 40960,
     temperature: 0.8
   };
 }
@@ -667,7 +667,7 @@ OUTPUT: Enhanced content-only HTML starting with <main>, no markdown.`;
   return {
     name: 'Styling',
     prompt,
-    maxTokens: 32768,
+    maxTokens: 65536,
     temperature: 0.9
   };
 }
@@ -1420,8 +1420,8 @@ serve(async (req) => {
             name: 'Planning',
             description: 'Create structure and outline',
             model: 'google/gemini-2.5-pro',
-            temperature: 0.4,
-            maxTokens: 4096,
+            temperature: 0.6,
+            maxTokens: 40960,
             validation: {
               enabled: true,
               model: 'google/gemini-2.5-flash',
@@ -1440,7 +1440,7 @@ serve(async (req) => {
             description: 'Generate all copy and text',
             model: 'google/gemini-2.5-pro',
             temperature: 0.8,
-            maxTokens: 16384,
+            maxTokens: 40960,
             validation: {
               enabled: true,
               model: 'google/gemini-2.5-flash',
@@ -1459,8 +1459,8 @@ serve(async (req) => {
             name: 'HTML Structure',
             description: 'Build semantic HTML with content',
             model: 'google/gemini-2.5-pro',
-            temperature: 0.2,
-            maxTokens: 32768,
+            temperature: 0.7,
+            maxTokens: 65536,
             validation: {
               enabled: true,
               model: 'google/gemini-2.5-flash',
