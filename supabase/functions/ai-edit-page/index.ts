@@ -3,6 +3,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.74.0';
 import { validateRequest, validateEnvironment, RequestValidationError } from './validators/request-validator.ts';
 import { CORS_HEADERS, TIMEOUTS, THRESHOLDS, RETRIES } from './config.ts';
+import type { GenerationMetrics } from './types.ts';
 
 const corsHeaders = CORS_HEADERS;
 
@@ -215,33 +216,6 @@ function getFallbackTemplate(pageType: string, userRequest: string): string {
 // PHASE 6: MONITORING & METRICS
 // Track performance, costs, quality for continuous optimization
 // ========================================================================
-
-interface GenerationMetrics {
-  startTime: number;
-  endTime?: number;
-  duration?: number;
-  command: string;
-  mode: string;
-  provider: 'lovable' | 'grok' | 'gemini';
-  inputTokens: number;
-  outputTokens: number;
-  staticTokens?: number;
-  dynamicTokens?: number;
-  cachedTokens?: number;
-  cacheCreated?: boolean;
-  cacheReused?: boolean;
-  cacheName?: string;
-  cacheStorageCost?: number;
-  cacheEnabled: boolean;
-  multiPass: boolean;
-  timeoutOccurred: boolean;
-  validationPassed: boolean;
-  validationErrors?: string[];
-  automatedChecks?: string[];
-  cost?: number;
-  stopReason?: string;
-  fallbackUsed?: boolean;
-}
 
 function calculateCost(
   inputTokens: number, 
