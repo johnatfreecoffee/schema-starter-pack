@@ -239,6 +239,42 @@ export type Database = {
           },
         ]
       }
+      ai_model_configs: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          max_tokens: number
+          model_name: string
+          provider: string
+          stage: string
+          temperature: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_tokens: number
+          model_name: string
+          provider: string
+          stage: string
+          temperature: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_tokens?: number
+          model_name?: string
+          provider?: string
+          stage?: string
+          temperature?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       ai_page_generation_jobs: {
         Row: {
           command: string

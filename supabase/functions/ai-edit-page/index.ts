@@ -4,6 +4,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.74.0';
 import { validateRequest, validateEnvironment, RequestValidationError } from './validators/request-validator.ts';
 import { CORS_HEADERS, TIMEOUTS, THRESHOLDS, RETRIES } from './config.ts';
 import type { GenerationMetrics } from './types.ts';
+import { getModelConfig, getAllConfigsForProvider } from './db-config-loader.ts';
+import { getStageDescription, getStageValidation } from './stage-helpers.ts';
 
 const corsHeaders = CORS_HEADERS;
 
@@ -537,13 +539,19 @@ OUTPUT EXACTLY THIS JSON (no markdown):
   return {
     name: 'Planning',
     prompt,
-    maxTokens: 40960,
-    temperature: 0.6
+    maxTokens: maxTokens,
+    temperature: temperature
   };
 }
 
 // Stage 2: Content - Generate all copy and text
-function buildContentStage(planResult: string, context: any): PipelineStage {
+async function buildContentStage(planResult: string, context: any, provider: 'gemini' | 'grok' | 'claude'): Promise<PipelineStage> {
+  // Fetch config from database
+  const config = await getModelConfig(provider, 'content');
+  
+  // Fallback to defaults if fetch fails
+  const maxTokens = config?.max_tokens || 40960;
+  const temperature = config?.temperature || 0.8;
   const prompt = `Based on this PLAN:
 ${planResult}
 
@@ -572,13 +580,19 @@ OUTPUT EXACTLY THIS JSON:
   return {
     name: 'Content',
     prompt,
-    maxTokens: 40960,
-    temperature: 0.8
+    maxTokens,
+    temperature
   };
 }
 
 // Stage 3: HTML Structure - Build semantic HTML with content
-function buildHTMLStage(planResult: string, contentResult: string, context: any): PipelineStage {
+async function buildHTMLStage(planResult: string, contentResult: string, context: any, provider: 'gemini' | 'grok' | 'claude'): Promise<PipelineStage> {
+  // Fetch config from database
+  const config = await getModelConfig(provider, 'html');
+  
+  // Fallback to defaults if fetch fails
+  const maxTokens = config?.max_tokens || 65536;
+  const temperature = config?.temperature || 0.7;
   const prompt = `Using this PLAN:
 ${planResult}
 
@@ -608,13 +622,19 @@ OUTPUT: Clean HTML snippet starting with <main>, no markdown.`;
   return {
     name: 'HTML',
     prompt,
-    maxTokens: 65536,
-    temperature: 0.7
+    maxTokens,
+    temperature
   };
 }
 
 // Stage 4: Styling & Polish - Add advanced CSS and visual effects
-function buildStylingStage(htmlResult: string, context: any): PipelineStage {
+async function buildStylingStage(htmlResult: string, context: any, provider: 'gemini' | 'grok' | 'claude'): Promise<PipelineStage> {
+  // Fetch config from database
+  const config = await getModelConfig(provider, 'styling');
+  
+  // Fallback to defaults if fetch fails
+  const maxTokens = config?.max_tokens || 65536;
+  const temperature = config?.temperature || 0.9;
   const prompt = `Given this CONTENT-ONLY HTML (starting with <main>):
 ${htmlResult.substring(0, 6000)}... (truncated)
 
@@ -641,8 +661,8 @@ OUTPUT: Enhanced content-only HTML starting with <main>, no markdown.`;
   return {
     name: 'Styling',
     prompt,
-    maxTokens: 65536,
-    temperature: 0.9
+    maxTokens,
+    temperature
   };
 }
 
@@ -661,9 +681,20 @@ async function executePipelineStage(
 ): Promise<StageResult> {
   const startTime = Date.now();
   
+  // Fetch the actual model name from config based on stage
+  const stageName = stage.name.toLowerCase().replace(' & ', '_').replace(' ', '_');
+  const config = await getModelConfig(model, stageName);
+  const modelName = config?.model_name || (
+    model === 'claude' ? 'claude-sonnet-4-5' :
+    model === 'grok' ? 'grok-4-fast-reasoning' :
+    'gemini-2.5-pro'
+  );
+  
   console.log(`\n${'='.repeat(60)}`);
   console.log(`🚀 STAGE ${stage.name.toUpperCase()}`);
   console.log(`${'='.repeat(60)}`);
+  console.log(`Provider: ${model}`);
+  console.log(`Model: ${modelName}`);
   console.log(`Max tokens: ${stage.maxTokens}`);
   console.log(`Temperature: ${stage.temperature}`);
   
@@ -713,7 +744,7 @@ async function executePipelineStage(
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-5',
+            model: modelName,
             max_tokens: requestPayload.max_tokens || 2000,
             temperature: requestPayload.temperature || 0.7,
             system: systemMessage,
@@ -755,7 +786,7 @@ async function executePipelineStage(
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'grok-4-fast-reasoning',
+            model: modelName,
             temperature: requestPayload.temperature || 0.7,
             max_tokens: requestPayload.max_tokens || 2000,
             messages: requestPayload.messages,
@@ -1309,7 +1340,7 @@ async function executeMultiStagePipeline(
   try {
     // Stage 1: Planning with validation
     console.log('\n🎯 STAGE 1: Planning');
-    const planStage = buildPlanningStage(userRequest, context);
+    const planStage = await buildPlanningStage(userRequest, context);
     const planResult = await executeStageWithValidation(
       planStage,
       staticContext,
@@ -1335,7 +1366,7 @@ async function executeMultiStagePipeline(
     console.log(planResult.content.substring(0, 600) + (planResult.content.length > 600 ? '...' : ''));
     console.log('─'.repeat(60));
     
-    const contentStage = buildContentStage(planResult.content, context);
+    const contentStage = await buildContentStage(planResult.content, context);
     const contentResult = await executeStageWithValidation(
       contentStage,
       staticContext,
@@ -1361,7 +1392,7 @@ async function executeMultiStagePipeline(
     console.log(contentResult.content.substring(0, 600) + (contentResult.content.length > 600 ? '...' : ''));
     console.log('─'.repeat(60));
     
-    const htmlStage = buildHTMLStage(planResult.content, contentResult.content, context);
+    const htmlStage = await buildHTMLStage(planResult.content, contentResult.content, context);
     const htmlResult = await executeStageWithValidation(
       htmlStage,
       staticContext,
@@ -1387,7 +1418,7 @@ async function executeMultiStagePipeline(
     console.log(htmlResult.content.substring(0, 600) + (htmlResult.content.length > 600 ? '...' : ''));
     console.log('─'.repeat(60));
     
-    const stylingStage = buildStylingStage(htmlResult.content, context);
+    const stylingStage = await buildStylingStage(htmlResult.content, context);
     const stylingResult = await executeStageWithValidation(
       stylingStage,
       staticContext,
@@ -1462,110 +1493,58 @@ serve(async (req) => {
     const action = url.searchParams.get('action');
     
     if (action === 'get-pipeline-config') {
-      // Return pipeline configuration metadata
-      const pipelineConfig = {
-        version: '1.0.0',
-        stages: [
-          {
-            id: 'stage-1',
-            name: 'Planning',
-            description: 'Create structure and outline',
-            model: 'google/gemini-2.5-pro',
-            temperature: 0.6,
-            maxTokens: 40960,
-            validation: {
-              enabled: true,
-              model: 'google/gemini-2.5-flash',
-              maxRetries: 3,
-              checks: [
-                'All required JSON fields present',
-                'At least 3-5 sections defined',
-                'No placeholder text',
-                'Valid JSON structure'
-              ]
-            }
-          },
-          {
-            id: 'stage-2',
-            name: 'Content Creation',
-            description: 'Generate all copy and text',
-            model: 'google/gemini-2.5-pro',
-            temperature: 0.8,
-            maxTokens: 40960,
-            validation: {
-              enabled: true,
-              model: 'google/gemini-2.5-flash',
-              maxRetries: 3,
-              checks: [
-                'Hero section complete',
-                'All planned sections present',
-                'No placeholder text',
-                'Proper Handlebars usage',
-                'Valid JSON structure'
-              ]
-            }
-          },
-          {
-            id: 'stage-3',
-            name: 'HTML Structure',
-            description: 'Build semantic HTML with content',
-            model: 'google/gemini-2.5-pro',
-            temperature: 0.7,
-            maxTokens: 65536,
-            validation: {
-              enabled: true,
-              model: 'google/gemini-2.5-flash',
-              maxRetries: 3,
-              checks: [
-                'Starts with <main> tag',
-                'All content sections present',
-                'Closing </main> tag present',
-                'Handlebars variables used',
-                'Lucide icons present',
-                'CTA modals integrated',
-                'No Lorem Ipsum text'
-              ],
-              features: {
-                contentAccumulation: true,
-                continueFromLastComplete: true
-              }
-            }
-          },
-          {
-            id: 'stage-4',
-            name: 'Styling & Polish',
-            description: 'Add advanced CSS and visual effects',
-            model: 'google/gemini-2.5-pro',
-            temperature: 0.5,
-            maxTokens: 65535,
-            validation: {
-              enabled: true,
-              model: 'google/gemini-2.5-flash',
-              maxRetries: 2,
-              checks: [
-                '<main> tags intact',
-                'Advanced Tailwind classes',
-                'Hover states present',
-                'All sections preserved',
-                'Valid HTML structure'
-              ]
-            }
-          }
-        ],
-        features: {
-          selfHealing: true,
-          intelligentRetries: true,
-          contextPreservation: true,
-          tokenLimitHandling: true
+      try {
+        // Get provider from query params (default to 'gemini')
+        const provider = (url.searchParams.get('provider') as 'gemini' | 'grok' | 'claude') || 'gemini';
+        
+        // Fetch configs from database
+        const configs = await getAllConfigsForProvider(provider);
+        
+        if (configs.length === 0) {
+          return new Response(
+            JSON.stringify({ error: 'No configuration found for provider' }),
+            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
         }
-      };
-      
-      return new Response(JSON.stringify(pipelineConfig), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+        
+        // Map database configs to pipeline config format
+        const stages = configs.map((config, index) => ({
+          id: `stage-${index + 1}`,
+          name: config.stage.charAt(0).toUpperCase() + config.stage.slice(1),
+          description: getStageDescription(config.stage),
+          model: config.model_name,
+          temperature: config.temperature,
+          maxTokens: config.max_tokens,
+          validation: getStageValidation(config.stage)
+        }));
+        
+        // Return pipeline configuration metadata
+        const pipelineConfig = {
+          version: '2.0.0',
+          provider: provider,
+          editable: true,
+          editInstructions: 'Edit configurations directly in the ai_model_configs table in your backend',
+          stages,
+          features: {
+            multiStage: true,
+            validation: true,
+            caching: false
+          }
+        };
+        
+        return new Response(JSON.stringify(pipelineConfig), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (error) {
+        console.error('Error fetching pipeline config:', error);
+        return new Response(
+          JSON.stringify({ error: 'Failed to fetch pipeline configuration' }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
     
-    return new Response(JSON.stringify({ error: 'Invalid action' }), {
+    return new Response(JSON.stringify({ error: 'Unknown action' }), {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
