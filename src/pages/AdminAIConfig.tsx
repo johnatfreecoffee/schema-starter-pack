@@ -53,6 +53,7 @@ export default function AdminAIConfig() {
             is_active: config.is_active,
           })
           .eq("id", config.id)
+          .select("*")
       );
 
       const results = await Promise.all(updates);
@@ -60,15 +61,32 @@ export default function AdminAIConfig() {
       if (errors.length > 0) {
         throw new Error(`Failed to update ${errors.length} configs`);
       }
+
+      // Ensure at least one row was updated for each request
+      const zeroUpdates = results.filter((r) => !r.error && (!r.data || (Array.isArray(r.data) && r.data.length === 0)));
+      if (zeroUpdates.length > 0) {
+        throw new Error("No rows were updated. You may not have permission or data is unchanged.");
+      }
     },
-    onSuccess: () => {
+    onSuccess: (_data, updatedConfigs) => {
+      // Optimistically update cache immediately so UI reflects changes
+      queryClient.setQueryData<AIModelConfig[] | undefined>(["ai-model-configs"], (old) => {
+        if (!old) return old;
+        const map = new Map(old.map((c) => [c.id, c]));
+        (updatedConfigs as AIModelConfig[]).forEach((u) => {
+          const existing = map.get(u.id);
+          if (existing) {
+            map.set(u.id, { ...existing, ...u });
+          }
+        });
+        return Array.from(map.values());
+      });
+
+      // Then refetch from server to ensure consistency
       queryClient.refetchQueries({ queryKey: ["ai-model-configs"] });
       setIsEditing(false);
       setEditedConfigs({});
-      toast({
-        title: "Success",
-        description: "AI model configurations updated successfully",
-      });
+      toast({ title: "Saved", description: "AI model configurations updated." });
     },
     onError: (error) => {
       toast({
