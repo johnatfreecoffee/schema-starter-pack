@@ -511,7 +511,14 @@ interface StageResult {
 }
 
 // Stage 1: Planning - Create structure and outline
-function buildPlanningStage(userRequest: string, context: any): PipelineStage {
+async function buildPlanningStage(userRequest: string, context: any, provider: 'gemini' | 'grok' | 'claude'): Promise<PipelineStage> {
+  // Fetch config from database
+  const config = await getModelConfig(provider, 'planning');
+  
+  // Fallback to defaults if fetch fails
+  const maxTokens = config?.max_tokens || 40960;
+  const temperature = config?.temperature || 0.6;
+  
   const prompt = `${userRequest}
 
 You are a world-class web design strategist. Using the company context provided above, create a comprehensive plan for a STUNNING, conversion-focused page that showcases this brand's unique value.
@@ -539,8 +546,8 @@ OUTPUT EXACTLY THIS JSON (no markdown):
   return {
     name: 'Planning',
     prompt,
-    maxTokens: maxTokens,
-    temperature: temperature
+    maxTokens,
+    temperature
   };
 }
 
@@ -1340,7 +1347,7 @@ async function executeMultiStagePipeline(
   try {
     // Stage 1: Planning with validation
     console.log('\n🎯 STAGE 1: Planning');
-    const planStage = await buildPlanningStage(userRequest, context);
+    const planStage = await buildPlanningStage(userRequest, context, model);
     const planResult = await executeStageWithValidation(
       planStage,
       staticContext,
@@ -1366,7 +1373,7 @@ async function executeMultiStagePipeline(
     console.log(planResult.content.substring(0, 600) + (planResult.content.length > 600 ? '...' : ''));
     console.log('─'.repeat(60));
     
-    const contentStage = await buildContentStage(planResult.content, context);
+    const contentStage = await buildContentStage(planResult.content, context, model);
     const contentResult = await executeStageWithValidation(
       contentStage,
       staticContext,
@@ -1392,7 +1399,7 @@ async function executeMultiStagePipeline(
     console.log(contentResult.content.substring(0, 600) + (contentResult.content.length > 600 ? '...' : ''));
     console.log('─'.repeat(60));
     
-    const htmlStage = await buildHTMLStage(planResult.content, contentResult.content, context);
+    const htmlStage = await buildHTMLStage(planResult.content, contentResult.content, context, model);
     const htmlResult = await executeStageWithValidation(
       htmlStage,
       staticContext,
@@ -1418,7 +1425,7 @@ async function executeMultiStagePipeline(
     console.log(htmlResult.content.substring(0, 600) + (htmlResult.content.length > 600 ? '...' : ''));
     console.log('─'.repeat(60));
     
-    const stylingStage = await buildStylingStage(htmlResult.content, context);
+    const stylingStage = await buildStylingStage(htmlResult.content, context, model);
     const stylingResult = await executeStageWithValidation(
       stylingStage,
       staticContext,
