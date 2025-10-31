@@ -159,10 +159,10 @@ export interface RequestPayload {
 
 // Constants
 export const TOKEN_LIMITS = {
-  PLANNING: 4096,
-  CONTENT: 16384,
-  HTML: 32768,
-  STYLING: 65535
+  PLANNING: 40960,
+  CONTENT: 40960,
+  HTML: 65536,
+  STYLING: 65536
 } as const;
 
 export const TIMEOUTS = {
