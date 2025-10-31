@@ -62,7 +62,7 @@ export default function AdminAIConfig() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ai-model-configs"] });
+      queryClient.refetchQueries({ queryKey: ["ai-model-configs"] });
       setIsEditing(false);
       setEditedConfigs({});
       toast({
