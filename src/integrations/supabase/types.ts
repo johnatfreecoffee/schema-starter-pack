@@ -248,6 +248,7 @@ export type Database = {
           model_name: string
           provider: string
           stage: string
+          stage_order: number
           temperature: number
           updated_at: string | null
         }
@@ -259,6 +260,7 @@ export type Database = {
           model_name: string
           provider: string
           stage: string
+          stage_order: number
           temperature: number
           updated_at?: string | null
         }
@@ -270,6 +272,7 @@ export type Database = {
           model_name?: string
           provider?: string
           stage?: string
+          stage_order?: number
           temperature?: number
           updated_at?: string | null
         }
