@@ -919,9 +919,15 @@ Check if it contains:
 - Hero section with headline, subheadline, ctaText
 - All sections from planning stage are present
 - Each section has headline, body, and items array
-- No placeholder text or empty strings
-- Proper use of Handlebars variables
 - Valid JSON structure (no truncation at end)
+
+CRITICAL: Handlebars variables like {{company_name}}, {{address_city}}, {{phone}}, {{years_experience}} are VALID and REQUIRED. Do NOT flag them as placeholders.
+
+ONLY flag these as placeholder text:
+- "TODO" or "[fill in]" or similar instructions
+- "Lorem ipsum" dummy text
+- Empty strings ""
+- Generic text like "Your company name here"
 
 Return ONLY this JSON (no other text):
 {
@@ -941,11 +947,14 @@ Check if the HTML:
 - Starts with <main> tag
 - Contains all sections from content stage
 - Has closing </main> tag (not truncated)
-- Uses Handlebars variables ({{company_name}}, etc.)
+- Uses Handlebars variables ({{company_name}}, etc.) - these are VALID, not placeholders
 - Contains data-lucide icons
 - Has CTA buttons with openLeadFormModal
-- No placeholder Lorem Ipsum text
 - Valid HTML structure
+
+CRITICAL: {{variable_name}} patterns are VALID Handlebars template variables. Do NOT flag them.
+
+ONLY flag actual placeholder text like "Lorem ipsum", "TODO", "[placeholder]", generic dummy text.
 
 Return ONLY this JSON (no other text):
 {
