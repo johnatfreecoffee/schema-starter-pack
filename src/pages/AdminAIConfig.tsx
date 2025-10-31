@@ -64,7 +64,8 @@ export default function AdminAIConfig() {
 
       // Ensure at least one row was updated for each request
       const zeroUpdates = results.filter((r) => !r.error && (!r.data || (Array.isArray(r.data) && r.data.length === 0)));
-      if (zeroUpdates.length > 0) {
+      // Only error if ALL attempted updates resulted in zero rows changed
+      if (zeroUpdates.length === results.length) {
         throw new Error("No rows were updated. You may not have permission or data is unchanged.");
       }
     },
@@ -114,7 +115,25 @@ export default function AdminAIConfig() {
   };
 
   const handleSave = () => {
-    const configsToSave = Object.values(editedConfigs);
+    const originals = configs || [];
+    const configsToSave = Object.values(editedConfigs).filter((cfg) => {
+      const orig = originals.find((o) => o.id === cfg.id);
+      if (!orig) return true;
+      return (
+        orig.model_name !== cfg.model_name ||
+        Number(orig.temperature) !== Number(cfg.temperature) ||
+        Number(orig.max_tokens) !== Number(cfg.max_tokens) ||
+        Boolean(orig.is_active) !== Boolean(cfg.is_active)
+      );
+    });
+
+    if (configsToSave.length === 0) {
+      toast({ title: "No changes", description: "There are no edits to save." });
+      setIsEditing(false);
+      setEditedConfigs({});
+      return;
+    }
+
     saveMutation.mutate(configsToSave);
   };
 
