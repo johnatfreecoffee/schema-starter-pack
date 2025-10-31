@@ -65,7 +65,8 @@ export const API_ENDPOINTS = {
 export const MODELS = {
   GEMINI_PRO: 'gemini-2.5-pro',
   GEMINI_FLASH: 'google/gemini-2.5-flash',
-  GROK: 'grok-4-fast-reasoning' // xAI's fast reasoning model optimized for speed and quality
+  GROK: 'grok-4-fast-reasoning', // xAI's fast reasoning model optimized for speed and quality
+  CLAUDE: 'claude-sonnet-4-5' // Anthropic's Claude 4.5 Sonnet - highly intelligent with superior reasoning
 } as const;
 
 // Validation thresholds

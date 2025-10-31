@@ -81,7 +81,7 @@ export interface GenerationMetrics {
   duration?: number;
   command: string;
   mode: string;
-  provider: 'lovable' | 'grok' | 'gemini';
+  provider: 'lovable' | 'grok' | 'gemini' | 'claude';
   inputTokens: number;
   outputTokens: number;
   staticTokens?: number;

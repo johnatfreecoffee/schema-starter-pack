@@ -92,4 +92,9 @@ export function validateEnvironment() {
   if (!Deno.env.get('X_AI')) {
     console.warn('⚠️ X_AI environment variable not set. Grok model will not be available.');
   }
+  
+  // CLAUDE is optional but recommended if users want to use Claude
+  if (!Deno.env.get('CLAUDE')) {
+    console.warn('⚠️ CLAUDE environment variable not set. Claude model will not be available.');
+  }
 }

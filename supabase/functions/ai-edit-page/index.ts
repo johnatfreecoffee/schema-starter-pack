@@ -682,7 +682,7 @@ async function executePipelineStage(
   stage: PipelineStage,
   staticContext: string,
   apiKey: string,
-  model: 'gemini' | 'grok' = 'gemini',
+  model: 'gemini' | 'grok' | 'claude' = 'gemini',
   systemInstructions?: string
 ): Promise<StageResult> {
   const startTime = Date.now();
@@ -724,7 +724,50 @@ async function executePipelineStage(
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      if (model === 'grok') {
+      if (model === 'claude') {
+        // Use Anthropic Claude API
+        const CLAUDE_API_KEY = Deno.env.get('CLAUDE');
+        if (!CLAUDE_API_KEY) {
+          throw new Error('CLAUDE API key not configured');
+        }
+        
+        response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'x-api-key': CLAUDE_API_KEY,
+            'anthropic-version': '2023-06-01',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-5',
+            max_tokens: requestPayload.max_tokens || 2000,
+            temperature: requestPayload.temperature || 0.7,
+            system: systemMessage,
+            messages: messages.map(m => ({
+              role: m.role === 'user' ? 'user' : 'assistant',
+              content: m.content
+            }))
+          })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          const errorMessage = errorData.error?.message || 'Unknown error';
+          
+          if (response.status === 529 && attempt < maxRetries) {
+            const backoffMs = RETRIES.BACKOFF_BASE_MS * Math.pow(2, attempt - 1);
+            const cappedBackoff = Math.min(backoffMs, RETRIES.BACKOFF_MAX_MS);
+            console.log(`⚠️ Claude API overloaded (529) on attempt ${attempt}/${maxRetries}. Retrying in ${cappedBackoff}ms...`);
+            await sleep(cappedBackoff);
+            continue;
+          }
+          
+          throw new Error(`Stage ${stage.name} failed with Claude: ${response.status} - ${errorMessage}`);
+        }
+        
+        data = await response.json();
+        break;
+      } else if (model === 'grok') {
         // Use X.AI Grok API
         const X_AI_API_KEY = Deno.env.get('X_AI');
         if (!X_AI_API_KEY) {
@@ -828,7 +871,9 @@ async function executePipelineStage(
   
   // Parse response based on model
   let content = '';
-  if (model === 'grok') {
+  if (model === 'claude') {
+    content = data.content?.[0]?.text || '';
+  } else if (model === 'grok') {
     content = data.choices?.[0]?.message?.content || '';
   } else {
     content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -1102,7 +1147,7 @@ async function executeStageWithValidation(
   apiKey: string,
   previousStageResult?: string,
   maxRetries: number = 3,
-  model: 'gemini' | 'grok' = 'gemini'
+  model: 'gemini' | 'grok' | 'claude' = 'gemini'
 ): Promise<StageResult & { validationAttempts: number; validationPassed: boolean }> {
   let attempt = 0;
   let lastResult: StageResult | null = null;
@@ -1273,7 +1318,7 @@ async function executeMultiStagePipeline(
   context: any,
   staticContext: string,
   apiKey: string,
-  model: 'gemini' | 'grok' = 'gemini'
+  model: 'gemini' | 'grok' | 'claude' = 'gemini'
 ): Promise<{ html: string; stages: any[]; totalTokens: any; totalDuration: number }> {
   console.log('\n' + '='.repeat(70));
   console.log('🎯 STARTING MULTI-STAGE PIPELINE');
@@ -1608,7 +1653,7 @@ serve(async (req) => {
     // Update metrics
     metrics.command = command.substring(0, 100);
     metrics.mode = mode;
-    metrics.provider = model === 'grok' ? 'grok' : 'gemini';
+    metrics.provider = model === 'grok' ? 'grok' : model === 'claude' ? 'claude' : 'gemini';
     
     console.log('AI Edit Request:', { 
       command: command.substring(0, 200) + (command.length > 200 ? '...' : ''), 
