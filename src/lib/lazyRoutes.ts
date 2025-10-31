@@ -51,6 +51,7 @@ export const Settings = lazy(() => import('@/pages/dashboard/Settings'));
 export const Permissions = lazy(() => import('@/pages/dashboard/settings/Permissions'));
 export const Security = lazy(() => import('@/pages/dashboard/settings/Security'));
 export const Company = lazy(() => import('@/pages/dashboard/settings/Company'));
+export const AdminAIConfig = lazy(() => import('@/pages/AdminAIConfig'));
 export const Services = lazy(() => import('@/pages/dashboard/settings/Services'));
 export const ServiceAreas = lazy(() => import('@/pages/dashboard/settings/ServiceAreas'));
 export const PageManagement = lazy(() => import('@/pages/dashboard/settings/PageManagement'));

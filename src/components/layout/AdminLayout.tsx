@@ -157,6 +157,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
         { path: '/dashboard/settings/permissions', icon: Settings, label: 'Permissions & Roles' },
         { path: '/dashboard/settings/security', icon: Settings, label: 'Security' },
         { path: '/dashboard/settings/seo', icon: Globe, label: 'SEO' },
+        { path: '/dashboard/settings/ai-config', icon: Brain, label: 'AI Configuration' },
         { path: '/dashboard/settings/backup-management', icon: Settings, label: 'Backup & Data' },
         { path: '/dashboard/settings/qa-testing', icon: TestTube, label: 'QA Testing' },
       ]
