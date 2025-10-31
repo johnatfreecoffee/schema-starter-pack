@@ -4,7 +4,7 @@
 
 // Token limits for each pipeline stage (Grok optimized)
 export const TOKEN_LIMITS = {
-  PLANNING: 4096,
+  PLANNING: 8192,
   CONTENT: 16384,
   HTML: 65536,
   STYLING: 32768,
