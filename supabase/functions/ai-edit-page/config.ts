@@ -13,8 +13,8 @@ export const TOKEN_LIMITS = {
 
 // Timeout configurations (in milliseconds)
 export const TIMEOUTS = {
-  REQUEST_MS: 120_000,        // 2 minutes total timeout
-  HARD_DEADLINE_MS: 110_000,  // 110 seconds before forcing stop
+  REQUEST_MS: 1_200_000,      // 20 minutes total timeout (5 min per stage × 4 stages)
+  HARD_DEADLINE_MS: 1_140_000, // 19 minutes before forcing stop
   CACHE_TTL_SECONDS: 3600     // 1 hour cache TTL
 } as const;
 
