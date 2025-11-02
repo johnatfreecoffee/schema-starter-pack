@@ -1864,6 +1864,25 @@ ${buildThemeContext(context || {})}
           throw new Error('Authorization required for per-stage execution');
         }
         
+        // Create Supabase client with user's JWT token
+        const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+        const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          global: {
+            headers: {
+              Authorization: authHeader
+            }
+          }
+        });
+        
+        // Get the authenticated user's ID
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+          throw new Error(`Authentication failed: ${authError?.message || 'User not found'}`);
+        }
+        const userId = user.id;
+        console.log(`👤 User ID: ${userId}`);
+        
         // Determine stage number and name
         const stageMap: Record<string, { number: number; name: string }> = {
           'planning': { number: 1, name: 'Planning' },
