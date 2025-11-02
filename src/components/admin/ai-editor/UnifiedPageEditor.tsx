@@ -681,12 +681,123 @@ const UnifiedPageEditor = ({
     
     try {
       
-      // Call edge function with extended timeout (5 minutes)
-      const data = await callEdgeFunction<any>({
-        name: 'ai-edit-page',
-        body: requestBody,
-        timeoutMs: 300000,
-      });
+      // Generate unique pipeline ID for tracking stages
+      const pipelineId = `pipeline_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      console.log(`🆔 Pipeline ID: ${pipelineId}`);
+      
+      const stages = ['planning', 'content', 'html', 'styling'];
+      const stageNames = ["Planning", "Building Content", "Creating HTML", "Styling & Polish"];
+      let allStagesData: any[] = [];
+      let finalHtml = '';
+      
+      // Execute each stage sequentially
+      for (let i = 0; i < stages.length; i++) {
+        const stageName = stages[i];
+        const displayName = stageNames[i];
+        
+        console.log(`\n🚀 Starting stage ${i + 1}/4: ${displayName}`);
+        
+        // Update pipeline progress
+        setPipelineStages(stageNames.map((name, idx) => ({
+          name,
+          completed: idx < i,
+          current: idx === i
+        })));
+        
+        // Update debug panel to show current stage
+        setDebugData(prev => ({
+          ...prev,
+          stages: prev.stages?.map((stage: any, idx: number) => ({
+            ...stage,
+            completed: idx < i,
+            current: idx === i
+          }))
+        }));
+        
+        try {
+          // Call the edge function for this specific stage with 8-minute timeout
+          const stageData = await callEdgeFunction<any>({
+            name: 'ai-edit-page',
+            body: {
+              ...requestBody,
+              stage: stageName,
+              pipelineId
+            },
+            timeoutMs: 480000, // 8 minutes per stage
+          });
+          
+          if (stageData?.error) {
+            throw new Error(`Stage ${displayName} failed: ${stageData.error}`);
+          }
+          
+          console.log(`✅ Stage ${displayName} completed:`, {
+            duration: stageData.result?.duration,
+            tokens: stageData.result?.tokens,
+            validationPassed: stageData.result?.validationPassed
+          });
+          
+          allStagesData.push({
+            name: displayName,
+            stage: stageName,
+            ...stageData.result,
+            completed: true,
+            current: false
+          });
+          
+          // If this is the final stage, store the HTML
+          if (stageName === 'styling' && stageData.result?.content) {
+            finalHtml = stageData.result.content;
+          }
+          
+        } catch (stageError: any) {
+          console.error(`❌ Stage ${displayName} failed:`, stageError);
+          
+          // Mark this stage as failed in UI
+          setPipelineStages(stageNames.map((name, idx) => ({
+            name,
+            completed: idx < i,
+            current: idx === i,
+            failed: idx === i
+          })));
+          
+          throw new Error(`Pipeline failed at stage ${displayName}: ${stageError.message}`);
+        }
+      }
+      
+      // All stages completed successfully
+      console.log('✨ All pipeline stages completed');
+      
+      // Mark all stages as completed
+      setPipelineStages(stageNames.map(name => ({
+        name,
+        completed: true,
+        current: false
+      })));
+      
+      // Create aggregated debug data
+      const data = {
+        success: true,
+        updatedHtml: finalHtml,
+        html: finalHtml,
+        debug: {
+          stages: allStagesData,
+          pipelineId,
+          totalStages: 4,
+          fullPrompt: requestBody.command,
+          requestPayload: requestContext,
+          responseData: { pipelineComplete: true },
+          generatedHtml: finalHtml
+        },
+        // Optional fields for compatibility
+        error: undefined,
+        errorDetails: undefined,
+        errorType: undefined,
+        statusCode: undefined,
+        metrics: undefined,
+        messages: undefined,
+        explanation: 'Page generated successfully through 4-stage pipeline'
+      };
+      
       const error = null;
 
       if (error) throw error;
@@ -705,7 +816,7 @@ const UnifiedPageEditor = ({
       // Token tracking removed - now using live input token counter
 
       // In build mode, auto-apply changes immediately
-      const newHtml = data?.updatedHtml ?? data?.html ?? data?.updated_html;
+      const newHtml = data?.updatedHtml ?? data?.html;
       if (editorMode === 'build' && newHtml) {
         setPreviousHtml(currentHtml);
         setCurrentHtml(newHtml);

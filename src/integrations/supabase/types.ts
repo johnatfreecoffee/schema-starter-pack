@@ -1888,6 +1888,51 @@ export type Database = {
         }
         Relationships: []
       }
+      pipeline_state: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          model: string | null
+          pipeline_id: string
+          stage_name: string
+          stage_number: number
+          stage_result: Json
+          static_context: string | null
+          updated_at: string | null
+          user_id: string
+          user_request: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          model?: string | null
+          pipeline_id: string
+          stage_name: string
+          stage_number: number
+          stage_result: Json
+          static_context?: string | null
+          updated_at?: string | null
+          user_id: string
+          user_request?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          model?: string | null
+          pipeline_id?: string
+          stage_name?: string
+          stage_number?: number
+          stage_result?: Json
+          static_context?: string | null
+          updated_at?: string | null
+          user_id?: string
+          user_request?: string | null
+        }
+        Relationships: []
+      }
       project_phases: {
         Row: {
           created_at: string | null
@@ -3805,6 +3850,7 @@ export type Database = {
     }
     Functions: {
       auth_has_role: { Args: { _role_names: string[] }; Returns: boolean }
+      cleanup_expired_pipeline_states: { Args: never; Returns: undefined }
       generate_ticket_number: { Args: never; Returns: string }
       get_assignable_users: {
         Args: never

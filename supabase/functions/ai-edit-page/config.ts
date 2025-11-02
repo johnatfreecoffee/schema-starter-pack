@@ -13,9 +13,9 @@ export const TOKEN_LIMITS = {
 
 // Timeout configurations (in milliseconds)
 export const TIMEOUTS = {
-  REQUEST_MS: 1_200_000,      // 20 minutes total timeout (5 min per stage × 4 stages)
-  HARD_DEADLINE_MS: 1_140_000, // 19 minutes before forcing stop
-  CACHE_TTL_SECONDS: 3600     // 1 hour cache TTL
+  STAGE_TIMEOUT_MS: 480_000,   // 8 minutes per stage (per invocation)
+  HARD_DEADLINE_MS: 420_000,   // 7 minutes hard deadline (leave buffer for response)
+  CACHE_TTL_SECONDS: 3600      // 1 hour cache TTL
 } as const;
 
 // API pricing (Gemini 2.5 Flash)

@@ -1599,7 +1599,14 @@ serve(async (req) => {
       : (commandObj?.text || '');
     const mode = commandObj?.mode || requestBody.mode || 'build';
     const model = commandObj?.model || requestBody.model || 'lovable';
-    const { conversationHistory = [], context = {}, userId, pipeline } = requestBody;
+    const { 
+      conversationHistory = [], 
+      context = {}, 
+      userId, 
+      pipeline,
+      stage: requestedStage,
+      pipelineId
+    } = requestBody;
     
     // Log pipeline info if present
     if (pipeline?.enabled) {
@@ -1839,6 +1846,157 @@ ${buildThemeContext(context || {})}
     
     if (context?.currentPage?.pageType) {
       dynamicContext += `\nPAGE TYPE: ${context.currentPage.pageType}\n`;
+    }
+
+    // ========================================================================
+    // PER-STAGE EXECUTION MODE
+    // If a specific stage is requested, execute only that stage
+    // ========================================================================
+    
+    if (requestedStage && pipelineId) {
+      console.log(`🎯 EXECUTING SINGLE STAGE: ${requestedStage}`);
+      console.log(`📋 Pipeline ID: ${pipelineId}`);
+      
+      try {
+        // Get auth user ID for RLS
+        const authHeader = req.headers.get('Authorization');
+        if (!authHeader) {
+          throw new Error('Authorization required for per-stage execution');
+        }
+        
+        // Determine stage number and name
+        const stageMap: Record<string, { number: number; name: string }> = {
+          'planning': { number: 1, name: 'Planning' },
+          'content': { number: 2, name: 'Content' },
+          'html': { number: 3, name: 'HTML' },
+          'styling': { number: 4, name: 'Styling' }
+        };
+        
+        const stageInfo = stageMap[requestedStage.toLowerCase()];
+        if (!stageInfo) {
+          throw new Error(`Invalid stage: ${requestedStage}`);
+        }
+        
+        // Load previous stage results if needed
+        let previousStageResult: string | undefined;
+        if (stageInfo.number > 1) {
+          const prevStageName = Object.keys(stageMap).find(k => stageMap[k].number === stageInfo.number - 1);
+          if (prevStageName) {
+            const { data: prevState } = await supabase
+              .from('pipeline_state')
+              .select('stage_result')
+              .eq('pipeline_id', pipelineId)
+              .eq('stage_name', prevStageName)
+              .single();
+            
+            if (prevState?.stage_result) {
+              previousStageResult = prevState.stage_result.content;
+              console.log(`📥 Loaded previous stage (${prevStageName}) result: ${previousStageResult?.substring(0, 200)}...`);
+            }
+          }
+        }
+        
+        // Build the stage
+        let stage: PipelineStage;
+        switch (requestedStage.toLowerCase()) {
+          case 'planning':
+            stage = await buildPlanningStage(command, context, model);
+            break;
+          case 'content':
+            if (!previousStageResult) throw new Error('Planning stage result required for content stage');
+            stage = await buildContentStage(previousStageResult, context, model);
+            break;
+          case 'html':
+            // Load both planning and content results
+            const { data: planState } = await supabase
+              .from('pipeline_state')
+              .select('stage_result')
+              .eq('pipeline_id', pipelineId)
+              .eq('stage_name', 'planning')
+              .single();
+            
+            if (!planState?.stage_result || !previousStageResult) {
+              throw new Error('Planning and content stage results required for HTML stage');
+            }
+            stage = await buildHTMLStage(planState.stage_result.content, previousStageResult, context, model);
+            break;
+          case 'styling':
+            if (!previousStageResult) throw new Error('HTML stage result required for styling stage');
+            stage = await buildStylingStage(previousStageResult, context, model);
+            break;
+          default:
+            throw new Error(`Invalid stage: ${requestedStage}`);
+        }
+        
+        // Execute the stage with validation
+        console.log(`\n⏱️  Stage timeout: ${TIMEOUTS.STAGE_TIMEOUT_MS / 1000}s`);
+        const stageResult = await executeStageWithValidation(
+          stage,
+          staticContext,
+          GOOGLE_GEMINI_API_KEY,
+          previousStageResult,
+          3,
+          model
+        );
+        
+        // Store the result in database
+        const { error: storeError } = await supabase
+          .from('pipeline_state')
+          .upsert({
+            user_id: userId,
+            pipeline_id: pipelineId,
+            stage_name: requestedStage.toLowerCase(),
+            stage_number: stageInfo.number,
+            stage_result: {
+              content: stageResult.content,
+              tokens: stageResult.tokens,
+              duration: stageResult.duration,
+              validationAttempts: stageResult.validationAttempts,
+              validationPassed: stageResult.validationPassed
+            },
+            static_context: staticContext,
+            user_request: command,
+            model: model
+          }, {
+            onConflict: 'pipeline_id,stage_name'
+          });
+        
+        if (storeError) {
+          console.error('Failed to store stage result:', storeError);
+        } else {
+          console.log('✅ Stage result stored in database');
+        }
+        
+        // Return the stage result
+        return new Response(JSON.stringify({
+          success: true,
+          stage: requestedStage.toLowerCase(),
+          stageNumber: stageInfo.number,
+          pipelineId,
+          result: {
+            content: stageResult.content,
+            tokens: stageResult.tokens,
+            duration: stageResult.duration,
+            validationAttempts: stageResult.validationAttempts,
+            validationPassed: stageResult.validationPassed
+          },
+          isComplete: stageInfo.number === 4, // Styling is the last stage
+          nextStage: stageInfo.number < 4 ? Object.keys(stageMap).find(k => stageMap[k].number === stageInfo.number + 1) : null
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+        
+      } catch (stageError: any) {
+        console.error(`❌ Stage ${requestedStage} failed:`, stageError);
+        return new Response(JSON.stringify({
+          error: `Stage ${requestedStage} failed: ${stageError.message}`,
+          stage: requestedStage,
+          pipelineId
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
     }
 
     // ========================================================================
