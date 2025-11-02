@@ -187,9 +187,31 @@ const UnifiedPageEditor = ({
   });
   const [isPublishing, setIsPublishing] = useState(false);
   const [settingsChanged, setSettingsChanged] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<'gemini' | 'grok'>(() => {
+  const [selectedModel, setSelectedModel] = useState<'gemini' | 'grok' | 'claude'>(() => {
     const saved = localStorage.getItem('ai-editor-model');
-    return (saved === 'grok' || saved === 'gemini') ? saved : 'gemini';
+    return (saved === 'grok' || saved === 'gemini' || saved === 'claude') ? saved : 'gemini';
+  });
+  
+  // Fetch available AI providers from database
+  const { data: availableProviders } = useQuery({
+    queryKey: ['ai-providers'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ai_model_configs')
+        .select('provider, model_name')
+        .eq('is_active', true)
+        .order('provider');
+      
+      if (error) throw error;
+      
+      // Get unique providers
+      const providers = Array.from(new Set(data?.map(d => d.provider) || []));
+      return providers.map(provider => {
+        const modelName = data?.find(d => d.provider === provider)?.model_name || '';
+        return { provider, modelName };
+      });
+    },
+    staleTime: 5 * 60 * 1000 // Cache for 5 minutes
   });
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -631,7 +653,7 @@ const UnifiedPageEditor = ({
     };
 
     // Show request data immediately in debug panel and reset pipeline stages
-    const modelName = selectedModel === 'grok' ? 'Grok' : 'Google Gemini 2.5 Pro';
+    const modelName = selectedModel === 'grok' ? 'Grok' : selectedModel === 'claude' ? 'Claude Sonnet 4.5' : 'Google Gemini 2.5 Pro';
     const baseDebug = {
       fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nModel: ${modelName}\nPage Type: ${pageType}`,
       requestPayload: requestContext,
@@ -1354,16 +1376,26 @@ const UnifiedPageEditor = ({
                   <Label htmlFor="model-select" className="text-xs text-muted-foreground whitespace-nowrap">
                     AI Model:
                   </Label>
-                  <Select value={selectedModel} onValueChange={(value: 'gemini' | 'grok') => {
+                  <Select value={selectedModel} onValueChange={(value: 'gemini' | 'grok' | 'claude') => {
                     setSelectedModel(value);
                     localStorage.setItem('ai-editor-model', value);
                   }}>
-                    <SelectTrigger id="model-select" className="w-[140px] h-8 text-xs">
+                    <SelectTrigger id="model-select" className="w-[180px] h-8 text-xs">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="gemini">Gemini 2.5 Pro</SelectItem>
-                      <SelectItem value="grok">Grok</SelectItem>
+                      {availableProviders?.map(({ provider, modelName }) => {
+                        let displayName = modelName;
+                        if (provider === 'gemini') displayName = 'Gemini 2.5 Pro';
+                        else if (provider === 'grok') displayName = 'Grok';
+                        else if (provider === 'claude') displayName = 'Claude Sonnet 4.5';
+                        
+                        return (
+                          <SelectItem key={provider} value={provider}>
+                            {displayName}
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
