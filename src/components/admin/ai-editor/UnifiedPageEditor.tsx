@@ -716,10 +716,16 @@ const UnifiedPageEditor = ({
         
         try {
           // Call the edge function for this specific stage with 8-minute timeout
+          // Use Claude for styling stage to handle larger outputs, Gemini for others
+          const stageModel = stageName === 'styling' ? 'claude' : selectedModel;
           const stageData = await callEdgeFunction<any>({
             name: 'ai-edit-page',
             body: {
               ...requestBody,
+              command: {
+                ...requestBody.command,
+                model: stageModel
+              },
               stage: stageName,
               pipelineId
             },
