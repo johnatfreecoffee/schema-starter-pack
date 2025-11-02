@@ -17,6 +17,7 @@ verify_jwt = true
 
 [functions.ai-edit-page]
 verify_jwt = true
+request_timeout = 1200
 
 [functions.generate-email-template]
 verify_jwt = true
