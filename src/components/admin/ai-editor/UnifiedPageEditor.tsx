@@ -753,11 +753,11 @@ const UnifiedPageEditor = ({
           }
           
           // Prepare company data (all settings and context)
+          // NOTE: siteSettings removed per user request - AI should only use Handlebars variables
           const companyData = {
             ...(requestBody.context.companyInfo || {}),
             socialMedia: socialMedia || [],
-            aiTraining: requestBody.context.aiTraining || {},
-            siteSettings: requestBody.context.siteSettings || {}
+            aiTraining: requestBody.context.aiTraining || {}
           };
           
           // Prepare comprehensive system instructions for AI
@@ -840,13 +840,13 @@ You are receiving COMPANY DATA for CONTEXT and TRAINING PURPOSES ONLY.
 <style>
 :root {
   /* Brand Colors - These will be injected at render time */
-  --color-primary: ${(companyData.siteSettings as any)?.primary_color || '#3b82f6'};
-  --color-secondary: ${(companyData.siteSettings as any)?.secondary_color || '#6d6d6f'};
-  --color-accent: ${(companyData.siteSettings as any)?.accent_color || '#0cb300'};
+  --color-primary: {{siteSettings.primary_color}};
+  --color-secondary: {{siteSettings.secondary_color}};
+  --color-accent: {{siteSettings.accent_color}};
   
   /* Border Radius Tokens */
-  --radius-button: ${(companyData.siteSettings as any)?.button_border_radius || 17}px;
-  --radius-card: ${(companyData.siteSettings as any)?.card_border_radius || 16}px;
+  --radius-button: {{siteSettings.button_border_radius}}px;
+  --radius-card: {{siteSettings.card_border_radius}}px;
   
   /* Derived Colors for Gradients */
   --color-primary-light: color-mix(in srgb, var(--color-primary) 70%, white);
@@ -990,11 +990,11 @@ ICONS:
   <style>
     /* DEFINE YOUR CSS VARIABLES HERE */
     :root {
-      --color-primary: ${(companyData.siteSettings as any)?.primary_color || '#3b82f6'};
-      --color-secondary: ${(companyData.siteSettings as any)?.secondary_color || '#6d6d6f'};
-      --color-accent: ${(companyData.siteSettings as any)?.accent_color || '#0cb300'};
-      --radius-button: ${(companyData.siteSettings as any)?.button_border_radius || 17}px;
-      --radius-card: ${(companyData.siteSettings as any)?.card_border_radius || 16}px;
+      --color-primary: {{siteSettings.primary_color}};
+      --color-secondary: {{siteSettings.secondary_color}};
+      --color-accent: {{siteSettings.accent_color}};
+      --radius-button: {{siteSettings.button_border_radius}}px;
+      --radius-card: {{siteSettings.card_border_radius}}px;
     }
     
     /* Additional custom styles using variables */
