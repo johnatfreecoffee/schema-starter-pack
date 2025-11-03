@@ -405,6 +405,25 @@ const UnifiedPageEditor = ({
     },
     enabled: open
   });
+
+  // Load social media links
+  const {
+    data: socialMedia
+  } = useQuery({
+    queryKey: ['company-social-media-editor'],
+    queryFn: async () => {
+      const {
+        data,
+        error
+      } = await supabase
+        .from('company_social_media')
+        .select('*, social_media_outlet_types(name, icon_url)')
+        .order('created_at');
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: open
+  });
   useEffect(() => {
     if (template?.template_html !== undefined) {
       const htmlToLoad = template.template_html;
@@ -729,9 +748,17 @@ const UnifiedPageEditor = ({
             supabaseData.pageRowId = pageId;
           }
           
+          // Prepare enhanced system message with all company data
+          const enhancedSystemMessage = {
+            ...(requestBody.context.companyInfo || {}),
+            socialMedia: socialMedia || [],
+            aiTraining: requestBody.context.aiTraining || {},
+            siteSettings: requestBody.context.siteSettings || {}
+          };
+          
           // Prepare webhook payload
           const webhookPayload = {
-            systemMessage: requestBody.context.companyInfo || {},
+            systemMessage: enhancedSystemMessage,
             userPrompt: currentCommand,
             supabaseData
           };
@@ -740,7 +767,7 @@ const UnifiedPageEditor = ({
           const response = await callEdgeFunction<any>({
             name: 'send-makecom-webhook',
             body: {
-              systemMessage: requestBody.context.companyInfo || {},
+              systemMessage: enhancedSystemMessage,
               userPrompt: currentCommand,
               supabaseData
             },
