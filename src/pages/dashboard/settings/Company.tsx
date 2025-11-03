@@ -44,10 +44,6 @@ const CompanySettings = () => {
     service_radius: 0,
     service_radius_unit: 'miles',
     business_hours: '',
-    facebook_url: '',
-    instagram_url: '',
-    twitter_url: '',
-    linkedin_url: '',
     logo_url: '',
     icon_url: '',
     document_header_color: '#3b82f6',
@@ -90,10 +86,6 @@ const CompanySettings = () => {
         service_radius: company.service_radius || 0,
         service_radius_unit: company.service_radius_unit || 'miles',
         business_hours: company.business_hours || '',
-        facebook_url: company.facebook_url || '',
-        instagram_url: company.instagram_url || '',
-        twitter_url: company.twitter_url || '',
-        linkedin_url: company.linkedin_url || '',
         logo_url: company.logo_url || '',
         icon_url: company.icon_url || '',
         document_header_color: company.document_header_color || '#3b82f6',
@@ -294,22 +286,6 @@ const CompanySettings = () => {
 
     if (formData.website_url && !validateUrl(formData.website_url)) {
       newErrors.website_url = 'Please enter a valid URL starting with http:// or https://';
-    }
-
-    if (formData.facebook_url && !validateUrl(formData.facebook_url)) {
-      newErrors.facebook_url = 'Please enter a valid URL starting with http:// or https://';
-    }
-
-    if (formData.instagram_url && !validateUrl(formData.instagram_url)) {
-      newErrors.instagram_url = 'Please enter a valid URL starting with http:// or https://';
-    }
-
-    if (formData.twitter_url && !validateUrl(formData.twitter_url)) {
-      newErrors.twitter_url = 'Please enter a valid URL starting with http:// or https://';
-    }
-
-    if (formData.linkedin_url && !validateUrl(formData.linkedin_url)) {
-      newErrors.linkedin_url = 'Please enter a valid URL starting with http:// or https://';
     }
 
     setErrors(newErrors);

@@ -1782,16 +1782,6 @@ serve(async (req) => {
         parts.push(`<service_area radius="${ctx.companyInfo.service_radius}" unit="${ctx.companyInfo.service_radius_unit || 'miles'}" />`);
       }
       
-      // Social media (condensed)
-      const social = [];
-      if (ctx.companyInfo?.facebook_url) social.push(`FB: ${ctx.companyInfo.facebook_url}`);
-      if (ctx.companyInfo?.instagram_url) social.push(`IG: ${ctx.companyInfo.instagram_url}`);
-      if (ctx.companyInfo?.twitter_url) social.push(`TW: ${ctx.companyInfo.twitter_url}`);
-      if (ctx.companyInfo?.linkedin_url) social.push(`LI: ${ctx.companyInfo.linkedin_url}`);
-      if (social.length > 0) {
-        parts.push(`<social>${social.join(' | ')}</social>`);
-      }
-      
       // Extended brand training details
       if (ctx.aiTraining) {
         const extended = [];

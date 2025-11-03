@@ -36,15 +36,6 @@ const SECTIONS = {
       { name: 'license_numbers', question: "Do you have any license numbers to add?", type: 'text', required: false },
       { name: 'business_hours', question: "What are your business hours?", type: 'text', required: false },
     ]
-  },
-  social: {
-    name: 'Social Media',
-    fields: [
-      { name: 'facebook_url', question: "Do you have a Facebook page?", type: 'url', required: false },
-      { name: 'instagram_url', question: "Do you have an Instagram account?", type: 'url', required: false },
-      { name: 'twitter_url', question: "Do you have a Twitter/X account?", type: 'url', required: false },
-      { name: 'linkedin_url', question: "Do you have a LinkedIn page?", type: 'url', required: false },
-    ]
   }
 };
 

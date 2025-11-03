@@ -18,10 +18,6 @@ export interface CompanyInfo {
   business_hours?: string;
   service_radius?: number;
   service_radius_unit?: 'miles' | 'km';
-  facebook_url?: string;
-  instagram_url?: string;
-  twitter_url?: string;
-  linkedin_url?: string;
 }
 
 export interface AITraining {
