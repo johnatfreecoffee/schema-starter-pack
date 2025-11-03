@@ -702,37 +702,54 @@ const UnifiedPageEditor = ({
           generatedHtml: 'Generating...'
         });
         
-        const response = await callEdgeFunction<any>({
-          name: 'ai-edit-page',
-          body: {
-            ...requestBody,
-            command: {
-              ...requestBody.command,
-              model: 'openrouter'
+        try {
+          const response = await callEdgeFunction<any>({
+            name: 'ai-edit-page',
+            body: {
+              ...requestBody,
+              command: {
+                ...requestBody.command,
+                model: 'openrouter'
+              },
+              mode: 'build',
+              pipelineId
             },
-            mode: 'build',
-            pipelineId
-          },
-          timeoutMs: 480000, // 8 minutes
-        });
-        
-        if (response.html) {
-          setCurrentHtml(response.html);
-          setTemplateHtml(response.html);
-          setDebugData({
-            fullPrompt: `Single-shot OpenRouter generation complete`,
-            requestPayload: requestContext,
-            responseData: response,
-            generatedHtml: response.html
+            timeoutMs: 480000, // 8 minutes
           });
           
+          if (response.html) {
+            setCurrentHtml(response.html);
+            setTemplateHtml(response.html);
+            setDebugData({
+              fullPrompt: `Single-shot OpenRouter generation complete`,
+              requestPayload: requestContext,
+              responseData: response,
+              generatedHtml: response.html
+            });
+            
+            toast({
+              title: "✨ Page generated successfully",
+              description: `OpenRouter generated your page in single-shot mode`,
+            });
+          } else if (response.error) {
+            throw new Error(response.error);
+          }
+        } catch (error: any) {
+          console.error('OpenRouter generation failed:', error);
           toast({
-            title: "✨ Page generated successfully",
-            description: `OpenRouter generated your page in single-shot mode`,
+            variant: "destructive",
+            title: "❌ Generation failed",
+            description: error.message || "OpenRouter generation failed. Check the debug panel for details.",
           });
+          setDebugData({
+            fullPrompt: `OpenRouter generation failed`,
+            requestPayload: requestContext,
+            responseData: { error: error.message },
+            generatedHtml: 'Generation failed'
+          });
+        } finally {
+          setIsAiLoading(false);
         }
-        
-        setIsAiLoading(false);
         return;
       }
       
