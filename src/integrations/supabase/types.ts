@@ -778,12 +778,9 @@ export type Database = {
           email_notifications_enabled: boolean | null
           email_reply_to: string | null
           email_signature: string | null
-          facebook_url: string | null
           icon_url: string | null
           id: string
-          instagram_url: string | null
           license_numbers: string | null
-          linkedin_url: string | null
           logo_url: string | null
           phone: string
           service_radius: number | null
@@ -791,7 +788,6 @@ export type Database = {
           show_logo_in_documents: boolean | null
           show_tagline_on_documents: boolean | null
           singleton_guard: boolean | null
-          twitter_url: string | null
           updated_at: string
           website_url: string | null
           years_experience: number | null
@@ -821,12 +817,9 @@ export type Database = {
           email_notifications_enabled?: boolean | null
           email_reply_to?: string | null
           email_signature?: string | null
-          facebook_url?: string | null
           icon_url?: string | null
           id?: string
-          instagram_url?: string | null
           license_numbers?: string | null
-          linkedin_url?: string | null
           logo_url?: string | null
           phone: string
           service_radius?: number | null
@@ -834,7 +827,6 @@ export type Database = {
           show_logo_in_documents?: boolean | null
           show_tagline_on_documents?: boolean | null
           singleton_guard?: boolean | null
-          twitter_url?: string | null
           updated_at?: string
           website_url?: string | null
           years_experience?: number | null
@@ -864,12 +856,9 @@ export type Database = {
           email_notifications_enabled?: boolean | null
           email_reply_to?: string | null
           email_signature?: string | null
-          facebook_url?: string | null
           icon_url?: string | null
           id?: string
-          instagram_url?: string | null
           license_numbers?: string | null
-          linkedin_url?: string | null
           logo_url?: string | null
           phone?: string
           service_radius?: number | null
@@ -877,7 +866,6 @@ export type Database = {
           show_logo_in_documents?: boolean | null
           show_tagline_on_documents?: boolean | null
           singleton_guard?: boolean | null
-          twitter_url?: string | null
           updated_at?: string
           website_url?: string | null
           years_experience?: number | null
