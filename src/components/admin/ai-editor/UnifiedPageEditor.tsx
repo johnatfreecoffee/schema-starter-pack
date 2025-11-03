@@ -188,10 +188,7 @@ const UnifiedPageEditor = ({
   });
   const [isPublishing, setIsPublishing] = useState(false);
   const [settingsChanged, setSettingsChanged] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<'gemini' | 'grok' | 'claude' | 'openrouter' | 'makecom'>(() => {
-    const saved = localStorage.getItem('ai-editor-model');
-    return (saved === 'grok' || saved === 'gemini' || saved === 'claude' || saved === 'openrouter' || saved === 'makecom') ? saved : 'gemini';
-  });
+  const [selectedModel] = useState<'makecom'>('makecom');
   
   // Fetch available AI providers from database
   const { data: availableProviders } = useQuery({
@@ -685,7 +682,7 @@ const UnifiedPageEditor = ({
     };
 
     // Show request data immediately in debug panel and reset pipeline stages
-    const modelName = selectedModel === 'openrouter' ? 'Open Router' : selectedModel === 'makecom' ? 'Make.com' : selectedModel === 'grok' ? 'Grok' : selectedModel === 'claude' ? 'Claude Sonnet 4.5' : 'Google Gemini 2.5 Pro';
+    const modelName = 'Make.com';
     const baseDebug = {
       fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nModel: ${modelName}\nPage Type: ${pageType}`,
       requestPayload: requestContext,
@@ -2007,33 +2004,6 @@ Create pages that are both BEAUTIFUL and FUNCTIONAL, using a complete variable-b
             <div className="p-4 border-t space-y-2 flex-shrink-0 bg-background pb-2">
               <div className="flex gap-2 mb-2 items-center justify-between">
                 <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="model-select" className="text-xs text-muted-foreground whitespace-nowrap">
-                    AI Model:
-                  </Label>
-                  <Select value={selectedModel} onValueChange={(value: 'gemini' | 'grok' | 'claude' | 'openrouter' | 'makecom') => {
-                    setSelectedModel(value);
-                    localStorage.setItem('ai-editor-model', value);
-                  }}>
-                    <SelectTrigger id="model-select" className="w-[180px] h-8 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableProviders?.map(({ provider, modelName }) => {
-                        let displayName = modelName;
-                        if (provider === 'gemini') displayName = 'Gemini 2.5 Pro';
-                        else if (provider === 'grok') displayName = 'Grok';
-                        else if (provider === 'claude') displayName = 'Claude Sonnet 4.5';
-                        
-                        return (
-                          <SelectItem key={provider} value={provider}>
-                            {displayName}
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
               <div className="flex gap-2 items-start">
                 <Textarea ref={textareaRef} placeholder="Ask AI to build something..." value={aiPrompt} onChange={e => setAiPrompt(e.target.value)} onKeyDown={e => {

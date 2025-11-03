@@ -200,7 +200,10 @@ const ServiceTemplateEditor = ({ service, onClose }: ServiceTemplateEditorProps)
       const data = await callEdgeFunction<{ updatedHtml?: string; explanation?: string }>({
         name: 'ai-edit-page',
         body: {
-          command: aiPrompt,
+          command: {
+            text: aiPrompt,
+            model: 'makecom',
+          },
           context: {
             currentPage: {
               type: 'service',
