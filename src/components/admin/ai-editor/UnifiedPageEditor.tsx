@@ -379,14 +379,18 @@ const UnifiedPageEditor = ({
     },
     enabled: open
   });
+  // Load only styling tokens from site settings (needed for CSS variables)
   const {
     data: siteSettings
   } = useQuery({
-    queryKey: ['site-settings'],
+    queryKey: ['site-settings-tokens'],
     queryFn: async () => {
       const {
         data
-      } = await supabase.from('site_settings').select('*').maybeSingle();
+      } = await supabase
+        .from('site_settings')
+        .select('primary_color, secondary_color, accent_color, button_border_radius, card_border_radius')
+        .maybeSingle();
       return data;
     },
     enabled: open
