@@ -29,7 +29,7 @@ serve(async (req) => {
       );
     }
 
-    // Prepare webhook payload
+    // Prepare webhook payload as a single object
     const webhookPayload = {
       systemMessage,
       userPrompt,
