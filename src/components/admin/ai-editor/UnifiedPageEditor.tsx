@@ -1733,6 +1733,10 @@ Create pages that are both BEAUTIFUL and FUNCTIONAL, using a complete variable-b
         queryClient.invalidateQueries({
           queryKey: ['service-template', service?.id]
         });
+        // Invalidate all rendered pages since they may use this template
+        queryClient.invalidateQueries({
+          queryKey: ['rendered-page']
+        });
         toast({
           title: 'Published successfully',
           description: 'Your changes are now live.'
