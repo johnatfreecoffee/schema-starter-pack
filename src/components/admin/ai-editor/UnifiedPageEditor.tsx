@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { CacheHelper } from '@/lib/cacheService';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -1679,6 +1680,13 @@ Create pages that are both BEAUTIFUL and FUNCTIONAL, using a complete variable-b
     setIsPublishing(true);
     try {
       if (pageType === 'static' && pageId) {
+        // Get the slug for cache invalidation
+        const { data: pageData } = await supabase
+          .from('static_pages')
+          .select('slug')
+          .eq('id', pageId)
+          .single();
+
         const {
           error
         } = await supabase.from('static_pages').update({
@@ -1688,6 +1696,12 @@ Create pages that are both BEAUTIFUL and FUNCTIONAL, using a complete variable-b
           updated_at: new Date().toISOString()
         }).eq('id', pageId);
         if (error) throw error;
+        
+        // Invalidate the frontend cache for this specific page
+        if (pageData?.slug) {
+          await CacheHelper.invalidatePage(pageData.slug, 'static');
+        }
+        
         setPublishedHtml(currentHtml);
         queryClient.invalidateQueries({
           queryKey: ['static-pages', pageId]
