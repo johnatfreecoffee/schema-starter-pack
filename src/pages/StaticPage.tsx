@@ -14,6 +14,7 @@ const StaticPage = () => {
     queryKey: ['static-page', slug],
     cacheKey: `pages:static:${slug}`,
     cacheTTL: 60 * 60 * 1000, // 1 hour
+    bypassCache: true, // Temporarily bypass cache to force fresh data
     queryFn: async () => {
       const { data, error } = await supabase
         .from('static_pages')
