@@ -46,7 +46,7 @@ application/json (raw JSON)
 
 ## 📝 Single Row Update
 
-### Example: Update Contact Us Page
+### Example: Update Contact Us Page (DRAFT)
 
 **Request Body:**
 ```json
@@ -55,13 +55,15 @@ application/json (raw JSON)
   "data": {
     "id": "518097ac-6e0d-4d8a-a5cf-cd20e0b64325",
     "updates": {
-      "content_html": "<h1>New Contact Page</h1><p>Updated content</p>",
+      "content_html_draft": "<h1>New Contact Page</h1><p>Updated content</p>",
       "meta_title": "Contact Us - Updated",
       "meta_description": "Get in touch with us today"
     }
   }
 }
 ```
+
+**Important:** Use `content_html_draft` for AI-generated drafts. When you click "Publish" in your app's AI editor, it will automatically move the draft content to `content_html` (the live version).
 
 **Response (Success):**
 ```json
@@ -203,11 +205,27 @@ Add these headers:
 
 | Table Name | Description | Common Columns to Update |
 |------------|-------------|--------------------------|
-| `static_pages` | Static website pages | `content_html`, `meta_title`, `meta_description` |
+| `static_pages` | Static website pages | `content_html_draft` (for drafts), `content_html` (for published), `meta_title`, `meta_description` |
 | `services` | Services offered | `name`, `full_description`, `starting_price` |
 | `accounts` | Customer accounts | `account_name`, `notes`, `status` |
 | `contacts` | Contact records | `first_name`, `last_name`, `email`, `phone` |
 | `test_table` | Test data | `test_one`, `test_two`, `test_three` |
+
+---
+
+## 📋 Draft vs Published Content
+
+### For `static_pages` table:
+
+- **`content_html_draft`**: Use this column when sending AI-generated drafts from Make.com
+- **`content_html`**: This is the live/published content shown on your website
+
+### Workflow:
+1. Make.com sends AI-edited content → Updates `content_html_draft`
+2. You review the draft in your app's AI editor
+3. Click "Publish" in the app → Automatically copies `content_html_draft` to `content_html`
+
+**Always use `content_html_draft` for your Make.com automations!**
 
 ---
 
