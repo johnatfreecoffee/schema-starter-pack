@@ -30,6 +30,41 @@ Content-Type: application/json
 
 ---
 
+## ⚠️ CRITICAL: Handling HTML Content
+
+When sending HTML content (especially AI-generated pages), you **MUST** ensure proper JSON encoding:
+
+### Common Issue: Bad Control Characters
+**Error**: `Bad control character in string literal in JSON at position 152`
+
+**Cause**: HTML contains unescaped newlines, quotes, or special characters that break JSON parsing.
+
+### ✅ Solution in Make.com:
+
+**Option 1: Use Make.com's JSON Builder (Recommended)**
+- Use the "Create JSON" module before your HTTP request
+- Map your fields in the JSON module - Make.com will auto-escape everything
+- Pass the output to the HTTP module's body
+
+**Option 2: Ensure toString() is Used**
+- Make sure AI-generated HTML is wrapped in `toString()` function
+- Example: `{{toString(ai.output)}}`
+
+**Option 3: Manual Text Functions**
+- Use Make.com's `replace()` function to escape critical characters:
+  - Replace `"` with `\"`
+  - Replace newlines with `\n`
+
+### ❌ DO NOT Include Markdown Code Fences
+The AI should output raw HTML without:
+- ` ```html ` at the beginning
+- ` ``` ` at the end
+- Any backticks wrapping the HTML
+
+**The HTML should start directly with `<!DOCTYPE html>` and end with `</html>`**
+
+---
+
 ## 📤 Request Format
 
 ### Method

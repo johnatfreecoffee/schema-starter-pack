@@ -44,8 +44,21 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Parse request body
-    const body: UpdateRequest = await req.json();
+    // Parse request body with better error handling
+    let body: UpdateRequest;
+    try {
+      body = await req.json();
+    } catch (jsonError) {
+      const message = jsonError instanceof Error ? jsonError.message : String(jsonError);
+      console.error('Invalid JSON in request body:', message);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid JSON format. Make sure HTML content is properly escaped. Tip: In Make.com, use the JSON builder and ensure strings are properly encoded.',
+          details: message
+        }),
+        { status: 400, headers: corsHeaders }
+      );
+    }
     const { table, data } = body;
 
     if (!table || !data) {
