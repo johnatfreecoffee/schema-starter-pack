@@ -2481,7 +2481,7 @@ OUTPUT: Complete HTML document ready to render.`;
     }
 
     // Initialize validation variables
-    let validation = { valid: true, errors: [] };
+    let validation: { valid: boolean; errors: string[] } = { valid: true, errors: [] };
     let automatedChecks: any[] = [];
     
     // Skip validation for OpenRouter (it generates full HTML docs)

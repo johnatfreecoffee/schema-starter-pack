@@ -187,9 +187,9 @@ const UnifiedPageEditor = ({
   });
   const [isPublishing, setIsPublishing] = useState(false);
   const [settingsChanged, setSettingsChanged] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<'gemini' | 'grok' | 'claude' | 'openrouter'>(() => {
+  const [selectedModel, setSelectedModel] = useState<'gemini' | 'grok' | 'claude' | 'openrouter' | 'makecom'>(() => {
     const saved = localStorage.getItem('ai-editor-model');
-    return (saved === 'grok' || saved === 'gemini' || saved === 'claude' || saved === 'openrouter') ? saved : 'gemini';
+    return (saved === 'grok' || saved === 'gemini' || saved === 'claude' || saved === 'openrouter' || saved === 'makecom') ? saved : 'gemini';
   });
   
   // Fetch available AI providers from database
@@ -212,7 +212,10 @@ const UnifiedPageEditor = ({
       });
       
       // Add OpenRouter as an additional option (single-shot generation)
-      providerModels.push({ provider: 'openrouter', modelName: 'anthropic/claude-sonnet-4.5' });
+      providerModels.push({ provider: 'openrouter', modelName: 'Open Router' });
+      
+      // Add Make.com webhook option
+      providerModels.push({ provider: 'makecom', modelName: 'Make.com' });
       
       return providerModels;
     },
@@ -658,7 +661,7 @@ const UnifiedPageEditor = ({
     };
 
     // Show request data immediately in debug panel and reset pipeline stages
-    const modelName = selectedModel === 'openrouter' ? 'OpenRouter (Claude Sonnet 4.5)' : selectedModel === 'grok' ? 'Grok' : selectedModel === 'claude' ? 'Claude Sonnet 4.5' : 'Google Gemini 2.5 Pro';
+    const modelName = selectedModel === 'openrouter' ? 'Open Router' : selectedModel === 'makecom' ? 'Make.com' : selectedModel === 'grok' ? 'Grok' : selectedModel === 'claude' ? 'Claude Sonnet 4.5' : 'Google Gemini 2.5 Pro';
     const baseDebug = {
       fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nModel: ${modelName}\nPage Type: ${pageType}`,
       requestPayload: requestContext,
@@ -689,6 +692,99 @@ const UnifiedPageEditor = ({
       // Generate unique pipeline ID for tracking stages
       const pipelineId = `pipeline_${Date.now()}_${Math.random().toString(36).substring(7)}`;
       console.log(`🆔 Pipeline ID: ${pipelineId}`);
+      
+      // Make.com webhook - send payload externally
+      if (selectedModel === 'makecom') {
+        console.log('🌐 Sending request to Make.com webhook');
+        
+        setIsAiLoading(true);
+        setDebugData({
+          fullPrompt: `Make.com webhook processing\n\nCommand: ${currentCommand}`,
+          requestPayload: requestContext,
+          responseData: { status: 'Sending to Make.com...' },
+          generatedHtml: 'Processing externally...'
+        });
+        
+        try {
+          // Prepare Supabase data object
+          const supabaseData: any = {
+            pageType,
+            pageTitle
+          };
+          
+          // Add page-specific database info
+          if (pageType === 'service' && service) {
+            supabaseData.table = 'services';
+            supabaseData.serviceId = service.id;
+            supabaseData.serviceName = service.name;
+            supabaseData.serviceSlug = service.slug;
+            supabaseData.templateId = template?.id;
+            if (template?.id) {
+              supabaseData.templatesTable = 'templates';
+              supabaseData.templateRowId = template.id;
+            }
+          } else if (pageType === 'static' && pageId) {
+            supabaseData.table = 'static_pages';
+            supabaseData.pageId = pageId;
+            supabaseData.pageRowId = pageId;
+          }
+          
+          // Prepare webhook payload
+          const webhookPayload = {
+            systemMessage: requestBody.context.companyInfo || {},
+            userPrompt: currentCommand,
+            supabaseData
+          };
+          
+          // Get webhook URL from secrets
+          const response = await callEdgeFunction<any>({
+            name: 'send-makecom-webhook',
+            body: {
+              systemMessage: requestBody.context.companyInfo || {},
+              userPrompt: currentCommand,
+              supabaseData
+            },
+            timeoutMs: 60000, // 1 minute timeout
+          });
+          
+          if (response.error) {
+            throw new Error(response.error);
+          }
+          
+          toast({
+            title: "✨ Request sent to Make.com",
+            description: "Your page is being processed externally",
+          });
+          
+          setDebugData({
+            fullPrompt: `Make.com webhook sent successfully`,
+            requestPayload: {
+              systemMessage: requestBody.context.companyInfo || {},
+              userPrompt: currentCommand,
+              supabaseData
+            },
+            responseData: response,
+            generatedHtml: 'Waiting for Make.com automation to complete...'
+          });
+          
+        } catch (error: any) {
+          console.error('Make.com webhook failed:', error);
+          toast({
+            variant: "destructive",
+            title: "❌ Webhook failed",
+            description: error.message || "Failed to send request to Make.com",
+          });
+          setDebugData({
+            fullPrompt: `Make.com webhook failed`,
+            requestPayload: requestContext,
+            responseData: { error: error.message },
+            generatedHtml: 'Webhook failed'
+          });
+        } finally {
+          setIsAiLoading(false);
+        }
+        return;
+      }
       
       // OpenRouter uses single-shot generation, not multi-stage pipeline
       if (selectedModel === 'openrouter') {
@@ -1563,7 +1659,7 @@ const UnifiedPageEditor = ({
                   <Label htmlFor="model-select" className="text-xs text-muted-foreground whitespace-nowrap">
                     AI Model:
                   </Label>
-                  <Select value={selectedModel} onValueChange={(value: 'gemini' | 'grok' | 'claude') => {
+                  <Select value={selectedModel} onValueChange={(value: 'gemini' | 'grok' | 'claude' | 'openrouter' | 'makecom') => {
                     setSelectedModel(value);
                     localStorage.setItem('ai-editor-model', value);
                   }}>
