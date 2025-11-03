@@ -2480,6 +2480,10 @@ OUTPUT: Complete HTML document ready to render.`;
       updatedHtml = updatedHtml.replace('<head>', '<head>\n  <script src="https://cdn.tailwindcss.com"></script>');
     }
 
+    // Initialize validation variables
+    let validation = { valid: true, errors: [] };
+    let automatedChecks: any[] = [];
+    
     // Skip validation for OpenRouter (it generates full HTML docs)
     if (model === 'openrouter') {
       console.log('✅ Skipping validation for OpenRouter - accepting full HTML document');
@@ -2488,12 +2492,12 @@ OUTPUT: Complete HTML document ready to render.`;
       metrics.automatedChecks = [];
     } else {
       // Validate HTML for other models
-      const validation = validateHTML(updatedHtml);
+      validation = validateHTML(updatedHtml);
       metrics.validationPassed = validation.valid;
       metrics.validationErrors = validation.errors;
       
       // Perform automated checks
-      const automatedChecks = performAutomatedChecks(
+      automatedChecks = performAutomatedChecks(
         updatedHtml, 
         context.companyInfo?.business_name || ''
       );
