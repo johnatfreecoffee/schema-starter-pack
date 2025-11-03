@@ -778,13 +778,15 @@ You are receiving COMPANY DATA for CONTEXT and TRAINING PURPOSES ONLY.
 ✗ NEVER hard-code company name, slogan, or any business information
 ✗ NEVER use static phone numbers, emails, or addresses
 ✗ NEVER write literal color values from the data
-✗ NEVER embed actual logo URLs or asset paths
+✗ NEVER create headers or footers (these are already assembled in the system)
+✗ NEVER use logo_url or icon_url (no company logos or icons)
 
 **ALWAYS DO THIS:**
 ✓ ALWAYS use Handlebars variables for ALL company information
 ✓ ALWAYS use CSS custom properties for colors and design tokens
 ✓ ALWAYS make the page dynamic so changes propagate automatically
 ✓ Build pages that adapt when company data changes in the system
+✓ Focus ONLY on main page content (no headers/footers)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎨 COMPLETE VARIABLE REFERENCE - USE THESE IN YOUR CODE
@@ -812,10 +814,6 @@ You are receiving COMPANY DATA for CONTEXT and TRAINING PURPOSES ONLY.
 {{service_radius}} - Service area radius (numeric)
 {{service_radius_unit}} - Service radius unit (miles/km)
 {{business_hours}} - Operating hours
-
-## VISUAL ASSETS VARIABLES
-{{logo_url}} - Company logo image URL
-{{icon_url}} - Company icon/favicon URL
 
 ## SOCIAL MEDIA VARIABLES (Loop through)
 {{#each socialMedia}}
@@ -967,6 +965,17 @@ ICONS:
 ✓ Initialize: <script>lucide.createIcons();</script>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚫 DO NOT CREATE HEADERS OR FOOTERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**CRITICAL:** This page content will be inserted into a pre-existing layout.
+- DO NOT create <header>, <nav>, or top navigation bars
+- DO NOT create <footer> elements
+- DO NOT include company logos or icons anywhere
+- Focus ONLY on the main page content
+- The system already handles site-wide header and footer
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📋 REQUIRED HTML STRUCTURE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -992,7 +1001,10 @@ ICONS:
   </style>
 </head>
 <body>
-  <!-- YOUR CONTENT USING HANDLEBARS VARIABLES -->
+  <!-- MAIN CONTENT ONLY - NO HEADERS OR FOOTERS -->
+  <main>
+    <!-- YOUR PAGE CONTENT USING HANDLEBARS VARIABLES -->
+  </main>
   
   <script>
     lucide.createIcons();
