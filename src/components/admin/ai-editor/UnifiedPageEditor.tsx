@@ -187,9 +187,9 @@ const UnifiedPageEditor = ({
   });
   const [isPublishing, setIsPublishing] = useState(false);
   const [settingsChanged, setSettingsChanged] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<'gemini' | 'grok' | 'claude'>(() => {
+  const [selectedModel, setSelectedModel] = useState<'gemini' | 'grok' | 'claude' | 'openrouter'>(() => {
     const saved = localStorage.getItem('ai-editor-model');
-    return (saved === 'grok' || saved === 'gemini' || saved === 'claude') ? saved : 'gemini';
+    return (saved === 'grok' || saved === 'gemini' || saved === 'claude' || saved === 'openrouter') ? saved : 'gemini';
   });
   
   // Fetch available AI providers from database
@@ -658,7 +658,7 @@ const UnifiedPageEditor = ({
     };
 
     // Show request data immediately in debug panel and reset pipeline stages
-    const modelName = selectedModel === 'grok' ? 'Grok' : selectedModel === 'claude' ? 'Claude Sonnet 4.5' : 'Google Gemini 2.5 Pro';
+    const modelName = selectedModel === 'openrouter' ? 'OpenRouter (Claude Sonnet 4.5)' : selectedModel === 'grok' ? 'Grok' : selectedModel === 'claude' ? 'Claude Sonnet 4.5' : 'Google Gemini 2.5 Pro';
     const baseDebug = {
       fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nModel: ${modelName}\nPage Type: ${pageType}`,
       requestPayload: requestContext,
@@ -690,6 +690,53 @@ const UnifiedPageEditor = ({
       const pipelineId = `pipeline_${Date.now()}_${Math.random().toString(36).substring(7)}`;
       console.log(`🆔 Pipeline ID: ${pipelineId}`);
       
+      // OpenRouter uses single-shot generation, not multi-stage pipeline
+      if (selectedModel === 'openrouter') {
+        console.log('🚀 Using single-shot generation with OpenRouter');
+        
+        setIsAiLoading(true);
+        setDebugData({
+          fullPrompt: `Single-shot generation with OpenRouter Claude Sonnet 4.5\n\nCommand: ${currentCommand}`,
+          requestPayload: requestContext,
+          responseData: { status: 'Waiting for OpenRouter response...' },
+          generatedHtml: 'Generating...'
+        });
+        
+        const response = await callEdgeFunction<any>({
+          name: 'ai-edit-page',
+          body: {
+            ...requestBody,
+            command: {
+              ...requestBody.command,
+              model: 'openrouter'
+            },
+            mode: 'build',
+            pipelineId
+          },
+          timeoutMs: 480000, // 8 minutes
+        });
+        
+        if (response.html) {
+          setCurrentHtml(response.html);
+          setTemplateHtml(response.html);
+          setDebugData({
+            fullPrompt: `Single-shot OpenRouter generation complete`,
+            requestPayload: requestContext,
+            responseData: response,
+            generatedHtml: response.html
+          });
+          
+          toast({
+            title: "✨ Page generated successfully",
+            description: `OpenRouter generated your page in single-shot mode`,
+          });
+        }
+        
+        setIsAiLoading(false);
+        return;
+      }
+      
+      // Multi-stage pipeline for Gemini, Grok, and Claude
       const stages = ['planning', 'content', 'html', 'styling'];
       const stageNames = ["Planning", "Building Content", "Creating HTML", "Styling & Polish"];
       let allStagesData: any[] = [];
