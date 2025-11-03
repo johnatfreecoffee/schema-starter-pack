@@ -1700,6 +1700,10 @@ Create pages that are both BEAUTIFUL and FUNCTIONAL, using a complete variable-b
         // Invalidate the frontend cache for this specific page
         if (pageData?.slug) {
           await CacheHelper.invalidatePage(pageData.slug, 'static');
+          // Also invalidate the React Query cache that StaticPage uses
+          queryClient.invalidateQueries({
+            queryKey: ['static-page', pageData.slug]
+          });
         }
         
         setPublishedHtml(currentHtml);
