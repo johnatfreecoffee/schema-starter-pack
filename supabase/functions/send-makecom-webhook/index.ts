@@ -29,11 +29,13 @@ serve(async (req) => {
       );
     }
 
-    // Prepare webhook payload as a single object
+    // Prepare webhook payload nested under userRequest
     const webhookPayload = {
-      systemMessage,
-      userPrompt,
-      supabaseData
+      userRequest: {
+        systemMessage,
+        userPrompt,
+        supabaseData
+      }
     };
 
     console.log('Sending webhook to Make.com:', {
