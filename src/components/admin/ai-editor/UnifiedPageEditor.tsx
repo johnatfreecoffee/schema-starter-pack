@@ -212,7 +212,7 @@ const UnifiedPageEditor = ({
       });
       
       // Add OpenRouter as an additional option (single-shot generation)
-      providerModels.push({ provider: 'openrouter', modelName: 'anthropic/claude-sonnet-4-5' });
+      providerModels.push({ provider: 'openrouter', modelName: 'anthropic/claude-sonnet-4.5' });
       
       return providerModels;
     },

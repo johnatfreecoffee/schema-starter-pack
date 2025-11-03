@@ -752,7 +752,7 @@ async function executePipelineStage(
             'X-Title': 'AI Page Editor'
           },
           body: JSON.stringify({
-            model: 'anthropic/claude-sonnet-4-5',
+            model: 'anthropic/claude-sonnet-4.5',
             max_tokens: 16384, // Claude's typical max output
             temperature: requestPayload.temperature || 0.7,
             messages: [
@@ -2147,7 +2147,7 @@ OUTPUT: Complete HTML document ready to render.`;
             'X-Title': 'AI Page Editor'
           },
           body: JSON.stringify({
-            model: 'anthropic/claude-sonnet-4-5',
+            model: 'anthropic/claude-sonnet-4.5',
             max_tokens: 16384,
             temperature: 0.7,
             messages: [
