@@ -748,17 +748,95 @@ const UnifiedPageEditor = ({
             supabaseData.pageRowId = pageId;
           }
           
-          // Prepare enhanced system message with all company data
-          const enhancedSystemMessage = {
+          // Prepare company data (all settings and context)
+          const companyData = {
             ...(requestBody.context.companyInfo || {}),
             socialMedia: socialMedia || [],
             aiTraining: requestBody.context.aiTraining || {},
             siteSettings: requestBody.context.siteSettings || {}
           };
           
+          // Prepare comprehensive system instructions for AI
+          const systemInstructions = `
+You are an ELITE web designer creating STUNNING, modern websites. Every page must be VISUALLY IMPRESSIVE and CONVERSION-FOCUSED.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎨 DESIGN SYSTEM & TOKENIZATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**COLORS (Use these CSS variables):**
+Primary: ${(companyData.siteSettings as any)?.primary_color || '#4A90E2'}
+Secondary: ${(companyData.siteSettings as any)?.secondary_color || '#50E3C2'}
+Accent: ${(companyData.siteSettings as any)?.accent_color || '#F5A623'}
+
+**TYPOGRAPHY:**
+Font Family: ${(companyData.siteSettings as any)?.font_family || "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"}
+
+**HANDLEBARS VARIABLES (Use these for dynamic content):**
+{{business_name}} - Company name
+{{business_slogan}} - Tagline
+{{phone}} - Phone number
+{{email}} - Email address
+{{address_city}} - City
+{{address_state}} - State
+{{years_experience}} - Years in business
+{{description}} - Company description
+{{logo_url}} - Logo image URL
+{{icon_url}} - Icon/favicon URL
+
+**DESIGN REQUIREMENTS:**
+✓ Rich gradient backgrounds on hero sections
+✓ Deep shadows on cards/buttons (shadow-xl, shadow-2xl)
+✓ Rounded corners (minimum rounded-xl)
+✓ Smooth hover effects with transforms
+✓ Large, bold typography (text-5xl+ for h1)
+✓ Generous spacing (py-16+ between sections)
+✓ Modern Tailwind classes with gradients, animations
+✓ Mobile-first responsive design
+✓ CTAs with: onclick="if(window.openLeadFormModal) window.openLeadFormModal('CTA Text')"
+✓ Lucide icons: data-lucide="icon-name"
+
+**NEVER CREATE:**
+✗ Plain backgrounds without gradients/depth
+✗ Flat buttons without shadows
+✗ Sharp corners (always rounded)
+✗ Cramped layouts
+✗ Small fonts
+✗ Hard-coded company data (use Handlebars)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚡ OUTPUT FORMAT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OUTPUT MUST:
+1. Start with <!DOCTYPE html>
+2. Include complete HTML structure
+3. Use Tailwind CSS from CDN
+4. Use Handlebars variables for ALL company data
+5. Include proper semantic HTML5
+6. Be fully responsive and accessible
+7. Have stunning visual design
+
+EXAMPLE BUTTON:
+<button 
+  onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Started')"
+  class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 font-bold text-lg">
+  Get Started Today
+</button>
+
+EXAMPLE HERO:
+<section class="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 text-white py-24 px-6 rounded-3xl shadow-2xl">
+  <h1 class="text-6xl font-bold mb-6">{{business_name}}</h1>
+  <p class="text-2xl mb-8">{{business_slogan}}</p>
+</section>
+
+Create pages that make visitors say "WOW!" and drive conversions.
+          `.trim();
+          
           // Prepare webhook payload
           const webhookPayload = {
-            systemMessage: enhancedSystemMessage,
+            companyData,
+            systemInstructions,
             userPrompt: currentCommand,
             supabaseData
           };
@@ -766,11 +844,7 @@ const UnifiedPageEditor = ({
           // Get webhook URL from secrets
           const response = await callEdgeFunction<any>({
             name: 'send-makecom-webhook',
-            body: {
-              systemMessage: enhancedSystemMessage,
-              userPrompt: currentCommand,
-              supabaseData
-            },
+            body: webhookPayload,
             timeoutMs: 60000, // 1 minute timeout
           });
           

@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { systemMessage, userPrompt, supabaseData } = await req.json();
+    const { companyData, systemInstructions, userPrompt, supabaseData } = await req.json();
 
     // Get webhook URL from environment
     const webhookUrl = Deno.env.get('MAKE_DOT_COM_HTML_PAGE_BUILDER');
@@ -32,7 +32,8 @@ serve(async (req) => {
     // Prepare webhook payload nested under userRequest
     const webhookPayload = {
       userRequest: {
-        systemMessage,
+        companyData,
+        systemInstructions,
         userPrompt,
         supabaseData
       }
@@ -40,6 +41,8 @@ serve(async (req) => {
 
     console.log('Sending webhook to Make.com:', {
       url: webhookUrl.substring(0, 50) + '...',
+      hasCompanyData: !!companyData,
+      hasSystemInstructions: !!systemInstructions,
       supabaseData
     });
 
