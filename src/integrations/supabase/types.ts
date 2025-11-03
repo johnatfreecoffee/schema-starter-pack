@@ -3322,6 +3322,30 @@ export type Database = {
         }
         Relationships: []
       }
+      test_table: {
+        Row: {
+          created_at: string
+          id: string
+          test_one: string
+          test_three: string
+          test_two: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          test_one: string
+          test_three: string
+          test_two: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          test_one?: string
+          test_three?: string
+          test_two?: string
+        }
+        Relationships: []
+      }
       ticket_messages: {
         Row: {
           attachments: Json | null
