@@ -61,7 +61,8 @@ export interface RequestContext {
   theme?: Theme;
   serviceInfo?: ServiceInfo[];
   currentPage?: CurrentPage;
-  siteSettings?: Record<string, unknown>;
+  // Note: siteSettings is intentionally NOT passed to AI context
+  // The AI should only use Handlebars variables, not see actual values
 }
 
 export interface ConversationTurn {

@@ -1788,7 +1788,6 @@ serve(async (req) => {
     console.log('companyInfo received:', context?.companyInfo ? Object.keys(context.companyInfo) : 'MISSING');
     console.log('companyInfo values:', JSON.stringify(context?.companyInfo, null, 2));
     console.log('aiTraining received:', context?.aiTraining ? Object.keys(context.aiTraining) : 'MISSING');
-    console.log('siteSettings received:', context?.siteSettings ? Object.keys(context.siteSettings) : 'MISSING');
     
     // Log full command for debugging
     console.log('=== FULL COMMAND START ===');
@@ -1926,35 +1925,9 @@ serve(async (req) => {
       return parts.join('\n');
     };
     
-    // Helper: Build theme context with design system
-    const buildThemeContext = (ctx: any): string => {
-      const theme = ctx.theme || {};
-      
-      // Build comprehensive design system object
-      const designSystem = {
-        colors: {
-          primary: theme.primaryColor || '#4A90E2',
-          secondary: theme.secondaryColor || '#50E3C2',
-          accent: theme.accentColor || '#F5A623',
-          text: {
-            dark: '#1F2937',
-            light: '#F9FAFB'
-          },
-          background: {
-            dark: '#111827',
-            light: '#FFFFFF'
-          }
-        },
-        typography: {
-          fontFamily: theme.fontFamily || "'Inter', sans-serif"
-        }
-      };
-      
-      const parts = ['<theme>'];
-      parts.push(JSON.stringify(designSystem, null, 2));
-      parts.push('</theme>');
-      return parts.join('\n');
-    };
+    // NOTE: buildThemeContext was removed to prevent confusing the AI with actual color values
+    // The AI should only know about Handlebars variables like {{siteSettings.primary_color}}
+    // and never see the actual hex values. This ensures clean variable usage in generated HTML.
     
     // ========================================================================
     // PHASE 3 OPTIMIZATION: Static vs Dynamic Context Separation
@@ -1970,12 +1943,14 @@ serve(async (req) => {
     const systemInstructions = getSystemInstructions();
     
     // Build static context (cacheable company data, ~3000-5000 tokens)
+    // NOTE: We do NOT include theme/siteSettings colors here to avoid confusing the AI
+    // The AI should only use Handlebars variables like {{siteSettings.primary_color}}
+    // The actual color values will be injected at render time
     const staticContext = `
 ${buildCriticalContext(context)}
 ${buildImportantContext(context)}
 ${buildSupplementaryContext(context)}
 ${buildServiceContext(context?.serviceInfo)}
-${buildThemeContext(context || {})}
 `.trim();
 
     // Build dynamic context (current request, not cached)
