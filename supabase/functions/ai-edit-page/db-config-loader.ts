@@ -20,7 +20,7 @@ const CACHE_TTL_MS = 60000; // 1 minute cache
  * Fetch AI model configuration from database with caching
  */
 export async function getModelConfig(
-  provider: 'gemini' | 'grok' | 'claude',
+  provider: 'gemini' | 'grok' | 'claude' | 'openrouter',
   stage: string
 ): Promise<AIModelConfig | null> {
   const cacheKey = `${provider}-${stage}`;
@@ -83,7 +83,7 @@ export async function getModelConfig(
 /**
  * Get all configs for a provider (used for WorkflowVisualizer)
  */
-export async function getAllConfigsForProvider(provider: 'gemini' | 'grok' | 'claude'): Promise<AIModelConfig[]> {
+export async function getAllConfigsForProvider(provider: 'gemini' | 'grok' | 'claude' | 'openrouter'): Promise<AIModelConfig[]> {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');

@@ -683,7 +683,7 @@ async function executePipelineStage(
   stage: PipelineStage,
   staticContext: string,
   apiKey: string,
-  model: 'gemini' | 'grok' | 'claude' = 'gemini',
+  model: 'gemini' | 'grok' | 'claude' | 'openrouter' = 'gemini',
   systemInstructions?: string
 ): Promise<StageResult> {
   const startTime = Date.now();
@@ -736,7 +736,56 @@ async function executePipelineStage(
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      if (model === 'claude') {
+      if (model === 'openrouter') {
+        // Use OpenRouter API with Claude Sonnet 4.5 for single-shot generation
+        const OPEN_ROUTER_API_KEY = Deno.env.get('OPEN_ROUTER');
+        if (!OPEN_ROUTER_API_KEY) {
+          throw new Error('OPEN_ROUTER API key not configured');
+        }
+        
+        response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPEN_ROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://lovable.dev',
+            'X-Title': 'AI Page Editor'
+          },
+          body: JSON.stringify({
+            model: 'anthropic/claude-sonnet-4-5',
+            max_tokens: 16384, // Claude's typical max output
+            temperature: requestPayload.temperature || 0.7,
+            messages: [
+              {
+                role: 'system',
+                content: systemMessage
+              },
+              ...messages.map(m => ({
+                role: m.role === 'user' ? 'user' : 'assistant',
+                content: m.content
+              }))
+            ]
+          })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          const errorMessage = errorData.error?.message || 'Unknown error';
+          
+          if (response.status === 429 && attempt < maxRetries) {
+            const backoffMs = RETRIES.BACKOFF_BASE_MS * Math.pow(2, attempt - 1);
+            const cappedBackoff = Math.min(backoffMs, RETRIES.BACKOFF_MAX_MS);
+            console.log(`⚠️ OpenRouter API rate limited (429) on attempt ${attempt}/${maxRetries}. Retrying in ${cappedBackoff}ms...`);
+            await sleep(cappedBackoff);
+            continue;
+          }
+          
+          throw new Error(`Stage ${stage.name} failed with OpenRouter: ${response.status} - ${errorMessage}`);
+        }
+        
+        data = await response.json();
+        break;
+      } else if (model === 'claude') {
         // Use Anthropic Claude API
         const CLAUDE_API_KEY = Deno.env.get('CLAUDE');
         if (!CLAUDE_API_KEY) {
@@ -883,7 +932,9 @@ async function executePipelineStage(
   
   // Parse response based on model
   let content = '';
-  if (model === 'claude') {
+  if (model === 'openrouter') {
+    content = data.choices?.[0]?.message?.content || '';
+  } else if (model === 'claude') {
     content = data.content?.[0]?.text || '';
   } else if (model === 'grok') {
     content = data.choices?.[0]?.message?.content || '';
@@ -2020,11 +2071,11 @@ ${buildThemeContext(context || {})}
 
     // ========================================================================
     // DECIDE: Multi-stage pipeline or single-shot generation
-    // Use multi-stage for 'build' mode (new pages)
-    // Use single-shot for 'edit' mode (modifications)
+    // Use multi-stage for 'build' mode with pipeline-capable models (gemini, grok, claude)
+    // Use single-shot for OpenRouter (always) or 'edit' mode (modifications)
     // ========================================================================
 
-    let useMultiStage = mode === 'build';
+    let useMultiStage = mode === 'build' && model !== 'openrouter';
     let updatedHtml = '';
     let usageMetadata: any = null;
     let pipelineStages: any[] = [];
@@ -2056,81 +2107,147 @@ ${buildThemeContext(context || {})}
       }
     }
     
-    // Single-shot generation (for edits or if multi-stage failed)
+    // Single-shot generation (for edits, OpenRouter, or if multi-stage failed)
     if (!useMultiStage || !updatedHtml) {
-      console.log('⚡ Using SINGLE-SHOT generation');
+      console.log(`⚡ Using SINGLE-SHOT generation${model === 'openrouter' ? ' with OpenRouter' : ''}`);
       
-      const cachedContentName = null;
-
-      // Build proper multi-turn conversation history
-      let chatMessages: Array<{ role: 'user' | 'assistant'; content: string }>;
-      
-      if (conversationHistory.length > 0) {
-        const prunedHistory = pruneConversationHistory(conversationHistory, 5);
+      // For OpenRouter, create a comprehensive single-shot prompt
+      if (model === 'openrouter') {
+        const OPEN_ROUTER_API_KEY = Deno.env.get('OPEN_ROUTER');
+        if (!OPEN_ROUTER_API_KEY) {
+          throw new Error('OPEN_ROUTER API key not configured');
+        }
         
-        chatMessages = formatChatHistoryForLLM(
-          prunedHistory,
-          command,
-          context.currentPage?.html,
-          context.currentPage?.pageType
-        );
+        // Build comprehensive context for single-shot generation
+        const singleShotPrompt = `${staticContext}
+
+USER REQUEST: ${command}
+
+Create a complete, stunning HTML page that fulfills the user's request. The page MUST:
+- Start with <!DOCTYPE html>
+- Include proper <html>, <head>, and <body> tags
+- Use Tailwind CSS from CDN (https://cdn.tailwindcss.com)
+- Include Lucide icons if needed (https://unpkg.com/lucide@latest)
+- Use Handlebars variables from company context: {{company_name}}, {{phone}}, {{email}}, etc.
+- Have modern design with gradients, shadows, rounded corners
+- Include proper CTAs with onclick="if(window.openLeadFormModal) window.openLeadFormModal('...')"
+- Be fully responsive and accessible
+- Use real Unsplash images where needed
+
+OUTPUT: Complete HTML document ready to render.`;
+
+        console.log('📤 Calling OpenRouter API with Claude Sonnet 4.5...');
+        
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPEN_ROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://lovable.dev',
+            'X-Title': 'AI Page Editor'
+          },
+          body: JSON.stringify({
+            model: 'anthropic/claude-sonnet-4-5',
+            max_tokens: 16384,
+            temperature: 0.7,
+            messages: [
+              {
+                role: 'user',
+                content: singleShotPrompt
+              }
+            ]
+          })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(`OpenRouter API error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+        }
+        
+        const openrouterData = await response.json();
+        updatedHtml = openrouterData.choices?.[0]?.message?.content || '';
+        
+        if (openrouterData.usage) {
+          usageMetadata = {
+            input_tokens: openrouterData.usage.prompt_tokens || 0,
+            output_tokens: openrouterData.usage.completion_tokens || 0
+          };
+        }
+        
+        console.log('✅ OpenRouter response complete. HTML length:', updatedHtml.length);
       } else {
-        chatMessages = [{
-          role: 'user' as const,
-          content: dynamicContext
-        }];
-      }
-      
-      // Prepend static context to first user message
-      if (!cachedContentName && chatMessages.length > 0) {
-        const firstUserMessage = chatMessages.find((msg: { role: 'user' | 'assistant'; content: string }) => msg.role === 'user');
-        if (firstUserMessage) {
-          firstUserMessage.content = staticContext + '\n\n' + firstUserMessage.content;
+        // Existing single-shot logic for other models
+        const cachedContentName = null;
+
+        // Build proper multi-turn conversation history
+        let chatMessages: Array<{ role: 'user' | 'assistant'; content: string }>;
+        
+        if (conversationHistory.length > 0) {
+          const prunedHistory = pruneConversationHistory(conversationHistory, 5);
+          
+          chatMessages = formatChatHistoryForLLM(
+            prunedHistory,
+            command,
+            context.currentPage?.html,
+            context.currentPage?.pageType
+          );
+        } else {
+          chatMessages = [{
+            role: 'user' as const,
+            content: dynamicContext
+          }];
         }
-      }
-      
-      // Prepare API call - Google Gemini 2.5 Pro only
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:streamGenerateContent?key=${GOOGLE_GEMINI_API_KEY}`;
-      
-      const requestPayload = {
-        contents: [
-          {
-            role: 'user',
-            parts: [{
-              text: systemInstructions + '\n\n' + chatMessages.map((m: any) => 
-                `${m.role === 'user' ? 'USER' : 'ASSISTANT'}: ${m.content}`
-              ).join('\n\n')
-            }]
+        
+        // Prepend static context to first user message
+        if (!cachedContentName && chatMessages.length > 0) {
+          const firstUserMessage = chatMessages.find((msg: { role: 'user' | 'assistant'; content: string }) => msg.role === 'user');
+          if (firstUserMessage) {
+            firstUserMessage.content = staticContext + '\n\n' + firstUserMessage.content;
           }
-        ],
-        generationConfig: {
-          temperature: 1,
-          maxOutputTokens: 8192,
         }
-      };
-      
-      const apiHeaders = {
-        'Content-Type': 'application/json',
-      };
-      
-      console.log('Calling Google Gemini 2.5 Pro API...');
+        
+        // Prepare API call - Google Gemini 2.5 Pro only
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:streamGenerateContent?key=${GOOGLE_GEMINI_API_KEY}`;
+        
+        const requestPayload = {
+          contents: [
+            {
+              role: 'user',
+              parts: [{
+                text: systemInstructions + '\n\n' + chatMessages.map((m: any) => 
+                  `${m.role === 'user' ? 'USER' : 'ASSISTANT'}: ${m.content}`
+                ).join('\n\n')
+              }]
+            }
+          ],
+          generationConfig: {
+            temperature: 1,
+            maxOutputTokens: 8192,
+          }
+        };
+        
+        const apiHeaders = {
+          'Content-Type': 'application/json',
+        };
+        
+        console.log('Calling Google Gemini 2.5 Pro API...');
 
-      console.log('Request payload structure:', {
-        mode: mode,
-        conversationTurns: chatMessages.length,
-        maxTokens: 8192
-      });
+        console.log('Request payload structure:', {
+          mode: mode,
+          conversationTurns: chatMessages.length,
+          maxTokens: 8192
+        });
 
-      // Retry logic for 503 errors with exponential backoff
-      const maxRetries = 3;
-      let response: Response | null = null;
-      let timeoutId: ReturnType<typeof setTimeout> | null = null;
+        // Retry logic for 503 errors with exponential backoff
+        const maxRetries = 3;
+        let response: Response | null = null;
+        let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        const controller = new AbortController();
-        timeoutId = setTimeout(() => {
-          controller.abort();
-          metrics.timeoutOccurred = true;
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+          const controller = new AbortController();
+          timeoutId = setTimeout(() => {
+            controller.abort();
+            metrics.timeoutOccurred = true;
         }, 120000);
 
         try {
@@ -2326,6 +2443,7 @@ ${buildThemeContext(context || {})}
         }
 
         console.log('Lovable AI streaming complete. HTML length:', updatedHtml.length);
+      }
       }
     }
 

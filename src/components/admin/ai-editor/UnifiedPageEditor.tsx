@@ -206,10 +206,15 @@ const UnifiedPageEditor = ({
       
       // Get unique providers
       const providers = Array.from(new Set(data?.map(d => d.provider) || []));
-      return providers.map(provider => {
+      const providerModels = providers.map(provider => {
         const modelName = data?.find(d => d.provider === provider)?.model_name || '';
         return { provider, modelName };
       });
+      
+      // Add OpenRouter as an additional option (single-shot generation)
+      providerModels.push({ provider: 'openrouter', modelName: 'anthropic/claude-sonnet-4-5' });
+      
+      return providerModels;
     },
     staleTime: 5 * 60 * 1000 // Cache for 5 minutes
   });
@@ -716,7 +721,8 @@ const UnifiedPageEditor = ({
         
         try {
           // Call the edge function for this specific stage with 8-minute timeout
-          // Use Claude for styling stage to handle larger outputs, Gemini for others
+          // Use Claude for styling stage to handle larger outputs, use selected model for others
+          // OpenRouter uses single-shot generation, not pipeline stages
           const stageModel = stageName === 'styling' ? 'claude' : selectedModel;
           const stageData = await callEdgeFunction<any>({
             name: 'ai-edit-page',
