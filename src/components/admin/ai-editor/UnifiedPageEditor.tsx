@@ -789,6 +789,34 @@ You are receiving COMPANY DATA for CONTEXT and TRAINING PURPOSES ONLY.
 ✓ Focus ONLY on main page content (no headers/footers)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📤 OUTPUT FORMAT REQUIREMENTS - CRITICAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**YOU MUST OUTPUT RAW HTML ONLY - NO MARKDOWN FORMATTING:**
+
+✓ Output ONLY the raw HTML code
+✓ Start directly with <!DOCTYPE html>
+✓ End directly with </html>
+
+❌ DO NOT wrap your output in markdown code fences
+❌ DO NOT use \`\`\`html at the beginning
+❌ DO NOT use \`\`\` at the end
+❌ DO NOT add any backticks before or after the HTML
+
+**CORRECT OUTPUT:**
+<!DOCTYPE html>
+<html lang="en">
+...
+</html>
+
+**WRONG OUTPUT:**
+\`\`\`html
+<!DOCTYPE html>
+...
+</html>
+\`\`\`
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎨 COMPLETE VARIABLE REFERENCE - USE THESE IN YOUR CODE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
