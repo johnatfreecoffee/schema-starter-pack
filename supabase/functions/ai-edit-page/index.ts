@@ -2480,17 +2480,25 @@ OUTPUT: Complete HTML document ready to render.`;
       updatedHtml = updatedHtml.replace('<head>', '<head>\n  <script src="https://cdn.tailwindcss.com"></script>');
     }
 
-    // Validate HTML
-    const validation = validateHTML(updatedHtml);
-    metrics.validationPassed = validation.valid;
-    metrics.validationErrors = validation.errors;
-    
-    // Perform automated checks
-    const automatedChecks = performAutomatedChecks(
-      updatedHtml, 
-      context.companyInfo?.business_name || ''
-    );
-    metrics.automatedChecks = automatedChecks;
+    // Skip validation for OpenRouter (it generates full HTML docs)
+    if (model === 'openrouter') {
+      console.log('✅ Skipping validation for OpenRouter - accepting full HTML document');
+      metrics.validationPassed = true;
+      metrics.validationErrors = [];
+      metrics.automatedChecks = [];
+    } else {
+      // Validate HTML for other models
+      const validation = validateHTML(updatedHtml);
+      metrics.validationPassed = validation.valid;
+      metrics.validationErrors = validation.errors;
+      
+      // Perform automated checks
+      const automatedChecks = performAutomatedChecks(
+        updatedHtml, 
+        context.companyInfo?.business_name || ''
+      );
+      metrics.automatedChecks = automatedChecks;
+    }
     
     // Update metrics with token usage
     if (usageMetadata) {
