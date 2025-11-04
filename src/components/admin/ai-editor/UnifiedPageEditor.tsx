@@ -188,37 +188,8 @@ const UnifiedPageEditor = ({
   });
   const [isPublishing, setIsPublishing] = useState(false);
   const [settingsChanged, setSettingsChanged] = useState(false);
-  const [selectedModel] = useState<'makecom'>('makecom');
-  
-  // Fetch available AI providers from database
-  const { data: availableProviders } = useQuery({
-    queryKey: ['ai-providers'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ai_model_configs')
-        .select('provider, model_name')
-        .eq('is_active', true)
-        .order('provider');
-      
-      if (error) throw error;
-      
-      // Get unique providers
-      const providers = Array.from(new Set(data?.map(d => d.provider) || []));
-      const providerModels = providers.map(provider => {
-        const modelName = data?.find(d => d.provider === provider)?.model_name || '';
-        return { provider, modelName };
-      });
-      
-      // Add OpenRouter as an additional option (single-shot generation)
-      providerModels.push({ provider: 'openrouter', modelName: 'Open Router' });
-      
-      // Add Make.com webhook option
-      providerModels.push({ provider: 'makecom', modelName: 'Make.com' });
-      
-      return providerModels;
-    },
-    staleTime: 5 * 60 * 1000 // Cache for 5 minutes
-  });
+  // Always use Make.com for AI page generation
+  const selectedModel = 'makecom';
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -1114,66 +1085,15 @@ Create pages that are both BEAUTIFUL and FUNCTIONAL, using a complete variable-b
         return;
       }
       
-      // OpenRouter uses single-shot generation, not multi-stage pipeline
-      if (selectedModel === 'openrouter') {
-        console.log('🚀 Using single-shot generation with OpenRouter');
-        
-        setIsAiLoading(true);
-        setDebugData({
-          fullPrompt: `Single-shot generation with OpenRouter Claude Sonnet 4.5\n\nCommand: ${currentCommand}`,
-          requestPayload: requestContext,
-          responseData: { status: 'Waiting for OpenRouter response...' },
-          generatedHtml: 'Generating...'
+      // All processing now happens through Make.com
+      // If we reach here without handling Make.com, something is wrong
+      if (selectedModel !== 'makecom') {
+        toast({
+          title: 'Configuration Error',
+          description: 'Only Make.com is configured for page generation',
+          variant: 'destructive',
         });
-        
-        try {
-          const response = await callEdgeFunction<any>({
-            name: 'ai-edit-page',
-            body: {
-              ...requestBody,
-              command: {
-                ...requestBody.command,
-                model: 'openrouter'
-              },
-              mode: 'build',
-              pipelineId
-            },
-            timeoutMs: 480000, // 8 minutes
-          });
-          
-          if (response.html) {
-            setCurrentHtml(response.html);
-            setTemplateHtml(response.html);
-            setDebugData({
-              fullPrompt: `Single-shot OpenRouter generation complete`,
-              requestPayload: requestContext,
-              responseData: response,
-              generatedHtml: response.html
-            });
-            
-            toast({
-              title: "✨ Page generated successfully",
-              description: `OpenRouter generated your page in single-shot mode`,
-            });
-          } else if (response.error) {
-            throw new Error(response.error);
-          }
-        } catch (error: any) {
-          console.error('OpenRouter generation failed:', error);
-          toast({
-            variant: "destructive",
-            title: "❌ Generation failed",
-            description: error.message || "OpenRouter generation failed. Check the debug panel for details.",
-          });
-          setDebugData({
-            fullPrompt: `OpenRouter generation failed`,
-            requestPayload: requestContext,
-            responseData: { error: error.message },
-            generatedHtml: 'Generation failed'
-          });
-        } finally {
-          setIsAiLoading(false);
-        }
+        setIsAiLoading(false);
         return;
       }
       
@@ -1208,17 +1128,14 @@ Create pages that are both BEAUTIFUL and FUNCTIONAL, using a complete variable-b
         }));
         
         try {
-          // Call the edge function for this specific stage with 8-minute timeout
-          // Use Claude for styling stage to handle larger outputs, use selected model for others
-          // OpenRouter uses single-shot generation, not pipeline stages
-          const stageModel = stageName === 'styling' ? 'claude' : selectedModel;
+          // All stages now use Make.com for processing
           const stageData = await callEdgeFunction<any>({
             name: 'ai-edit-page',
             body: {
               ...requestBody,
               command: {
                 ...requestBody.command,
-                model: stageModel
+                model: 'makecom'
               },
               stage: stageName,
               pipelineId

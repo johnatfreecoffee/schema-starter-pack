@@ -202,7 +202,7 @@ const ServiceTemplateEditor = ({ service, onClose }: ServiceTemplateEditorProps)
         body: {
           command: {
             text: aiPrompt,
-            model: 'makecom',
+            model: 'makecom', // Always use Make.com
           },
           context: {
             currentPage: {
