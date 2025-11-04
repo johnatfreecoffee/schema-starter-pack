@@ -21,6 +21,7 @@ import PreviewIframe from './PreviewIframe';
 import { PipelineProgressIndicator } from './PipelineProgressIndicator';
 import { callEdgeFunction } from '@/utils/callEdgeFunction';
 import { WorkflowVisualizer } from './WorkflowVisualizer';
+import { renderTemplate } from '@/lib/templateEngine';
 
 interface UnifiedPageEditorProps {
   open: boolean;
@@ -517,13 +518,69 @@ const UnifiedPageEditor = ({
       return;
     }
 
-    // For static and generated pages, render without variable substitution
+    // For static and generated pages, process Handlebars variables with actual data
     if (pageType === 'static' || pageType === 'generated') {
       console.log('Setting preview for', {
         pageType,
         length: htmlToRender.length
       });
-      setRenderedPreview(htmlToRender);
+      
+      // Process Handlebars variables if we have the necessary data
+      if (companySettings && siteSettings) {
+        try {
+          const templateData = {
+            // Company settings
+            business_name: companySettings.business_name || '',
+            business_slogan: companySettings.business_slogan || '',
+            description: companySettings.description || '',
+            years_experience: companySettings.years_experience || '',
+            website_url: companySettings.website_url || '',
+            phone: companySettings.phone || '',
+            email: companySettings.email || '',
+            address: companySettings.address || '',
+            address_street: companySettings.address_street || '',
+            address_unit: companySettings.address_unit || '',
+            address_city: companySettings.address_city || '',
+            address_state: companySettings.address_state || '',
+            address_zip: companySettings.address_zip || '',
+            license_numbers: companySettings.license_numbers || '',
+            service_radius: companySettings.service_radius || '',
+            service_radius_unit: companySettings.service_radius_unit || 'miles',
+            business_hours: companySettings.business_hours || '',
+            
+            // Site settings (colors and styling)
+            siteSettings: {
+              primary_color: siteSettings.primary_color || 'hsl(221, 83%, 53%)',
+              secondary_color: siteSettings.secondary_color || 'hsl(210, 40%, 96%)',
+              accent_color: siteSettings.accent_color || 'hsl(280, 65%, 60%)',
+              success_color: siteSettings.success_color || '#10b981',
+              warning_color: siteSettings.warning_color || '#f59e0b',
+              info_color: siteSettings.info_color || '#3b82f6',
+              danger_color: siteSettings.danger_color || '#ef4444',
+              button_border_radius: siteSettings.button_border_radius || 8,
+              card_border_radius: siteSettings.card_border_radius || 12,
+              icon_stroke_width: siteSettings.icon_stroke_width || 2,
+              icon_background_style: siteSettings.icon_background_style || 'none',
+              icon_background_padding: siteSettings.icon_background_padding || 8,
+            },
+            
+            // Social media and other data
+            socialMedia: socialMedia || [],
+            aiTraining: aiTraining || {},
+            serviceAreas: serviceAreas || [],
+          };
+          
+          const rendered = renderTemplate(htmlToRender, templateData);
+          setRenderedPreview(rendered);
+        } catch (error) {
+          console.error('Template rendering error:', error);
+          // Fallback to raw HTML if rendering fails
+          setRenderedPreview(htmlToRender);
+        }
+      } else {
+        // Show raw HTML if data not loaded yet
+        setRenderedPreview(htmlToRender);
+      }
       return;
     }
 
@@ -558,7 +615,7 @@ const UnifiedPageEditor = ({
       // Fallback: show raw template without substitution so preview never stays blank
       setRenderedPreview(htmlToRender);
     }
-  }, [displayedHtml, serviceAreas, companySettings, service, pageType, isShowingPrevious]);
+  }, [displayedHtml, serviceAreas, companySettings, service, pageType, isShowingPrevious, siteSettings, socialMedia, aiTraining]);
   const sendToAi = async () => {
     if (!aiPrompt.trim()) return;
 
