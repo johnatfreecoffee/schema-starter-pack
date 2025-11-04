@@ -35,6 +35,7 @@ const BrandTheme = () => {
   const [iconBackgroundPadding, setIconBackgroundPadding] = useState(8);
   const [isSaving, setIsSaving] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [excludedColors, setExcludedColors] = useState<string[]>([]);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
 
   const { data: settings } = useQuery({
@@ -200,6 +201,7 @@ const BrandTheme = () => {
       const { data, error } = await supabase.functions.invoke('generate-color-palette', {
         body: { 
           type,
+          excludedColors,
           companyContext: {
             businessName: companySettings?.business_name || '',
             slogan: companySettings?.business_slogan || '',
@@ -252,11 +254,49 @@ const BrandTheme = () => {
 
       <Card className="mb-8">
         <div className="p-6">
-          <div className="flex items-center justify-between">
+          <div className="space-y-4">
             <div>
               <h3 className="text-lg font-semibold mb-1">AI Palette Generator</h3>
               <p className="text-sm text-muted-foreground">Generate a complete color system based on your company</p>
             </div>
+
+            {/* Color Exclusions */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Exclude Colors (optional)</Label>
+              <p className="text-xs text-muted-foreground">Select colors to avoid in generated palettes</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { name: 'Red', value: 'red' },
+                  { name: 'Orange', value: 'orange' },
+                  { name: 'Yellow', value: 'yellow' },
+                  { name: 'Green', value: 'green' },
+                  { name: 'Teal', value: 'teal' },
+                  { name: 'Blue', value: 'blue' },
+                  { name: 'Purple', value: 'purple' },
+                  { name: 'Pink', value: 'pink' },
+                  { name: 'Brown', value: 'brown' },
+                  { name: 'Gray', value: 'gray' },
+                ].map((color) => (
+                  <Button
+                    key={color.value}
+                    variant={excludedColors.includes(color.value) ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => {
+                      setExcludedColors(prev => 
+                        prev.includes(color.value)
+                          ? prev.filter(c => c !== color.value)
+                          : [...prev, color.value]
+                      );
+                    }}
+                    className="h-8"
+                  >
+                    {color.name}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Style Buttons */}
             <div className="flex gap-2 flex-wrap">
               <Button
                 variant="outline"
