@@ -806,11 +806,7 @@ const UnifiedPageEditor = ({
           
           // Prepare company data (all settings and context)
           // NOTE: siteSettings removed per user request - AI should only use Handlebars variables
-          const companyData = {
-            ...(requestBody.context.companyInfo || {}),
-            socialMedia: socialMedia || [],
-            aiTraining: requestBody.context.aiTraining || {}
-          };
+          const companyData = requestBody.context.companyInfo || {};
           
           // Prepare comprehensive system instructions for AI
           const systemInstructions = `# AI PAGE DESIGNER - COMPREHENSIVE BUILD INSTRUCTIONS
@@ -1256,6 +1252,8 @@ Create pages that are both BEAUTIFUL and FUNCTIONAL, using a complete variable-b
           // Prepare webhook payload
           const webhookPayload = {
             companyData,
+            socialMedia: socialMedia || [],
+            aiTraining: requestBody.context.aiTraining || {},
             systemInstructions,
             userPrompt: currentCommand,
             supabaseData
