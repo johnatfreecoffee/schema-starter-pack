@@ -11,24 +11,34 @@ serve(async (req) => {
   }
 
   try {
-    const { type } = await req.json();
+    const { type, companyContext } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
+    // Build company context string
+    let contextString = '';
+    if (companyContext?.businessName || companyContext?.description) {
+      contextString = '\n\nCompany Context:';
+      if (companyContext.businessName) contextString += `\nBusiness: ${companyContext.businessName}`;
+      if (companyContext.slogan) contextString += `\nSlogan: ${companyContext.slogan}`;
+      if (companyContext.description) contextString += `\nDescription: ${companyContext.description}`;
+      contextString += '\n\nConsider this company information when selecting colors that match their brand personality and industry.';
+    }
+
     let prompt = '';
     
     if (type === 'professional') {
-      prompt = 'Generate a professional color palette with 17 colors in hex format for a corporate website. Include: 1) Primary (trustworthy blue), 2) Secondary (neutral), 3) Accent (professional vibrant), 4) Success (green), 5) Warning (orange), 6) Info (blue), 7) Danger (red), 8) Background Primary (clean white), 9) Background Secondary (light gray), 10) Background Tertiary (subtle gray), 11) Text Primary (dark), 12) Text Secondary (medium gray), 13) Text Muted (light gray), 14) Border (subtle gray), 15) Card Background (white), 16) Feature (professional blue), 17) CTA (action green).';
+      prompt = `Generate a professional color palette with 17 colors in hex format for a corporate website. Include: 1) Primary (trustworthy blue), 2) Secondary (neutral), 3) Accent (professional vibrant), 4) Success (green), 5) Warning (orange), 6) Info (blue), 7) Danger (red), 8) Background Primary (clean white), 9) Background Secondary (light gray), 10) Background Tertiary (subtle gray), 11) Text Primary (dark), 12) Text Secondary (medium gray), 13) Text Muted (light gray), 14) Border (subtle gray), 15) Card Background (white), 16) Feature (professional blue), 17) CTA (action green).${contextString}`;
     } else if (type === 'creative') {
-      prompt = 'Generate a creative color palette with 17 colors in hex format for a bold website. Include: 1) Primary (bold eye-catching), 2) Secondary (creative complementary), 3) Accent (unique vibrant), 4) Success (fresh green), 5) Warning (warm orange), 6) Info (cool blue), 7) Danger (striking red), 8) Background Primary (bright), 9) Background Secondary (vibrant light), 10) Background Tertiary (creative subtle), 11) Text Primary (strong), 12) Text Secondary (interesting), 13) Text Muted (soft), 14) Border (tasteful), 15) Card Background (clean), 16) Feature (standout), 17) CTA (bold action).';
+      prompt = `Generate a creative color palette with 17 colors in hex format for a bold website. Include: 1) Primary (bold eye-catching), 2) Secondary (creative complementary), 3) Accent (unique vibrant), 4) Success (fresh green), 5) Warning (warm orange), 6) Info (cool blue), 7) Danger (striking red), 8) Background Primary (bright), 9) Background Secondary (vibrant light), 10) Background Tertiary (creative subtle), 11) Text Primary (strong), 12) Text Secondary (interesting), 13) Text Muted (soft), 14) Border (tasteful), 15) Card Background (clean), 16) Feature (standout), 17) CTA (bold action).${contextString}`;
     } else if (type === 'minimal') {
-      prompt = 'Generate a minimal color palette with 17 colors in hex format for a clean website. Include: 1) Primary (elegant subtle), 2) Secondary (refined neutral), 3) Accent (minimal pop), 4) Success (muted green), 5) Warning (soft amber), 6) Info (gentle blue), 7) Danger (refined red), 8) Background Primary (pure white), 9) Background Secondary (whisper gray), 10) Background Tertiary (soft gray), 11) Text Primary (charcoal), 12) Text Secondary (gray), 13) Text Muted (light gray), 14) Border (delicate), 15) Card Background (white), 16) Feature (subtle), 17) CTA (understated action).';
+      prompt = `Generate a minimal color palette with 17 colors in hex format for a clean website. Include: 1) Primary (elegant subtle), 2) Secondary (refined neutral), 3) Accent (minimal pop), 4) Success (muted green), 5) Warning (soft amber), 6) Info (gentle blue), 7) Danger (refined red), 8) Background Primary (pure white), 9) Background Secondary (whisper gray), 10) Background Tertiary (soft gray), 11) Text Primary (charcoal), 12) Text Secondary (gray), 13) Text Muted (light gray), 14) Border (delicate), 15) Card Background (white), 16) Feature (subtle), 17) CTA (understated action).${contextString}`;
     } else {
       // random
-      prompt = 'Generate a completely random, aesthetically pleasing color palette with 17 colors in hex format for a website. Ensure all colors work well together. Include: Primary, Secondary, Accent, Success, Warning, Info, Danger, Background Primary, Background Secondary, Background Tertiary, Text Primary, Text Secondary, Text Muted, Border, Card Background, Feature, and CTA colors.';
+      prompt = `Generate a completely random, aesthetically pleasing color palette with 17 colors in hex format for a website. Ensure all colors work well together. Include: Primary, Secondary, Accent, Success, Warning, Info, Danger, Background Primary, Background Secondary, Background Tertiary, Text Primary, Text Secondary, Text Muted, Border, Card Background, Feature, and CTA colors.${contextString}`;
     }
 
     console.log('Generating palette with type:', type);

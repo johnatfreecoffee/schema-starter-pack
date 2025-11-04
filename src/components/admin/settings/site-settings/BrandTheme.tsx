@@ -63,6 +63,20 @@ const BrandTheme = () => {
     },
   });
 
+  const { data: companySettings } = useQuery({
+    queryKey: ['company-settings'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('company_settings')
+        .select('*')
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
   useEffect(() => {
     if (settings) {
       setPrimaryColor(settings.primary_color);
@@ -184,7 +198,14 @@ const BrandTheme = () => {
     setIsGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-color-palette', {
-        body: { type }
+        body: { 
+          type,
+          companyContext: {
+            businessName: companySettings?.business_name || '',
+            slogan: companySettings?.business_slogan || '',
+            description: companySettings?.description || '',
+          }
+        }
       });
 
       if (error) throw error;
