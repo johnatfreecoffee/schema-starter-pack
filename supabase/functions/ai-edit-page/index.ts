@@ -40,9 +40,9 @@ serve(async (req) => {
     const webhookPayload = {
       userRequest: {
         companyInfo: {
-          companyData: context.companyInfo || {},
-          socialMedia: context.socialMedia || [],
-          aiTraining: context.aiTraining || {}
+          companyData: context.companyInfo?.companyData || context.companyInfo || {},
+          socialMedia: context.companyInfo?.socialMedia || context.socialMedia || [],
+          aiTraining: context.companyInfo?.aiTraining || context.aiTraining || {}
         },
         systemInstructions: context.siteSettings || {},
         userPrompt: command.text || command,
