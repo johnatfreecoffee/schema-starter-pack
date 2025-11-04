@@ -103,6 +103,10 @@ const StaticPage = () => {
           primary_color: siteSettings?.primary_color || '#3b82f6',
           secondary_color: siteSettings?.secondary_color || '#6b7280',
           accent_color: siteSettings?.accent_color || '#8b5cf6',
+          success_color: siteSettings?.success_color || '#10b981',
+          warning_color: siteSettings?.warning_color || '#f59e0b',
+          info_color: siteSettings?.info_color || '#3b82f6',
+          danger_color: siteSettings?.danger_color || '#ef4444',
           button_border_radius: siteSettings?.button_border_radius || 8,
           card_border_radius: siteSettings?.card_border_radius || 12,
         }

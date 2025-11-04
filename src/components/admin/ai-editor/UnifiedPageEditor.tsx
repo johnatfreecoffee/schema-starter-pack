@@ -358,7 +358,7 @@ const UnifiedPageEditor = ({
         data
       } = await supabase
         .from('site_settings')
-        .select('primary_color, secondary_color, accent_color, button_border_radius, card_border_radius')
+        .select('primary_color, secondary_color, accent_color, success_color, warning_color, info_color, danger_color, button_border_radius, card_border_radius')
         .maybeSingle();
       return data;
     },
@@ -840,6 +840,10 @@ You are receiving COMPANY DATA for CONTEXT and TRAINING PURPOSES ONLY.
   --color-primary: {{siteSettings.primary_color}};
   --color-secondary: {{siteSettings.secondary_color}};
   --color-accent: {{siteSettings.accent_color}};
+  --color-success: {{siteSettings.success_color}};
+  --color-warning: {{siteSettings.warning_color}};
+  --color-info: {{siteSettings.info_color}};
+  --color-danger: {{siteSettings.danger_color}};
   
   /* Border Radius Tokens */
   --radius-button: {{siteSettings.button_border_radius}}px;
@@ -853,6 +857,21 @@ You are receiving COMPANY DATA for CONTEXT and TRAINING PURPOSES ONLY.
 /* Use the tokens in your CSS */
 .btn-primary {
   background: var(--color-primary);
+  border-radius: var(--radius-button);
+}
+
+.btn-success {
+  background: var(--color-success);
+  border-radius: var(--radius-button);
+}
+
+.btn-warning {
+  background: var(--color-warning);
+  border-radius: var(--radius-button);
+}
+
+.btn-danger {
+  background: var(--color-danger);
   border-radius: var(--radius-button);
 }
 
@@ -1057,6 +1076,10 @@ Truck Icon:
       --color-primary: {{siteSettings.primary_color}};
       --color-secondary: {{siteSettings.secondary_color}};
       --color-accent: {{siteSettings.accent_color}};
+      --color-success: {{siteSettings.success_color}};
+      --color-warning: {{siteSettings.warning_color}};
+      --color-info: {{siteSettings.info_color}};
+      --color-danger: {{siteSettings.danger_color}};
       --radius-button: {{siteSettings.button_border_radius}}px;
       --radius-card: {{siteSettings.card_border_radius}}px;
     }
