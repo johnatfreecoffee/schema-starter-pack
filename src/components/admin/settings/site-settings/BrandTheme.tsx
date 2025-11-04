@@ -507,86 +507,6 @@ const BrandTheme = () => {
               </div>
             </Card>
 
-            {/* Icon Preview */}
-            <Card className="p-6 space-y-6" style={{ borderRadius: `${cardRadius}px` }}>
-              <div>
-                <p className="text-sm font-medium mb-3 text-slate-700">Icon Styles</p>
-                <div className="flex flex-wrap gap-4">
-                  {/* Home Icon */}
-                  <div className="flex flex-col items-center gap-2">
-                    <div
-                      className="flex items-center justify-center"
-                      style={{
-                        width: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
-                        height: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
-                        backgroundColor: iconBackgroundStyle !== 'none' ? `${primaryColor}15` : 'transparent',
-                        borderRadius: iconBackgroundStyle === 'circle' ? '50%' : iconBackgroundStyle === 'rounded-square' ? `${buttonRadius}px` : '0',
-                      }}
-                    >
-                      <svg width={iconSize} height={iconSize} fill="none" stroke={primaryColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                      </svg>
-                    </div>
-                    <span className="text-xs text-muted-foreground">Home</span>
-                  </div>
-
-                  {/* Phone Icon */}
-                  <div className="flex flex-col items-center gap-2">
-                    <div
-                      className="flex items-center justify-center"
-                      style={{
-                        width: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
-                        height: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
-                        backgroundColor: iconBackgroundStyle !== 'none' ? `${successColor}15` : 'transparent',
-                        borderRadius: iconBackgroundStyle === 'circle' ? '50%' : iconBackgroundStyle === 'rounded-square' ? `${buttonRadius}px` : '0',
-                      }}
-                    >
-                      <svg width={iconSize} height={iconSize} fill="none" stroke={successColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                    </div>
-                    <span className="text-xs text-muted-foreground">Phone</span>
-                  </div>
-
-                  {/* Email Icon */}
-                  <div className="flex flex-col items-center gap-2">
-                    <div
-                      className="flex items-center justify-center"
-                      style={{
-                        width: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
-                        height: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
-                        backgroundColor: iconBackgroundStyle !== 'none' ? `${accentColor}15` : 'transparent',
-                        borderRadius: iconBackgroundStyle === 'circle' ? '50%' : iconBackgroundStyle === 'rounded-square' ? `${buttonRadius}px` : '0',
-                      }}
-                    >
-                      <svg width={iconSize} height={iconSize} fill="none" stroke={accentColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <span className="text-xs text-muted-foreground">Email</span>
-                  </div>
-
-                  {/* Check Circle Icon */}
-                  <div className="flex flex-col items-center gap-2">
-                    <div
-                      className="flex items-center justify-center"
-                      style={{
-                        width: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
-                        height: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
-                        backgroundColor: iconBackgroundStyle !== 'none' ? `${secondaryColor}15` : 'transparent',
-                        borderRadius: iconBackgroundStyle === 'circle' ? '50%' : iconBackgroundStyle === 'rounded-square' ? `${buttonRadius}px` : '0',
-                      }}
-                    >
-                      <svg width={iconSize} height={iconSize} fill="none" stroke={secondaryColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <span className="text-xs text-muted-foreground">Check</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
             {/* Website Mockup */}
             <Card className="p-4 bg-slate-50" style={{ borderRadius: `${cardRadius}px` }}>
               <p className="text-sm font-medium mb-4 text-slate-700">Website Preview</p>
@@ -690,6 +610,86 @@ const BrandTheme = () => {
                       !
                     </div>
                     <p className="text-xs font-medium text-slate-700">Warning</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Icon Preview */}
+            <Card className="p-6 space-y-6" style={{ borderRadius: `${cardRadius}px` }}>
+              <div>
+                <p className="text-sm font-medium mb-3 text-slate-700">Icon Styles</p>
+                <div className="flex flex-wrap gap-4">
+                  {/* Home Icon */}
+                  <div className="flex flex-col items-center gap-2">
+                    <div
+                      className="flex items-center justify-center"
+                      style={{
+                        width: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
+                        height: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
+                        backgroundColor: iconBackgroundStyle !== 'none' ? `${primaryColor}15` : 'transparent',
+                        borderRadius: iconBackgroundStyle === 'circle' ? '50%' : iconBackgroundStyle === 'rounded-square' ? `${buttonRadius}px` : '0',
+                      }}
+                    >
+                      <svg width={iconSize} height={iconSize} fill="none" stroke={primaryColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                      </svg>
+                    </div>
+                    <span className="text-xs text-muted-foreground">Home</span>
+                  </div>
+
+                  {/* Phone Icon */}
+                  <div className="flex flex-col items-center gap-2">
+                    <div
+                      className="flex items-center justify-center"
+                      style={{
+                        width: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
+                        height: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
+                        backgroundColor: iconBackgroundStyle !== 'none' ? `${successColor}15` : 'transparent',
+                        borderRadius: iconBackgroundStyle === 'circle' ? '50%' : iconBackgroundStyle === 'rounded-square' ? `${buttonRadius}px` : '0',
+                      }}
+                    >
+                      <svg width={iconSize} height={iconSize} fill="none" stroke={successColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                    </div>
+                    <span className="text-xs text-muted-foreground">Phone</span>
+                  </div>
+
+                  {/* Email Icon */}
+                  <div className="flex flex-col items-center gap-2">
+                    <div
+                      className="flex items-center justify-center"
+                      style={{
+                        width: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
+                        height: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
+                        backgroundColor: iconBackgroundStyle !== 'none' ? `${accentColor}15` : 'transparent',
+                        borderRadius: iconBackgroundStyle === 'circle' ? '50%' : iconBackgroundStyle === 'rounded-square' ? `${buttonRadius}px` : '0',
+                      }}
+                    >
+                      <svg width={iconSize} height={iconSize} fill="none" stroke={accentColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <span className="text-xs text-muted-foreground">Email</span>
+                  </div>
+
+                  {/* Check Circle Icon */}
+                  <div className="flex flex-col items-center gap-2">
+                    <div
+                      className="flex items-center justify-center"
+                      style={{
+                        width: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
+                        height: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
+                        backgroundColor: iconBackgroundStyle !== 'none' ? `${secondaryColor}15` : 'transparent',
+                        borderRadius: iconBackgroundStyle === 'circle' ? '50%' : iconBackgroundStyle === 'rounded-square' ? `${buttonRadius}px` : '0',
+                      }}
+                    >
+                      <svg width={iconSize} height={iconSize} fill="none" stroke={secondaryColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <span className="text-xs text-muted-foreground">Check</span>
                   </div>
                 </div>
               </div>
