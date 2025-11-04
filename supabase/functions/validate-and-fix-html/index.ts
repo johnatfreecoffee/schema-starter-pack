@@ -29,14 +29,15 @@ CRITICAL RULES:
 
 REQUIRED FIXES:
 
-1. **Icons - LUCIDE ONLY**: 
-   - Replace ALL icon elements with proper Lucide data-lucide attributes
-   - Find: <i class="..."></i>, <span class="icon"></span>, font-awesome icons, material icons, etc.
-   - Replace with: <i data-lucide="icon-name" class="w-5 h-5"></i>
-   - Use ONLY these Lucide icon names: check-circle, x-circle, alert-circle, info, star, heart, user, users, mail, phone, map-pin, calendar, clock, settings, search, menu, chevron-right, chevron-down, arrow-right, plus, minus, edit, trash, download, upload, eye, eye-off, lock, unlock, shield, zap, trending-up, award, briefcase, building, home, package, shopping-cart, credit-card, dollar-sign, percent, bar-chart, pie-chart, activity, bell, message-circle, send, share-2, external-link, link, file, folder, image, video, play, pause, stop, skip-back, skip-forward, volume-2, thumbs-up, thumbs-down, flag, bookmark, tag, filter, refresh-cw, more-horizontal, more-vertical, maximize, minimize, copy, check
-   - Infer appropriate icon from context (e.g., contact → "mail" or "phone", benefits → "check-circle", process → "arrow-right")
-   - Use icons for: badges, feature markers, process steps, navigation, CTAs, benefits lists
-   - NO emojis as icons - only use emojis sparingly in body text
+1. **Icons - INLINE SVG ONLY**: 
+   - PRESERVE all existing inline SVG icons - DO NOT convert them
+   - ONLY convert Font Awesome, Material Icons, or other icon libraries to inline SVG
+   - Find: <i class="fa..."></i>, <i class="material-icons"></i>, etc.
+   - Replace with complete inline SVG code from Heroicons
+   - Example: <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+   - Use appropriate SVG icons for context (check-circle, phone, mail, map-pin, etc.)
+   - NO icon libraries requiring JavaScript - ONLY inline SVG
+   - NO emojis as icons
 
 2. **Colors - CSS Variables ONLY**:
    - Replace ALL hardcoded colors with semantic CSS variables
