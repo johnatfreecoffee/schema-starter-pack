@@ -51,23 +51,63 @@ ${companyInfo?.companyData ? `
 - Years Experience: ${companyInfo.companyData.years_experience}
 ` : ''}
 
-## COLOR SYSTEM (must be preserved):
+## COMPLETE 17-COLOR PALETTE SYSTEM (must be preserved):
 ${colors ? `
+### Brand Colors:
 - Primary: ${colors.primary_color}
 - Secondary: ${colors.secondary_color}
 - Accent: ${colors.accent_color}
+
+### State Colors:
 - Success: ${colors.success_color}
 - Warning: ${colors.warning_color}
 - Info: ${colors.info_color}
 - Danger: ${colors.danger_color}
+
+### Website Palette:
+- BG Primary: ${colors.bg_primary_color || '#ffffff'}
+- BG Secondary: ${colors.bg_secondary_color || '#f8f9fa'}
+- BG Tertiary: ${colors.bg_tertiary_color || '#e9ecef'}
+- Text Primary: ${colors.text_primary_color || '#212529'}
+- Text Secondary: ${colors.text_secondary_color || '#6c757d'}
+- Text Muted: ${colors.text_muted_color || '#adb5bd'}
+- Border: ${colors.border_color || '#dee2e6'}
+- Card BG: ${colors.card_bg_color || '#ffffff'}
+- Feature: ${colors.feature_color || '#0d6efd'}
+- CTA: ${colors.cta_color || '#198754'}
 ` : ''}
 
-## DESIGN TOKENS (must use these):
-- Use var(--color-primary) for brand colors
-- Use var(--color-secondary) for secondary elements
-- Use var(--color-accent) for CTAs
-- Use var(--radius-button) for button border radius
-- Use var(--radius-card) for card border radius
+## DESIGN TOKENS (must use these CSS variables):
+### Brand Identity:
+- var(--color-primary) - Main brand color
+- var(--color-secondary) - Supporting color
+- var(--color-accent) - Accent/highlights
+
+### State & Feedback:
+- var(--color-success) - Success states
+- var(--color-warning) - Warning states
+- var(--color-info) - Info states
+- var(--color-danger) - Error/danger states
+
+### Backgrounds (for layering/depth):
+- var(--color-bg-primary) - Main background
+- var(--color-bg-secondary) - Secondary sections
+- var(--color-bg-tertiary) - Subtle backgrounds
+
+### Typography:
+- var(--color-text-primary) - Main text
+- var(--color-text-secondary) - Supporting text
+- var(--color-text-muted) - Subtle text
+
+### UI Elements:
+- var(--color-border) - Borders & dividers
+- var(--color-card-bg) - Card backgrounds
+- var(--color-feature) - Feature highlights
+- var(--color-cta) - Call-to-action buttons
+
+### Spacing:
+- var(--radius-button) - Button border radius
+- var(--radius-card) - Card border radius
 
 ## OUTPUT REQUIREMENTS:
 - Return complete, valid HTML document

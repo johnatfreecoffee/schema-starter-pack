@@ -888,6 +888,7 @@ const UnifiedPageEditor = ({
           const companyData = {
             ...contextInfo,
             siteSettings: {
+              // Brand Colors
               primary_color: contextSiteSettings?.primary_color,
               secondary_color: contextSiteSettings?.secondary_color,
               accent_color: contextSiteSettings?.accent_color,
@@ -895,6 +896,20 @@ const UnifiedPageEditor = ({
               warning_color: contextSiteSettings?.warning_color,
               info_color: contextSiteSettings?.info_color,
               danger_color: contextSiteSettings?.danger_color,
+              
+              // Website Palette Colors
+              bg_primary_color: contextSiteSettings?.bg_primary_color,
+              bg_secondary_color: contextSiteSettings?.bg_secondary_color,
+              bg_tertiary_color: contextSiteSettings?.bg_tertiary_color,
+              text_primary_color: contextSiteSettings?.text_primary_color,
+              text_secondary_color: contextSiteSettings?.text_secondary_color,
+              text_muted_color: contextSiteSettings?.text_muted_color,
+              border_color: contextSiteSettings?.border_color,
+              card_bg_color: contextSiteSettings?.card_bg_color,
+              feature_color: contextSiteSettings?.feature_color,
+              cta_color: contextSiteSettings?.cta_color,
+              
+              // Design Tokens
               button_border_radius: contextSiteSettings?.button_border_radius,
               card_border_radius: contextSiteSettings?.card_border_radius,
               icon_stroke_width: contextSiteSettings?.icon_stroke_width || 2,
@@ -1012,72 +1027,154 @@ You are receiving COMPANY DATA for CONTEXT and TRAINING PURPOSES ONLY.
 {{aiTraining.target_audience}} - Understand who you're designing for
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎨 COLOR & DESIGN TOKEN SYSTEM
+🎨 COLOR & DESIGN TOKEN SYSTEM - 17 COLOR COMPREHENSIVE PALETTE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**YOU MUST DEFINE CSS CUSTOM PROPERTIES IN YOUR <style> TAG:**
+**YOU MUST DEFINE ALL CSS CUSTOM PROPERTIES IN YOUR <style> TAG:**
 
 <style>
 :root {
-  /* Brand Colors - These will be injected at render time */
-  --color-primary: {{siteSettings.primary_color}};
-  --color-secondary: {{siteSettings.secondary_color}};
-  --color-accent: {{siteSettings.accent_color}};
-  --color-success: {{siteSettings.success_color}};
-  --color-warning: {{siteSettings.warning_color}};
-  --color-info: {{siteSettings.info_color}};
-  --color-danger: {{siteSettings.danger_color}};
+  /* ═══════════════════════════════════════════ */
+  /* BRAND COLORS (Primary Identity)             */
+  /* ═══════════════════════════════════════════ */
+  --color-primary: {{siteSettings.primary_color}};      /* Main brand color */
+  --color-secondary: {{siteSettings.secondary_color}};  /* Supporting color */
+  --color-accent: {{siteSettings.accent_color}};        /* Accent/highlight */
   
-  /* Border Radius Tokens */
+  /* ═══════════════════════════════════════════ */
+  /* STATE COLORS (Feedback & Status)            */
+  /* ═══════════════════════════════════════════ */
+  --color-success: {{siteSettings.success_color}};      /* Success states */
+  --color-warning: {{siteSettings.warning_color}};      /* Warning states */
+  --color-info: {{siteSettings.info_color}};            /* Info states */
+  --color-danger: {{siteSettings.danger_color}};        /* Error/danger states */
+  
+  /* ═══════════════════════════════════════════ */
+  /* BACKGROUND COLORS (Layering & Depth)        */
+  /* ═══════════════════════════════════════════ */
+  --color-bg-primary: {{siteSettings.bg_primary_color}};      /* Main background */
+  --color-bg-secondary: {{siteSettings.bg_secondary_color}};  /* Secondary sections */
+  --color-bg-tertiary: {{siteSettings.bg_tertiary_color}};    /* Subtle backgrounds */
+  
+  /* ═══════════════════════════════════════════ */
+  /* TEXT COLORS (Typography Hierarchy)          */
+  /* ═══════════════════════════════════════════ */
+  --color-text-primary: {{siteSettings.text_primary_color}};      /* Main text */
+  --color-text-secondary: {{siteSettings.text_secondary_color}};  /* Supporting text */
+  --color-text-muted: {{siteSettings.text_muted_color}};          /* Subtle text */
+  
+  /* ═══════════════════════════════════════════ */
+  /* UI ELEMENT COLORS (Components)              */
+  /* ═══════════════════════════════════════════ */
+  --color-border: {{siteSettings.border_color}};        /* Borders & dividers */
+  --color-card-bg: {{siteSettings.card_bg_color}};      /* Card backgrounds */
+  --color-feature: {{siteSettings.feature_color}};      /* Feature highlights */
+  --color-cta: {{siteSettings.cta_color}};              /* Call-to-action buttons */
+  
+  /* ═══════════════════════════════════════════ */
+  /* DESIGN TOKENS (Spacing & Effects)           */
+  /* ═══════════════════════════════════════════ */
   --radius-button: {{siteSettings.button_border_radius}}px;
   --radius-card: {{siteSettings.card_border_radius}}px;
-  
-  /* Icon Settings */
   --icon-stroke-width: {{siteSettings.icon_stroke_width}};
   
-  /* Derived Colors for Gradients */
+  /* ═══════════════════════════════════════════ */
+  /* DERIVED COLORS (Auto-generated variants)    */
+  /* ═══════════════════════════════════════════ */
   --color-primary-light: color-mix(in srgb, var(--color-primary) 70%, white);
   --color-primary-dark: color-mix(in srgb, var(--color-primary) 70%, black);
+  --color-accent-light: color-mix(in srgb, var(--color-accent) 70%, white);
+  --color-cta-hover: color-mix(in srgb, var(--color-cta) 85%, black);
 }
 
-/* Use the tokens in your CSS */
+/* ═══════════════════════════════════════════ */
+/* USAGE EXAMPLES - Apply tokens in your CSS  */
+/* ═══════════════════════════════════════════ */
+
+/* Page Layout */
+body {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}
+
+/* Buttons */
 .btn-primary {
   background: var(--color-primary);
   border-radius: var(--radius-button);
+  color: white;
 }
 
-.btn-success {
-  background: var(--color-success);
+.btn-cta {
+  background: var(--color-cta);
   border-radius: var(--radius-button);
+  color: white;
 }
 
-.btn-warning {
-  background: var(--color-warning);
-  border-radius: var(--radius-button);
+.btn-cta:hover {
+  background: var(--color-cta-hover);
 }
 
-.btn-danger {
-  background: var(--color-danger);
-  border-radius: var(--radius-button);
-}
-
+/* Cards & Sections */
 .card {
+  background: var(--color-card-bg);
   border-radius: var(--radius-card);
-  border: 2px solid var(--color-secondary);
+  border: 2px solid var(--color-border);
 }
 
+.section-alt {
+  background: var(--color-bg-secondary);
+}
+
+/* Text Hierarchy */
+h1, h2, h3 {
+  color: var(--color-text-primary);
+}
+
+p {
+  color: var(--color-text-secondary);
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+/* Feature Sections */
+.feature-highlight {
+  background: var(--color-feature);
+  border-radius: var(--radius-card);
+}
+
+/* Gradients */
 .gradient-hero {
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+}
+
+.gradient-feature {
+  background: linear-gradient(to right, var(--color-feature), var(--color-primary));
 }
 </style>
 
 **IN YOUR HTML, USE INLINE STYLES WITH CSS VARIABLES:**
-<button style="background: var(--color-primary); border-radius: var(--radius-button);">
+
+<!-- CTA Button with proper colors -->
+<button style="background: var(--color-cta); border-radius: var(--radius-button); color: white;">
   Call {{phone}}
 </button>
 
-<div style="border-radius: var(--radius-card); border: 2px solid var(--color-secondary);">
+<!-- Card with proper backgrounds and borders -->
+<div style="background: var(--color-card-bg); border-radius: var(--radius-card); border: 2px solid var(--color-border); color: var(--color-text-primary);">
   <h3>{{business_name}}</h3>
+  <p style="color: var(--color-text-secondary);">{{business_slogan}}</p>
+</div>
+
+<!-- Section with alternate background -->
+<section style="background: var(--color-bg-secondary); padding: 4rem 2rem;">
+  <h2 style="color: var(--color-text-primary);">Our Services</h2>
+</section>
+
+<!-- Feature highlight box -->
+<div style="background: var(--color-feature); border-radius: var(--radius-card); padding: 2rem; color: white;">
+  <h3>Special Feature</h3>
 </div>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
