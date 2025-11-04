@@ -625,7 +625,9 @@ const UnifiedPageEditor = ({
         } : null,
         companyInfo: companySettings || {},
         aiTraining: aiTraining || {},
-        siteSettings: siteSettings || {}
+        siteSettings: siteSettings || {},
+        socialMedia: socialMedia || [],
+        serviceAreas: serviceAreas || []
       },
       userId: user?.id
     };
@@ -818,6 +820,15 @@ You are receiving COMPANY DATA for CONTEXT and TRAINING PURPOSES ONLY.
   {{this.link}} - Profile URL
   {{this.handle}} - Handle/username
   {{this.social_media_outlet_types.icon_url}} - Platform icon
+{{/each}}
+
+## SERVICE AREAS VARIABLES (Loop through service locations)
+{{#each serviceAreas}}
+  {{this.area_name}} - Service area name
+  {{this.city}} - City name
+  {{this.state}} - State
+  {{this.zip_code}} - ZIP code
+  {{this.county}} - County name
 {{/each}}
 
 ## AI TRAINING CONTEXT (Use for content strategy, not literal copying)
