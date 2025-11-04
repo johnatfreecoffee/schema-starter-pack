@@ -344,7 +344,43 @@ const BrandTheme = () => {
           </div>
 
           <div className="mt-8 space-y-4">
-            <h3 className="text-lg font-semibold">Website Palette</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Website Palette</h3>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleGeneratePalette('professional')}
+                  disabled={isGenerating}
+                >
+                  Professional
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleGeneratePalette('creative')}
+                  disabled={isGenerating}
+                >
+                  Creative
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleGeneratePalette('minimal')}
+                  disabled={isGenerating}
+                >
+                  Minimal
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleGeneratePalette('random')}
+                  disabled={isGenerating}
+                >
+                  {isGenerating ? 'Generating...' : 'Randomize'}
+                </Button>
+              </div>
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
