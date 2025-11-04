@@ -40,6 +40,20 @@ const Home = () => {
     }
   });
 
+  const { data: siteSettings } = useCachedQuery({
+    queryKey: ['site-settings'],
+    cacheKey: 'site:settings',
+    cacheTTL: 24 * 60 * 60 * 1000, // 24 hours
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    }
+  });
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
@@ -53,36 +67,45 @@ const Home = () => {
     let renderedContent = homepage.content_html;
     if (companySettings) {
       try {
-        const templateData = {
-          // Common company variables
-          company_name: companySettings.business_name || '',
-          business_name: companySettings.business_name || '', // support both keys
-          company_phone: formatPhone(companySettings.phone || ''),
-          company_email: companySettings.email || '',
-          company_address: companySettings.address || '',
-          company_website: companySettings.website_url || '',
-          company_years_in_business: companySettings.years_experience || 0,
-          years_experience: companySettings.years_experience || 0, // support both keys
-          company_city: companySettings.address_city || '',
-          company_state: companySettings.address_state || '',
-          company_zip: companySettings.address_zip || '',
-          license_number: companySettings.license_numbers || '',
-          business_slogan: companySettings.business_slogan || '',
-          logo_url: companySettings.logo_url || '',
-          icon_url: companySettings.icon_url || '',
-          business_hours: companySettings.business_hours || '',
-          address_street: companySettings.address_street || '',
-          address_unit: companySettings.address_unit || '',
-          address_city: companySettings.address_city || '',
-          address_state: companySettings.address_state || '',
-          address_zip: companySettings.address_zip || '',
-          service_radius: companySettings.service_radius || '',
-          service_radius_unit: companySettings.service_radius_unit || 'miles',
-          email_from_name: companySettings.email_from_name || '',
-          email_signature: companySettings.email_signature || '',
-          description: companySettings.description || '',
-          license_numbers: companySettings.license_numbers || '',
-        };
+      const templateData = {
+        // Common company variables
+        company_name: companySettings.business_name || '',
+        business_name: companySettings.business_name || '',
+        company_phone: formatPhone(companySettings.phone || ''),
+        company_email: companySettings.email || '',
+        company_address: companySettings.address || '',
+        company_website: companySettings.website_url || '',
+        company_years_in_business: companySettings.years_experience || 0,
+        years_experience: companySettings.years_experience || 0,
+        company_city: companySettings.address_city || '',
+        company_state: companySettings.address_state || '',
+        company_zip: companySettings.address_zip || '',
+        license_number: companySettings.license_numbers || '',
+        business_slogan: companySettings.business_slogan || '',
+        logo_url: companySettings.logo_url || '',
+        icon_url: companySettings.icon_url || '',
+        business_hours: companySettings.business_hours || '',
+        address_street: companySettings.address_street || '',
+        address_unit: companySettings.address_unit || '',
+        address_city: companySettings.address_city || '',
+        address_state: companySettings.address_state || '',
+        address_zip: companySettings.address_zip || '',
+        service_radius: companySettings.service_radius || '',
+        service_radius_unit: companySettings.service_radius_unit || 'miles',
+        email_from_name: companySettings.email_from_name || '',
+        email_signature: companySettings.email_signature || '',
+        description: companySettings.description || '',
+        license_numbers: companySettings.license_numbers || '',
+        
+        // Site settings for styling
+        siteSettings: {
+          primary_color: siteSettings?.primary_color || '#3b82f6',
+          secondary_color: siteSettings?.secondary_color || '#6b7280',
+          accent_color: siteSettings?.accent_color || '#8b5cf6',
+          button_border_radius: siteSettings?.button_border_radius || 8,
+          card_border_radius: siteSettings?.card_border_radius || 12,
+        }
+      };
         renderedContent = renderTemplate(homepage.content_html, templateData);
       } catch (error) {
         console.error('Template rendering error (homepage):', error);

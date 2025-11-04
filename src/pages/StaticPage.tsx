@@ -42,6 +42,20 @@ const StaticPage = () => {
     }
   });
 
+  const { data: siteSettings } = useCachedQuery({
+    queryKey: ['site-settings'],
+    cacheKey: 'site:settings',
+    cacheTTL: 24 * 60 * 60 * 1000, // 24 hours
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    }
+  });
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
@@ -83,6 +97,15 @@ const StaticPage = () => {
         email_signature: companySettings.email_signature || '',
         description: companySettings.description || '',
         license_numbers: companySettings.license_numbers || '',
+        
+        // Site settings for styling
+        siteSettings: {
+          primary_color: siteSettings?.primary_color || '#3b82f6',
+          secondary_color: siteSettings?.secondary_color || '#6b7280',
+          accent_color: siteSettings?.accent_color || '#8b5cf6',
+          button_border_radius: siteSettings?.button_border_radius || 8,
+          card_border_radius: siteSettings?.card_border_radius || 12,
+        }
       };
       
       renderedContent = renderTemplate(page.content_html, templateData);
