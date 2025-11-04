@@ -38,6 +38,7 @@ interface ChatMessage {
   suggestion?: string;
 }
 type EditorMode = 'chat' | 'build';
+type AIMode = 'build' | 'edit';
 const TOKEN_SOFT_LIMIT = 800000;
 const TOKEN_HARD_LIMIT = 1000000;
 
@@ -141,6 +142,7 @@ const UnifiedPageEditor = ({
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [editorMode, setEditorMode] = useState<EditorMode>('build');
+  const [aiMode, setAiMode] = useState<AIMode>('build');
   const [tokenCount, setTokenCount] = useState(0);
   const [currentHtml, setCurrentHtml] = useState('');
   const [previousHtml, setPreviousHtml] = useState('');
@@ -687,7 +689,86 @@ const UnifiedPageEditor = ({
       const pipelineId = `pipeline_${Date.now()}_${Math.random().toString(36).substring(7)}`;
       console.log(`🆔 Pipeline ID: ${pipelineId}`);
       
-      // Make.com webhook - send payload externally
+      // Check if using local AI edit mode
+      if (aiMode === 'edit') {
+        console.log('🔧 Using local AI edit mode');
+        
+        try {
+          const editPayload = {
+            currentHtml,
+            userPrompt: currentCommand,
+            companyInfo: companySettings,
+            systemInstructions: aiTraining,
+            colors: siteSettings
+          };
+
+          console.log('Sending to local AI edit:', {
+            htmlLength: currentHtml.length,
+            promptLength: currentCommand.length
+          });
+
+          const response = await callEdgeFunction<{
+            success: boolean;
+            updatedHtml: string;
+            explanation?: string;
+            error?: string;
+          }>({
+            name: 'ai-local-edit',
+            body: editPayload,
+            timeoutMs: 120000, // 2 minutes
+          });
+
+          if (!response.success || response.error) {
+            throw new Error(response.error || 'Local AI edit failed');
+          }
+
+          // Update the HTML
+          setPreviousHtml(currentHtml);
+          setCurrentHtml(response.updatedHtml);
+          setIsShowingPrevious(false);
+
+          // Add assistant message
+          const assistantMessage: ChatMessage = {
+            role: 'assistant',
+            content: response.explanation || 'Local edit completed successfully'
+          };
+          setChatMessages(prev => [...prev, assistantMessage]);
+
+          toast({
+            title: 'Changes Applied',
+            description: 'Local AI edit completed successfully',
+          });
+
+        } catch (error: any) {
+          console.error('Local AI edit error:', error);
+          
+          let errorMessage = 'Failed to process local AI edit';
+          if (error.message.includes('Rate limit')) {
+            errorMessage = 'Rate limit exceeded. Please wait and try again.';
+          } else if (error.message.includes('usage limit')) {
+            errorMessage = 'AI usage limit reached. Please add credits.';
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+
+          toast({
+            variant: 'destructive',
+            title: 'Edit Failed',
+            description: errorMessage,
+          });
+
+          const assistantError: ChatMessage = {
+            role: 'assistant',
+            content: `## ❌ Local Edit Error\n\n**${errorMessage}**`
+          };
+          setChatMessages(prev => [...prev, assistantError]);
+        } finally {
+          setIsAiLoading(false);
+        }
+        return;
+      }
+      
+      // Make.com webhook - send payload externally (for full page builds)
       if (selectedModel === 'makecom') {
         console.log('🌐 Sending request to Make.com webhook');
         
@@ -1961,6 +2042,35 @@ Create pages that are both BEAUTIFUL and FUNCTIONAL, using a complete variable-b
                   </Button>
                 </div>
               </div>
+              
+              {/* AI Mode Toggle */}
+              <div className="flex items-center gap-2 mb-3 p-2 bg-muted/50 rounded-md border">
+                <div className="flex-1 flex items-center gap-2">
+                  <Button 
+                    variant={aiMode === 'build' ? 'default' : 'outline'} 
+                    size="sm" 
+                    onClick={() => setAiMode('build')} 
+                    className="text-xs h-7 flex-1"
+                  >
+                    Build New Page
+                  </Button>
+                  <Button 
+                    variant={aiMode === 'edit' ? 'default' : 'outline'} 
+                    size="sm" 
+                    onClick={() => setAiMode('edit')} 
+                    className="text-xs h-7 flex-1"
+                  >
+                    Edit Existing
+                  </Button>
+                </div>
+              </div>
+              
+              <p className="text-xs text-muted-foreground mb-2">
+                {aiMode === 'build' 
+                  ? '🚀 Full creative rebuild via Make.com (slower, more creative)'
+                  : '⚡ Quick targeted edits via local AI (faster, preserves structure)'
+                }
+              </p>
               
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs text-muted-foreground">

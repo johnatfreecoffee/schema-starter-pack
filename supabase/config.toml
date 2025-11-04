@@ -1,5 +1,9 @@
 project_id = "tkrcdxkdfjeupbdlbcfz"
 
+[functions.ai-local-edit]
+verify_jwt = true
+request_timeout = 120
+
 [functions.render-page]
 verify_jwt = false
 
