@@ -74,6 +74,21 @@ const generateSettingsHash = (companySettings: any, aiTraining: any, siteSetting
   return hash.toString();
 };
 
+// Normalize a color value from settings into a valid CSS color string
+const normalizeCssColor = (val?: string | null): string | undefined => {
+  if (!val) return undefined;
+  const v = String(val).trim();
+  if (v.startsWith('#') || v.startsWith('rgb') || v.startsWith('hsl') || v.startsWith('oklch') || v.startsWith('color(')) return v;
+  // Match formats like "221, 83%, 53%" or "221 83% 53%"
+  const parts = v.split(/[ ,]+/).filter(Boolean);
+  if (parts.length === 3 && /%$/.test(parts[1]) && /%$/.test(parts[2])) {
+    const [h, s, l] = parts;
+    return `hsl(${h} ${s} ${l})`;
+  }
+  // Fallback: return as-is
+  return v;
+};
+
 const loadChatHistory = (pageType: string, pageId?: string): ChatMessage[] => {
   try {
     const key = getStorageKey('ai-editor-chat-history', pageType, pageId);
@@ -550,13 +565,13 @@ const UnifiedPageEditor = ({
             
             // Site settings (colors and styling)
             siteSettings: {
-              primary_color: siteSettings.primary_color || 'hsl(221, 83%, 53%)',
-              secondary_color: siteSettings.secondary_color || 'hsl(210, 40%, 96%)',
-              accent_color: siteSettings.accent_color || 'hsl(280, 65%, 60%)',
-              success_color: siteSettings.success_color || '#10b981',
-              warning_color: siteSettings.warning_color || '#f59e0b',
-              info_color: siteSettings.info_color || '#3b82f6',
-              danger_color: siteSettings.danger_color || '#ef4444',
+              primary_color: normalizeCssColor(siteSettings.primary_color) || 'hsl(221 83% 53%)',
+              secondary_color: normalizeCssColor(siteSettings.secondary_color) || 'hsl(210 40% 96%)',
+              accent_color: normalizeCssColor(siteSettings.accent_color) || 'hsl(280 65% 60%)',
+              success_color: normalizeCssColor(siteSettings.success_color) || '#10b981',
+              warning_color: normalizeCssColor(siteSettings.warning_color) || '#f59e0b',
+              info_color: normalizeCssColor(siteSettings.info_color) || '#3b82f6',
+              danger_color: normalizeCssColor(siteSettings.danger_color) || '#ef4444',
               button_border_radius: siteSettings.button_border_radius || 8,
               card_border_radius: siteSettings.card_border_radius || 12,
               icon_stroke_width: siteSettings.icon_stroke_width || 2,
