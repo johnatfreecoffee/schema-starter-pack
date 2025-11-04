@@ -81,6 +81,10 @@ export function useSiteSettings() {
           primary_color: 'hsl(221, 83%, 53%)',
           secondary_color: 'hsl(210, 40%, 96%)',
           accent_color: 'hsl(280, 65%, 60%)',
+          success_color: '#10b981',
+          warning_color: '#f59e0b',
+          info_color: '#3b82f6',
+          danger_color: '#ef4444',
           button_border_radius: 8,
           card_border_radius: 12,
         };
@@ -121,6 +125,18 @@ export function useSiteSettings() {
       }
       if (settings.accent_color) {
         root.style.setProperty('--accent', parseColorToHSL(settings.accent_color));
+      }
+      if (settings.success_color) {
+        root.style.setProperty('--success', parseColorToHSL(settings.success_color));
+      }
+      if (settings.warning_color) {
+        root.style.setProperty('--warning', parseColorToHSL(settings.warning_color));
+      }
+      if (settings.info_color) {
+        root.style.setProperty('--info', parseColorToHSL(settings.info_color));
+      }
+      if (settings.danger_color) {
+        root.style.setProperty('--danger', parseColorToHSL(settings.danger_color));
       }
       
       // Apply border radius

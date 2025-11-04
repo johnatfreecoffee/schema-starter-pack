@@ -14,9 +14,14 @@ const BrandTheme = () => {
   const [primaryColor, setPrimaryColor] = useState('#3b82f6');
   const [secondaryColor, setSecondaryColor] = useState('#8b5cf6');
   const [accentColor, setAccentColor] = useState('#10b981');
+  const [successColor, setSuccessColor] = useState('#10b981');
+  const [warningColor, setWarningColor] = useState('#f59e0b');
+  const [infoColor, setInfoColor] = useState('#3b82f6');
+  const [dangerColor, setDangerColor] = useState('#ef4444');
   const [buttonRadius, setButtonRadius] = useState(6);
   const [cardRadius, setCardRadius] = useState(8);
   const [isSaving, setIsSaving] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
 
   const { data: settings } = useQuery({
@@ -50,6 +55,10 @@ const BrandTheme = () => {
       setPrimaryColor(settings.primary_color);
       setSecondaryColor(settings.secondary_color);
       setAccentColor(settings.accent_color);
+      setSuccessColor(settings.success_color || '#10b981');
+      setWarningColor(settings.warning_color || '#f59e0b');
+      setInfoColor(settings.info_color || '#3b82f6');
+      setDangerColor(settings.danger_color || '#ef4444');
       setButtonRadius(settings.button_border_radius);
       setCardRadius(settings.card_border_radius);
       
@@ -57,6 +66,10 @@ const BrandTheme = () => {
       document.documentElement.style.setProperty('--primary-color', settings.primary_color);
       document.documentElement.style.setProperty('--secondary-color', settings.secondary_color);
       document.documentElement.style.setProperty('--accent-color', settings.accent_color);
+      document.documentElement.style.setProperty('--success-color', settings.success_color || '#10b981');
+      document.documentElement.style.setProperty('--warning-color', settings.warning_color || '#f59e0b');
+      document.documentElement.style.setProperty('--info-color', settings.info_color || '#3b82f6');
+      document.documentElement.style.setProperty('--danger-color', settings.danger_color || '#ef4444');
       document.documentElement.style.setProperty('--button-radius', `${settings.button_border_radius}px`);
       document.documentElement.style.setProperty('--card-radius', `${settings.card_border_radius}px`);
     }
@@ -85,6 +98,10 @@ const BrandTheme = () => {
       document.documentElement.style.setProperty('--primary-color', data.primary_color);
       document.documentElement.style.setProperty('--secondary-color', data.secondary_color);
       document.documentElement.style.setProperty('--accent-color', data.accent_color);
+      document.documentElement.style.setProperty('--success-color', data.success_color || '#10b981');
+      document.documentElement.style.setProperty('--warning-color', data.warning_color || '#f59e0b');
+      document.documentElement.style.setProperty('--info-color', data.info_color || '#3b82f6');
+      document.documentElement.style.setProperty('--danger-color', data.danger_color || '#ef4444');
       document.documentElement.style.setProperty('--button-radius', `${data.button_border_radius}px`);
       document.documentElement.style.setProperty('--card-radius', `${data.card_border_radius}px`);
       
@@ -107,17 +124,48 @@ const BrandTheme = () => {
         primary_color: primaryColor,
         secondary_color: secondaryColor,
         accent_color: accentColor,
+        success_color: successColor,
+        warning_color: warningColor,
+        info_color: infoColor,
+        danger_color: dangerColor,
         button_border_radius: buttonRadius,
         card_border_radius: cardRadius,
       });
     }, 1000);
-  }, [primaryColor, secondaryColor, accentColor, buttonRadius, cardRadius, updateMutation]);
+  }, [primaryColor, secondaryColor, accentColor, successColor, warningColor, infoColor, dangerColor, buttonRadius, cardRadius, updateMutation]);
 
   useEffect(() => {
     if (settings && settings.id) {
       autoSave();
     }
-  }, [primaryColor, secondaryColor, accentColor, buttonRadius, cardRadius]);
+  }, [primaryColor, secondaryColor, accentColor, successColor, warningColor, infoColor, dangerColor, buttonRadius, cardRadius]);
+
+  const handleGeneratePalette = async (type: string) => {
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-color-palette', {
+        body: { type }
+      });
+
+      if (error) throw error;
+
+      if (data.palette) {
+        setPrimaryColor(data.palette.primary);
+        setSecondaryColor(data.palette.secondary);
+        setAccentColor(data.palette.accent);
+        setSuccessColor(data.palette.success);
+        setWarningColor(data.palette.warning);
+        setInfoColor(data.palette.info);
+        setDangerColor(data.palette.danger);
+        toast.success('Color palette generated!');
+      }
+    } catch (error: any) {
+      console.error('Error generating palette:', error);
+      toast.error(error.message || 'Failed to generate color palette');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -132,36 +180,114 @@ const BrandTheme = () => {
         {/* Left Column - Settings */}
         <div className="space-y-8">
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold">Brand Colors</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Brand Colors</h3>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleGeneratePalette('professional')}
+                  disabled={isGenerating}
+                >
+                  Professional
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleGeneratePalette('creative')}
+                  disabled={isGenerating}
+                >
+                  Creative
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleGeneratePalette('minimal')}
+                  disabled={isGenerating}
+                >
+                  Minimal
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleGeneratePalette('random')}
+                  disabled={isGenerating}
+                >
+                  {isGenerating ? 'Generating...' : 'Randomize'}
+                </Button>
+              </div>
+            </div>
             
-            <div>
-              <Label>Primary Color</Label>
-              <p className="text-sm text-muted-foreground mb-2">Used for buttons, links, focus states</p>
-              <ColorPicker
-                value={primaryColor}
-                onChange={setPrimaryColor}
-                label="Primary Color"
-              />
-            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Primary Color</Label>
+                <p className="text-sm text-muted-foreground mb-2">Main brand color</p>
+                <ColorPicker
+                  value={primaryColor}
+                  onChange={setPrimaryColor}
+                  label="Primary Color"
+                />
+              </div>
 
-            <div>
-              <Label>Secondary Color</Label>
-              <p className="text-sm text-muted-foreground mb-2">Used for secondary UI elements</p>
-              <ColorPicker
-                value={secondaryColor}
-                onChange={setSecondaryColor}
-                label="Secondary Color"
-              />
-            </div>
+              <div>
+                <Label>Secondary Color</Label>
+                <p className="text-sm text-muted-foreground mb-2">Supporting color</p>
+                <ColorPicker
+                  value={secondaryColor}
+                  onChange={setSecondaryColor}
+                  label="Secondary Color"
+                />
+              </div>
 
-            <div>
-              <Label>Accent Color</Label>
-              <p className="text-sm text-muted-foreground mb-2">Used for success states and highlights</p>
-              <ColorPicker
-                value={accentColor}
-                onChange={setAccentColor}
-                label="Accent Color"
-              />
+              <div>
+                <Label>Accent Color</Label>
+                <p className="text-sm text-muted-foreground mb-2">Highlights</p>
+                <ColorPicker
+                  value={accentColor}
+                  onChange={setAccentColor}
+                  label="Accent Color"
+                />
+              </div>
+
+              <div>
+                <Label>Success Color</Label>
+                <p className="text-sm text-muted-foreground mb-2">Positive states</p>
+                <ColorPicker
+                  value={successColor}
+                  onChange={setSuccessColor}
+                  label="Success Color"
+                />
+              </div>
+
+              <div>
+                <Label>Warning Color</Label>
+                <p className="text-sm text-muted-foreground mb-2">Caution states</p>
+                <ColorPicker
+                  value={warningColor}
+                  onChange={setWarningColor}
+                  label="Warning Color"
+                />
+              </div>
+
+              <div>
+                <Label>Info Color</Label>
+                <p className="text-sm text-muted-foreground mb-2">Informational</p>
+                <ColorPicker
+                  value={infoColor}
+                  onChange={setInfoColor}
+                  label="Info Color"
+                />
+              </div>
+
+              <div>
+                <Label>Danger Color</Label>
+                <p className="text-sm text-muted-foreground mb-2">Error states</p>
+                <ColorPicker
+                  value={dangerColor}
+                  onChange={setDangerColor}
+                  label="Danger Color"
+                />
+              </div>
             </div>
           </div>
 
@@ -213,22 +339,40 @@ const BrandTheme = () => {
                       borderRadius: `${buttonRadius}px`
                     }}
                   >
-                    Primary Button
+                    Primary
                   </button>
                   <button
-                    className="px-4 py-2 text-white font-medium opacity-50"
+                    className="px-4 py-2 text-white font-medium transition-opacity hover:opacity-90"
                     style={{ 
-                      backgroundColor: primaryColor,
+                      backgroundColor: successColor,
                       borderRadius: `${buttonRadius}px`
                     }}
                   >
-                    Disabled
+                    Success
+                  </button>
+                  <button
+                    className="px-4 py-2 text-white font-medium transition-opacity hover:opacity-90"
+                    style={{ 
+                      backgroundColor: warningColor,
+                      borderRadius: `${buttonRadius}px`
+                    }}
+                  >
+                    Warning
+                  </button>
+                  <button
+                    className="px-4 py-2 text-white font-medium transition-opacity hover:opacity-90"
+                    style={{ 
+                      backgroundColor: dangerColor,
+                      borderRadius: `${buttonRadius}px`
+                    }}
+                  >
+                    Danger
                   </button>
                 </div>
               </div>
 
               <div>
-                <p className="text-sm font-medium mb-3 text-slate-700">Secondary Buttons</p>
+                <p className="text-sm font-medium mb-3 text-slate-700">Secondary & Info</p>
                 <div className="flex flex-wrap gap-3">
                   <button
                     className="px-4 py-2 text-white font-medium transition-opacity hover:opacity-90"
@@ -237,25 +381,17 @@ const BrandTheme = () => {
                       borderRadius: `${buttonRadius}px`
                     }}
                   >
-                    Secondary Button
+                    Secondary
                   </button>
                   <button
-                    className="px-4 py-2 font-medium border-2 transition-colors hover:bg-opacity-10"
+                    className="px-4 py-2 text-white font-medium transition-opacity hover:opacity-90"
                     style={{ 
-                      borderColor: secondaryColor,
-                      color: secondaryColor,
-                      borderRadius: `${buttonRadius}px`,
-                      backgroundColor: 'transparent'
+                      backgroundColor: infoColor,
+                      borderRadius: `${buttonRadius}px`
                     }}
                   >
-                    Outline
+                    Info
                   </button>
-                </div>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium mb-3 text-slate-700">Accent / Success Buttons</p>
-                <div className="flex flex-wrap gap-3">
                   <button
                     className="px-4 py-2 text-white font-medium transition-opacity hover:opacity-90"
                     style={{ 
@@ -263,17 +399,7 @@ const BrandTheme = () => {
                       borderRadius: `${buttonRadius}px`
                     }}
                   >
-                    Success
-                  </button>
-                  <button
-                    className="px-3 py-2 text-sm font-medium transition-opacity hover:opacity-90"
-                    style={{ 
-                      backgroundColor: accentColor,
-                      color: 'white',
-                      borderRadius: `${buttonRadius}px`
-                    }}
-                  >
-                    ✓ Complete
+                    Accent
                   </button>
                 </div>
               </div>
@@ -351,7 +477,37 @@ const BrandTheme = () => {
                     >
                       ✓
                     </div>
-                    <p className="text-xs font-medium text-slate-700">Success Story</p>
+                    <p className="text-xs font-medium text-slate-700">Success</p>
+                  </div>
+                  <div 
+                    className="p-3 bg-opacity-10"
+                    style={{ 
+                      backgroundColor: infoColor,
+                      borderRadius: `${cardRadius}px`
+                    }}
+                  >
+                    <div 
+                      className="w-8 h-8 rounded-full mb-2 flex items-center justify-center text-white text-xs font-bold"
+                      style={{ backgroundColor: infoColor }}
+                    >
+                      i
+                    </div>
+                    <p className="text-xs font-medium text-slate-700">Info</p>
+                  </div>
+                  <div 
+                    className="p-3 bg-opacity-10"
+                    style={{ 
+                      backgroundColor: warningColor,
+                      borderRadius: `${cardRadius}px`
+                    }}
+                  >
+                    <div 
+                      className="w-8 h-8 rounded-full mb-2 flex items-center justify-center text-white text-xs font-bold"
+                      style={{ backgroundColor: warningColor }}
+                    >
+                      !
+                    </div>
+                    <p className="text-xs font-medium text-slate-700">Warning</p>
                   </div>
                 </div>
               </div>

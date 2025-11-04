@@ -39,3 +39,6 @@ verify_jwt = true
 
 [functions.database-webhook]
 verify_jwt = false
+
+[functions.generate-color-palette]
+verify_jwt = true

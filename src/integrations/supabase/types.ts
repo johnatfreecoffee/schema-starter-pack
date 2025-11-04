@@ -2970,6 +2970,7 @@ export type Database = {
           accent_color: string
           button_border_radius: number
           card_border_radius: number
+          danger_color: string | null
           footer_bg_color: string
           footer_logo_size: number
           footer_text_color: string
@@ -2977,6 +2978,7 @@ export type Database = {
           header_border_color: string
           header_logo_size: number
           id: string
+          info_color: string | null
           primary_color: string
           reviews_allow_photos: boolean | null
           reviews_default_sort: string | null
@@ -2992,14 +2994,17 @@ export type Database = {
           social_icon_custom_color: string | null
           social_icon_size: number
           social_icon_style: string
+          success_color: string | null
           updated_at: string
           updated_by: string | null
           use_standard_social_logos: boolean | null
+          warning_color: string | null
         }
         Insert: {
           accent_color?: string
           button_border_radius?: number
           card_border_radius?: number
+          danger_color?: string | null
           footer_bg_color?: string
           footer_logo_size?: number
           footer_text_color?: string
@@ -3007,6 +3012,7 @@ export type Database = {
           header_border_color?: string
           header_logo_size?: number
           id?: string
+          info_color?: string | null
           primary_color?: string
           reviews_allow_photos?: boolean | null
           reviews_default_sort?: string | null
@@ -3022,14 +3028,17 @@ export type Database = {
           social_icon_custom_color?: string | null
           social_icon_size?: number
           social_icon_style?: string
+          success_color?: string | null
           updated_at?: string
           updated_by?: string | null
           use_standard_social_logos?: boolean | null
+          warning_color?: string | null
         }
         Update: {
           accent_color?: string
           button_border_radius?: number
           card_border_radius?: number
+          danger_color?: string | null
           footer_bg_color?: string
           footer_logo_size?: number
           footer_text_color?: string
@@ -3037,6 +3046,7 @@ export type Database = {
           header_border_color?: string
           header_logo_size?: number
           id?: string
+          info_color?: string | null
           primary_color?: string
           reviews_allow_photos?: boolean | null
           reviews_default_sort?: string | null
@@ -3052,9 +3062,11 @@ export type Database = {
           social_icon_custom_color?: string | null
           social_icon_size?: number
           social_icon_style?: string
+          success_color?: string | null
           updated_at?: string
           updated_by?: string | null
           use_standard_social_logos?: boolean | null
+          warning_color?: string | null
         }
         Relationships: []
       }
