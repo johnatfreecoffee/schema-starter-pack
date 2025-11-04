@@ -257,7 +257,7 @@ const BrandTheme = () => {
               <h3 className="text-lg font-semibold mb-1">AI Palette Generator</h3>
               <p className="text-sm text-muted-foreground">Generate a complete color system based on your company</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button
                 variant="outline"
                 size="sm"
@@ -281,6 +281,46 @@ const BrandTheme = () => {
                 disabled={isGenerating}
               >
                 Minimal
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleGeneratePalette('modern')}
+                disabled={isGenerating}
+              >
+                Modern
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleGeneratePalette('vibrant')}
+                disabled={isGenerating}
+              >
+                Vibrant
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleGeneratePalette('elegant')}
+                disabled={isGenerating}
+              >
+                Elegant
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleGeneratePalette('warm')}
+                disabled={isGenerating}
+              >
+                Warm
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleGeneratePalette('cool')}
+                disabled={isGenerating}
+              >
+                Cool
               </Button>
               <Button
                 variant="outline"
