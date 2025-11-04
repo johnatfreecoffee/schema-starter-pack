@@ -360,7 +360,7 @@ const UnifiedPageEditor = ({
         data
       } = await supabase
         .from('site_settings')
-        .select('primary_color, secondary_color, accent_color, success_color, warning_color, info_color, danger_color, button_border_radius, card_border_radius')
+        .select('primary_color, secondary_color, accent_color, success_color, warning_color, info_color, danger_color, button_border_radius, card_border_radius, icon_stroke_width, icon_background_style, icon_background_padding')
         .maybeSingle();
       return data;
     },
@@ -807,21 +807,22 @@ const UnifiedPageEditor = ({
           // Prepare company data (all settings and context)
           // Include icon settings for AI to use in building pages
           const contextInfo = requestBody.context.companyInfo as any;
+          const contextSiteSettings = requestBody.context.siteSettings as any;
           const companyData = {
             ...contextInfo,
             siteSettings: {
-              primary_color: contextInfo?.siteSettings?.primary_color,
-              secondary_color: contextInfo?.siteSettings?.secondary_color,
-              accent_color: contextInfo?.siteSettings?.accent_color,
-              success_color: contextInfo?.siteSettings?.success_color,
-              warning_color: contextInfo?.siteSettings?.warning_color,
-              info_color: contextInfo?.siteSettings?.info_color,
-              danger_color: contextInfo?.siteSettings?.danger_color,
-              button_border_radius: contextInfo?.siteSettings?.button_border_radius,
-              card_border_radius: contextInfo?.siteSettings?.card_border_radius,
-              icon_stroke_width: contextInfo?.siteSettings?.icon_stroke_width || 2,
-              icon_background_style: contextInfo?.siteSettings?.icon_background_style || 'none',
-              icon_background_padding: contextInfo?.siteSettings?.icon_background_padding || 8,
+              primary_color: contextSiteSettings?.primary_color,
+              secondary_color: contextSiteSettings?.secondary_color,
+              accent_color: contextSiteSettings?.accent_color,
+              success_color: contextSiteSettings?.success_color,
+              warning_color: contextSiteSettings?.warning_color,
+              info_color: contextSiteSettings?.info_color,
+              danger_color: contextSiteSettings?.danger_color,
+              button_border_radius: contextSiteSettings?.button_border_radius,
+              card_border_radius: contextSiteSettings?.card_border_radius,
+              icon_stroke_width: contextSiteSettings?.icon_stroke_width || 2,
+              icon_background_style: contextSiteSettings?.icon_background_style || 'none',
+              icon_background_padding: contextSiteSettings?.icon_background_padding || 8,
             }
           };
           
