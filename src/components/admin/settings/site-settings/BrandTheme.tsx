@@ -21,7 +21,6 @@ const BrandTheme = () => {
   const [buttonRadius, setButtonRadius] = useState(6);
   const [cardRadius, setCardRadius] = useState(8);
   const [iconStrokeWidth, setIconStrokeWidth] = useState(2);
-  const [iconSize, setIconSize] = useState(24);
   const [iconBackgroundStyle, setIconBackgroundStyle] = useState<'none' | 'circle' | 'rounded-square'>('none');
   const [iconBackgroundPadding, setIconBackgroundPadding] = useState(8);
   const [isSaving, setIsSaving] = useState(false);
@@ -66,7 +65,6 @@ const BrandTheme = () => {
       setButtonRadius(settings.button_border_radius);
       setCardRadius(settings.card_border_radius);
       setIconStrokeWidth(settings.icon_stroke_width || 2);
-      setIconSize(settings.icon_size || 24);
       setIconBackgroundStyle((settings.icon_background_style as 'none' | 'circle' | 'rounded-square') || 'none');
       setIconBackgroundPadding(settings.icon_background_padding || 8);
       
@@ -81,7 +79,6 @@ const BrandTheme = () => {
       document.documentElement.style.setProperty('--button-radius', `${settings.button_border_radius}px`);
       document.documentElement.style.setProperty('--card-radius', `${settings.card_border_radius}px`);
       document.documentElement.style.setProperty('--icon-stroke-width', `${settings.icon_stroke_width || 2}`);
-      document.documentElement.style.setProperty('--icon-size', `${settings.icon_size || 24}px`);
     }
   }, [settings]);
 
@@ -141,18 +138,17 @@ const BrandTheme = () => {
         button_border_radius: buttonRadius,
         card_border_radius: cardRadius,
         icon_stroke_width: iconStrokeWidth,
-        icon_size: iconSize,
         icon_background_style: iconBackgroundStyle,
         icon_background_padding: iconBackgroundPadding,
       });
     }, 1000);
-  }, [primaryColor, secondaryColor, accentColor, successColor, warningColor, infoColor, dangerColor, buttonRadius, cardRadius, iconStrokeWidth, iconSize, iconBackgroundStyle, iconBackgroundPadding, updateMutation]);
+  }, [primaryColor, secondaryColor, accentColor, successColor, warningColor, infoColor, dangerColor, buttonRadius, cardRadius, iconStrokeWidth, iconBackgroundStyle, iconBackgroundPadding, updateMutation]);
 
   useEffect(() => {
     if (settings && settings.id) {
       autoSave();
     }
-  }, [primaryColor, secondaryColor, accentColor, successColor, warningColor, infoColor, dangerColor, buttonRadius, cardRadius, iconStrokeWidth, iconSize, iconBackgroundStyle, iconBackgroundPadding]);
+  }, [primaryColor, secondaryColor, accentColor, successColor, warningColor, infoColor, dangerColor, buttonRadius, cardRadius, iconStrokeWidth, iconBackgroundStyle, iconBackgroundPadding]);
 
   const handleGeneratePalette = async (type: string) => {
     setIsGenerating(true);
@@ -351,20 +347,6 @@ const BrandTheme = () => {
                 step={1}
                 value={[iconStrokeWidth]}
                 onValueChange={([value]) => setIconStrokeWidth(value)}
-                className="mt-2"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="icon-size">Icon Base Size: {iconSize}px</Label>
-              <p className="text-xs text-muted-foreground mb-2">Base size for icons</p>
-              <Slider
-                id="icon-size"
-                min={16}
-                max={48}
-                step={4}
-                value={[iconSize]}
-                onValueChange={([value]) => setIconSize(value)}
                 className="mt-2"
               />
             </div>
@@ -625,13 +607,13 @@ const BrandTheme = () => {
                     <div
                       className="flex items-center justify-center"
                       style={{
-                        width: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
-                        height: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
+                        width: iconBackgroundStyle !== 'none' ? `${32 + iconBackgroundPadding * 2}px` : '32px',
+                        height: iconBackgroundStyle !== 'none' ? `${32 + iconBackgroundPadding * 2}px` : '32px',
                         backgroundColor: iconBackgroundStyle !== 'none' ? `${primaryColor}15` : 'transparent',
                         borderRadius: iconBackgroundStyle === 'circle' ? '50%' : iconBackgroundStyle === 'rounded-square' ? `${buttonRadius}px` : '0',
                       }}
                     >
-                      <svg width={iconSize} height={iconSize} fill="none" stroke={primaryColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
+                      <svg width={32} height={32} fill="none" stroke={primaryColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                       </svg>
                     </div>
@@ -643,13 +625,13 @@ const BrandTheme = () => {
                     <div
                       className="flex items-center justify-center"
                       style={{
-                        width: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
-                        height: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
+                        width: iconBackgroundStyle !== 'none' ? `${32 + iconBackgroundPadding * 2}px` : '32px',
+                        height: iconBackgroundStyle !== 'none' ? `${32 + iconBackgroundPadding * 2}px` : '32px',
                         backgroundColor: iconBackgroundStyle !== 'none' ? `${successColor}15` : 'transparent',
                         borderRadius: iconBackgroundStyle === 'circle' ? '50%' : iconBackgroundStyle === 'rounded-square' ? `${buttonRadius}px` : '0',
                       }}
                     >
-                      <svg width={iconSize} height={iconSize} fill="none" stroke={successColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
+                      <svg width={32} height={32} fill="none" stroke={successColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                       </svg>
                     </div>
@@ -661,13 +643,13 @@ const BrandTheme = () => {
                     <div
                       className="flex items-center justify-center"
                       style={{
-                        width: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
-                        height: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
+                        width: iconBackgroundStyle !== 'none' ? `${32 + iconBackgroundPadding * 2}px` : '32px',
+                        height: iconBackgroundStyle !== 'none' ? `${32 + iconBackgroundPadding * 2}px` : '32px',
                         backgroundColor: iconBackgroundStyle !== 'none' ? `${accentColor}15` : 'transparent',
                         borderRadius: iconBackgroundStyle === 'circle' ? '50%' : iconBackgroundStyle === 'rounded-square' ? `${buttonRadius}px` : '0',
                       }}
                     >
-                      <svg width={iconSize} height={iconSize} fill="none" stroke={accentColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
+                      <svg width={32} height={32} fill="none" stroke={accentColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
                     </div>
@@ -679,13 +661,13 @@ const BrandTheme = () => {
                     <div
                       className="flex items-center justify-center"
                       style={{
-                        width: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
-                        height: iconBackgroundStyle !== 'none' ? `${iconSize + iconBackgroundPadding * 2}px` : `${iconSize}px`,
+                        width: iconBackgroundStyle !== 'none' ? `${32 + iconBackgroundPadding * 2}px` : '32px',
+                        height: iconBackgroundStyle !== 'none' ? `${32 + iconBackgroundPadding * 2}px` : '32px',
                         backgroundColor: iconBackgroundStyle !== 'none' ? `${secondaryColor}15` : 'transparent',
                         borderRadius: iconBackgroundStyle === 'circle' ? '50%' : iconBackgroundStyle === 'rounded-square' ? `${buttonRadius}px` : '0',
                       }}
                     >
-                      <svg width={iconSize} height={iconSize} fill="none" stroke={secondaryColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
+                      <svg width={32} height={32} fill="none" stroke={secondaryColor} viewBox="0 0 24 24" strokeWidth={iconStrokeWidth}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>

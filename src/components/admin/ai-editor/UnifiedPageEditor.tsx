@@ -820,7 +820,6 @@ const UnifiedPageEditor = ({
               button_border_radius: contextInfo?.siteSettings?.button_border_radius,
               card_border_radius: contextInfo?.siteSettings?.card_border_radius,
               icon_stroke_width: contextInfo?.siteSettings?.icon_stroke_width || 2,
-              icon_size: contextInfo?.siteSettings?.icon_size || 24,
               icon_background_style: contextInfo?.siteSettings?.icon_background_style || 'none',
               icon_background_padding: contextInfo?.siteSettings?.icon_background_padding || 8,
             }
@@ -957,7 +956,6 @@ You are receiving COMPANY DATA for CONTEXT and TRAINING PURPOSES ONLY.
   
   /* Icon Settings */
   --icon-stroke-width: {{siteSettings.icon_stroke_width}};
-  --icon-size: {{siteSettings.icon_size}}px;
   
   /* Derived Colors for Gradients */
   --color-primary-light: color-mix(in srgb, var(--color-primary) 70%, white);
@@ -1096,7 +1094,11 @@ ICONS - CRITICAL REQUIREMENT:
 **ICON CUSTOMIZATION WITH CSS VARIABLES:**
 Use these CSS variables for consistent icon styling:
 - stroke-width: Use {{siteSettings.icon_stroke_width}} (typically 1-4)
-- width/height: Use {{siteSettings.icon_size}}px (typically 16-48px)
+- width/height: Choose appropriate sizes based on context (16-64px):
+  * Small UI elements: 16-20px
+  * Body content/cards: 24-32px  
+  * Feature sections: 40-48px
+  * Hero sections: 56-64px
 - Optional background container based on {{siteSettings.icon_background_style}}:
   * 'none': No background container
   * 'circle': Circular background with 50% border-radius
@@ -1107,18 +1109,18 @@ Use these CSS variables for consistent icon styling:
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: calc({{siteSettings.icon_size}}px + {{siteSettings.icon_background_padding}}px * 2);
-  height: calc({{siteSettings.icon_size}}px + {{siteSettings.icon_background_padding}}px * 2);
+  width: calc(24px + {{siteSettings.icon_background_padding}}px * 2);
+  height: calc(24px + {{siteSettings.icon_background_padding}}px * 2);
   background: color-mix(in srgb, var(--color-primary) 10%, transparent);
   border-radius: {{#if (eq siteSettings.icon_background_style 'circle')}}50%{{else}}var(--radius-button){{/if}};
 ">
-  <svg width="{{siteSettings.icon_size}}" height="{{siteSettings.icon_size}}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{siteSettings.icon_stroke_width}}">
+  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{siteSettings.icon_stroke_width}}">
     <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
   </svg>
 </div>
 
 **ICON WITHOUT BACKGROUND (when icon_background_style is 'none'):**
-<svg width="{{siteSettings.icon_size}}" height="{{siteSettings.icon_size}}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{siteSettings.icon_stroke_width}}">
+<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{siteSettings.icon_stroke_width}}">
   <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
 </svg>
 

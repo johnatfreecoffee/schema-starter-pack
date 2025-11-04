@@ -2979,7 +2979,6 @@ export type Database = {
           header_logo_size: number
           icon_background_padding: number | null
           icon_background_style: string | null
-          icon_size: number | null
           icon_stroke_width: number | null
           id: string
           info_color: string | null
@@ -3017,7 +3016,6 @@ export type Database = {
           header_logo_size?: number
           icon_background_padding?: number | null
           icon_background_style?: string | null
-          icon_size?: number | null
           icon_stroke_width?: number | null
           id?: string
           info_color?: string | null
@@ -3055,7 +3053,6 @@ export type Database = {
           header_logo_size?: number
           icon_background_padding?: number | null
           icon_background_style?: string | null
-          icon_size?: number | null
           icon_stroke_width?: number | null
           id?: string
           info_color?: string | null
