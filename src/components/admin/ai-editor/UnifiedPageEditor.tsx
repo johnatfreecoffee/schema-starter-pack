@@ -1721,15 +1721,6 @@ Create pages that are both BEAUTIFUL and FUNCTIONAL, using a complete variable-b
   // Publish function - copies draft to live
   const handlePublish = async () => {
     if (isPublishing) return;
-    if (!currentHtml || currentHtml.trim() === '') {
-      console.warn('Publish blocked: empty currentHtml');
-      toast({
-        title: 'Publish blocked',
-        description: 'Draft is empty. Please add content before publishing.',
-        variant: 'destructive'
-      });
-      return;
-    }
     
     console.log('Publishing...', { currentHtml: currentHtml?.substring(0, 100), pageType, pageId, templateId: template?.id });
     setIsPublishing(true);
