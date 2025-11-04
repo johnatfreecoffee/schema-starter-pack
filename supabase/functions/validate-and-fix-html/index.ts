@@ -29,14 +29,22 @@ CRITICAL RULES:
 
 REQUIRED FIXES:
 
-1. **Icons - INLINE SVG ONLY**: 
-   - PRESERVE all existing inline SVG icons - DO NOT convert them
-   - ONLY convert Font Awesome, Material Icons, or other icon libraries to inline SVG
-   - Find: <i class="fa..."></i>, <i class="material-icons"></i>, etc.
-   - Replace with complete inline SVG code from Heroicons
-   - Example: <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-   - Use appropriate SVG icons for context (check-circle, phone, mail, map-pin, etc.)
-   - NO icon libraries requiring JavaScript - ONLY inline SVG
+1. **Icons - FIX EMPTY SVG TAGS AND CONVERT ICON LIBRARIES**: 
+   - 🚨 CRITICAL: Find ALL <svg> tags that are EMPTY or missing <path> elements
+   - Empty SVG tags are INVISIBLE - they MUST be replaced with complete SVG icons from Heroicons
+   - Example of BROKEN icon: <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
+   - Example of FIXED icon: <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+   - Based on surrounding context (text, class names, section purpose), select appropriate icon:
+     * Emergency/Shield/Protection → shield-check icon
+     * Phone/Call → phone icon  
+     * Home/House → home icon
+     * Tool/Repair/Wrench → wrench/cog icon
+     * Check/Success → check-circle icon
+     * Dollar/Money → currency-dollar icon
+     * Calendar → calendar icon
+   - PRESERVE all existing SVG icons that already have <path> elements
+   - ONLY convert Font Awesome (<i class="fa...">), Material Icons, or other icon libraries to inline SVG
+   - NO icon libraries requiring JavaScript - ONLY complete inline SVG with path data
    - NO emojis as icons
 
 2. **Colors - CSS Variables ONLY**:
