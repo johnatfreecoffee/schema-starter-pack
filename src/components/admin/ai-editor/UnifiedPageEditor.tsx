@@ -2461,10 +2461,49 @@ Create pages that are both BEAUTIFUL and FUNCTIONAL, using a complete variable-b
                 </div>
               ) : viewMode === 'code' ? (
                 <div className="h-full flex flex-col">
-                  <div className="bg-blue-500/10 border-b border-blue-500/20 px-4 py-2">
+                  <div className="bg-blue-500/10 border-b border-blue-500/20 px-4 py-2 flex items-center justify-between">
                     <p className="text-xs text-blue-700 dark:text-blue-400 font-medium">
                       📝 Draft Code - Editing working copy
                     </p>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(displayedHtml);
+                          toast({
+                            title: 'Copied to clipboard',
+                            description: 'Draft code copied successfully',
+                          });
+                        }}
+                        className="h-7 px-2 text-xs"
+                        title="Copy all code"
+                      >
+                        <Copy className="h-3 w-3 mr-1" />
+                        Copy
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          if (confirm('Are you sure you want to clear all draft code?')) {
+                            setCurrentHtml('');
+                            if (pageType === 'static' || pageType === 'generated') {
+                              setRenderedPreview('');
+                            }
+                            toast({
+                              title: 'Draft cleared',
+                              description: 'All draft code has been cleared',
+                            });
+                          }
+                        }}
+                        className="h-7 px-2 text-xs"
+                        title="Clear all code"
+                      >
+                        <Trash2 className="h-3 w-3 mr-1" />
+                        Clear
+                      </Button>
+                    </div>
                   </div>
                   <div className="flex-1">
                     <Editor
