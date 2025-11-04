@@ -36,11 +36,25 @@ serve(async (req) => {
 
     console.log('✅ Routing to Make.com webhook');
 
-    // Forward the entire request to Make.com
+    // Forward the request to Make.com with proper nesting
     const webhookPayload = {
-      command: command.text || command,
+      userRequest: {
+        companyInfo: {
+          companyData: context.companyInfo || {},
+          socialMedia: context.socialMedia || [],
+          aiTraining: context.aiTraining || {}
+        },
+        systemInstructions: context.siteSettings || {},
+        userPrompt: command.text || command,
+        supabaseData: {
+          pageType: context.currentPage?.type,
+          pageUrl: context.currentPage?.url,
+          currentHtml: context.currentPage?.html,
+          serviceInfo: context.serviceInfo,
+          serviceAreas: context.serviceAreas
+        }
+      },
       mode: command.mode || 'build',
-      context: context,
       timestamp: new Date().toISOString(),
       source: 'ai-edit-page'
     };
