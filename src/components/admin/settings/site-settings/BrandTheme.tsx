@@ -249,48 +249,57 @@ const BrandTheme = () => {
           Saving...
         </div>
       )}
+
+      <Card className="mb-8">
+        <div className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold mb-1">AI Palette Generator</h3>
+              <p className="text-sm text-muted-foreground">Generate a complete color system based on your company</p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleGeneratePalette('professional')}
+                disabled={isGenerating}
+              >
+                Professional
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleGeneratePalette('creative')}
+                disabled={isGenerating}
+              >
+                Creative
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleGeneratePalette('minimal')}
+                disabled={isGenerating}
+              >
+                Minimal
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleGeneratePalette('random')}
+                disabled={isGenerating}
+              >
+                {isGenerating ? 'Generating...' : 'Randomize'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Card>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Column - Settings */}
         <div className="space-y-8">
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Brand Colors</h3>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleGeneratePalette('professional')}
-                  disabled={isGenerating}
-                >
-                  Professional
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleGeneratePalette('creative')}
-                  disabled={isGenerating}
-                >
-                  Creative
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleGeneratePalette('minimal')}
-                  disabled={isGenerating}
-                >
-                  Minimal
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleGeneratePalette('random')}
-                  disabled={isGenerating}
-                >
-                  {isGenerating ? 'Generating...' : 'Randomize'}
-                </Button>
-              </div>
-            </div>
+            <h3 className="text-lg font-semibold">Brand Colors</h3>
             
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -365,43 +374,7 @@ const BrandTheme = () => {
           </div>
 
           <div className="mt-8 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Website Palette</h3>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleGeneratePalette('professional')}
-                  disabled={isGenerating}
-                >
-                  Professional
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleGeneratePalette('creative')}
-                  disabled={isGenerating}
-                >
-                  Creative
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleGeneratePalette('minimal')}
-                  disabled={isGenerating}
-                >
-                  Minimal
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleGeneratePalette('random')}
-                  disabled={isGenerating}
-                >
-                  {isGenerating ? 'Generating...' : 'Randomize'}
-                </Button>
-              </div>
-            </div>
+            <h3 className="text-lg font-semibold">Website Palette</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
