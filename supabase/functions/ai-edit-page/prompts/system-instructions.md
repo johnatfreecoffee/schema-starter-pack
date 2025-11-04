@@ -277,47 +277,72 @@ If it can be changed by the business owner, it MUST be a Handlebars variable or 
 - WITHOUT the complete path data, icons will be invisible empty boxes
 - NO external libraries, NO JavaScript initialization, NO data-lucide attributes
 
-**✅ CORRECT ICON USAGE - COMPLETE SVG WITH PATH DATA:**
+**ICON CUSTOMIZATION - USE HANDLEBARS VARIABLES:**
+Icons are customizable through site settings. ALWAYS use these variables:
+- **Stroke Width:** `stroke-width="{{siteSettings.icon_stroke_width}}"` (thickness of icon lines, 1-4)
+- **Icon Size:** `width="{{siteSettings.icon_size}}" height="{{siteSettings.icon_size}}"` (base size in pixels, 16-48)
+- **Background Style:** `{{siteSettings.icon_background_style}}` (values: 'none', 'circle', 'rounded-square')
+- **Background Padding:** `{{siteSettings.icon_background_padding}}px` (space around icon when using background)
+
+**✅ CORRECT - ICON WITH BACKGROUND CONTAINER:**
+```html
+{{#if (ne siteSettings.icon_background_style 'none')}}
+<div style="
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc({{siteSettings.icon_size}}px + {{siteSettings.icon_background_padding}}px * 2);
+  height: calc({{siteSettings.icon_size}}px + {{siteSettings.icon_background_padding}}px * 2);
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  border-radius: {{#if (eq siteSettings.icon_background_style 'circle')}}50%{{else}}var(--radius-button){{/if}};
+">
+  <svg width="{{siteSettings.icon_size}}" height="{{siteSettings.icon_size}}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{siteSettings.icon_stroke_width}}">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+  </svg>
+</div>
+{{else}}
+<svg width="{{siteSettings.icon_size}}" height="{{siteSettings.icon_size}}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{siteSettings.icon_stroke_width}}">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+</svg>
+{{/if}}
+```
+
+**✅ CORRECT ICON USAGE - COMPLETE SVG WITH PATH DATA AND VARIABLES:**
 
 ```html
-<!-- Shield Check Icon - COMPLETE with path data -->
-<svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+<!-- Phone Icon with customizable settings -->
+<svg width="{{siteSettings.icon_size}}" height="{{siteSettings.icon_size}}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{siteSettings.icon_stroke_width}}">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
 </svg>
 
-<!-- Phone Icon - COMPLETE with path data -->
-<svg class="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+<!-- Email Icon with customizable settings -->
+<svg width="{{siteSettings.icon_size}}" height="{{siteSettings.icon_size}}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{siteSettings.icon_stroke_width}}">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
 </svg>
 
-<!-- Email Icon - COMPLETE with path data -->
-<svg class="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+<!-- Home Icon with customizable settings -->
+<svg width="{{siteSettings.icon_size}}" height="{{siteSettings.icon_size}}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{siteSettings.icon_stroke_width}}">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
 </svg>
 
-<!-- Home Icon - COMPLETE with path data -->
-<svg class="w-8 h-8 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+<!-- Check Circle Icon with customizable settings -->
+<svg width="{{siteSettings.icon_size}}" height="{{siteSettings.icon_size}}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{siteSettings.icon_stroke_width}}">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
 </svg>
 
-<!-- Check Circle Icon - COMPLETE with path data -->
-<svg class="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+<!-- Shield Check Icon with customizable settings -->
+<svg width="{{siteSettings.icon_size}}" height="{{siteSettings.icon_size}}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{siteSettings.icon_stroke_width}}">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
 </svg>
 
-<!-- Wrench/Tool Icon - COMPLETE with path data -->
-<svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+<!-- Wrench/Tool Icon with customizable settings -->
+<svg width="{{siteSettings.icon_size}}" height="{{siteSettings.icon_size}}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="{{siteSettings.icon_stroke_width}}">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
 </svg>
 ```
+
+**NOTE:** The icon pack you MUST use is Heroicons (the same as Lucide). Go to https://heroicons.com/ to find more icons with their complete SVG code including path data.
 
 **ICON STYLING:**
 - Use Tailwind sizing: `w-5 h-5`, `w-6 h-6`, `w-8 h-8`
