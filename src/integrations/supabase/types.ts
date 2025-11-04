@@ -2968,9 +2968,16 @@ export type Database = {
       site_settings: {
         Row: {
           accent_color: string
+          bg_primary_color: string | null
+          bg_secondary_color: string | null
+          bg_tertiary_color: string | null
+          border_color: string | null
           button_border_radius: number
+          card_bg_color: string | null
           card_border_radius: number
+          cta_color: string | null
           danger_color: string | null
+          feature_color: string | null
           footer_bg_color: string
           footer_logo_size: number
           footer_text_color: string
@@ -2998,6 +3005,9 @@ export type Database = {
           social_icon_size: number
           social_icon_style: string
           success_color: string | null
+          text_muted_color: string | null
+          text_primary_color: string | null
+          text_secondary_color: string | null
           updated_at: string
           updated_by: string | null
           use_standard_social_logos: boolean | null
@@ -3005,9 +3015,16 @@ export type Database = {
         }
         Insert: {
           accent_color?: string
+          bg_primary_color?: string | null
+          bg_secondary_color?: string | null
+          bg_tertiary_color?: string | null
+          border_color?: string | null
           button_border_radius?: number
+          card_bg_color?: string | null
           card_border_radius?: number
+          cta_color?: string | null
           danger_color?: string | null
+          feature_color?: string | null
           footer_bg_color?: string
           footer_logo_size?: number
           footer_text_color?: string
@@ -3035,6 +3052,9 @@ export type Database = {
           social_icon_size?: number
           social_icon_style?: string
           success_color?: string | null
+          text_muted_color?: string | null
+          text_primary_color?: string | null
+          text_secondary_color?: string | null
           updated_at?: string
           updated_by?: string | null
           use_standard_social_logos?: boolean | null
@@ -3042,9 +3062,16 @@ export type Database = {
         }
         Update: {
           accent_color?: string
+          bg_primary_color?: string | null
+          bg_secondary_color?: string | null
+          bg_tertiary_color?: string | null
+          border_color?: string | null
           button_border_radius?: number
+          card_bg_color?: string | null
           card_border_radius?: number
+          cta_color?: string | null
           danger_color?: string | null
+          feature_color?: string | null
           footer_bg_color?: string
           footer_logo_size?: number
           footer_text_color?: string
@@ -3072,6 +3099,9 @@ export type Database = {
           social_icon_size?: number
           social_icon_style?: string
           success_color?: string | null
+          text_muted_color?: string | null
+          text_primary_color?: string | null
+          text_secondary_color?: string | null
           updated_at?: string
           updated_by?: string | null
           use_standard_social_logos?: boolean | null

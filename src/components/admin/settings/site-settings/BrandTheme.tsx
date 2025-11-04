@@ -18,6 +18,16 @@ const BrandTheme = () => {
   const [warningColor, setWarningColor] = useState('#f59e0b');
   const [infoColor, setInfoColor] = useState('#3b82f6');
   const [dangerColor, setDangerColor] = useState('#ef4444');
+  const [bgPrimaryColor, setBgPrimaryColor] = useState('#ffffff');
+  const [bgSecondaryColor, setBgSecondaryColor] = useState('#f8f9fa');
+  const [bgTertiaryColor, setBgTertiaryColor] = useState('#e9ecef');
+  const [textPrimaryColor, setTextPrimaryColor] = useState('#212529');
+  const [textSecondaryColor, setTextSecondaryColor] = useState('#6c757d');
+  const [textMutedColor, setTextMutedColor] = useState('#adb5bd');
+  const [borderColor, setBorderColor] = useState('#dee2e6');
+  const [cardBgColor, setCardBgColor] = useState('#ffffff');
+  const [featureColor, setFeatureColor] = useState('#0d6efd');
+  const [ctaColor, setCtaColor] = useState('#198754');
   const [buttonRadius, setButtonRadius] = useState(6);
   const [cardRadius, setCardRadius] = useState(8);
   const [iconStrokeWidth, setIconStrokeWidth] = useState(2);
@@ -62,6 +72,16 @@ const BrandTheme = () => {
       setWarningColor(settings.warning_color || '#f59e0b');
       setInfoColor(settings.info_color || '#3b82f6');
       setDangerColor(settings.danger_color || '#ef4444');
+      setBgPrimaryColor(settings.bg_primary_color || '#ffffff');
+      setBgSecondaryColor(settings.bg_secondary_color || '#f8f9fa');
+      setBgTertiaryColor(settings.bg_tertiary_color || '#e9ecef');
+      setTextPrimaryColor(settings.text_primary_color || '#212529');
+      setTextSecondaryColor(settings.text_secondary_color || '#6c757d');
+      setTextMutedColor(settings.text_muted_color || '#adb5bd');
+      setBorderColor(settings.border_color || '#dee2e6');
+      setCardBgColor(settings.card_bg_color || '#ffffff');
+      setFeatureColor(settings.feature_color || '#0d6efd');
+      setCtaColor(settings.cta_color || '#198754');
       setButtonRadius(settings.button_border_radius);
       setCardRadius(settings.card_border_radius);
       setIconStrokeWidth(settings.icon_stroke_width || 2);
@@ -135,6 +155,16 @@ const BrandTheme = () => {
         warning_color: warningColor,
         info_color: infoColor,
         danger_color: dangerColor,
+        bg_primary_color: bgPrimaryColor,
+        bg_secondary_color: bgSecondaryColor,
+        bg_tertiary_color: bgTertiaryColor,
+        text_primary_color: textPrimaryColor,
+        text_secondary_color: textSecondaryColor,
+        text_muted_color: textMutedColor,
+        border_color: borderColor,
+        card_bg_color: cardBgColor,
+        feature_color: featureColor,
+        cta_color: ctaColor,
         button_border_radius: buttonRadius,
         card_border_radius: cardRadius,
         icon_stroke_width: iconStrokeWidth,
@@ -142,13 +172,13 @@ const BrandTheme = () => {
         icon_background_padding: iconBackgroundPadding,
       });
     }, 1000);
-  }, [primaryColor, secondaryColor, accentColor, successColor, warningColor, infoColor, dangerColor, buttonRadius, cardRadius, iconStrokeWidth, iconBackgroundStyle, iconBackgroundPadding, updateMutation]);
+  }, [primaryColor, secondaryColor, accentColor, successColor, warningColor, infoColor, dangerColor, bgPrimaryColor, bgSecondaryColor, bgTertiaryColor, textPrimaryColor, textSecondaryColor, textMutedColor, borderColor, cardBgColor, featureColor, ctaColor, buttonRadius, cardRadius, iconStrokeWidth, iconBackgroundStyle, iconBackgroundPadding, updateMutation]);
 
   useEffect(() => {
     if (settings && settings.id) {
       autoSave();
     }
-  }, [primaryColor, secondaryColor, accentColor, successColor, warningColor, infoColor, dangerColor, buttonRadius, cardRadius, iconStrokeWidth, iconBackgroundStyle, iconBackgroundPadding]);
+  }, [primaryColor, secondaryColor, accentColor, successColor, warningColor, infoColor, dangerColor, bgPrimaryColor, bgSecondaryColor, bgTertiaryColor, textPrimaryColor, textSecondaryColor, textMutedColor, borderColor, cardBgColor, featureColor, ctaColor, buttonRadius, cardRadius, iconStrokeWidth, iconBackgroundStyle, iconBackgroundPadding]);
 
   const handleGeneratePalette = async (type: string) => {
     setIsGenerating(true);
@@ -167,6 +197,19 @@ const BrandTheme = () => {
         setWarningColor(data.palette.warning);
         setInfoColor(data.palette.info);
         setDangerColor(data.palette.danger);
+        
+        // Set website palette colors if provided
+        if (data.palette.bgPrimary) setBgPrimaryColor(data.palette.bgPrimary);
+        if (data.palette.bgSecondary) setBgSecondaryColor(data.palette.bgSecondary);
+        if (data.palette.bgTertiary) setBgTertiaryColor(data.palette.bgTertiary);
+        if (data.palette.textPrimary) setTextPrimaryColor(data.palette.textPrimary);
+        if (data.palette.textSecondary) setTextSecondaryColor(data.palette.textSecondary);
+        if (data.palette.textMuted) setTextMutedColor(data.palette.textMuted);
+        if (data.palette.border) setBorderColor(data.palette.border);
+        if (data.palette.cardBg) setCardBgColor(data.palette.cardBg);
+        if (data.palette.feature) setFeatureColor(data.palette.feature);
+        if (data.palette.cta) setCtaColor(data.palette.cta);
+        
         toast.success('Color palette generated!');
       }
     } catch (error: any) {
@@ -292,13 +335,100 @@ const BrandTheme = () => {
               <div>
                 <Label>Danger Color</Label>
                 <p className="text-sm text-muted-foreground mb-2">Error states</p>
+              <ColorPicker
+                value={dangerColor}
+                onChange={setDangerColor}
+                label="Danger Color"
+              />
+            </div>
+          </div>
+
+          <div className="mt-8 space-y-4">
+            <h3 className="text-lg font-semibold">Website Palette</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="text-sm font-medium">Background Primary</label>
                 <ColorPicker
-                  value={dangerColor}
-                  onChange={setDangerColor}
-                  label="Danger Color"
+                  value={bgPrimaryColor}
+                  onChange={setBgPrimaryColor}
+                  label="Background Primary Color"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Background Secondary</label>
+                <ColorPicker
+                  value={bgSecondaryColor}
+                  onChange={setBgSecondaryColor}
+                  label="Background Secondary Color"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Background Tertiary</label>
+                <ColorPicker
+                  value={bgTertiaryColor}
+                  onChange={setBgTertiaryColor}
+                  label="Background Tertiary Color"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Text Primary</label>
+                <ColorPicker
+                  value={textPrimaryColor}
+                  onChange={setTextPrimaryColor}
+                  label="Text Primary Color"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Text Secondary</label>
+                <ColorPicker
+                  value={textSecondaryColor}
+                  onChange={setTextSecondaryColor}
+                  label="Text Secondary Color"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Text Muted</label>
+                <ColorPicker
+                  value={textMutedColor}
+                  onChange={setTextMutedColor}
+                  label="Text Muted Color"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Border Color</label>
+                <ColorPicker
+                  value={borderColor}
+                  onChange={setBorderColor}
+                  label="Border Color"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Card Background</label>
+                <ColorPicker
+                  value={cardBgColor}
+                  onChange={setCardBgColor}
+                  label="Card Background Color"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Feature Color</label>
+                <ColorPicker
+                  value={featureColor}
+                  onChange={setFeatureColor}
+                  label="Feature Color"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">CTA Color</label>
+                <ColorPicker
+                  value={ctaColor}
+                  onChange={setCtaColor}
+                  label="CTA Color"
                 />
               </div>
             </div>
+          </div>
           </div>
 
           <div className="space-y-6 pt-6 border-t">

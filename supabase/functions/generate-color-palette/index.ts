@@ -21,14 +21,14 @@ serve(async (req) => {
     let prompt = '';
     
     if (type === 'professional') {
-      prompt = 'Generate a professional, corporate color palette with 7 colors in hex format. Include: primary (trustworthy blue or corporate color), secondary (complementary neutral), accent (vibrant but professional), success (green), warning (orange/amber), info (blue), danger (red). Return only the 7 hex colors as a JSON array, no explanation.';
+      prompt = 'Generate a professional color palette with 17 colors in hex format for a corporate website. Include: 1) Primary (trustworthy blue), 2) Secondary (neutral), 3) Accent (professional vibrant), 4) Success (green), 5) Warning (orange), 6) Info (blue), 7) Danger (red), 8) Background Primary (clean white), 9) Background Secondary (light gray), 10) Background Tertiary (subtle gray), 11) Text Primary (dark), 12) Text Secondary (medium gray), 13) Text Muted (light gray), 14) Border (subtle gray), 15) Card Background (white), 16) Feature (professional blue), 17) CTA (action green).';
     } else if (type === 'creative') {
-      prompt = 'Generate a creative, vibrant color palette with 7 colors in hex format. Include: primary (bold and eye-catching), secondary (complementary creative color), accent (unique highlight), success (fresh green), warning (warm orange), info (cool blue), danger (striking red). Return only the 7 hex colors as a JSON array, no explanation.';
+      prompt = 'Generate a creative color palette with 17 colors in hex format for a bold website. Include: 1) Primary (bold eye-catching), 2) Secondary (creative complementary), 3) Accent (unique vibrant), 4) Success (fresh green), 5) Warning (warm orange), 6) Info (cool blue), 7) Danger (striking red), 8) Background Primary (bright), 9) Background Secondary (vibrant light), 10) Background Tertiary (creative subtle), 11) Text Primary (strong), 12) Text Secondary (interesting), 13) Text Muted (soft), 14) Border (tasteful), 15) Card Background (clean), 16) Feature (standout), 17) CTA (bold action).';
     } else if (type === 'minimal') {
-      prompt = 'Generate a minimal, modern color palette with 7 colors in hex format. Include: primary (subtle elegant color), secondary (refined neutral), accent (minimal pop of color), success (muted green), warning (soft amber), info (gentle blue), danger (refined red). Return only the 7 hex colors as a JSON array, no explanation.';
+      prompt = 'Generate a minimal color palette with 17 colors in hex format for a clean website. Include: 1) Primary (elegant subtle), 2) Secondary (refined neutral), 3) Accent (minimal pop), 4) Success (muted green), 5) Warning (soft amber), 6) Info (gentle blue), 7) Danger (refined red), 8) Background Primary (pure white), 9) Background Secondary (whisper gray), 10) Background Tertiary (soft gray), 11) Text Primary (charcoal), 12) Text Secondary (gray), 13) Text Muted (light gray), 14) Border (delicate), 15) Card Background (white), 16) Feature (subtle), 17) CTA (understated action).';
     } else {
       // random
-      prompt = 'Generate a completely random, aesthetically pleasing color palette with 7 colors in hex format. Include: primary, secondary, accent, success, warning, info, danger. Ensure colors work well together. Return only the 7 hex colors as a JSON array, no explanation.';
+      prompt = 'Generate a completely random, aesthetically pleasing color palette with 17 colors in hex format for a website. Ensure all colors work well together. Include: Primary, Secondary, Accent, Success, Warning, Info, Danger, Background Primary, Background Secondary, Background Tertiary, Text Primary, Text Secondary, Text Muted, Border, Card Background, Feature, and CTA colors.';
     }
 
     console.log('Generating palette with type:', type);
@@ -44,7 +44,7 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a color palette generator. Always respond with exactly 7 hex colors in a JSON array format like ["#123456", "#abcdef", ...]. No other text or explanation.'
+            content: 'You are a color palette generator. Always respond with exactly 17 hex colors in a JSON array format like ["#123456", "#abcdef", ...]. No other text or explanation. The order must be: Primary, Secondary, Accent, Success, Warning, Info, Danger, BG Primary, BG Secondary, BG Tertiary, Text Primary, Text Secondary, Text Muted, Border, Card BG, Feature, CTA.'
           },
           {
             role: 'user',
@@ -62,7 +62,7 @@ serve(async (req) => {
                 colors: {
                   type: 'array',
                   items: { type: 'string' },
-                  description: 'Array of 7 hex color codes'
+                  description: 'Array of 17 hex color codes in order: Primary, Secondary, Accent, Success, Warning, Info, Danger, BG Primary, BG Secondary, BG Tertiary, Text Primary, Text Secondary, Text Muted, Border, Card BG, Feature, CTA'
                 }
               },
               required: ['colors']
@@ -100,7 +100,7 @@ serve(async (req) => {
       const args = JSON.parse(toolCall.function.arguments);
       const colors = args.colors || [];
       
-      if (colors.length === 7) {
+      if (colors.length === 17) {
         return new Response(
           JSON.stringify({ 
             palette: {
@@ -110,7 +110,17 @@ serve(async (req) => {
               success: colors[3],
               warning: colors[4],
               info: colors[5],
-              danger: colors[6]
+              danger: colors[6],
+              bgPrimary: colors[7],
+              bgSecondary: colors[8],
+              bgTertiary: colors[9],
+              textPrimary: colors[10],
+              textSecondary: colors[11],
+              textMuted: colors[12],
+              border: colors[13],
+              cardBg: colors[14],
+              feature: colors[15],
+              cta: colors[16]
             }
           }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

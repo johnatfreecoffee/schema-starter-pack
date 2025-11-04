@@ -139,6 +139,38 @@ export function useSiteSettings() {
         root.style.setProperty('--danger', parseColorToHSL(settings.danger_color));
       }
       
+      // Apply website palette colors
+      if ((settings as any).bg_primary_color) {
+        root.style.setProperty('--bg-primary', parseColorToHSL((settings as any).bg_primary_color));
+      }
+      if ((settings as any).bg_secondary_color) {
+        root.style.setProperty('--bg-secondary', parseColorToHSL((settings as any).bg_secondary_color));
+      }
+      if ((settings as any).bg_tertiary_color) {
+        root.style.setProperty('--bg-tertiary', parseColorToHSL((settings as any).bg_tertiary_color));
+      }
+      if ((settings as any).text_primary_color) {
+        root.style.setProperty('--text-primary', parseColorToHSL((settings as any).text_primary_color));
+      }
+      if ((settings as any).text_secondary_color) {
+        root.style.setProperty('--text-secondary', parseColorToHSL((settings as any).text_secondary_color));
+      }
+      if ((settings as any).text_muted_color) {
+        root.style.setProperty('--text-muted', parseColorToHSL((settings as any).text_muted_color));
+      }
+      if ((settings as any).border_color) {
+        root.style.setProperty('--border-color', parseColorToHSL((settings as any).border_color));
+      }
+      if ((settings as any).card_bg_color) {
+        root.style.setProperty('--card-bg', parseColorToHSL((settings as any).card_bg_color));
+      }
+      if ((settings as any).feature_color) {
+        root.style.setProperty('--feature', parseColorToHSL((settings as any).feature_color));
+      }
+      if ((settings as any).cta_color) {
+        root.style.setProperty('--cta', parseColorToHSL((settings as any).cta_color));
+      }
+      
       // Apply border radius
       if (settings.button_border_radius !== undefined) {
         root.style.setProperty('--radius', `${settings.button_border_radius / 16}rem`);
