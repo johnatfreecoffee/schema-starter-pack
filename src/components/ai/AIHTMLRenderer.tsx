@@ -52,8 +52,13 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
     const withCtas = normalizeCTAs(wrapped);
     // 3) Sanitize while allowing <style> and our data attribute
     const sanitized = sanitizeHtml(withCtas, {
-      ADD_TAGS: ['style'],
-      ADD_ATTR: ['data-lead-form'],
+      ADD_TAGS: ['style', 'svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g', 'use', 'defs', 'symbol', 'title', 'desc'],
+      ADD_ATTR: [
+        'data-lead-form',
+        // SVG attributes
+        'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'd', 'viewBox', 'xmlns',
+        'points', 'x', 'y', 'width', 'height', 'aria-hidden', 'focusable', 'role'
+      ],
     });
     // 4) Drop any <style> that is not scoped to the wrapper id
     const scopedOnly = keepScopedStylesOnly(sanitized, id);
