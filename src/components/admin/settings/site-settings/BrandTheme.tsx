@@ -261,26 +261,24 @@ const BrandTheme = () => {
             </div>
 
             {/* Color Exclusions */}
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Exclude Colors (optional)</Label>
-              <p className="text-xs text-muted-foreground">Select colors to avoid in generated palettes</p>
-              <div className="flex flex-wrap gap-2">
+            <div className="space-y-2 pb-4 border-b">
+              <Label className="text-sm font-medium">🚫 Exclude Color Families</Label>
+              <p className="text-xs text-muted-foreground">Click colors to exclude them from AI generation</p>
+              <div className="flex flex-wrap gap-3">
                 {[
-                  { name: 'Red', value: 'red' },
-                  { name: 'Orange', value: 'orange' },
-                  { name: 'Yellow', value: 'yellow' },
-                  { name: 'Green', value: 'green' },
-                  { name: 'Teal', value: 'teal' },
-                  { name: 'Blue', value: 'blue' },
-                  { name: 'Purple', value: 'purple' },
-                  { name: 'Pink', value: 'pink' },
-                  { name: 'Brown', value: 'brown' },
-                  { name: 'Gray', value: 'gray' },
+                  { name: 'Red', value: 'red', color: '#DC2626' },
+                  { name: 'Orange', value: 'orange', color: '#EA580C' },
+                  { name: 'Yellow', value: 'yellow', color: '#EAB308' },
+                  { name: 'Green', value: 'green', color: '#16A34A' },
+                  { name: 'Teal', value: 'teal', color: '#0D9488' },
+                  { name: 'Blue', value: 'blue', color: '#2563EB' },
+                  { name: 'Purple', value: 'purple', color: '#9333EA' },
+                  { name: 'Pink', value: 'pink', color: '#EC4899' },
+                  { name: 'Brown', value: 'brown', color: '#92400E' },
+                  { name: 'Gray', value: 'gray', color: '#6B7280' },
                 ].map((color) => (
-                  <Button
+                  <button
                     key={color.value}
-                    variant={excludedColors.includes(color.value) ? 'default' : 'outline'}
-                    size="sm"
                     onClick={() => {
                       setExcludedColors(prev => 
                         prev.includes(color.value)
@@ -288,16 +286,31 @@ const BrandTheme = () => {
                           : [...prev, color.value]
                       );
                     }}
-                    className="h-8"
+                    className={`relative w-12 h-12 rounded-full transition-all ${
+                      excludedColors.includes(color.value)
+                        ? 'ring-4 ring-red-500 ring-offset-2 opacity-50'
+                        : 'ring-2 ring-border hover:ring-4 hover:ring-primary/50'
+                    }`}
+                    style={{ backgroundColor: color.color }}
+                    title={`${color.name} - ${excludedColors.includes(color.value) ? 'Click to include' : 'Click to exclude'}`}
                   >
-                    {color.name}
-                  </Button>
+                    {excludedColors.includes(color.value) && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <svg className="w-8 h-8 text-white drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </div>
+                    )}
+                  </button>
                 ))}
               </div>
             </div>
 
-            {/* Style Buttons */}
-            <div className="flex gap-2 flex-wrap">
+            {/* Style Selection */}
+            <div className="space-y-2 pt-4">
+              <Label className="text-sm font-medium">✨ Choose Generation Style</Label>
+              <p className="text-xs text-muted-foreground">Select the aesthetic direction for your palette</p>
+              <div className="flex gap-2 flex-wrap">
               <Button
                 variant="outline"
                 size="sm"
@@ -370,6 +383,7 @@ const BrandTheme = () => {
               >
                 {isGenerating ? 'Generating...' : 'Randomize'}
               </Button>
+              </div>
             </div>
           </div>
         </div>
