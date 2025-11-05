@@ -34,10 +34,18 @@ const normalizeCTAs = (input: string) => {
   return out;
 };
 
-// Keep only <style> tags that include the wrapper id selector inside
+// Keep <style> tags scoped to the wrapper, but preserve global CSS variable blocks
 const keepScopedStylesOnly = (input: string, wrapperId: string) => {
   return input.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, (full, css) => {
     const hasScope = new RegExp(`#${wrapperId}\\b`).test(css);
+    const definesRootVars = /:root\b|--color-|--radius-|--icon-/i.test(css);
+
+    if (definesRootVars) {
+      // Scope CSS variables to the wrapper so they cascade within this section only
+      const scopedCss = css.replace(/:root\b/gi, `#${wrapperId}`);
+      return `<style>${scopedCss}<\/style>`;
+    }
+
     return hasScope ? full : '';
   });
 };

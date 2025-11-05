@@ -100,15 +100,48 @@ const StaticPage = () => {
         
         // Site settings for styling
         siteSettings: {
-          primary_color: siteSettings?.primary_color || '#3b82f6',
-          secondary_color: siteSettings?.secondary_color || '#6b7280',
-          accent_color: siteSettings?.accent_color || '#8b5cf6',
-          success_color: siteSettings?.success_color || '#10b981',
-          warning_color: siteSettings?.warning_color || '#f59e0b',
-          info_color: siteSettings?.info_color || '#3b82f6',
-          danger_color: siteSettings?.danger_color || '#ef4444',
-          button_border_radius: siteSettings?.button_border_radius || 8,
-          card_border_radius: siteSettings?.card_border_radius || 12,
+          primary_color: siteSettings?.primary_color ?? '#3b82f6',
+          secondary_color: siteSettings?.secondary_color ?? '#6b7280',
+          accent_color: siteSettings?.accent_color ?? '#8b5cf6',
+          success_color: siteSettings?.success_color ?? '#10b981',
+          warning_color: siteSettings?.warning_color ?? '#f59e0b',
+          info_color: siteSettings?.info_color ?? '#3b82f6',
+          danger_color: siteSettings?.danger_color ?? '#ef4444',
+
+          // Extended palette used by templates
+          bg_primary_color: siteSettings?.bg_primary_color ?? '#FFFFFF',
+          bg_secondary_color: siteSettings?.bg_secondary_color ?? '#F1F5F9',
+          bg_tertiary_color: siteSettings?.bg_tertiary_color ?? '#E2E8F0',
+          text_primary_color: siteSettings?.text_primary_color ?? '#1E293B',
+          text_secondary_color: siteSettings?.text_secondary_color ?? '#475569',
+          text_muted_color: siteSettings?.text_muted_color ?? '#94A3B8',
+          border_color: siteSettings?.border_color ?? '#CBD5E1',
+          card_bg_color: siteSettings?.card_bg_color ?? '#FFFFFF',
+          feature_color: siteSettings?.feature_color ?? '#1E40AF',
+          cta_color: siteSettings?.cta_color ?? '#16A34A',
+
+          // Radius and icon styles
+          button_border_radius: siteSettings?.button_border_radius ?? 8,
+          card_border_radius: siteSettings?.card_border_radius ?? 12,
+          icon_stroke_width: siteSettings?.icon_stroke_width ?? 2,
+          icon_background_style: siteSettings?.icon_background_style ?? 'none',
+          icon_background_padding: siteSettings?.icon_background_padding ?? 8,
+
+          // Header & footer (used by some templates)
+          header_logo_size: siteSettings?.header_logo_size ?? 48,
+          header_bg_color: siteSettings?.header_bg_color ?? '#ffffff',
+          header_border_color: siteSettings?.header_border_color ?? '#e5e7eb',
+          footer_bg_color: siteSettings?.footer_bg_color ?? '#f8fafc',
+          footer_logo_size: siteSettings?.footer_logo_size ?? 48,
+          footer_text_color: siteSettings?.footer_text_color ?? '#000000',
+
+          // Social icons
+          show_social_links: siteSettings?.show_social_links ?? true,
+          social_icon_style: siteSettings?.social_icon_style ?? 'colored',
+          social_icon_custom_color: siteSettings?.social_icon_custom_color ?? '#000000',
+          social_border_style: siteSettings?.social_border_style ?? 'none',
+          social_icon_size: siteSettings?.social_icon_size ?? 24,
+          use_standard_social_logos: siteSettings?.use_standard_social_logos ?? false,
         }
       };
       
