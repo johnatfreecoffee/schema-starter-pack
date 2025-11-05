@@ -34,19 +34,21 @@ const normalizeCTAs = (input: string) => {
   return out;
 };
 
-// Keep <style> tags scoped to the wrapper, but preserve global CSS variable blocks
+// Keep <style> tags - preserve both scoped styles and CSS variables
 const keepScopedStylesOnly = (input: string, wrapperId: string) => {
   return input.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, (full, css) => {
     const hasScope = new RegExp(`#${wrapperId}\\b`).test(css);
     const definesRootVars = /:root\b|--color-|--radius-|--icon-/i.test(css);
 
-    if (definesRootVars) {
+    // Always keep styles that define CSS variables or are already scoped
+    if (definesRootVars || hasScope) {
       // Scope CSS variables to the wrapper so they cascade within this section only
       const scopedCss = css.replace(/:root\b/gi, `#${wrapperId}`);
       return `<style>${scopedCss}<\/style>`;
     }
 
-    return hasScope ? full : '';
+    // Also keep other utility styles (gradients, classes, etc.)
+    return full;
   });
 };
 
