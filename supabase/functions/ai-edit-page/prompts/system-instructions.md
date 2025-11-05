@@ -222,80 +222,146 @@ If it can be changed by the business owner, it MUST be a Handlebars variable or 
 
 ## 📞 CALL-TO-ACTION BUTTONS - REQUIRED FORMAT
 
-**EVERY CTA BUTTON MUST:**
-1. Use the lead form modal trigger
-2. Use CSS custom properties for colors
-3. Include hover effects and shadows
-4. Have proper border radius
-5. **Include a relevant icon** (simple inline SVG, 20-24px, no background)
-6. **Use consistent text sizing** (text-base or text-lg max, font-semibold or font-bold)
-7. **Phone numbers MUST always be styled as buttons** (not plain text links)
+### 🎯 CANONICAL CTA PATTERN - USE THIS FOR ALL BUTTONS
 
-**BUTTON TEXT SIZE RULES:**
-- ✓ Use ONLY `text-base` (16px) for all buttons
-- ✓ Use `font-semibold` or `font-bold` for weight
-- ❌ NEVER use `text-xl`, `text-2xl`, or larger in buttons
-- ❌ NEVER use `text-lg` or any size other than `text-base`
-- ❌ NEVER mix different text sizes within the same button group
+**THIS IS THE ONLY BUTTON PATTERN YOU SHOULD USE. NO EXCEPTIONS.**
 
-**PHONE NUMBER BUTTON REQUIREMENT:**
-🚨 CRITICAL: ALL phone numbers MUST be styled as clickable buttons with phone icons, NOT as plain text links. This applies to EVERY occurrence on the page (header, hero, content sections, footer).
+Every button on the page must follow this exact pattern:
 
-**ICON REQUIREMENT:**
-🚨 CRITICAL: EVERY button MUST include an inline SVG icon (20-24px). A button without an icon is WRONG and must be fixed.
-- ❌ ANY button without an icon = WRONG
-- ✅ ALL buttons need: `inline-flex items-center gap-2` + complete SVG with path data
-
-**CORRECT CTA BUTTON FORMAT:**
 ```html
 <button 
-  onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Started')"
+  onclick="if(window.openLeadFormModal) window.openLeadFormModal('CTA Label')"
   style="background: var(--color-primary); border-radius: var(--radius-button);"
-  class="inline-flex items-center gap-2 px-8 py-4 text-white text-base font-semibold shadow-2xl hover:scale-105 hover:shadow-3xl transition-all duration-300">
+  class="inline-flex items-center gap-2 text-base font-semibold px-6 py-3 text-white shadow-lg hover:opacity-90 transition-all">
   <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
     <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
   </svg>
-  Get Started Today
+  CTA Label
 </button>
 ```
 
-**CTA BUTTON VARIATIONS:**
+**CANONICAL PATTERN REQUIREMENTS:**
+- ✅ ALWAYS use `inline-flex items-center gap-2` for layout
+- ✅ ALWAYS use `text-base` (16px) for font size - NEVER `text-lg`, `text-xl`, or larger
+- ✅ ALWAYS use `font-semibold` or `font-bold` for weight
+- ✅ ALWAYS use `px-6 py-3` (standard) or `px-8 py-4` (hero/primary) for padding
+- ✅ ALWAYS include an SVG icon as the FIRST child element (20-24px with complete path data)
+- ✅ ALWAYS use CSS variables for colors: `var(--color-primary)`, `var(--color-accent)`, etc.
+- ✅ ALWAYS use `var(--radius-button)` for border radius
+- ✅ ALWAYS include shadow and hover effects
+
+**❌ WRONG - Button without icon:**
+```html
+<button class="px-8 py-4 text-base">Contact Us</button>
+```
+
+**❌ WRONG - Button with wrong text size:**
+```html
+<button class="text-lg px-8 py-4">Too Big</button>
+<button class="text-xl px-8 py-4">Way Too Big</button>
+```
+
+**❌ WRONG - Button without CSS variables:**
+```html
+<button class="bg-blue-500 rounded-xl">Hard-coded colors</button>
+```
+
+**✅ CORRECT - Following canonical pattern:**
+```html
+<button class="inline-flex items-center gap-2 text-base font-semibold px-6 py-3" 
+        style="background: var(--color-primary); border-radius: var(--radius-button);">
+  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+  </svg>
+  Get Started
+</button>
+```
+
+---
+
+### 🚨 PHONE NUMBERS – MUST BE BUTTONS
+
+**CRITICAL RULE: ALL INSTANCES OF {{phone}} MUST USE THE CANONICAL CTA PATTERN**
+
+Phone numbers are NOT plain text. They are NOT simple links. They MUST be rendered as prominent buttons with phone icons.
+
+**This applies to:**
+- ✓ Hero section phone numbers
+- ✓ Header phone numbers  
+- ✓ Contact section phone numbers
+- ✓ Footer phone numbers
+- ✓ ANY occurrence of {{phone}} ANYWHERE on the page
+
+**✅ CORRECT - Phone as Button (Hero Section):**
+```html
+<a href="tel:{{phone}}"
+   style="background: var(--color-success); border-radius: var(--radius-button); text-decoration: none;"
+   class="inline-flex items-center gap-2 px-8 py-4 text-white text-base font-bold shadow-2xl hover:opacity-90 transition-all">
+  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+  </svg>
+  Call Now: {{phone}}
+</a>
+```
+
+**✅ CORRECT - Phone as Button (Contact Section):**
+```html
+<a href="tel:{{phone}}"
+   style="background: var(--color-primary); border-radius: var(--radius-button); text-decoration: none;"
+   class="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-semibold shadow-lg hover:opacity-90 transition-all">
+  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+  </svg>
+  {{phone}}
+</a>
+```
+
+**❌ WRONG - Phone as plain text link:**
+```html
+<a href="tel:{{phone}}" class="text-blue-500">Call {{phone}}</a>
+<p>Call us: <a href="tel:{{phone}}">{{phone}}</a></p>
+<a href="tel:{{phone}}" class="text-4xl font-bold">{{phone}}</a>
+```
+
+**❌ WRONG - Phone link without icon:**
+```html
+<a href="tel:{{phone}}" class="px-6 py-3 bg-blue-500 text-white">{{phone}}</a>
+```
+
+---
+
+### 🔍 ICON REQUIREMENT - ZERO EXCEPTIONS
+
+**ANY BUTTON WITHOUT AN INLINE SVG ICON IS INVALID AND MUST BE FIXED**
+
+Every `<button>` and every CTA `<a>` tag must contain exactly one inline SVG icon as the first child element.
+
+**BUTTON VARIATION EXAMPLES:**
 ```html
 <!-- Primary CTA with Icon -->
 <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Contact Us')"
         style="background: var(--color-primary); border-radius: var(--radius-button);"
-        class="inline-flex items-center gap-2 px-8 py-4 text-white text-base font-semibold shadow-2xl hover:scale-105 transition-all">
+        class="inline-flex items-center gap-2 px-8 py-4 text-white text-base font-semibold shadow-2xl hover:opacity-90 transition-all">
   <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
     <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
   </svg>
   Contact {{business_name}}
 </button>
 
-<!-- Phone Number Button (REQUIRED FORMAT FOR ALL PHONE NUMBERS) -->
-<!-- Use this format EVERYWHERE phone appears: header, hero, content, footer -->
-<a href="tel:{{phone}}"
-   style="background: var(--color-success); border-radius: var(--radius-button); text-decoration: none;"
-   class="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-semibold shadow-xl hover:scale-105 transition-all">
+<!-- Secondary CTA with Icon -->
+<button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Learn More')"
+        style="background: var(--color-accent); border-radius: var(--radius-button);"
+        class="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-semibold shadow-lg hover:opacity-90 transition-all">
   <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
   </svg>
-  {{phone}}
-</a>
-
-<!-- Phone Number in Hero Section (larger, more prominent) -->
-<a href="tel:{{phone}}"
-   style="background: var(--color-success); border-radius: var(--radius-button); text-decoration: none;"
-   class="inline-flex items-center gap-2 px-8 py-4 text-white text-base font-bold shadow-2xl hover:scale-105 transition-all">
-  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-  </svg>
-  Call Now: {{phone}}
-</a>
+  Learn More
+</button>
 
 <!-- Schedule CTA with Icon -->
 <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Schedule Now')"
-        style="background: var(--color-accent); border-radius: var(--radius-button);"
-        class="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-semibold shadow-xl hover:scale-105 transition-all">
+        style="background: var(--color-info); border-radius: var(--radius-button);"
+        class="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-semibold shadow-lg hover:opacity-90 transition-all">
   <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
   </svg>
@@ -303,46 +369,10 @@ If it can be changed by the business owner, it MUST be a Handlebars variable or 
 </button>
 ```
 
-**❌ WRONG EXAMPLES (DO NOT DO THIS):**
-```html
-<!-- ❌ WRONG: Phone number as plain text link (NEVER DO THIS) -->
-<a href="tel:{{phone}}" class="text-blue-500">Call {{phone}}</a>
-<p>Call us: <a href="tel:{{phone}}">{{phone}}</a></p>
-
-<!-- ❌ WRONG: Button without icon -->
-<button class="px-8 py-4 text-base">Contact Us</button>
-
-<!-- ❌ WRONG: Mixed text sizes -->
-<button class="text-2xl">Big Button</button>
-<button class="text-sm">Small Button</button>
-
-<!-- ❌ WRONG: Using text-lg or text-xl -->
-<button class="text-lg">Too Big</button>
-```
-
-**✅ CORRECT EXAMPLES (ALWAYS DO THIS):**
-```html
-<!-- ✅ All buttons same size (text-base), all have icons -->
-<button class="inline-flex items-center gap-2 px-6 py-3 text-base font-semibold">
-  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-  </svg>
-  Get Started
-</button>
-
-<!-- ✅ Phone as button with icon, same text-base size -->
-<a href="tel:{{phone}}" class="inline-flex items-center gap-2 px-6 py-3 text-base font-semibold">
-  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-  </svg>
-  {{phone}}
-</a>
-```
-
 **WHERE TO PLACE CTAs:**
-- Hero section (primary, large)
+- Hero section (primary, prominent with larger padding)
 - End of each major section
-- Floating/sticky CTA for mobile
+- Service cards and feature blocks
 - Final CTA before conclusion
 
 ---
@@ -562,12 +592,25 @@ https://images.unsplash.com/photo-[ID]?w=[width]&h=[height]&fit=crop
       <p class="text-lg mb-8">
         Proudly serving {{address_city}}, {{address_state}} for {{years_experience}}+ years
       </p>
-      <button 
-        onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Started')"
-        style="background: var(--color-accent); border-radius: var(--radius-button);"
-        class="px-8 py-4 text-white font-bold shadow-2xl hover:scale-105 transition-all">
-        Get Started Today
-      </button>
+      <div class="flex flex-wrap gap-4">
+        <button 
+          onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Started')"
+          style="background: var(--color-accent); border-radius: var(--radius-button);"
+          class="inline-flex items-center gap-2 px-8 py-4 text-white text-base font-bold shadow-2xl hover:opacity-90 transition-all">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+          Get Started Today
+        </button>
+        <a href="tel:{{phone}}"
+           style="background: var(--color-success); border-radius: var(--radius-button); text-decoration: none;"
+           class="inline-flex items-center gap-2 px-8 py-4 text-white text-base font-bold shadow-2xl hover:opacity-90 transition-all">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+          </svg>
+          Call: {{phone}}
+        </a>
+      </div>
     </section>
     
     <!-- CONTENT SECTIONS -->
@@ -579,16 +622,15 @@ https://images.unsplash.com/photo-[ID]?w=[width]&h=[height]&fit=crop
         Contact {{business_name}}
       </h2>
       <div class="space-y-4">
-        <a href="tel:{{phone}}" 
-           style="color: var(--color-accent);" 
-           class="text-xl font-semibold hover:underline flex items-center gap-2">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+        <a href="tel:{{phone}}"
+           style="background: var(--color-primary); border-radius: var(--radius-button); text-decoration: none;"
+           class="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-semibold shadow-lg hover:opacity-90 transition-all">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
           </svg>
           {{phone}}
         </a>
-        <p class="text-lg text-gray-700">{{address}}</p>
+        <p class="text-lg text-gray-700 mt-4">{{address}}</p>
       </div>
     </section>
     
@@ -597,7 +639,10 @@ https://images.unsplash.com/photo-[ID]?w=[width]&h=[height]&fit=crop
       <button 
         onclick="if(window.openLeadFormModal) window.openLeadFormModal('Contact Us')"
         style="background: var(--color-primary); border-radius: var(--radius-button);"
-        class="px-12 py-5 text-white text-xl font-bold shadow-2xl hover:scale-105 transition-all">
+        class="inline-flex items-center gap-2 px-12 py-5 text-white text-base font-bold shadow-2xl hover:opacity-90 transition-all">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+        </svg>
         Contact {{business_name}} Today
       </button>
     </section>
@@ -644,12 +689,25 @@ https://images.unsplash.com/photo-[ID]?w=[width]&h=[height]&fit=crop
   <h1 class="text-6xl font-bold mb-6">{{business_name}}</h1>
   <p class="text-2xl mb-8">{{business_slogan}}</p>
   <p class="text-lg mb-8">Serving {{address_city}}, {{address_state}} for {{years_experience}}+ years</p>
-  <button 
-    onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Started')"
-    style="background: var(--color-accent); border-radius: var(--radius-button);"
-    class="px-8 py-4 text-white font-bold shadow-2xl hover:scale-105 transition-all">
-    Get Started Today
-  </button>
+  <div class="flex flex-wrap gap-4">
+    <button 
+      onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Started')"
+      style="background: var(--color-accent); border-radius: var(--radius-button);"
+      class="inline-flex items-center gap-2 px-8 py-4 text-white text-base font-bold shadow-2xl hover:opacity-90 transition-all">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+      </svg>
+      Get Started Today
+    </button>
+    <a href="tel:{{phone}}"
+       style="background: var(--color-success); border-radius: var(--radius-button); text-decoration: none;"
+       class="inline-flex items-center gap-2 px-8 py-4 text-white text-base font-bold shadow-2xl hover:opacity-90 transition-all">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+      </svg>
+      Call: {{phone}}
+    </a>
+  </div>
 </section>
 ```
 
@@ -671,7 +729,10 @@ https://images.unsplash.com/photo-[ID]?w=[width]&h=[height]&fit=crop
     <button 
       onclick="if(window.openLeadFormModal) window.openLeadFormModal('Learn More')"
       style="background: var(--color-accent); border-radius: var(--radius-button);"
-      class="px-6 py-3 text-white font-semibold shadow-xl hover:scale-105 transition-all">
+      class="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-semibold shadow-xl hover:opacity-90 transition-all">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+      </svg>
       Learn More
     </button>
   </div>
@@ -686,17 +747,14 @@ https://images.unsplash.com/photo-[ID]?w=[width]&h=[height]&fit=crop
   </h2>
   
   <div class="space-y-4">
-    <div class="flex items-center gap-3">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-           style="color: var(--color-accent);">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+    <a href="tel:{{phone}}"
+       style="background: var(--color-primary); border-radius: var(--radius-button); text-decoration: none;"
+       class="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-semibold shadow-lg hover:opacity-90 transition-all">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
       </svg>
-      <a href="tel:{{phone}}" class="text-xl font-semibold hover:underline"
-         style="color: var(--color-accent);">
-        {{phone}}
-      </a>
-    </div>
+      {{phone}}
+    </a>
     
     <div class="flex items-center gap-3">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -849,18 +907,38 @@ https://images.unsplash.com/photo-[ID]?w=[width]&h=[height]&fit=crop
 
 ---
 
+## ✅ PRE-OUTPUT CHECKLIST
+
+**BEFORE FINALIZING YOUR HTML, VERIFY:**
+
+- [ ] Every `<button>` and CTA `<a>` contains an inline SVG icon as the first child
+- [ ] Every button uses `text-base` (NEVER `text-lg`, `text-xl`, or larger)
+- [ ] Every instance of `{{phone}}` is rendered as a button with phone icon (NOT plain text)
+- [ ] All buttons use `inline-flex items-center gap-2` for consistent layout
+- [ ] All colors use CSS variables: `var(--color-primary)`, `var(--color-accent)`, etc.
+- [ ] All border radius uses CSS variables: `var(--radius-button)`, `var(--radius-card)`
+- [ ] All icons include complete `<path>` elements with `d` attribute (NOT empty SVGs)
+- [ ] Hero section phone number is a prominent button, not text
+- [ ] Contact section phone number is a button, not a link
+- [ ] No hard-coded company names, addresses, or contact info
+
+**If ANY item above is not checked, FIX IT before outputting the HTML.**
+
+---
+
 ## 🎓 FINAL REMINDERS
 
 1. **NEVER HARD-CODE** - If it can change, it must be a variable
 2. **USE CSS CUSTOM PROPERTIES** - All colors and border radius must use `var(--*)`
 3. **HANDLEBARS EVERYWHERE** - Business data must use `{{variable}}` syntax
-4. **INLINE SVG ONLY** - No external icon libraries
+4. **INLINE SVG ONLY** - No external icon libraries, complete path data required
 5. **NO HEADERS/FOOTERS** - Focus on main page content only
 6. **MOBILE-FIRST** - Design for small screens first
 7. **HIGH CONTRAST** - Ensure text is always readable
-8. **PROPER CTAs** - Use lead form modal trigger on all buttons
-9. **COMPLETE HTML** - Output must be ready to render
-10. **NO MARKDOWN** - No code fences, no backticks
+8. **CANONICAL CTA PATTERN** - Follow the exact button format defined above
+9. **PHONE NUMBERS AS BUTTONS** - ALWAYS render {{phone}} as a button with icon
+10. **COMPLETE HTML** - Output must be ready to render
+11. **NO MARKDOWN** - No code fences, no backticks
 
 **SUCCESS CRITERIA:**
 ✓ When the business updates their primary color, ALL elements using that color update instantly
