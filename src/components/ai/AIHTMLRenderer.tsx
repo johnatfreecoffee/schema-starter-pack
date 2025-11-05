@@ -10,6 +10,80 @@ interface AIHTMLRendererProps {
 // Utility to generate a short random id suffix
 const uid = () => Math.random().toString(36).slice(2, 10);
 
+// Strip markdown code fences from HTML output
+const stripMarkdownFences = (input: string) => {
+  // Remove ```html at start and ``` at end
+  let cleaned = input.trim();
+  cleaned = cleaned.replace(/^```html\s*/i, '');
+  cleaned = cleaned.replace(/^```\s*/i, '');
+  cleaned = cleaned.replace(/\s*```$/i, '');
+  return cleaned;
+};
+
+// Strip custom forms and replace with canonical CTA button
+const stripCustomForms = (input: string) => {
+  // Remove entire form blocks including all nested inputs/selects/textareas
+  let cleaned = input.replace(/<form[^>]*>[\s\S]*?<\/form>/gi, () => {
+    return `
+      <div class="text-center py-8">
+        <button
+          onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get My Free Estimate')"
+          style="background: var(--color-primary); border-radius: var(--radius-button);"
+          class="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-semibold shadow-lg hover:opacity-90 transition-all">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+          Get My Free Estimate
+        </button>
+      </div>`;
+  });
+
+  // Remove any orphaned form elements
+  cleaned = cleaned.replace(/<input[^>]*>/gi, '');
+  cleaned = cleaned.replace(/<select[^>]*>[\s\S]*?<\/select>/gi, '');
+  cleaned = cleaned.replace(/<textarea[^>]*>[\s\S]*?<\/textarea>/gi, '');
+  cleaned = cleaned.replace(/<label[^>]*>[\s\S]*?<\/label>/gi, '');
+
+  return cleaned;
+};
+
+// Normalize button text sizes to text-base
+const normalizeButtonTextSizes = (input: string) => {
+  // Replace text-lg, text-xl, text-2xl, text-3xl, text-4xl with text-base on buttons and CTAs
+  return input.replace(/(<(?:button|a)[^>]*class="[^"]*)\btext-(?:lg|xl|2xl|3xl|4xl)\b([^"]*"[^>]*>)/gi, '$1text-base$2');
+};
+
+// Ensure all CTA buttons and links have icons
+const ensureIconsOnButtons = (input: string) => {
+  // Find buttons/links that are CTAs but missing SVG icons
+  const defaultIcon = `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+  </svg>`;
+
+  // Match buttons that don't already have an SVG as first child
+  return input.replace(/(<button[^>]*class="[^"]*inline-flex[^"]*"[^>]*>)(?!\s*<svg)/gi, `$1${defaultIcon} `);
+};
+
+// Convert phone numbers to proper button format
+const enforcePhoneButtons = (input: string) => {
+  const phoneIcon = `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+  </svg>`;
+
+  // Convert tel: links that are not properly styled as buttons
+  return input.replace(
+    /<a\s+href="tel:([^"]+)"(?![^>]*class="[^"]*inline-flex)/gi,
+    (match, phone) => {
+      return `<a href="tel:${phone}"
+        style="background: var(--color-success); border-radius: var(--radius-button); text-decoration: none;"
+        class="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-semibold shadow-lg hover:opacity-90 transition-all">
+        ${phoneIcon}
+        ${phone}
+      </a>`;
+    }
+  );
+};
+
 // Extract AI wrapper id if present, else generate one
 const ensureWrapper = (input: string) => {
   const match = input.match(/id=\"(ai-section-[^\"]+)\"/i);
@@ -108,13 +182,23 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
   const { openModal } = useLeadFormModal();
 
   const processed = useMemo(() => {
+    // 0) Strip markdown code fences if present
+    const noFences = stripMarkdownFences(html || '');
     // 1) Ensure wrapper id
-    const { id, html: wrapped } = ensureWrapper(html || '');
-    // 2) Normalize CTA handlers to data attributes
-    const withCtas = normalizeCTAs(wrapped);
-    // 3) Convert any lucide placeholders to inline SVG
-    const withIcons = convertLucidePlaceholdersToSvg(withCtas);
-    // 4) Sanitize while allowing <style> and SVG
+    const { id, html: wrapped } = ensureWrapper(noFences);
+    // 2) Strip custom forms and replace with CTA buttons
+    const noForms = stripCustomForms(wrapped);
+    // 3) Normalize CTA handlers to data attributes
+    const withCtas = normalizeCTAs(noForms);
+    // 4) Normalize button text sizes to text-base
+    const normalizedSizes = normalizeButtonTextSizes(withCtas);
+    // 5) Ensure all buttons have icons
+    const withButtonIcons = ensureIconsOnButtons(normalizedSizes);
+    // 6) Enforce phone buttons
+    const withPhoneButtons = enforcePhoneButtons(withButtonIcons);
+    // 7) Convert any lucide placeholders to inline SVG
+    const withIcons = convertLucidePlaceholdersToSvg(withPhoneButtons);
+    // 8) Sanitize while allowing <style> and SVG
     const sanitized = sanitizeHtml(withIcons, {
       ADD_TAGS: ['style', 'svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g', 'use', 'defs', 'symbol', 'title', 'desc', 'button', 'a'],
       ADD_ATTR: [
@@ -125,9 +209,9 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
       ],
       ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
     });
-    // 5) Keep scoped styles and CSS vars
+    // 9) Keep scoped styles and CSS vars
     const scopedOnly = keepScopedStylesOnly(sanitized, id);
-    // 6) Inject minimal utility CSS so Tailwind classes used in templates render
+    // 10) Inject minimal utility CSS so Tailwind classes used in templates render
     const utilityCss = `
 <style>
 #${id} .px-10{padding-left:2.5rem;padding-right:2.5rem;} 
@@ -156,6 +240,7 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
 #${id} .rounded-3xl{border-radius:1.5rem;}
 #${id} .font-bold{font-weight:700;}
 #${id} .font-semibold{font-weight:600;}
+#${id} .text-base{font-size:1rem;line-height:1.5rem;}
 #${id} .text-lg{font-size:1.125rem;line-height:1.75rem;}
 #${id} .text-xl{font-size:1.25rem;line-height:1.75rem;}
 #${id} .text-2xl{font-size:1.5rem;line-height:2rem;}
