@@ -118,11 +118,12 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
     const sanitized = sanitizeHtml(withIcons, {
       ADD_TAGS: ['style', 'svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g', 'use', 'defs', 'symbol', 'title', 'desc', 'button', 'a'],
       ADD_ATTR: [
-        'data-lead-form', 'href', 'class', 'style', 'onclick',
+        'data-lead-form', 'href', 'class', 'style', 'onclick', 'type', 'target', 'rel',
         // SVG attributes
         'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'd', 'viewBox', 'xmlns',
         'points', 'x', 'y', 'width', 'height', 'aria-hidden', 'focusable', 'role', 'fill-rule', 'clip-rule'
       ],
+      ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
     });
     // 5) Keep scoped styles and CSS vars
     const scopedOnly = keepScopedStylesOnly(sanitized, id);
