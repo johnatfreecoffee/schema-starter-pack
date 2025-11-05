@@ -176,8 +176,13 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
   const { openModal } = useLeadFormModal();
 
   const processed = useMemo(() => {
+    // 0) Strip markdown code fences if present (safeguard against AI returning ```html ... ```)
+    let cleanHtml = (html || '').trim();
+    cleanHtml = cleanHtml.replace(/^```html\s*/i, '').replace(/^```\s*/, '');
+    cleanHtml = cleanHtml.replace(/\s*```\s*$/i, '');
+    
     // 1) Ensure wrapper id
-    const { id, html: wrapped } = ensureWrapper(html || '');
+    const { id, html: wrapped } = ensureWrapper(cleanHtml);
     // 2) Normalize CTA handlers to data attributes
     const withCtas = normalizeCTAs(wrapped);
     // 3) Strip any custom forms and replace with canonical CTA
