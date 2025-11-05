@@ -104,6 +104,74 @@ const convertLucidePlaceholdersToSvg = (input: string) => {
   });
 };
 
+const stripCustomForms = (input: string) => {
+  // Remove any custom <form> blocks entirely and replace with a canonical CTA
+  const replacedForms = input.replace(/<form\b[\s\S]*?<\/form>/gi, (_m) => {
+    const label = 'Get Your Free Estimate';
+    return `
+      <div class="text-center">
+        <button 
+          data-lead-form="${label}"
+          class="inline-flex items-center gap-2 text-base font-semibold px-6 py-3 text-white shadow-lg hover:opacity-90 transition-all"
+          style="background: var(--color-cta); border-radius: var(--radius-button);">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+          ${label}
+        </button>
+      </div>`;
+  });
+  // Also strip stray inputs/selects/textareas that may have been output without a form
+  return replacedForms
+    .replace(/<(input|select|textarea)\b[\s\S]*?>/gi, '')
+    .replace(/<label\b[\s\S]*?>[\s\S]*?<\/label>/gi, '');
+};
+
+const normalizeButtonClasses = (input: string) => {
+  // Normalize class names for CTA <button> and CTA <a> (data-lead-form or tel:)
+  return input.replace(/(<(button|a)(?=[^>]*\b(data-lead-form|href\s*=\s*["']tel:)[^>]*)([^>]*class=")([^\"]*)("))/gi,
+    (_m, p1, _tag, _det, _p4, cls, p6) => {
+      let newCls = cls
+        .replace(/\btext-(?:lg|xl|2xl|3xl|4xl)\b/g, '')
+        .trim();
+      if (!/\binline-flex\b/.test(newCls)) newCls = `inline-flex items-center gap-2 ${newCls}`.trim();
+      if (!/\btext-base\b/.test(newCls)) newCls = `${newCls} text-base`.trim();
+      if (!/\bfont-(?:semibold|bold)\b/.test(newCls)) newCls = `${newCls} font-semibold`.trim();
+      if (!/\bpx-(?:6|8)\b/.test(newCls)) newCls = `${newCls} px-6`.trim();
+      if (!/\bpy-(?:3|4)\b/.test(newCls)) newCls = `${newCls} py-3`.trim();
+      return `${p1}${newCls}${p6}`;
+    }
+  );
+};
+
+const ensureIconsOnCtas = (input: string) => {
+  const arrowSvg = '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>';
+  const phoneSvg = '<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>';
+
+  let out = input;
+  // Insert icon as first child for CTA buttons missing an SVG
+  out = out.replace(/(<button\b[^>]*data-lead-form="[^"]*"[^>]*>)(\s*)(?!<svg)/gi, `$1${arrowSvg} `);
+  // Insert icon for tel anchors
+  out = out.replace(/(<a\b[^>]*href\s*=\s*['\"]tel:[^'\"]+['\"][^>]*>)(\s*)(?!<svg)/gi, `$1${phoneSvg} `);
+  // Also cover CTA anchors that call the modal
+  out = out.replace(/(<a\b[^>]*data-lead-form="[^"]*"[^>]*>)(\s*)(?!<svg)/gi, `$1${arrowSvg} `);
+  // And general buttons that slipped through but open modal via leftover onclick (handled later)
+  out = out.replace(/(<button\b(?![^>]*data-lead-form)[^>]*>)(\s*)(?!<svg)/gi, `$1${arrowSvg} `);
+  return out;
+};
+
+const enforcePhoneButtonStyles = (input: string) => {
+  // Ensure tel: links have canonical style attributes and CTA classes
+  let out = input.replace(/(<a\b[^>]*href\s*=\s*["']tel:[^"']+["'][^>]*)(?![^>]*style=)([^>]*>)/gi,
+    (_m, p1, p2) => {
+      return `${p1} style="background: var(--color-primary); border-radius: var(--radius-button); color: white; text-decoration: none;" class="inline-flex items-center gap-2 text-base font-semibold px-6 py-3 shadow-lg hover:opacity-90 transition-all"${p2}`;
+    }
+  );
+  // Normalize classes even if style already existed
+  out = normalizeButtonClasses(out);
+  return out;
+};
+
 const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
   const { openModal } = useLeadFormModal();
 
@@ -112,9 +180,13 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
     const { id, html: wrapped } = ensureWrapper(html || '');
     // 2) Normalize CTA handlers to data attributes
     const withCtas = normalizeCTAs(wrapped);
-    // 3) Convert any lucide placeholders to inline SVG
-    const withIcons = convertLucidePlaceholdersToSvg(withCtas);
-    // 4) Sanitize while allowing <style> and SVG
+    // 3) Strip any custom forms and replace with canonical CTA
+    const noForms = stripCustomForms(withCtas);
+    // 4) Enforce canonical classes and icon presence on CTAs (buttons and tel links)
+    const withNormalizedCtas = ensureIconsOnCtas(enforcePhoneButtonStyles(noForms));
+    // 5) Convert any lucide placeholders to inline SVG
+    const withIcons = convertLucidePlaceholdersToSvg(withNormalizedCtas);
+    // 6) Sanitize while allowing <style> and SVG
     const sanitized = sanitizeHtml(withIcons, {
       ADD_TAGS: ['style', 'svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g', 'use', 'defs', 'symbol', 'title', 'desc', 'button', 'a'],
       ADD_ATTR: [
@@ -125,9 +197,9 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
       ],
       ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
     });
-    // 5) Keep scoped styles and CSS vars
+    // 7) Keep scoped styles and CSS vars
     const scopedOnly = keepScopedStylesOnly(sanitized, id);
-    // 6) Inject minimal utility CSS so Tailwind classes used in templates render
+    // 8) Inject minimal utility CSS so Tailwind classes used in templates render
     const utilityCss = `
 <style>
 #${id} .px-10{padding-left:2.5rem;padding-right:2.5rem;} 
@@ -145,10 +217,10 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
 #${id} .inline-block{display:inline-block;}
 #${id} .bg-white{background:#fff;}
 #${id} .text-white{color:#fff;}
-#${id} .bg-white\\/10{background-color:rgba(255,255,255,0.1);}
-#${id} .bg-opacity-10{background-color:rgba(255,255,255,0.1);}
-#${id} .backdrop-blur-sm{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
-#${id} .backdrop-blur{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+#${id} .bg-white\\/10{background-color:rgba(255,255,255,0.1);} 
+#${id} .bg-opacity-10{background-color:rgba(255,255,255,0.1);} 
+#${id} .backdrop-blur-sm{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);} 
+#${id} .backdrop-blur{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);} 
 #${id} .rounded{border-radius:.25rem;}
 #${id} .rounded-lg{border-radius:.5rem;}
 #${id} .rounded-xl{border-radius:.75rem;}
@@ -162,11 +234,11 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
 #${id} .text-center{text-align:center;}
 #${id} .shadow-xl{box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04);} 
 #${id} .shadow-2xl{box-shadow:0 25px 50px -12px rgba(0,0,0,.25);} 
-#${id} .shadow-lg{box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05);}
+#${id} .shadow-lg{box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05);} 
 #${id} .hover\\:scale-105:hover{transform:scale(1.05);} 
-#${id} .hover\\:shadow-2xl:hover{box-shadow:0 25px 50px -12px rgba(0,0,0,.25);}
-#${id} .transition-all{transition:all .2s ease-in-out;}
-#${id} .transition-transform{transition:transform .2s ease-in-out;}
+#${id} .hover\\:shadow-2xl:hover{box-shadow:0 25px 50px -12px rgba(0,0,0,.25);} 
+#${id} .transition-all{transition:all .2s ease-in-out;} 
+#${id} .transition-transform{transition:transform .2s ease-in-out;} 
 #${id} .flex{display:flex;}
 #${id} .inline-flex{display:inline-flex;}
 #${id} .grid{display:grid;}
