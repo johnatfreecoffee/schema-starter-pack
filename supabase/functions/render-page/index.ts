@@ -1,7 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-// Enhanced Handlebars-like template rendering with array support
+// Enhanced Handlebars-like template rendering with array and nested object support
 function compileTemplate(templateHtml: string) {
   return (data: Record<string, any>) => {
     let result = templateHtml;
@@ -23,6 +23,13 @@ function compileTemplate(templateHtml: string) {
         // Also replace simple {{local_benefits}} with joined string
         const simpleRegex = new RegExp(`{{${key}}}`, 'g');
         result = result.replace(simpleRegex, value.join(', '));
+      } else if (typeof value === 'object' && value !== null) {
+        // Handle nested objects (like siteSettings.primary_color)
+        Object.keys(value).forEach(nestedKey => {
+          const nestedValue = value[nestedKey];
+          const nestedRegex = new RegExp(`{{${key}\\.${nestedKey}}}`, 'g');
+          result = result.replace(nestedRegex, String(nestedValue || ''));
+        });
       } else {
         // Handle regular variables
         const regex = new RegExp(`{{${key}}}`, 'g');
@@ -244,6 +251,12 @@ serve(async (req) => {
       .select('*')
       .single();
 
+    // Fetch site settings for color palette and styling
+    const { data: siteSettings } = await supabase
+      .from('site_settings')
+      .select('*')
+      .maybeSingle();
+
     // Use safe defaults if company settings are missing
     const companyData = company ?? {
       business_name: 'Company',
@@ -255,6 +268,30 @@ serve(async (req) => {
       years_experience: 0,
       logo_url: '',
       icon_url: '',
+    } as any;
+
+    // Use safe defaults if site settings are missing
+    const siteSettingsData = siteSettings ?? {
+      primary_color: 'hsl(221, 83%, 53%)',
+      secondary_color: 'hsl(210, 40%, 96%)',
+      accent_color: 'hsl(280, 65%, 60%)',
+      success_color: '#10b981',
+      warning_color: '#f59e0b',
+      info_color: '#3b82f6',
+      danger_color: '#ef4444',
+      bg_primary_color: 'hsl(0, 0%, 100%)',
+      bg_secondary_color: 'hsl(0, 0%, 96%)',
+      bg_tertiary_color: 'hsl(0, 0%, 89%)',
+      text_primary_color: 'hsl(0, 0%, 13%)',
+      text_secondary_color: 'hsl(0, 0%, 45%)',
+      text_muted_color: 'hsl(0, 0%, 64%)',
+      border_color: 'hsl(0, 0%, 89%)',
+      card_bg_color: 'hsl(0, 0%, 100%)',
+      feature_color: 'hsl(221, 83%, 53%)',
+      cta_color: 'hsl(142, 71%, 45%)',
+      button_border_radius: 8,
+      card_border_radius: 12,
+      icon_stroke_width: 2,
     } as any;
 
     // Build comprehensive page data with localized content
@@ -286,6 +323,8 @@ serve(async (req) => {
 
       // Company variables
       company_name: companyData.business_name,
+      business_name: companyData.business_name,
+      phone: companyData.phone ? formatPhone(companyData.phone) : '',
       company_phone: companyData.phone ? formatPhone(companyData.phone) : '',
       company_email: companyData.email || '',
       company_address: companyData.address || '',
@@ -294,6 +333,9 @@ serve(async (req) => {
       years_experience: companyData.years_experience || 0,
       logo_url: companyData.logo_url || '',
       icon_url: companyData.icon_url || '',
+
+      // Site settings for colors and styling
+      siteSettings: siteSettingsData,
 
       // Page meta
       page_title: localizedContent?.meta_title_override || page.page_title,
