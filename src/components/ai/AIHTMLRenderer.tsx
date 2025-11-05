@@ -124,9 +124,38 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
         'points', 'x', 'y', 'width', 'height', 'aria-hidden', 'focusable', 'role', 'fill-rule', 'clip-rule'
       ],
     });
-    // 4) Drop any <style> that is not scoped to the wrapper id
+    // 5) Keep scoped styles and CSS vars
     const scopedOnly = keepScopedStylesOnly(sanitized, id);
-    return { id, html: scopedOnly };
+    // 6) Inject minimal utility CSS so Tailwind classes used in templates render
+    const utilityCss = `
+<style>
+#${id} .px-10{padding-left:2.5rem;padding-right:2.5rem;} 
+#${id} .py-5{padding-top:1.25rem;padding-bottom:1.25rem;}
+#${id} .px-8{padding-left:2rem;padding-right:2rem;}
+#${id} .py-4{padding-top:1rem;padding-bottom:1rem;}
+#${id} .px-6{padding-left:1.5rem;padding-right:1.5rem;}
+#${id} .py-3{padding-top:.75rem;padding-bottom:.75rem;}
+#${id} .py-2{padding-top:.5rem;padding-bottom:.5rem;}
+#${id} .w-full{width:100%;}
+#${id} .inline-block{display:inline-block;}
+#${id} .bg-white{background:#fff;}
+#${id} .text-white{color:#fff;}
+#${id} .font-bold{font-weight:700;}
+#${id} .font-semibold{font-weight:600;}
+#${id} .text-lg{font-size:1.125rem;line-height:1.75rem;}
+#${id} .shadow-xl{box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04);} 
+#${id} .shadow-2xl{box-shadow:0 25px 50px -12px rgba(0,0,0,.25);} 
+#${id} .hover\\:scale-105:hover{transform:scale(1.05);} 
+#${id} .transition-all{transition:all .2s ease-in-out;}
+#${id} .flex{display:flex;}
+#${id} .inline-flex{display:inline-flex;}
+#${id} .items-center{align-items:center;}
+#${id} .justify-center{justify-content:center;}
+#${id} .gap-3{gap:.75rem;}
+#${id} .gap-4{gap:1rem;}
+</style>`;
+
+    return { id, html: scopedOnly + utilityCss };
   }, [html]);
 
   useEffect(() => {
