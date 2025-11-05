@@ -225,38 +225,92 @@ If it can be changed by the business owner, it MUST be a Handlebars variable or 
 2. Use CSS custom properties for colors
 3. Include hover effects and shadows
 4. Have proper border radius
+5. **Include a relevant icon** (simple inline SVG, 20-24px, no background)
+6. **Use consistent text sizing** (text-base or text-lg max, font-semibold or font-bold)
+7. **Phone numbers MUST always be styled as buttons** (not plain text links)
+
+**BUTTON TEXT SIZE RULES:**
+- ✓ Use `text-base` (16px) or `text-lg` (18px) maximum
+- ✓ Use `font-semibold` or `font-bold` for weight
+- ❌ NEVER use `text-xl`, `text-2xl`, or larger in buttons
+- ❌ NEVER mix different text sizes within the same button group
+- ❌ NEVER use small text (text-sm) that's hard to read on mobile
+
+**PHONE NUMBER BUTTON REQUIREMENT:**
+All phone numbers MUST be styled as clickable buttons with icons, NOT as plain text links.
+
+**ICON REQUIREMENT:**
+Every button must include a simple inline SVG icon (20-24px) that matches the button action. Icons should be clean and simple without backgrounds.
 
 **CORRECT CTA BUTTON FORMAT:**
 ```html
 <button 
   onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Started')"
   style="background: var(--color-primary); border-radius: var(--radius-button);"
-  class="px-8 py-4 text-white font-bold shadow-2xl hover:scale-105 hover:shadow-3xl transition-all duration-300">
+  class="inline-flex items-center gap-2 px-8 py-4 text-white text-base font-semibold shadow-2xl hover:scale-105 hover:shadow-3xl transition-all duration-300">
+  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+  </svg>
   Get Started Today
 </button>
 ```
 
 **CTA BUTTON VARIATIONS:**
 ```html
-<!-- Primary CTA -->
+<!-- Primary CTA with Icon -->
 <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Contact Us')"
         style="background: var(--color-primary); border-radius: var(--radius-button);"
-        class="px-8 py-4 text-white font-bold shadow-2xl hover:scale-105 transition-all">
+        class="inline-flex items-center gap-2 px-8 py-4 text-white text-base font-semibold shadow-2xl hover:scale-105 transition-all">
+  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+  </svg>
   Contact {{business_name}}
 </button>
 
-<!-- Success CTA -->
+<!-- Phone Number Button (REQUIRED FORMAT) -->
+<a href="tel:{{phone}}"
+   style="background: var(--color-success); border-radius: var(--radius-button); text-decoration: none;"
+   class="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-semibold shadow-xl hover:scale-105 transition-all">
+  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+  </svg>
+  {{phone}}
+</a>
+
+<!-- Schedule CTA with Icon -->
 <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Schedule Now')"
-        style="background: var(--color-success); border-radius: var(--radius-button);"
-        class="px-6 py-3 text-white font-semibold shadow-xl hover:scale-105 transition-all">
+        style="background: var(--color-accent); border-radius: var(--radius-button);"
+        class="inline-flex items-center gap-2 px-6 py-3 text-white text-lg font-semibold shadow-xl hover:scale-105 transition-all">
+  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+  </svg>
   Schedule Service
 </button>
+```
 
-<!-- Accent CTA -->
-<button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Quote')"
-        style="background: var(--color-accent); border-radius: var(--radius-button);"
-        class="px-6 py-3 text-white font-semibold shadow-xl hover:scale-105 transition-all">
-  Get Free Quote
+**❌ WRONG - INCONSISTENT TEXT SIZES:**
+```html
+<!-- WRONG: Mixed text sizes in button group -->
+<button class="text-2xl">Big Button</button>
+<button class="text-sm">Small Button</button>
+
+<!-- WRONG: Phone number as plain text -->
+<a href="tel:{{phone}}" class="text-blue-500">{{phone}}</a>
+
+<!-- WRONG: Button without icon -->
+<button class="px-8 py-4">Contact Us</button>
+```
+
+**✅ CORRECT - CONSISTENT SIZES WITH ICONS:**
+```html
+<!-- All buttons same size, all have icons -->
+<button class="inline-flex items-center gap-2 text-base font-semibold">
+  <svg width="20" height="20">...</svg>
+  Get Started
+</button>
+<button class="inline-flex items-center gap-2 text-base font-semibold">
+  <svg width="20" height="20">...</svg>
+  Learn More
 </button>
 ```
 
