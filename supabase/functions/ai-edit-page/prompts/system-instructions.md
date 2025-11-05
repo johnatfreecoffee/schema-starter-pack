@@ -449,51 +449,6 @@ Phone numbers are NOT plain text. They are NOT simple links. They MUST be render
 
 ---
 
-### 🛠️ AUTO-CORRECTION REWRITE STEPS (MANDATORY)
-If any violation is detected during the checklist, REWRITE the output using these fixes BEFORE returning HTML:
-
-1) Remove custom forms completely
-- Delete ALL `<form>...</form>`, `<input>`, `<select>`, `<textarea>`, and `<label>` tags
-- For each removed `<form>`, insert a canonical CTA:
-```html
-<div class="text-center">
-  <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get My Free Estimate')"
-          style="background: var(--color-cta); border-radius: var(--radius-button);"
-          class="inline-flex items-center gap-2 text-base font-semibold px-6 py-3 text-white shadow-lg hover:opacity-90 transition-all">
-    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-    </svg>
-    Get My Free Estimate
-  </button>
-</div>
-```
-
-2) Normalize ALL CTA buttons and links
-- Replace any `text-lg`, `text-xl`, `text-2xl`, `text-3xl`, `text-4xl` on buttons/CTA links with `text-base`
-- Ensure classes include: `inline-flex items-center gap-2 text-base font-semibold px-6 py-3`
-- If a CTA has no inline `<svg>` as the FIRST child, insert one:
-  - Arrow icon for modal CTAs
-  - Phone icon for `tel:` links
-
-3) Convert ALL phone numbers to canonical phone buttons
-- Replace plain text or simple links with:
-```html
-<a href="tel:{{phone}}"
-   style="background: var(--color-primary); border-radius: var(--radius-button); text-decoration: none;"
-   class="inline-flex items-center gap-2 px-6 py-3 text-white text-base font-semibold shadow-lg hover:opacity-90 transition-all">
-  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-  </svg>
-  Call Now: {{phone}}
-</a>
-```
-
-4) Hero CTAs must both include icons
-- The primary AND secondary hero buttons MUST include inline SVG icons
-- NEVER increase button font size; use larger padding (`px-8 py-4`) instead of `text-xl`
-
----
-
 ### 🔍 ICON REQUIREMENT - ZERO EXCEPTIONS
 
 **ANY BUTTON WITHOUT AN INLINE SVG ICON IS INVALID AND MUST BE FIXED**
