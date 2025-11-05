@@ -52,6 +52,50 @@ const keepScopedStylesOnly = (input: string, wrapperId: string) => {
   });
 };
 
+// Strip Tailwind CDN (or any Tailwind CDN variants) from provided HTML
+const stripTailwindCdn = (input: string) => {
+  return input.replace(/<script[^>]*src=["']https:\/\/cdn\.tailwindcss\.com[^>]*><\/script>/gi, '');
+};
+
+// Replace CSS variable assignments that still contain template placeholders like {{...}}
+// with sensible HSL defaults so colors render even if the generator forgot to inject values
+const patchCssVariables = (input: string) => {
+  const defaults: Record<string, string> = {
+    '--color-primary': 'hsl(221 83% 53%)',
+    '--color-secondary': 'hsl(262 83% 58%)',
+    '--color-accent': 'hsl(16 100% 50%)',
+    '--color-success': 'hsl(142 71% 45%)',
+    '--color-warning': 'hsl(38 92% 50%)',
+    '--color-info': 'hsl(199 89% 48%)',
+    '--color-danger': 'hsl(0 84% 60%)',
+    '--color-bg-primary': 'hsl(0 0% 100%)',
+    '--color-bg-secondary': 'hsl(210 40% 96%)',
+    '--color-bg-tertiary': 'hsl(210 40% 98%)',
+    '--color-text-primary': 'hsl(222 47% 11%)',
+    '--color-text-secondary': 'hsl(215 20% 35%)',
+    '--color-text-muted': 'hsl(215 16% 47%)',
+    '--color-border': 'hsl(214 32% 91%)',
+    '--color-card-bg': 'hsl(0 0% 100%)',
+    '--color-feature': 'hsl(240 5% 96%)',
+    '--color-cta': 'hsl(221 83% 53%)',
+    '--radius-button': '8px',
+    '--radius-card': '12px',
+    '--icon-stroke-width': '2',
+  };
+
+  const replacePlaceholders = (css: string) =>
+    css.replace(/(--[a-z0-9-_]+)\s*:\s*([^;]*\{\{[^}]+\}[^;]*);/gi, (_m, name: string) => {
+      const key = String(name).toLowerCase();
+      const fallback = defaults[key] || (key.includes('radius') ? '8px' : key.includes('icon-stroke-width') ? '2' : 'hsl(221 83% 53%)');
+      return `${name}: ${fallback};`;
+    });
+
+  return input.replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, (_full, css) => {
+    const updated = replacePlaceholders(css);
+    return `<style>${updated}<\/style>`;
+  });
+};
+
 // Convert <i data-lucide="..."> placeholders into inline SVG for cross-browser rendering
 const convertLucidePlaceholdersToSvg = (input: string) => {
   return input.replace(/<i[^>]*data-lucide=\"([^\"]+)\"[^>]*><\/i>/gi, (_m, name) => {
@@ -114,8 +158,10 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
     const withCtas = normalizeCTAs(wrapped);
     // 3) Convert any lucide placeholders to inline SVG
     const withIcons = convertLucidePlaceholdersToSvg(withCtas);
-    // 4) Sanitize while allowing <style> and SVG
-    const sanitized = sanitizeHtml(withIcons, {
+    // 4) Strip Tailwind CDN to avoid unsafe runtime styles
+    const withoutCdn = stripTailwindCdn(withIcons);
+    // 5) Sanitize while allowing <style> and SVG
+    const sanitized = sanitizeHtml(withoutCdn, {
       ADD_TAGS: ['style', 'svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g', 'use', 'defs', 'symbol', 'title', 'desc', 'button', 'a'],
       ADD_ATTR: [
         'data-lead-form', 'href', 'class', 'style', 'onclick', 'type', 'target', 'rel',
@@ -125,9 +171,11 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
       ],
       ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
     });
-    // 5) Keep scoped styles and CSS vars
-    const scopedOnly = keepScopedStylesOnly(sanitized, id);
-    // 6) Inject minimal utility CSS so Tailwind classes used in templates render
+    // 6) Patch unresolved CSS variables like {{...}} to HSL defaults
+    const varsPatched = patchCssVariables(sanitized);
+    // 7) Keep scoped styles and CSS vars
+    const scopedOnly = keepScopedStylesOnly(varsPatched, id);
+    // 8) Inject minimal utility CSS so Tailwind classes used in templates render
     const utilityCss = `
 <style>
 #${id} .px-10{padding-left:2.5rem;padding-right:2.5rem;} 

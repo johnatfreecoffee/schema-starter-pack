@@ -10,44 +10,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Guardrail instructions sent to the content generator (Make.com)
-// These are explicit rules the AI must follow to keep output consistent with our app
-const SYSTEM_INSTRUCTIONS = `
-OUTPUT FORMAT
-- Return ONLY raw HTML. Do not wrap in Markdown code fences and do not include explanations.
-- If your draft accidentally includes code fences, remove them before returning the final response.
-
-LEAD FORM POLICY (MANDATORY)
-- Do NOT include any <form>, <input>, <select>, <textarea>, or <label> elements in the page.
-- Replace any inline/on-page forms with a single CTA button that opens the global lead modal:
-  <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get My Free Estimate')">Get My Free Estimate</button>
-- The button text should be one of: "Get My Free Estimate", "Get Emergency Repair Quote", "Free Insurance Claim Assessment" (match page context).
-- No other custom event handlers; only the onclick calling window.openLeadFormModal is allowed.
-
-CTA BUTTON CONSISTENCY
-- Button text must be consistent site-wide. Use Title Case exactly as above. No emojis or arrows.
-- Avoid oversized typography for buttons. Use regular body size text and adjust padding for emphasis.
-- Keep CTA labels short (<= 5 words) and action-oriented.
-
-PHONE NUMBER HANDLING
-- Every phone number must be a clickable call button using a tel: link:
-  <a href="tel:{{phone}}">{{phone}}</a>
-- Prefer a single prominent call button near the hero. Do not leave phone numbers as plain text.
-
-ICON USAGE
-- Include icons only where specified; do NOT use default arrows.
-- Recommended mapping:
-  - Primary action CTAs: use a lightning/zap icon
-  - Insurance/assessment CTAs: use a shield-check icon
-  - Phone links: use a phone icon
-- Use inline SVG (no external icon libraries) and keep strokeWidth=2.
-
-SANITATION & SAFETY
-- No inline scripts except the single allowed onclick for the lead modal.
-- Do not embed external iframes/scripts. Keep styles in <style> or inline style attributes.
-`;
-
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -74,29 +36,28 @@ serve(async (req) => {
 
     console.log('✅ Routing to Make.com webhook');
 
-// Forward the request to Make.com with proper nesting
-const webhookPayload = {
-  userRequest: {
-    companyInfo: {
-      companyData: context.companyInfo?.companyData || context.companyInfo || {},
-      socialMedia: context.companyInfo?.socialMedia || context.socialMedia || [],
-      aiTraining: context.companyInfo?.aiTraining || context.aiTraining || {}
-    },
-    systemInstructions: SYSTEM_INSTRUCTIONS,
-    siteSettings: context.siteSettings || {},
-    userPrompt: command.text || command,
-    supabaseData: {
-      pageType: context.currentPage?.type,
-      pageUrl: context.currentPage?.url,
-      currentHtml: context.currentPage?.html,
-      serviceInfo: context.serviceInfo,
-      serviceAreas: context.serviceAreas
-    }
-  },
-  mode: command.mode || 'build',
-  timestamp: new Date().toISOString(),
-  source: 'ai-edit-page'
-};
+    // Forward the request to Make.com with proper nesting
+    const webhookPayload = {
+      userRequest: {
+        companyInfo: {
+          companyData: context.companyInfo?.companyData || context.companyInfo || {},
+          socialMedia: context.companyInfo?.socialMedia || context.socialMedia || [],
+          aiTraining: context.companyInfo?.aiTraining || context.aiTraining || {}
+        },
+        systemInstructions: context.siteSettings || {},
+        userPrompt: command.text || command,
+        supabaseData: {
+          pageType: context.currentPage?.type,
+          pageUrl: context.currentPage?.url,
+          currentHtml: context.currentPage?.html,
+          serviceInfo: context.serviceInfo,
+          serviceAreas: context.serviceAreas
+        }
+      },
+      mode: command.mode || 'build',
+      timestamp: new Date().toISOString(),
+      source: 'ai-edit-page'
+    };
 
     console.log('📤 Sending payload to Make.com...');
     
