@@ -136,23 +136,63 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
 #${id} .px-6{padding-left:1.5rem;padding-right:1.5rem;}
 #${id} .py-3{padding-top:.75rem;padding-bottom:.75rem;}
 #${id} .py-2{padding-top:.5rem;padding-bottom:.5rem;}
+#${id} .p-8{padding:2rem;}
+#${id} .p-6{padding:1.5rem;}
+#${id} .p-4{padding:1rem;}
+#${id} .p-3{padding:.75rem;}
 #${id} .w-full{width:100%;}
 #${id} .inline-block{display:inline-block;}
 #${id} .bg-white{background:#fff;}
 #${id} .text-white{color:#fff;}
+#${id} .bg-white\\/10{background-color:rgba(255,255,255,0.1);}
+#${id} .bg-opacity-10{background-color:rgba(255,255,255,0.1);}
+#${id} .backdrop-blur-sm{backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
+#${id} .backdrop-blur{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+#${id} .rounded{border-radius:.25rem;}
+#${id} .rounded-lg{border-radius:.5rem;}
+#${id} .rounded-xl{border-radius:.75rem;}
+#${id} .rounded-2xl{border-radius:1rem;}
+#${id} .rounded-3xl{border-radius:1.5rem;}
 #${id} .font-bold{font-weight:700;}
 #${id} .font-semibold{font-weight:600;}
 #${id} .text-lg{font-size:1.125rem;line-height:1.75rem;}
+#${id} .text-xl{font-size:1.25rem;line-height:1.75rem;}
+#${id} .text-2xl{font-size:1.5rem;line-height:2rem;}
+#${id} .text-center{text-align:center;}
 #${id} .shadow-xl{box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04);} 
 #${id} .shadow-2xl{box-shadow:0 25px 50px -12px rgba(0,0,0,.25);} 
+#${id} .shadow-lg{box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05);}
 #${id} .hover\\:scale-105:hover{transform:scale(1.05);} 
+#${id} .hover\\:shadow-2xl:hover{box-shadow:0 25px 50px -12px rgba(0,0,0,.25);}
 #${id} .transition-all{transition:all .2s ease-in-out;}
+#${id} .transition-transform{transition:transform .2s ease-in-out;}
 #${id} .flex{display:flex;}
 #${id} .inline-flex{display:inline-flex;}
+#${id} .grid{display:grid;}
+#${id} .grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr));}
+#${id} .grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}
+#${id} .grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}
 #${id} .items-center{align-items:center;}
 #${id} .justify-center{justify-content:center;}
+#${id} .gap-2{gap:.5rem;}
 #${id} .gap-3{gap:.75rem;}
 #${id} .gap-4{gap:1rem;}
+#${id} .gap-6{gap:1.5rem;}
+#${id} .gap-8{gap:2rem;}
+@media(min-width:640px){
+  #${id} .sm\\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}
+  #${id} .sm\\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}
+}
+@media(min-width:768px){
+  #${id} .md\\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr));}
+  #${id} .md\\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}
+  #${id} .md\\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr));}
+}
+@media(min-width:1024px){
+  #${id} .lg\\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr));}
+  #${id} .lg\\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr));}
+  #${id} .lg\\:grid-cols-6{grid-template-columns:repeat(6,minmax(0,1fr));}
+}
 </style>`;
 
     return { id, html: scopedOnly + utilityCss };
