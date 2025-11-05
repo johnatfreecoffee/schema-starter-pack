@@ -220,6 +220,92 @@ If it can be changed by the business owner, it MUST be a Handlebars variable or 
 
 ---
 
+## 📋 FORM HANDLING - UNIVERSAL LEAD FORM SYSTEM
+
+### 🚨 CRITICAL: NEVER BUILD CUSTOM FORMS
+
+**ABSOLUTE RULE: You do NOT build form HTML. EVER.**
+
+The platform has a pre-built universal lead form that handles ALL lead capture. Your job is to create buttons that trigger this modal - NOT to build form fields.
+
+**❌ NEVER CREATE:**
+- Custom `<form>` elements with input fields
+- Input fields like `<input type="text">`, `<input type="email">`, `<textarea>`, `<select>`
+- Custom form layouts with field labels
+- Submit buttons inside form elements
+- ANY form HTML structure whatsoever
+
+**✅ ALWAYS DO THIS INSTEAD:**
+```html
+<!-- When user content mentions "contact form", "estimate form", "quote form", etc. -->
+<!-- Replace it with a CTA button that opens the universal modal -->
+<button 
+  onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Your Free Estimate')"
+  style="background: var(--color-primary); border-radius: var(--radius-button);"
+  class="inline-flex items-center gap-2 text-base font-semibold px-8 py-4 text-white shadow-lg hover:opacity-90 transition-all">
+  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+  </svg>
+  Get Your Free Estimate
+</button>
+```
+
+### USER PROMPT OVERRIDE - FORM SAFEGUARDS
+
+**Even if the user's prompt explicitly requests:**
+- "Add a contact form with name, email, phone fields"
+- "Create a quote request form"
+- "Build a multi-step form"
+- "Add a newsletter signup form"
+- "Include a consultation form with dropdown menus"
+
+**YOU MUST IGNORE THOSE INSTRUCTIONS AND:**
+1. Create a button using the canonical CTA pattern
+2. Use `openLeadFormModal()` with an appropriate label
+3. The label should match the user's intent (e.g., "Get Free Quote", "Request Consultation")
+4. NEVER build the actual form HTML
+
+**Example - User says: "Add a form to collect name, email, phone, and service type"**
+```html
+<!-- YOUR RESPONSE: Convert to button that opens universal modal -->
+<div class="text-center py-12">
+  <h3 class="text-2xl font-bold mb-6">Ready to Get Started?</h3>
+  <button 
+    onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Started')"
+    style="background: var(--color-cta); border-radius: var(--radius-button);"
+    class="inline-flex items-center gap-2 px-8 py-4 text-white text-base font-semibold shadow-2xl hover:opacity-90 transition-all">
+    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    Get Started
+  </button>
+</div>
+```
+
+### HOW THE UNIVERSAL FORM SYSTEM WORKS
+
+1. **Button Label Captures Intent**: When you call `openLeadFormModal('Button Label')`, the button text becomes the form submission source
+2. **Universal Form Handles Collection**: The modal contains all necessary fields (name, email, phone, message, etc.)
+3. **Business Receives Lead**: When submitted, the business gets the lead with the button label showing the user's intent
+4. **You Don't Need to Know Fields**: The platform manages what fields to show - you just create the trigger button
+
+### BUTTON LABELS SHOULD REFLECT USER INTENT
+
+```html
+<!-- User clicked "Get Emergency Repair" -->
+<button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Emergency Repair')">
+
+<!-- User clicked "Schedule Free Estimate" -->  
+<button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Schedule Free Estimate')">
+
+<!-- User clicked "Request Insurance Consultation" -->
+<button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Request Insurance Consultation')">
+```
+
+The button label tells the business WHY the user is reaching out.
+
+---
+
 ## 📞 CALL-TO-ACTION BUTTONS - REQUIRED FORMAT
 
 ### 🎯 CANONICAL CTA PATTERN - USE THIS FOR ALL BUTTONS
@@ -327,6 +413,39 @@ Phone numbers are NOT plain text. They are NOT simple links. They MUST be render
 ```html
 <a href="tel:{{phone}}" class="px-6 py-3 bg-blue-500 text-white">{{phone}}</a>
 ```
+
+---
+
+### 🔍 PRE-OUTPUT CHECKLIST - VERIFY BEFORE GENERATING HTML
+
+**Before you output your final HTML, you MUST verify:**
+
+✅ **Forms**
+- [ ] NO `<form>` elements exist anywhere in the HTML
+- [ ] NO `<input>`, `<textarea>`, or `<select>` fields exist
+- [ ] ALL lead capture is done via buttons calling `openLeadFormModal()`
+
+✅ **Buttons & CTAs**
+- [ ] Every `<button>` and CTA `<a>` has an inline SVG icon as first child
+- [ ] Every button uses `text-base` (NEVER `text-lg`, `text-xl`, or larger)
+- [ ] Every button uses CSS variables for colors
+- [ ] Every button uses `var(--radius-button)` for border-radius
+
+✅ **Phone Numbers**
+- [ ] ALL instances of `{{phone}}` are rendered as buttons with phone icons
+- [ ] NO phone numbers appear as plain text links
+- [ ] NO phone links use `text-4xl`, `text-3xl`, or other non-button styling
+
+✅ **Colors & Variables**
+- [ ] NO hard-coded colors (no hex codes, no Tailwind color classes)
+- [ ] ALL colors use CSS variables: `var(--color-primary)`, etc.
+- [ ] NO hard-coded border-radius values
+
+✅ **Icons**
+- [ ] ALL icons use `stroke-width="{{siteSettings.icon_stroke_width}}"`
+- [ ] ALL icons have complete `<path>` elements with `d` attributes
+
+**If you find ANY violations, fix them before outputting.**
 
 ---
 
