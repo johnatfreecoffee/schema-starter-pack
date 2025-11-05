@@ -54,6 +54,23 @@ const Home = () => {
     }
   });
 
+  // Service areas for templates like "Serving 18 Communities"
+  const { data: serviceAreasData } = useCachedQuery({
+    queryKey: ['service-areas'],
+    cacheKey: 'site:service-areas',
+    cacheTTL: 6 * 60 * 60 * 1000, // 6 hours
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('service_areas')
+        .select('id, area_name, display_name, city_name, state, zip_code, archived, status')
+        .eq('archived', false)
+        .eq('status', true)
+        .order('area_name', { ascending: true });
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
@@ -122,7 +139,16 @@ const Home = () => {
           button_border_radius: siteSettings?.button_border_radius ?? 8,
           card_border_radius: siteSettings?.card_border_radius ?? 12,
           icon_stroke_width: siteSettings?.icon_stroke_width ?? 2,
-        }
+        },
+
+        // Data-driven lists used by templates
+        serviceAreas: (serviceAreasData || []).map((sa: any) => ({
+          area_name: sa.area_name || sa.display_name || sa.city_name || '',
+          city: sa.city_name || '',
+          state: sa.state || 'LA',
+          zip_code: sa.zip_code || '',
+          county: sa.county || ''
+        })),
       };
         renderedContent = renderTemplate(homepage.content_html, templateData);
       } catch (error) {
