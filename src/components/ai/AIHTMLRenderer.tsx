@@ -54,7 +54,7 @@ const keepScopedStylesOnly = (input: string, wrapperId: string) => {
 
 // Strip Tailwind CDN (or any Tailwind CDN variants) from provided HTML
 const stripTailwindCdn = (input: string) => {
-  return input.replace(/<script[^>]*src=["']https:\/\/cdn\.tailwindcss\.com[^>]*><\\/script>/gi, '');
+  return input.replace(/<script[^>]*src=["']https:\/\/cdn\.tailwindcss\.com[^>]*><\/script>/gi, '');
 };
 
 // Replace CSS variable assignments that still contain template placeholders like {{...}}
