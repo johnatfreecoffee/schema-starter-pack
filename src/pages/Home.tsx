@@ -99,15 +99,26 @@ const Home = () => {
         
         // Site settings for styling
         siteSettings: {
-          primary_color: siteSettings?.primary_color || '#3b82f6',
-          secondary_color: siteSettings?.secondary_color || '#6b7280',
-          accent_color: siteSettings?.accent_color || '#8b5cf6',
-          success_color: siteSettings?.success_color || '#10b981',
-          warning_color: siteSettings?.warning_color || '#f59e0b',
-          info_color: siteSettings?.info_color || '#3b82f6',
-          danger_color: siteSettings?.danger_color || '#ef4444',
-          button_border_radius: siteSettings?.button_border_radius || 8,
-          card_border_radius: siteSettings?.card_border_radius || 12,
+          primary_color: siteSettings?.primary_color ?? 'hsl(221, 83%, 53%)',
+          secondary_color: siteSettings?.secondary_color ?? 'hsl(210, 40%, 96%)',
+          accent_color: siteSettings?.accent_color ?? 'hsl(280, 65%, 60%)',
+          success_color: siteSettings?.success_color ?? '#10b981',
+          warning_color: siteSettings?.warning_color ?? '#f59e0b',
+          info_color: siteSettings?.info_color ?? '#3b82f6',
+          danger_color: siteSettings?.danger_color ?? '#ef4444',
+          bg_primary_color: siteSettings?.bg_primary_color ?? 'hsl(0, 0%, 100%)',
+          bg_secondary_color: siteSettings?.bg_secondary_color ?? 'hsl(0, 0%, 96%)',
+          bg_tertiary_color: siteSettings?.bg_tertiary_color ?? 'hsl(0, 0%, 89%)',
+          text_primary_color: siteSettings?.text_primary_color ?? 'hsl(0, 0%, 13%)',
+          text_secondary_color: siteSettings?.text_secondary_color ?? 'hsl(0, 0%, 45%)',
+          text_muted_color: siteSettings?.text_muted_color ?? 'hsl(0, 0%, 64%)',
+          border_color: siteSettings?.border_color ?? 'hsl(0, 0%, 89%)',
+          card_bg_color: siteSettings?.card_bg_color ?? 'hsl(0, 0%, 100%)',
+          feature_color: siteSettings?.feature_color ?? 'hsl(221, 83%, 53%)',
+          cta_color: siteSettings?.cta_color ?? 'hsl(142, 71%, 45%)',
+          button_border_radius: siteSettings?.button_border_radius ?? 8,
+          card_border_radius: siteSettings?.card_border_radius ?? 12,
+          icon_stroke_width: siteSettings?.icon_stroke_width ?? 2,
         }
       };
         renderedContent = renderTemplate(homepage.content_html, templateData);
