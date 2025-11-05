@@ -71,8 +71,11 @@ const Home = () => {
         // Common company variables
         company_name: companySettings.business_name || '',
         business_name: companySettings.business_name || '',
+        phone: formatPhone(companySettings.phone || ''),
         company_phone: formatPhone(companySettings.phone || ''),
+        email: companySettings.email || '',
         company_email: companySettings.email || '',
+        address: companySettings.address || '',
         company_address: companySettings.address || '',
         company_website: companySettings.website_url || '',
         company_years_in_business: companySettings.years_experience || 0,

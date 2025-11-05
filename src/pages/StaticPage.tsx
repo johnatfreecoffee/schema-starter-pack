@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useCachedQuery } from '@/hooks/useCachedQuery';
 
 import { SEOHead } from '@/components/seo/SEOHead';
-import { renderTemplate } from '@/lib/templateEngine';
+import { renderTemplate, formatPhone } from '@/lib/templateEngine';
 import AIHTMLRenderer from '@/components/ai/AIHTMLRenderer';
 
 const StaticPage = () => {
@@ -75,9 +75,14 @@ const StaticPage = () => {
   if (companySettings) {
     try {
       const templateData = {
+        // Common company variables (both short and prefixed versions for compatibility)
         company_name: companySettings.business_name || '',
-        company_phone: companySettings.phone || '',
+        business_name: companySettings.business_name || '',
+        phone: formatPhone(companySettings.phone || ''),
+        company_phone: formatPhone(companySettings.phone || ''),
+        email: companySettings.email || '',
         company_email: companySettings.email || '',
+        address: companySettings.address || '',
         company_address: companySettings.address || '',
         company_website: companySettings.website_url || '',
         years_experience: companySettings.years_experience || 0,
