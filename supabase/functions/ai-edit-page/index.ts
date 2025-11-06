@@ -125,7 +125,7 @@ serve(async (req) => {
 
       // Safely handle the response with comprehensive error handling
       let responseText: string;
-      let htmlContent: string;
+      let htmlContent: string | undefined;
       
       try {
         console.log('📊 Response status:', openrouterResponse.status);
