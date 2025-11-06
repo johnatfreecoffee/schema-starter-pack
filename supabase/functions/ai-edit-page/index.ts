@@ -123,63 +123,104 @@ serve(async (req) => {
         throw new Error(`OpenRouter API failed: ${openrouterResponse.status} - ${errorText}`);
       }
 
-      // Check response before parsing
-      console.log('📊 Response details:', {
-        status: openrouterResponse.status,
-        contentType: openrouterResponse.headers.get('content-type'),
-        contentLength: openrouterResponse.headers.get('content-length')
-      });
-
-      let openrouterResult;
-      let responseText;
+      // Safely handle the response with comprehensive error handling
+      let responseText: string;
+      let htmlContent: string;
       
       try {
-        // First get the raw text to see what we're dealing with
-        responseText = await openrouterResponse.text();
-        console.log('📝 Raw response length:', responseText.length);
-        console.log('📝 Response preview:', responseText.substring(0, 500));
+        console.log('📊 Response status:', openrouterResponse.status);
+        console.log('📊 Content-Type:', openrouterResponse.headers.get('content-type'));
         
-        // Now try to parse it as JSON
-        openrouterResult = JSON.parse(responseText);
-        console.log('✅ Received response from OpenRouter');
-        console.log('📦 OpenRouter result structure:', {
-          hasChoices: !!openrouterResult.choices,
-          choicesLength: openrouterResult.choices?.length,
-          hasFirstChoice: !!openrouterResult.choices?.[0],
-          hasMessage: !!openrouterResult.choices?.[0]?.message,
-          hasContent: !!openrouterResult.choices?.[0]?.message?.content,
-          contentLength: openrouterResult.choices?.[0]?.message?.content?.length
+        // Read response text with timeout protection
+        const textPromise = openrouterResponse.text();
+        const timeoutPromise = new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Response read timeout')), 30000)
+        );
+        
+        responseText = await Promise.race([textPromise, timeoutPromise]);
+        console.log('📝 Received response text, length:', responseText.length);
+        
+        if (!responseText || responseText.trim().length === 0) {
+          console.error('❌ Empty response body from OpenRouter');
+          return new Response(
+            JSON.stringify({ 
+              error: 'OpenRouter returned an empty response. Please try again.' 
+            }),
+            { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Try to parse as JSON
+        let openrouterResult;
+        try {
+          openrouterResult = JSON.parse(responseText);
+          console.log('✅ Successfully parsed JSON response');
+        } catch (parseError) {
+          console.error('❌ JSON parse failed:', parseError);
+          console.error('Response preview:', responseText.substring(0, 500));
+          
+          // If it looks like HTML, maybe OpenRouter returned HTML directly
+          if (responseText.trim().startsWith('<')) {
+            console.log('📄 Response appears to be HTML, returning directly');
+            htmlContent = responseText;
+          } else {
+            return new Response(
+              JSON.stringify({ 
+                error: 'OpenRouter returned invalid JSON. Please try again or contact support.' 
+              }),
+              { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+        }
+
+        // Extract content from JSON structure if we parsed it
+        if (openrouterResult && !htmlContent) {
+          htmlContent = openrouterResult.choices?.[0]?.message?.content;
+          
+          if (!htmlContent) {
+            console.error('❌ No content in expected JSON structure');
+            console.error('Response structure:', JSON.stringify(openrouterResult, null, 2).substring(0, 1000));
+            return new Response(
+              JSON.stringify({ 
+                error: 'OpenRouter response missing expected content. Please try again.' 
+              }),
+              { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+        }
+
+        // Validate HTML content
+        if (!htmlContent || htmlContent.trim().length === 0) {
+          console.error('❌ HTML content is empty');
+          return new Response(
+            JSON.stringify({ 
+              error: 'OpenRouter returned empty content. Please try again with a different prompt.' 
+            }),
+            { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        console.log('✅ Successfully extracted HTML content, length:', htmlContent.length);
+        console.log('📄 Content preview:', htmlContent.substring(0, 200));
+        
+        // Return in the same format as Make.com
+        return new Response(JSON.stringify({ 
+          html: htmlContent,
+          model: 'openrouter',
+          usage: openrouterResult?.usage
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
-      } catch (jsonError) {
-        console.error('❌ Failed to parse OpenRouter response:', jsonError);
-        console.error('❌ Response text that failed to parse:', responseText?.substring(0, 1000));
-        throw new Error('Failed to parse OpenRouter response as JSON');
+        
+      } catch (error) {
+        console.error('❌ Fatal error processing OpenRouter response:', error);
+        return new Response(
+          JSON.stringify({ 
+            error: error instanceof Error ? error.message : 'Failed to process OpenRouter response' 
+          }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
       }
-
-      // Extract the HTML content from the response
-      const htmlContent = openrouterResult.choices?.[0]?.message?.content;
-      
-      console.log('📄 Extracted HTML content:', {
-        hasContent: !!htmlContent,
-        contentLength: htmlContent?.length,
-        contentPreview: htmlContent?.substring(0, 200)
-      });
-      
-      if (!htmlContent) {
-        console.error('❌ No content in OpenRouter response. Full response:', JSON.stringify(openrouterResult, null, 2));
-        throw new Error('No content received from OpenRouter');
-      }
-
-      console.log('✅ Returning HTML content to client');
-      
-      // Return in the same format as Make.com
-      return new Response(JSON.stringify({ 
-        html: htmlContent,
-        model: 'openrouter',
-        usage: openrouterResult.usage
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
     }
 
     // Handle Make.com (existing flow)
