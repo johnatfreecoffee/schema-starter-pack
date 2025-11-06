@@ -22,6 +22,7 @@ import { PipelineProgressIndicator } from './PipelineProgressIndicator';
 import { callEdgeFunction } from '@/utils/callEdgeFunction';
 import { WorkflowVisualizer } from './WorkflowVisualizer';
 import { renderTemplate } from '@/lib/templateEngine';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 
 interface UnifiedPageEditorProps {
   open: boolean;
@@ -152,12 +153,14 @@ const UnifiedPageEditor = ({
   const [aiPrompt, setAiPrompt] = useState('');
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const { aiEditorPreferences, saveAiEditorPreferences } = useUserPreferences();
+  
   const [viewMode, setViewMode] = useState<'preview' | 'code' | 'published' | 'debug' | 'workflow'>('preview');
   const [publishedHtml, setPublishedHtml] = useState('');
   const [renderedPreview, setRenderedPreview] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [editorMode, setEditorMode] = useState<EditorMode>('build');
+  const [editorMode, setEditorMode] = useState<EditorMode>(aiEditorPreferences.editorMode || 'build');
   const [aiMode, setAiMode] = useState<AIMode>('build');
   const [tokenCount, setTokenCount] = useState(0);
   const [currentHtml, setCurrentHtml] = useState('');
@@ -206,7 +209,7 @@ const UnifiedPageEditor = ({
   });
   const [isPublishing, setIsPublishing] = useState(false);
   const [settingsChanged, setSettingsChanged] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<'makecom' | 'openrouter'>('makecom');
+  const [selectedModel, setSelectedModel] = useState<'makecom' | 'openrouter'>(aiEditorPreferences.selectedModel || 'makecom');
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -2423,10 +2426,26 @@ You're building a TEMPLATE ENGINE, not a static website:
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant={editorMode === 'chat' ? 'default' : 'outline'} size="sm" onClick={() => setEditorMode('chat')} className="text-xs h-7">
+                  <Button 
+                    variant={editorMode === 'chat' ? 'default' : 'outline'} 
+                    size="sm" 
+                    onClick={() => {
+                      setEditorMode('chat');
+                      saveAiEditorPreferences({ editorMode: 'chat' });
+                    }} 
+                    className="text-xs h-7"
+                  >
                     Chat
                   </Button>
-                  <Button variant={editorMode === 'build' ? 'default' : 'outline'} size="sm" onClick={() => setEditorMode('build')} className="text-xs h-7">
+                  <Button 
+                    variant={editorMode === 'build' ? 'default' : 'outline'} 
+                    size="sm" 
+                    onClick={() => {
+                      setEditorMode('build');
+                      saveAiEditorPreferences({ editorMode: 'build' });
+                    }} 
+                    className="text-xs h-7"
+                  >
                     Build
                   </Button>
                 </div>
@@ -2552,7 +2571,13 @@ You're building a TEMPLATE ENGINE, not a static website:
             <div className="p-4 border-t space-y-2 flex-shrink-0 bg-background pb-2">
               <div className="flex gap-2 mb-2 items-center justify-between">
                 <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
-                <Select value={selectedModel} onValueChange={(value: 'makecom' | 'openrouter') => setSelectedModel(value)}>
+                <Select 
+                  value={selectedModel} 
+                  onValueChange={(value: 'makecom' | 'openrouter') => {
+                    setSelectedModel(value);
+                    saveAiEditorPreferences({ selectedModel: value });
+                  }}
+                >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue />
                   </SelectTrigger>
@@ -2611,7 +2636,6 @@ You're building a TEMPLATE ENGINE, not a static website:
                   </TabsTrigger>
                   <TabsTrigger value="workflow">
                     <Sparkles className="mr-2 h-4 w-4" />
-                    Workflow
                   </TabsTrigger>
                 </TabsList>
               </Tabs>

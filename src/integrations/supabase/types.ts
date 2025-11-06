@@ -3603,6 +3603,7 @@ export type Database = {
       }
       user_preferences: {
         Row: {
+          ai_editor_preferences: Json | null
           created_at: string
           id: string
           sidebar_state: Json | null
@@ -3610,6 +3611,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_editor_preferences?: Json | null
           created_at?: string
           id?: string
           sidebar_state?: Json | null
@@ -3617,6 +3619,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_editor_preferences?: Json | null
           created_at?: string
           id?: string
           sidebar_state?: Json | null

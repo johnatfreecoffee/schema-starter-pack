@@ -8,8 +8,14 @@ export interface SidebarState {
   lastRoute?: string;
 }
 
+export interface AIEditorPreferences {
+  editorMode?: 'chat' | 'build';
+  selectedModel?: 'makecom' | 'openrouter';
+}
+
 export function useUserPreferences() {
   const [sidebarState, setSidebarState] = useState<SidebarState>({});
+  const [aiEditorPreferences, setAiEditorPreferences] = useState<AIEditorPreferences>({});
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
@@ -28,7 +34,7 @@ export function useUserPreferences() {
 
       const { data, error } = await supabase
         .from('user_preferences')
-        .select('sidebar_state')
+        .select('sidebar_state, ai_editor_preferences')
         .eq('user_id', user.id)
         .single();
 
@@ -38,6 +44,10 @@ export function useUserPreferences() {
 
       if (data?.sidebar_state) {
         setSidebarState(data.sidebar_state as SidebarState);
+      }
+      
+      if (data?.ai_editor_preferences) {
+        setAiEditorPreferences(data.ai_editor_preferences as AIEditorPreferences);
       }
     } catch (error) {
       console.error('Error loading user preferences:', error);
@@ -76,9 +86,36 @@ export function useUserPreferences() {
     }
   };
 
+  const saveAiEditorPreferences = async (newPreferences: Partial<AIEditorPreferences>) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const updatedPreferences = { ...aiEditorPreferences, ...newPreferences };
+      setAiEditorPreferences(updatedPreferences);
+
+      const { error } = await supabase
+        .from('user_preferences')
+        .upsert({
+          user_id: user.id,
+          ai_editor_preferences: updatedPreferences,
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (error) {
+        console.error('Error saving AI editor preferences:', error);
+      }
+    } catch (error) {
+      console.error('Error saving AI editor preferences:', error);
+    }
+  };
+
   return {
     sidebarState,
     saveSidebarState,
+    aiEditorPreferences,
+    saveAiEditorPreferences,
     isLoading,
   };
 }
