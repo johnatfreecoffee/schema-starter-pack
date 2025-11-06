@@ -1751,7 +1751,7 @@ You're building a TEMPLATE ENGINE, not a static website:
               stage: stageName,
               pipelineId
             },
-            timeoutMs: 480000, // 8 minutes per stage
+            timeoutMs: 900000, // 15 minutes per stage (matches backend timeout)
           });
           
           if (stageData?.error) {
