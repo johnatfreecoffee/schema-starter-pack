@@ -12,6 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { LazyImage } from '@/components/ui/lazy-image';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { 
   Menu, 
   Home, 
@@ -60,17 +61,50 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
   const { role, loading } = useUserRole();
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    'CRM': true,
-    'Money': false,
-    'Support': false,
-    'Settings': false,
-    'Automation': false,
-    'System': false,
-  });
+  const { sidebarState, saveSidebarState, isLoading: prefsLoading } = useUserPreferences();
+  
+  const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(
+    sidebarState.desktopCollapsed ?? false
+  );
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(
+    sidebarState.expandedSections ?? {
+      'CRM': true,
+      'Money': false,
+      'Support': false,
+      'Settings': false,
+      'Automation': false,
+      'System': false,
+    }
+  );
+  
   const { data: company } = useCompanySettings();
   const { data: siteSettings } = useSiteSettings();
+
+  // Load saved preferences when they become available
+  useEffect(() => {
+    if (!prefsLoading && sidebarState) {
+      if (sidebarState.desktopCollapsed !== undefined) {
+        setDesktopSidebarCollapsed(sidebarState.desktopCollapsed);
+      }
+      if (sidebarState.expandedSections) {
+        setExpandedSections(sidebarState.expandedSections);
+      }
+    }
+  }, [prefsLoading, sidebarState]);
+
+  // Save desktop sidebar state when it changes
+  useEffect(() => {
+    if (!prefsLoading) {
+      saveSidebarState({ desktopCollapsed: desktopSidebarCollapsed });
+    }
+  }, [desktopSidebarCollapsed]);
+
+  // Save expanded sections when they change
+  useEffect(() => {
+    if (!prefsLoading) {
+      saveSidebarState({ expandedSections });
+    }
+  }, [expandedSections]);
 
   const toggleSection = (sectionTitle: string) => {
     setExpandedSections(prev => ({
