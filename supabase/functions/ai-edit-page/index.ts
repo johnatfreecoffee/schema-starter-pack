@@ -10,6 +10,29 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Timeout helper function (15 minutes = 900000ms)
+const OPENROUTER_TIMEOUT = 900000; // 15 minutes
+
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error(`Request timed out after ${timeoutMs / 1000} seconds`);
+    }
+    throw error;
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -49,25 +72,29 @@ serve(async (req) => {
         }
       ];
 
-      console.log('📤 Sending request to OpenRouter...');
+      console.log('📤 Sending request to OpenRouter with 15-minute timeout...');
       
-      const openrouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://lovable.dev',
-          'X-Title': 'Lovable AI Page Editor'
+      const openrouterResponse = await fetchWithTimeout(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://lovable.dev',
+            'X-Title': 'Lovable AI Page Editor'
+          },
+          body: JSON.stringify({
+            model: 'anthropic/claude-sonnet-4.5',
+            messages: messages,
+            max_tokens: 100000,
+            temperature: 1,
+            top_p: 1,
+            n: 1
+          })
         },
-        body: JSON.stringify({
-          model: 'anthropic/claude-sonnet-4.5',
-          messages: messages,
-          max_tokens: 100000,
-          temperature: 1,
-          top_p: 1,
-          n: 1
-        })
-      });
+        OPENROUTER_TIMEOUT
+      );
 
       if (!openrouterResponse.ok) {
         const errorText = await openrouterResponse.text();
