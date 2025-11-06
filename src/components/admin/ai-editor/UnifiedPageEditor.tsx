@@ -218,6 +218,16 @@ const UnifiedPageEditor = ({
   const chatEndRef = useRef<HTMLDivElement>(null);
   const hasLoadedHistory = useRef(false);
 
+  // Sync state with loaded preferences
+  useEffect(() => {
+    if (aiEditorPreferences.editorMode) {
+      setEditorMode(aiEditorPreferences.editorMode);
+    }
+    if (aiEditorPreferences.selectedModel) {
+      setSelectedModel(aiEditorPreferences.selectedModel);
+    }
+  }, [aiEditorPreferences]);
+
   // Load template for service or static page
   const {
     data: template,
