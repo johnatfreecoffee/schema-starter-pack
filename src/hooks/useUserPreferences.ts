@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 export interface SidebarState {
   desktopCollapsed?: boolean;
   expandedSections?: Record<string, boolean>;
+  lastRoute?: string;
 }
 
 export function useUserPreferences() {

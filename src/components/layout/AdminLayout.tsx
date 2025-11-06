@@ -62,6 +62,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { sidebarState, saveSidebarState, isLoading: prefsLoading } = useUserPreferences();
+  const [hasRedirected, setHasRedirected] = useState(false);
   
   const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(
     sidebarState.desktopCollapsed ?? false
@@ -91,6 +92,26 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
       }
     }
   }, [prefsLoading, sidebarState]);
+
+  // Redirect to last visited route if landing on /dashboard
+  useEffect(() => {
+    if (!prefsLoading && !hasRedirected && location.pathname === '/dashboard') {
+      if (sidebarState.lastRoute && sidebarState.lastRoute !== '/dashboard') {
+        setHasRedirected(true);
+        navigate(sidebarState.lastRoute, { replace: true });
+      }
+    }
+  }, [prefsLoading, hasRedirected, location.pathname, sidebarState.lastRoute, navigate]);
+
+  // Save current route as last visited (but debounce to avoid too many saves)
+  useEffect(() => {
+    if (!prefsLoading && location.pathname.startsWith('/dashboard')) {
+      const timeoutId = setTimeout(() => {
+        saveSidebarState({ lastRoute: location.pathname });
+      }, 500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [location.pathname, prefsLoading]);
 
   // Save desktop sidebar state when it changes
   useEffect(() => {
