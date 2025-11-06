@@ -107,11 +107,14 @@ serve(async (req) => {
     const webhookPayload = {
       userRequest: {
         companyInfo: {
-          companyData: context.companyInfo?.companyData || context.companyInfo || {},
+          companyData: {
+            ...(context.companyInfo?.companyData || context.companyInfo || {}),
+            siteSettings: context.siteSettings || {}
+          },
           socialMedia: context.companyInfo?.socialMedia || context.socialMedia || [],
           aiTraining: context.companyInfo?.aiTraining || context.aiTraining || {}
         },
-        systemInstructions: context.siteSettings || {},
+        systemInstructions: context.systemInstructions || '',
         userPrompt: command.text || command,
         supabaseData: {
           pageType: context.currentPage?.type,
