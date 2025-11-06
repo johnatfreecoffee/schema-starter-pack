@@ -123,9 +123,24 @@ serve(async (req) => {
         throw new Error(`OpenRouter API failed: ${openrouterResponse.status} - ${errorText}`);
       }
 
+      // Check response before parsing
+      console.log('📊 Response details:', {
+        status: openrouterResponse.status,
+        contentType: openrouterResponse.headers.get('content-type'),
+        contentLength: openrouterResponse.headers.get('content-length')
+      });
+
       let openrouterResult;
+      let responseText;
+      
       try {
-        openrouterResult = await openrouterResponse.json();
+        // First get the raw text to see what we're dealing with
+        responseText = await openrouterResponse.text();
+        console.log('📝 Raw response length:', responseText.length);
+        console.log('📝 Response preview:', responseText.substring(0, 500));
+        
+        // Now try to parse it as JSON
+        openrouterResult = JSON.parse(responseText);
         console.log('✅ Received response from OpenRouter');
         console.log('📦 OpenRouter result structure:', {
           hasChoices: !!openrouterResult.choices,
@@ -137,6 +152,7 @@ serve(async (req) => {
         });
       } catch (jsonError) {
         console.error('❌ Failed to parse OpenRouter response:', jsonError);
+        console.error('❌ Response text that failed to parse:', responseText?.substring(0, 1000));
         throw new Error('Failed to parse OpenRouter response as JSON');
       }
 
