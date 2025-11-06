@@ -206,8 +206,7 @@ const UnifiedPageEditor = ({
   });
   const [isPublishing, setIsPublishing] = useState(false);
   const [settingsChanged, setSettingsChanged] = useState(false);
-  // Always use Make.com for AI page generation
-  const selectedModel = 'makecom';
+  const [selectedModel, setSelectedModel] = useState<'makecom' | 'openrouter'>('makecom');
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -1326,19 +1325,7 @@ const UnifiedPageEditor = ({
         return;
       }
       
-      // All processing now happens through Make.com
-      // If we reach here without handling Make.com, something is wrong
-      if (selectedModel !== 'makecom') {
-        toast({
-          title: 'Configuration Error',
-          description: 'Only Make.com is configured for page generation',
-          variant: 'destructive',
-        });
-        setIsAiLoading(false);
-        return;
-      }
-      
-      // Multi-stage pipeline for Gemini, Grok, and Claude
+      // Multi-stage pipeline processing
       const stages = ['planning', 'content', 'html', 'styling'];
       const stageNames = ["Planning", "Building Content", "Creating HTML", "Styling & Polish"];
       let allStagesData: any[] = [];
@@ -1369,14 +1356,14 @@ const UnifiedPageEditor = ({
         }));
         
         try {
-          // All stages now use Make.com for processing
+          // Use selected model for processing
           const stageData = await callEdgeFunction<any>({
             name: 'ai-edit-page',
             body: {
               ...requestBody,
               command: {
                 ...requestBody.command,
-                model: 'makecom'
+                model: selectedModel
               },
               stage: stageName,
               pipelineId
@@ -2182,6 +2169,15 @@ const UnifiedPageEditor = ({
             <div className="p-4 border-t space-y-2 flex-shrink-0 bg-background pb-2">
               <div className="flex gap-2 mb-2 items-center justify-between">
                 <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
+                <Select value={selectedModel} onValueChange={(value: 'makecom' | 'openrouter') => setSelectedModel(value)}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="makecom">Make.com</SelectItem>
+                    <SelectItem value="openrouter">OpenRouter</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex gap-2 items-start">
                 <Textarea ref={textareaRef} placeholder="Ask AI to build something..." value={aiPrompt} onChange={e => setAiPrompt(e.target.value)} onKeyDown={e => {
