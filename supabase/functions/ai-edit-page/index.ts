@@ -73,9 +73,15 @@ serve(async (req) => {
       ];
 
       console.log('📤 Sending request to OpenRouter with 15-minute timeout...');
+      console.log('📋 Request payload:', {
+        model: 'anthropic/claude-sonnet-4.5',
+        messagesCount: messages.length,
+        maxTokens: 100000
+      });
       
       let openrouterResponse;
       try {
+        console.log('🔄 Initiating fetch to OpenRouter...');
         openrouterResponse = await fetchWithTimeout(
           'https://openrouter.ai/api/v1/chat/completions',
           {
@@ -97,8 +103,12 @@ serve(async (req) => {
           },
           OPENROUTER_TIMEOUT
         );
+        console.log('✅ Fetch completed, status:', openrouterResponse.status);
       } catch (fetchError) {
         console.error('❌ OpenRouter fetch failed:', fetchError);
+        console.error('❌ Error name:', fetchError instanceof Error ? fetchError.name : 'Unknown');
+        console.error('❌ Error message:', fetchError instanceof Error ? fetchError.message : String(fetchError));
+        console.error('❌ Error stack:', fetchError instanceof Error ? fetchError.stack : 'No stack');
         throw new Error(`OpenRouter network error: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`);
       }
 
