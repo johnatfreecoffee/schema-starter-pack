@@ -74,36 +74,53 @@ serve(async (req) => {
 
       console.log('📤 Sending request to OpenRouter with 15-minute timeout...');
       
-      const openrouterResponse = await fetchWithTimeout(
-        'https://openrouter.ai/api/v1/chat/completions',
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': 'https://lovable.dev',
-            'X-Title': 'Lovable AI Page Editor'
+      let openrouterResponse;
+      try {
+        openrouterResponse = await fetchWithTimeout(
+          'https://openrouter.ai/api/v1/chat/completions',
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+              'Content-Type': 'application/json',
+              'HTTP-Referer': 'https://lovable.dev',
+              'X-Title': 'Lovable AI Page Editor'
+            },
+            body: JSON.stringify({
+              model: 'anthropic/claude-sonnet-4.5',
+              messages: messages,
+              max_tokens: 100000,
+              temperature: 1,
+              top_p: 1,
+              n: 1
+            })
           },
-          body: JSON.stringify({
-            model: 'anthropic/claude-sonnet-4.5',
-            messages: messages,
-            max_tokens: 100000,
-            temperature: 1,
-            top_p: 1,
-            n: 1
-          })
-        },
-        OPENROUTER_TIMEOUT
-      );
+          OPENROUTER_TIMEOUT
+        );
+      } catch (fetchError) {
+        console.error('❌ OpenRouter fetch failed:', fetchError);
+        throw new Error(`OpenRouter network error: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`);
+      }
 
       if (!openrouterResponse.ok) {
-        const errorText = await openrouterResponse.text();
+        let errorText = 'Unknown error';
+        try {
+          errorText = await openrouterResponse.text();
+        } catch (e) {
+          console.error('Failed to read error response:', e);
+        }
         console.error('❌ OpenRouter API failed:', openrouterResponse.status, errorText);
         throw new Error(`OpenRouter API failed: ${openrouterResponse.status} - ${errorText}`);
       }
 
-      const openrouterResult = await openrouterResponse.json();
-      console.log('✅ Received response from OpenRouter');
+      let openrouterResult;
+      try {
+        openrouterResult = await openrouterResponse.json();
+        console.log('✅ Received response from OpenRouter');
+      } catch (jsonError) {
+        console.error('❌ Failed to parse OpenRouter response:', jsonError);
+        throw new Error('Failed to parse OpenRouter response as JSON');
+      }
 
       // Extract the HTML content from the response
       const htmlContent = openrouterResult.choices?.[0]?.message?.content;
