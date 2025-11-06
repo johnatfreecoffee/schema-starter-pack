@@ -127,6 +127,14 @@ serve(async (req) => {
       try {
         openrouterResult = await openrouterResponse.json();
         console.log('✅ Received response from OpenRouter');
+        console.log('📦 OpenRouter result structure:', {
+          hasChoices: !!openrouterResult.choices,
+          choicesLength: openrouterResult.choices?.length,
+          hasFirstChoice: !!openrouterResult.choices?.[0],
+          hasMessage: !!openrouterResult.choices?.[0]?.message,
+          hasContent: !!openrouterResult.choices?.[0]?.message?.content,
+          contentLength: openrouterResult.choices?.[0]?.message?.content?.length
+        });
       } catch (jsonError) {
         console.error('❌ Failed to parse OpenRouter response:', jsonError);
         throw new Error('Failed to parse OpenRouter response as JSON');
@@ -135,10 +143,19 @@ serve(async (req) => {
       // Extract the HTML content from the response
       const htmlContent = openrouterResult.choices?.[0]?.message?.content;
       
+      console.log('📄 Extracted HTML content:', {
+        hasContent: !!htmlContent,
+        contentLength: htmlContent?.length,
+        contentPreview: htmlContent?.substring(0, 200)
+      });
+      
       if (!htmlContent) {
+        console.error('❌ No content in OpenRouter response. Full response:', JSON.stringify(openrouterResult, null, 2));
         throw new Error('No content received from OpenRouter');
       }
 
+      console.log('✅ Returning HTML content to client');
+      
       // Return in the same format as Make.com
       return new Response(JSON.stringify({ 
         html: htmlContent,
