@@ -36,12 +36,12 @@ serve(async (req) => {
       }
 
       // Construct messages array exactly like Make.com subflow
-      // Message 1: companyInfo + systemInstructions as system role
+      // Message 1: companyInfo + systemInstructions as system role (as JSON array)
       // Message 2: userPrompt as user role
       const messages = [
         {
           role: 'system',
-          content: JSON.stringify([context.companyInfo, context.siteSettings])
+          content: JSON.stringify([context.companyInfo, context.systemInstructions])
         },
         {
           role: 'user',
