@@ -131,10 +131,10 @@ serve(async (req) => {
         console.log('📊 Response status:', openrouterResponse.status);
         console.log('📊 Content-Type:', openrouterResponse.headers.get('content-type'));
         
-        // Read response text with timeout protection
+        // Read response text with timeout protection (15 minutes to match overall timeout)
         const textPromise = openrouterResponse.text();
         const timeoutPromise = new Promise<never>((_, reject) => 
-          setTimeout(() => reject(new Error('Response read timeout')), 30000)
+          setTimeout(() => reject(new Error('Response read timeout')), OPENROUTER_TIMEOUT)
         );
         
         responseText = await Promise.race([textPromise, timeoutPromise]);
