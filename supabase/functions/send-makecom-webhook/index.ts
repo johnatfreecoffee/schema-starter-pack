@@ -38,10 +38,14 @@ serve(async (req) => {
           aiTraining
         },
         systemInstructions: {
-          content: systemInstructions
+          content: systemInstructions,
+          type: 'system_instructions',
+          length: systemInstructions?.length || 0
         },
         userPrompt: {
-          content: userPrompt
+          content: userPrompt,
+          type: 'user_prompt',
+          length: userPrompt?.length || 0
         },
         supabaseData
       }
