@@ -16,10 +16,10 @@ serve(async (req) => {
     const { companyData, socialMedia, aiTraining, systemInstructions, userPrompt, supabaseData } = await req.json();
 
     // Get webhook URL from environment
-    const webhookUrl = Deno.env.get('MAKE_DOT_COM_HTML_PAGE_BUILDER');
+    const webhookUrl = Deno.env.get('TEST_BREW_FREECOFFEE_HTML_PAGE_BUILDER');
     
     if (!webhookUrl) {
-      console.error('MAKE_DOT_COM_HTML_PAGE_BUILDER secret not configured');
+      console.error('TEST_BREW_FREECOFFEE_HTML_PAGE_BUILDER secret not configured');
       return new Response(
         JSON.stringify({ error: 'Make.com webhook URL not configured' }),
         { 
