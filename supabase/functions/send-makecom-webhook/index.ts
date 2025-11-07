@@ -37,8 +37,12 @@ serve(async (req) => {
           socialMedia,
           aiTraining
         },
-        systemInstructions,
-        userPrompt,
+        systemInstructions: {
+          content: systemInstructions
+        },
+        userPrompt: {
+          content: userPrompt
+        },
         supabaseData
       }
     };
