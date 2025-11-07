@@ -226,9 +226,9 @@ serve(async (req) => {
     // Handle Make.com (existing flow)
     console.log('✅ Routing to Make.com webhook');
     
-    const MAKECOM_WEBHOOK = Deno.env.get('SEND_MAKECOM_WEBHOOK');
+    const MAKECOM_WEBHOOK = Deno.env.get('TEST_BREW_FREECOFFEE_HTML_PAGE_BUILDER');
     if (!MAKECOM_WEBHOOK) {
-      throw new Error('SEND_MAKECOM_WEBHOOK secret not configured. Please add the Make.com webhook URL in project secrets.');
+      throw new Error('TEST_BREW_FREECOFFEE_HTML_PAGE_BUILDER secret not configured. Please add the Make.com webhook URL in project secrets.');
     }
 
     // Forward the request to Make.com with proper nesting
