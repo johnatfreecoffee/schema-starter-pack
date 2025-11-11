@@ -209,7 +209,7 @@ const UnifiedPageEditor = ({
   });
   const [isPublishing, setIsPublishing] = useState(false);
   const [settingsChanged, setSettingsChanged] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<'makecom' | 'openrouter'>(aiEditorPreferences.selectedModel || 'makecom');
+  const selectedModel = 'makecom'; // Always use Make.com
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -222,9 +222,6 @@ const UnifiedPageEditor = ({
   useEffect(() => {
     if (aiEditorPreferences.editorMode) {
       setEditorMode(aiEditorPreferences.editorMode);
-    }
-    if (aiEditorPreferences.selectedModel) {
-      setSelectedModel(aiEditorPreferences.selectedModel);
     }
   }, [aiEditorPreferences]);
 
@@ -2581,21 +2578,6 @@ You're building a TEMPLATE ENGINE, not a static website:
             <div className="p-4 border-t space-y-2 flex-shrink-0 bg-background pb-2">
               <div className="flex gap-2 mb-2 items-center justify-between">
                 <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
-                <Select 
-                  value={selectedModel} 
-                  onValueChange={(value: 'makecom' | 'openrouter') => {
-                    setSelectedModel(value);
-                    saveAiEditorPreferences({ selectedModel: value });
-                  }}
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="makecom">Make.com</SelectItem>
-                    <SelectItem value="openrouter">OpenRouter</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
               <div className="flex gap-2 items-start">
                 <Textarea ref={textareaRef} placeholder="Ask AI to build something..." value={aiPrompt} onChange={e => setAiPrompt(e.target.value)} onKeyDown={e => {
