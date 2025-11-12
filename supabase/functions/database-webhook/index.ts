@@ -62,6 +62,7 @@ Deno.serve(async (req) => {
     let body: UpdateRequest | AIGeneratedPageRequest;
     try {
       body = await req.json();
+      console.log('Received webhook payload:', JSON.stringify(body, null, 2));
     } catch (jsonError) {
       const message = jsonError instanceof Error ? jsonError.message : String(jsonError);
       console.error('Invalid JSON in request body:', message);
@@ -75,7 +76,7 @@ Deno.serve(async (req) => {
     }
 
     // Check if this is an AI-generated page format
-    if ('complete_page' in body && 'status' in body) {
+    if ('complete_page' in body || 'status' in body) {
       console.log('Received AI-generated page format');
       const aiRequest = body as AIGeneratedPageRequest;
       
