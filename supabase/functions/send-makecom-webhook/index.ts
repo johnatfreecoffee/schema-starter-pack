@@ -378,6 +378,8 @@ When all stages pass validation, you MUST format your response in this EXACT str
 3. **Table name**: Always use \`"static_pages"\` for the \`"table"\` field
 4. **No escaping**: Do NOT escape quotes or special characters in the HTML - send it as a raw string
 5. **Complete structure**: Include the entire HTML from \`<!DOCTYPE html>\` through closing \`</html>\` tag
+6. **NO MARKDOWN**: DO NOT wrap the HTML in markdown code fences like \`\`\`html or \`\`\`css - output RAW HTML ONLY
+7. **NO CODE BLOCKS**: The HTML must start directly with \`<!DOCTYPE html>\` NOT with \`\`\`html
 
 ### EXAMPLE OUTPUT:
 
@@ -392,6 +394,22 @@ When all stages pass validation, you MUST format your response in this EXACT str
   "table": "static_pages"
 }
 \`\`\`
+
+### WRONG OUTPUT EXAMPLE (DO NOT DO THIS):
+
+\`\`\`json
+{
+  "data": {
+    "id": "d749020b-e074-464d-abab-80cf44b7c077",
+    "updates": {
+      "content_html_draft": "\`\`\`html\\n<!DOCTYPE html>\\n<html>...</html>\\n\`\`\`"
+    }
+  },
+  "table": "static_pages"
+}
+\`\`\`
+
+❌ The above is WRONG because it includes markdown code fences (\`\`\`html) - these MUST NOT appear in the HTML string.
 
 This output will be sent directly to the database webhook which expects this exact structure.
 
