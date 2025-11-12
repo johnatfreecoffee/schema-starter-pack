@@ -357,19 +357,43 @@ If a stage fails validation twice:
 
 ## SUCCESS OUTPUT
 
-When all stages pass validation, return:
+When all stages pass validation, you MUST format your response in this EXACT structure for the database webhook:
+
 \`\`\`json
 {
-  "status": "success",
-  "complete_page": "the final assembled HTML with embedded CSS",
-  "metadata": {
-    "stages_completed": 4,
-    "total_validation_attempts": number,
-    "wireframe_summary": "brief summary of layout",
-    "technologies_used": ["HTML5", "CSS3", "Responsive Design"]
-  }
+  "data": {
+    "id": "USE_THE_ID_FROM_SUPABASE_DATA",
+    "updates": {
+      "content_html_draft": "PLACE_THE_COMPLETE_HTML_PAGE_HERE_AS_A_STRING"
+    }
+  },
+  "table": "static_pages"
 }
 \`\`\`
+
+### CRITICAL FORMATTING REQUIREMENTS:
+
+1. **Extract the ID**: Use \`supabaseData.id\` value for the \`"id"\` field
+2. **Place HTML**: Put the ENTIRE final assembled HTML page (with embedded CSS) inside \`"content_html_draft"\` as a plain string
+3. **Table name**: Always use \`"static_pages"\` for the \`"table"\` field
+4. **No escaping**: Do NOT escape quotes or special characters in the HTML - send it as a raw string
+5. **Complete structure**: Include the entire HTML from \`<!DOCTYPE html>\` through closing \`</html>\` tag
+
+### EXAMPLE OUTPUT:
+
+\`\`\`json
+{
+  "data": {
+    "id": "d749020b-e074-464d-abab-80cf44b7c077",
+    "updates": {
+      "content_html_draft": "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>{{company_name}}</title><style>body { margin: 0; font-family: Arial, sans-serif; } .hero { padding: 60px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; }</style></head><body><section class=\"hero\"><h1>Welcome to {{company_name}}</h1><p>Your trusted partner in excellence</p></section></body></html>"
+    }
+  },
+  "table": "static_pages"
+}
+\`\`\`
+
+This output will be sent directly to the database webhook which expects this exact structure.
 
 ---
 
