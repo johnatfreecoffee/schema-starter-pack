@@ -17,6 +17,20 @@ interface UpdateRequest {
   }[];
 }
 
+interface AIGeneratedPageRequest {
+  status: string;
+  complete_page: string;
+  metadata?: {
+    stages_completed?: number;
+    total_validation_attempts?: number;
+    wireframe_summary?: string;
+    technologies_used?: string[];
+  };
+  table?: string;
+  id?: string;
+  field?: string;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -45,7 +59,7 @@ Deno.serve(async (req) => {
     }
 
     // Parse request body with better error handling
-    let body: UpdateRequest;
+    let body: UpdateRequest | AIGeneratedPageRequest;
     try {
       body = await req.json();
     } catch (jsonError) {
@@ -59,7 +73,71 @@ Deno.serve(async (req) => {
         { status: 400, headers: corsHeaders }
       );
     }
-    const { table, data } = body;
+
+    // Check if this is an AI-generated page format
+    if ('complete_page' in body && 'status' in body) {
+      console.log('Received AI-generated page format');
+      const aiRequest = body as AIGeneratedPageRequest;
+      
+      // Extract table, id, and field from the request (Make.com should provide these)
+      const table = aiRequest.table;
+      const id = aiRequest.id;
+      const field = aiRequest.field || 'content';
+      
+      if (!table || !id) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'AI-generated page format requires table and id fields',
+            received: { status: aiRequest.status, has_complete_page: !!aiRequest.complete_page }
+          }),
+          { status: 400, headers: corsHeaders }
+        );
+      }
+
+      console.log(`Updating ${table} record ${id} with AI-generated content`);
+      
+      const supabaseClient = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      );
+
+      const updateData: Record<string, any> = {
+        [field]: aiRequest.complete_page,
+        updated_at: new Date().toISOString(),
+      };
+
+      // Store metadata if provided
+      if (aiRequest.metadata) {
+        updateData.metadata = aiRequest.metadata;
+      }
+
+      const { data: result, error } = await supabaseClient
+        .from(table)
+        .update(updateData)
+        .eq('id', id)
+        .select();
+
+      if (error) {
+        console.error(`Error updating ${table} record ${id}:`, error);
+        return new Response(
+          JSON.stringify({ error: error.message }),
+          { status: 500, headers: corsHeaders }
+        );
+      }
+
+      console.log(`Successfully updated ${table} record ${id} with AI-generated content`);
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'AI-generated page saved successfully',
+          data: result 
+        }),
+        { status: 200, headers: corsHeaders }
+      );
+    }
+
+    // Handle original format (direct database updates)
+    const { table, data } = body as UpdateRequest;
 
     if (!table || !data) {
       return new Response(
