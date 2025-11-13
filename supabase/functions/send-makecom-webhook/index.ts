@@ -6,23 +6,21 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Builder Stage Process Instructions with Explicit Model Prompt Templates
-const builderStageInstructions = `# AI Agent Orchestration Instructions
+// Stage 1: Wireframe Planning Instructions
+const stage1Instructions = `# STAGE 1: WIREFRAME & CONTENT PLANNING
 
 ## Your Role
-You are an orchestration agent managing a 4-stage web page building process. For each stage, you will:
-1. Format and send a specific prompt to the AI model
-2. Receive and validate the model's response
-3. Store the output as context for subsequent stages
-4. Only proceed when validation passes
+You are creating the structural blueprint for a web page. DO NOT write any code in this stage.
 
-## Critical: How to Format Model Prompts
+## Input Context
+You will receive:
+- Company information (name, industry, services)
+- Brand voice and target audience
+- User's page request
+- System instructions for reference
 
-For each stage below, construct the model prompt EXACTLY as specified in the "MODEL INPUT FORMAT" section. Include all context from previous stages and format the request precisely.
-
----
-
-## STAGE 1: Wireframe and Content Planning
+## Your Task
+Create a detailed wireframe that includes:
 
 ### MODEL INPUT FORMAT:
 \`\`\`
@@ -448,7 +446,7 @@ serve(async (req) => {
       );
     }
 
-    // Prepare webhook payload with companyInfo nested structure
+    // Prepare webhook payload with 4 separate stage instructions
     const webhookPayload = {
       userRequest: {
         companyInfo: {
@@ -461,10 +459,25 @@ serve(async (req) => {
           type: 'system_instructions',
           length: systemInstructions?.length || 0
         },
-        builderStageInstructions: {
-          content: builderStageInstructions,
-          type: 'builder_stage_process',
-          length: builderStageInstructions.length
+        stage1Instructions: {
+          content: stage1Instructions,
+          type: 'stage1_wireframe',
+          length: stage1Instructions.length
+        },
+        stage2Instructions: {
+          content: stage2Instructions,
+          type: 'stage2_copywriting',
+          length: stage2Instructions.length
+        },
+        stage3Instructions: {
+          content: stage3Instructions,
+          type: 'stage3_html',
+          length: stage3Instructions.length
+        },
+        stage4Instructions: {
+          content: stage4Instructions,
+          type: 'stage4_css',
+          length: stage4Instructions.length
         },
         userPrompt: {
           content: userPrompt,
