@@ -6,6 +6,53 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Image Generation Instructions
+const imageGenInstructions = `# IMAGE GENERATION TASK
+
+Analyze the following "APPROVED HTML CONTENT" from Stage 3. Identify all image placeholders, which are <img> tags with a placeholder src attribute (e.g., src="placeholder-hero.jpg", src="placeholder-service-1.png") and a descriptive alt attribute.
+
+## Your Task
+Generate a valid JSON array of objects. Each object represents one image that needs to be generated. The object must have exactly two keys:
+
+1. "location": The exact string value from the src attribute of the placeholder <img> tag (e.g., "placeholder-hero.jpg")
+2. "prompt": A detailed, photorealistic image generation prompt based on the alt text and surrounding HTML context. The prompt should be suitable for Google's Imagen 2 model to create a lifelike, high-quality photograph that fits perfectly on a professional website.
+
+## Prompt Guidelines
+- Start with "Photorealistic photograph of..."
+- Include subject, setting, lighting, mood, and composition details
+- Mention professional quality, high resolution, sharp focus
+- For roofing/construction: include safety equipment, professional tools, clean work environment
+- For business: include modern settings, diverse professionals, natural lighting
+- For before/after: specify the contrast clearly
+- Keep prompts 100-200 characters for optimal results
+
+## Example Output Format
+[
+  {
+    "location": "placeholder-hero.jpg",
+    "prompt": "Photorealistic photograph of professional roofer inspecting shingles on modern residential home under clear blue sky, wide angle, natural lighting, high detail"
+  },
+  {
+    "location": "placeholder-service-1.png",
+    "prompt": "Close-up photorealistic image of hands installing metal roofing panels with cordless drill, safety gloves visible, bright daylight, sharp focus on tools and materials"
+  },
+  {
+    "location": "placeholder-team.jpg",
+    "prompt": "Photorealistic group photo of diverse professional roofing team standing in front of company truck, smiling, wearing branded uniforms and safety gear, natural outdoor lighting"
+  }
+]
+
+## Important Rules
+- Output ONLY the JSON array, nothing else
+- No markdown code fences (no \`\`\`json)
+- No explanatory text before or after the JSON
+- If no image placeholders are found, output an empty array: []
+- Ensure all JSON is valid (proper quotes, commas, brackets)
+- Include ALL image placeholders found in the HTML
+
+## Context
+The HTML content represents a {{business_name}} web page focused on {{service_or_topic}}. Tailor image prompts to match the business industry and service offerings while maintaining photorealistic quality suitable for a professional website.`;
+
 // Stage 1: Wireframe Planning Instructions
 const stage1Instructions = `# STAGE 1: WIREFRAME & CONTENT PLANNING
 
@@ -209,7 +256,20 @@ Build the complete HTML structure for this page. Requirements:
      * ONLY on explicit CTA buttons like "Get Quote", "Request Service", "Book Now"
      * NOT on phone numbers, email addresses, or direct contact information
 
-6. COMPLETE PAGE
+6. IMAGES
+   - Include <img> tags with placeholder src attributes for all visual elements
+   - Use descriptive naming: src="placeholder-hero.jpg", src="placeholder-service-1.png", etc.
+   - File extensions: .jpg for photos, .png for graphics/icons, .svg for logos
+   - Write DETAILED alt attributes that describe the ideal image (50-100 chars)
+   - Alt text should include: subject, setting, mood, composition, lighting
+   - Examples:
+     * alt="Professional roofer inspecting shingles on residential home under clear blue sky"
+     * alt="Close-up of hands installing metal roofing panels with power drill, safety gloves visible"
+     * alt="Before and after comparison of weathered vs new roof tiles in bright daylight"
+   - Use placeholders for: hero images, service photos, team photos, process diagrams, before/after images
+   - Every major content section should have at least one relevant image
+
+7. COMPLETE PAGE
    - Include <!DOCTYPE html>, <html>, <head>, and <body>
    - Add viewport meta tag for responsive design
    - Add charset and meta description
@@ -493,6 +553,11 @@ serve(async (req) => {
             content: stage1Instructions || "",
             type: "builder_stages",
             length: stage1Instructions?.length || null
+          },
+          imageGenInstructions: {
+            content: imageGenInstructions || "",
+            type: "image_generation",
+            length: imageGenInstructions?.length || null
           },
           supabaseData: {
             pageType: supabaseData?.pageType || "",
