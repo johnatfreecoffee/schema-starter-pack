@@ -28,8 +28,6 @@ Generate a valid JSON array of objects. Each object represents one image that ne
 
 ## Example Output Format
 
-TOTAL_IMAGES: 3
-
 [
   {
     "location": "placeholder-hero.jpg",
@@ -46,17 +44,16 @@ TOTAL_IMAGES: 3
 ]
 
 ## Important Rules
-- First line MUST be: TOTAL_IMAGES: [number]
-- Second line MUST be blank
-- Third line starts the JSON array with opening bracket [
+- Output MUST start with opening bracket [ on the first line
 - **CRITICAL: NO BACKTICKS ANYWHERE** - Do not wrap JSON in backticks or code fences
 - No markdown formatting of any kind (no \`\`\`json, no \`\`\`, no backticks)
-- No explanatory text before or after
-- Output must be pure text: the count line, blank line, then raw JSON array
-- If no image placeholders are found, output: TOTAL_IMAGES: 0 followed by blank line and []
+- No explanatory text before or after the JSON array
+- No line numbers, no comments, no extra text - ONLY the JSON array
+- Output must be pure, raw JSON that starts with [ and ends with ]
+- If no image placeholders are found, output: []
 - Ensure all JSON is valid (proper quotes, commas, brackets)
 - Include ALL image placeholders found in the HTML
-- The JSON array must be a clean list of objects that can be iterated through programmatically
+- The JSON array must be perfectly formatted and directly loopable in automation tools
 
 ## Context
 The HTML content represents a {{business_name}} web page focused on {{service_or_topic}}. Tailor image prompts to match the business industry and service offerings while maintaining photorealistic quality suitable for a professional website.`;
