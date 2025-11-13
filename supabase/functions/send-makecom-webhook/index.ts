@@ -48,12 +48,15 @@ TOTAL_IMAGES: 3
 ## Important Rules
 - First line MUST be: TOTAL_IMAGES: [number]
 - Second line MUST be blank
-- Third line starts the JSON array
-- No markdown code fences (no \`\`\`json)
+- Third line starts the JSON array with opening bracket [
+- **CRITICAL: NO BACKTICKS ANYWHERE** - Do not wrap JSON in backticks or code fences
+- No markdown formatting of any kind (no \`\`\`json, no \`\`\`, no backticks)
 - No explanatory text before or after
+- Output must be pure text: the count line, blank line, then raw JSON array
 - If no image placeholders are found, output: TOTAL_IMAGES: 0 followed by blank line and []
 - Ensure all JSON is valid (proper quotes, commas, brackets)
 - Include ALL image placeholders found in the HTML
+- The JSON array must be a clean list of objects that can be iterated through programmatically
 
 ## Context
 The HTML content represents a {{business_name}} web page focused on {{service_or_topic}}. Tailor image prompts to match the business industry and service offerings while maintaining photorealistic quality suitable for a professional website.`;
