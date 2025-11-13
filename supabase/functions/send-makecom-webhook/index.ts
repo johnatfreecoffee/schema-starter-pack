@@ -480,9 +480,9 @@ serve(async (req) => {
             length: systemInstructions?.length || null
           },
           builderStageInstructions: {
-            content: `${stage1Instructions}\n\n${stage2Instructions}\n\n${stage3Instructions}\n\n${stage4Instructions}`,
+            content: stage1Instructions || "",
             type: "builder_stages",
-            length: stage1Instructions.length + stage2Instructions.length + stage3Instructions.length + stage4Instructions.length
+            length: stage1Instructions?.length || null
           },
           supabaseData: {
             pageType: supabaseData?.pageType || "",
