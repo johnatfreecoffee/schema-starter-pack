@@ -199,7 +199,17 @@ Build the complete HTML structure for this page. Requirements:
    - Add container divs for layout purposes
    - Include proper meta tags in <head>
 
-5. COMPLETE PAGE
+5. CRITICAL: PHONE LINKS VS. LEAD FORM CTAs
+   - Phone numbers: Use ONLY <a href="tel:{{phone}}">{{phone}}</a>
+     * NO onclick handlers on phone links
+     * NO window.openLeadFormModal() calls
+     * Phone links should directly initiate calls when clicked
+   
+   - Lead Form CTAs: Use onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Name')"
+     * ONLY on explicit CTA buttons like "Get Quote", "Request Service", "Book Now"
+     * NOT on phone numbers, email addresses, or direct contact information
+
+6. COMPLETE PAGE
    - Include <!DOCTYPE html>, <html>, <head>, and <body>
    - Add viewport meta tag for responsive design
    - Add charset and meta description
