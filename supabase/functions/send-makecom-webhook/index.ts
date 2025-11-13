@@ -446,47 +446,54 @@ serve(async (req) => {
       );
     }
 
-    // Prepare webhook payload with 4 separate stage instructions
-    const webhookPayload = {
-      userRequest: {
-        companyInfo: {
-          companyData,
-          socialMedia,
-          aiTraining
-        },
-        systemInstructions: {
-          content: systemInstructions,
-          type: 'system_instructions',
-          length: systemInstructions?.length || 0
-        },
-        stage1Instructions: {
-          content: stage1Instructions,
-          type: 'stage1_wireframe',
-          length: stage1Instructions.length
-        },
-        stage2Instructions: {
-          content: stage2Instructions,
-          type: 'stage2_copywriting',
-          length: stage2Instructions.length
-        },
-        stage3Instructions: {
-          content: stage3Instructions,
-          type: 'stage3_html',
-          length: stage3Instructions.length
-        },
-        stage4Instructions: {
-          content: stage4Instructions,
-          type: 'stage4_css',
-          length: stage4Instructions.length
-        },
-        userPrompt: {
-          content: userPrompt,
-          type: 'user_prompt',
-          length: userPrompt?.length || 0
-        },
-        supabaseData
+    // Prepare webhook payload in exact format requested by user
+    const webhookPayload = [
+      {
+        body: {
+          companyData: {
+            business_name: companyData?.business_name || "",
+            business_slogan: companyData?.business_slogan || "",
+            description: companyData?.description || "",
+            id: companyData?.id || "",
+            brand_voice: aiTraining?.brand_voice || "",
+            mission_statement: aiTraining?.mission_statement || "",
+            customer_promise: aiTraining?.customer_promise || "",
+            competitive_positioning: aiTraining?.competitive_positioning || "",
+            unique_selling_points: aiTraining?.unique_selling_points || "",
+            competitive_advantages: aiTraining?.competitive_advantages || "",
+            target_audience: aiTraining?.target_audience || "",
+            service_standards: aiTraining?.service_standards || "",
+            certifications: aiTraining?.certifications || "",
+            emergency_response: aiTraining?.emergency_response || "",
+            service_area_coverage: aiTraining?.service_area_coverage || "",
+            project_timeline: aiTraining?.project_timeline || "",
+            payment_options: aiTraining?.payment_options || ""
+          },
+          userPrompt: {
+            content: userPrompt || "",
+            type: "user_prompt",
+            length: userPrompt?.length || null
+          },
+          systemInstructions: {
+            content: systemInstructions || "",
+            type: "system_instructions",
+            length: systemInstructions?.length || null
+          },
+          builderStageInstructions: {
+            content: `${stage1Instructions}\n\n${stage2Instructions}\n\n${stage3Instructions}\n\n${stage4Instructions}`,
+            type: "builder_stages",
+            length: stage1Instructions.length + stage2Instructions.length + stage3Instructions.length + stage4Instructions.length
+          },
+          supabaseData: {
+            pageType: supabaseData?.pageType || "",
+            pageTitle: supabaseData?.pageTitle || "",
+            table: supabaseData?.table || "",
+            pageId: supabaseData?.pageId || "",
+            pageRowId: supabaseData?.pageRowId || ""
+          }
+        }
       }
-    };
+    ];
 
     console.log('Sending webhook to Make.com:', {
       url: webhookUrl.substring(0, 50) + '...',
