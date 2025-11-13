@@ -27,6 +27,9 @@ Generate a valid JSON array of objects. Each object represents one image that ne
 - Keep prompts 100-200 characters for optimal results
 
 ## Example Output Format
+
+TOTAL_IMAGES: 3
+
 [
   {
     "location": "placeholder-hero.jpg",
@@ -43,10 +46,12 @@ Generate a valid JSON array of objects. Each object represents one image that ne
 ]
 
 ## Important Rules
-- Output ONLY the JSON array, nothing else
+- First line MUST be: TOTAL_IMAGES: [number]
+- Second line MUST be blank
+- Third line starts the JSON array
 - No markdown code fences (no \`\`\`json)
-- No explanatory text before or after the JSON
-- If no image placeholders are found, output an empty array: []
+- No explanatory text before or after
+- If no image placeholders are found, output: TOTAL_IMAGES: 0 followed by blank line and []
 - Ensure all JSON is valid (proper quotes, commas, brackets)
 - Include ALL image placeholders found in the HTML
 
