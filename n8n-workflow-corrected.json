@@ -1,0 +1,341 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "clear_home_webpages",
+        "options": {}
+      },
+      "id": "491d1ace-ca3d-448a-bed7-e7d531a1b774",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -112,
+        -32
+      ],
+      "webhookId": "855ae128-dc58-46f7-a2c8-4e25a8607a29"
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.5",
+        "options": {
+          "maxTokens": 32768
+        }
+      },
+      "id": "01c147d2-7566-4c68-88a8-553d5cf4e7fa",
+      "name": "OpenRouter Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        184,
+        192
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "yVwPTTtvC7HlTl7I",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://tkrcdxkdfjeupbdlbcfz.supabase.co/functions/v1/database-webhook",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer Hpl02n&4E4$%0oHMKCAUyqg&G8b6R@E8"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "ebc485c8-fec1-4b3f-b644-bae2fce861fa",
+      "name": "Send to Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1744,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=COMPANY CONTEXT:\nBusiness Name: {{ $json.body.userRequest.companyInfo.companyData.business_name }}\nSlogan: {{ $json.body.userRequest.companyInfo.companyData.business_slogan }}\nDescription: {{ $json.body.userRequest.companyInfo.companyData.description }}\nYears of Experience: {{ $json.body.userRequest.companyInfo.companyData.years_experience }}\nWebsite: {{ $json.body.userRequest.companyInfo.companyData.website_url }}\nPhone: {{ $json.body.userRequest.companyInfo.companyData.phone }}\nEmail: {{ $json.body.userRequest.companyInfo.companyData.email }}\nAddress: {{ $json.body.userRequest.companyInfo.companyData.address }}\nSocial Media:\n{{ $json.body.userRequest.companyInfo.socialMedia.map(sm => `- ${sm.social_media_outlet_types.name}: ${sm.link}`).join('\\n') }}\n\nAI TRAINING CONTEXT:\nBrand Voice: {{ $json.body.userRequest.companyInfo.aiTraining.brand_voice }}\nMission Statement: {{ $json.body.userRequest.companyInfo.aiTraining.mission_statement }}\nTarget Audience: {{ $json.body.userRequest.companyInfo.aiTraining.target_audience }}\n\nSYSTEM INSTRUCTIONS:\n{{ $json.body.userRequest.systemInstructions.content }}\n\nUSER REQUEST:\n{{ $json.body.userRequest.userPrompt.content }}\n\nTASK:\nCreate a detailed wireframe and content structure for this web page. Your output must include:\n\n1. PAGE LAYOUT STRUCTURE\n2. CONTENT BLOCKS\n3. INFORMATION HIERARCHY\n4. CALL-TO-ACTION STRATEGY\n5. NAVIGATION STRUCTURE\n\nFormat your response as a structured wireframe document.",
+        "options": {
+          "systemMessage": "={{$json.body.userRequest.stage1Instructions.content}}",
+          "maxIterations": 20
+        }
+      },
+      "id": "4f531c65-23a9-42ae-abd9-1ce8c4c72345",
+      "name": "Stage 1: Wireframe",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        112,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=COMPANY CONTEXT:\nBusiness Name: {{ $json.body.userRequest.companyInfo.companyData.business_name }}\nSlogan: {{ $json.body.userRequest.companyInfo.companyData.business_slogan }}\nDescription: {{ $json.body.userRequest.companyInfo.companyData.description }}\nYears of Experience: {{ $json.body.userRequest.companyInfo.companyData.years_experience }}\nWebsite: {{ $json.body.userRequest.companyInfo.companyData.website_url }}\nPhone: {{ $json.body.userRequest.companyInfo.companyData.phone }}\nEmail: {{ $json.body.userRequest.companyInfo.companyData.email }}\nAddress: {{ $json.body.userRequest.companyInfo.companyData.address }}\nSocial Media:\n{{ $json.body.userRequest.companyInfo.socialMedia.map(sm => `- ${sm.social_media_outlet_types.name}: ${sm.link}`).join('\\n') }}\n\nAI TRAINING CONTEXT:\nBrand Voice: {{ $json.body.userRequest.companyInfo.aiTraining.brand_voice }}\nMission Statement: {{ $json.body.userRequest.companyInfo.aiTraining.mission_statement }}\nTarget Audience: {{ $json.body.userRequest.companyInfo.aiTraining.target_audience }}\nCustomer Promise: {{ $json.body.userRequest.companyInfo.aiTraining.customer_promise }}\nUnique Selling Points: {{ $json.body.userRequest.companyInfo.aiTraining.unique_selling_points }}\n\nAPPROVED WIREFRAME FROM STAGE 1:\n{{ $node[\"Stage 1: Wireframe\"].json.output }}\n\nSYSTEM INSTRUCTIONS:\n{{ $json.body.userRequest.systemInstructions.content }}\n\nUSER REQUEST:\n{{ $json.body.userRequest.userPrompt.content }}\n\nTASK:\nWrite all copy for this web page based on the approved wireframe. Provide:\n\n1. HEADLINES\n2. BODY COPY\n3. CALLS-TO-ACTION\n4. NAVIGATION & UI TEXT\n5. META CONTENT\n\nFormat each piece of copy clearly labeled by section and element type.",
+        "options": {
+          "systemMessage": "={{$json.body.userRequest.stage2Instructions.content}}",
+          "maxIterations": 20
+        }
+      },
+      "id": "7bae52cb-316c-4bcf-8633-13fa708ec903",
+      "name": "Stage 2: Copywriting",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        464,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=SYSTEM INSTRUCTIONS:\n{{ $json.body.userRequest.systemInstructions.content }}\n\nAPPROVED WIREFRAME:\n{{ $node[\"Stage 1: Wireframe\"].json.output }}\n\nAPPROVED COPY:\n{{ $node[\"Stage 2: Copywriting\"].json.output }}\n\nTEMPLATE VARIABLES AVAILABLE:\n{{company_name}}, {{phone}}, {{email}}, {{address}}, {{city}}, {{state}}, {{zip}}, {{country}}\n{{facebook_url}}, {{twitter_url}}, {{linkedin_url}}, {{instagram_url}}, {{youtube_url}}\n(Use these variables in HTML where dynamic company data should appear)\n\nTASK:\nBuild the complete HTML structure for this page. Requirements:\n\n1. SEMANTIC HTML5\n2. CONTENT INTEGRATION - Place ALL copy from Stage 2 in appropriate HTML elements\n3. USE TEMPLATE VARIABLES - Use {{variable}} format for dynamic data\n4. ACCESSIBILITY - All images must have descriptive alt attributes\n5. COMPLETE PAGE - Include <!DOCTYPE html>, <html>, <head>, and <body>\n\nOutput ONLY the HTML code, properly formatted and indented.",
+        "options": {
+          "systemMessage": "={{$json.body.userRequest.stage3Instructions.content}}",
+          "maxIterations": 20
+        }
+      },
+      "id": "42a4d8f4-761c-45d6-b84b-8c467320ca63",
+      "name": "Stage 3: HTML Structure",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        816,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=SYSTEM INSTRUCTIONS:\n{{ $json.body.userRequest.systemInstructions.content }}\n\nWIREFRAME (for visual layout intent):\n{{ $node[\"Stage 1: Wireframe\"].json.output }}\n\nHTML TO STYLE:\n{{ $node[\"Stage 3: HTML Structure\"].json.output }}\n\nCRITICAL REQUIREMENTS:\n1. Create comprehensive, responsive, mobile-first CSS to style this HTML\n2. NEVER use hardcoded hex colors (like #0056b3 or #dc3545)\n3. ALWAYS use Handlebars variables for ALL colors:\n   - {{brand.colors.primary}}\n   - {{brand.colors.secondary}}\n   - {{brand.colors.accent}}\n   - {{brand.colors.success}}\n   - {{brand.colors.warning}}\n   - {{brand.colors.info}}\n   - {{brand.colors.danger}}\n4. Define CSS variables in :root using Handlebars:\n   :root {\n     --color-primary: {{brand.colors.primary}};\n     --color-secondary: {{brand.colors.secondary}};\n     --color-accent: {{brand.colors.accent}};\n   }\n5. Reference CSS variables throughout stylesheet: color: var(--color-primary);\n6. Use Handlebars for other design tokens:\n   - {{brand.design.buttonRadius}}\n   - {{brand.design.cardRadius}}\n   - {{brand.design.iconStrokeWidth}}\n\nTASK:\nCreate comprehensive CSS following all rules above. Output ONLY the CSS code, well-organized with comments for major sections.",
+        "options": {
+          "systemMessage": "={{$json.body.userRequest.stage4Instructions.content}}",
+          "maxIterations": 20
+        }
+      },
+      "id": "6bde2e98-d153-492d-98b1-6c197b3ef460",
+      "name": "Stage 4: CSS Styling",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1168,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const stage3Html = $node[\"Stage 3: HTML Structure\"].json.output;\nconst stage4Css = $node[\"Stage 4: CSS Styling\"].json.output;\nconst webhookData = $node[\"Webhook\"].json.body.userRequest;\n\n// Combine HTML and CSS\nconst finalHtml = stage3Html.replace(/<\\/head>/i, `<style>\\n${stage4Css}\\n</style>\\n</head>`);\n\n// Format the final payload for the webhook\nconst finalPayload = {\n  data: {\n    id: webhookData.supabaseData.pageId,\n    updates: {\n      content_html_draft: finalHtml\n    }\n  },\n  table: \"static_pages\"\n};\n\n// n8n expects an array of items to be returned\nreturn [{ json: finalPayload }];"
+      },
+      "id": "00eefb50-6558-40f4-9091-a5f7468942b7",
+      "name": "Assemble & Format Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.5",
+        "options": {
+          "maxTokens": 32768
+        }
+      },
+      "id": "bd5c45ff-5470-4425-931c-64285562dd9b",
+      "name": "OpenRouter Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        536,
+        192
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "yVwPTTtvC7HlTl7I",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.5",
+        "options": {
+          "maxTokens": 32768
+        }
+      },
+      "id": "3f6c1dd6-164a-4092-ae08-aa2a56da2ba8",
+      "name": "OpenRouter Chat Model2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1240,
+        192
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "yVwPTTtvC7HlTl7I",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.5",
+        "options": {
+          "maxTokens": 32768
+        }
+      },
+      "id": "6e6b6c18-969d-4a54-95f9-f5031f380790",
+      "name": "OpenRouter Chat Model3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        888,
+        192
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "yVwPTTtvC7HlTl7I",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Stage 1: Wireframe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Stage 1: Wireframe",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stage 1: Wireframe": {
+      "main": [
+        [
+          {
+            "node": "Stage 2: Copywriting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stage 2: Copywriting": {
+      "main": [
+        [
+          {
+            "node": "Stage 3: HTML Structure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stage 3: HTML Structure": {
+      "main": [
+        [
+          {
+            "node": "Stage 4: CSS Styling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stage 4: CSS Styling": {
+      "main": [
+        [
+          {
+            "node": "Assemble & Format Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble & Format Payload": {
+      "main": [
+        [
+          {
+            "node": "Send to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Stage 2: Copywriting",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Stage 4: CSS Styling",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Stage 3: HTML Structure",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0d09dc8f78a0343164d21a43c9d5669384099073403f9f74eb7d8d27ebbee23b"
+  }
+}
