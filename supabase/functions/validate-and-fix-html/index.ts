@@ -5,6 +5,23 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Post-processing function to replace Google Drive URLs with placeholder filenames
+function replaceGoogleDriveUrls(html: string): string {
+  let counter = 1;
+  
+  // Replace Google Drive preview URLs with placeholder filenames
+  const processedHtml = html.replace(
+    /src=["']https:\/\/drive\.google\.com\/file\/d\/[^\/]+\/preview["']/g,
+    () => `src="placeholder-image-${counter++}.jpg"`
+  );
+  
+  // Also handle other Google Drive URL formats
+  return processedHtml.replace(
+    /src=["']https:\/\/drive\.google\.com\/[^"']+["']/g,
+    () => `src="placeholder-image-${counter++}.jpg"`
+  );
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -19,6 +36,13 @@ serve(async (req) => {
     }
 
     console.log(`Validating HTML for page: ${pageTitle} (${pageType})`);
+    
+    // Pre-process HTML to replace Google Drive URLs with placeholders
+    const preprocessedHtml = replaceGoogleDriveUrls(html);
+    
+    if (preprocessedHtml !== html) {
+      console.log(`Replaced Google Drive URLs with placeholder filenames for ${pageTitle}`);
+    }
 
     const systemPrompt = `You are an HTML validation and design enhancement assistant. Your job is to fix rendering issues and ensure professional, modern design standards.
 
@@ -92,7 +116,7 @@ Return ONLY the fixed HTML. No explanations, no markdown blocks, just the correc
         model: "google/gemini-2.5-flash-lite",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Fix this HTML:\n\n${html}` }
+          { role: "user", content: `Fix this HTML:\n\n${preprocessedHtml}` }
         ],
       }),
     });
