@@ -154,9 +154,9 @@ const replaceBrokenImageSources = (input: string) => {
     try {
       const u = String(url);
       let m = u.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
-      if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+      if (m) return `https://drive.google.com/uc?export=download&id=${m[1]}`;
       m = u.match(/[?&]id=([^&]+)/i);
-      if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+      if (m) return `https://drive.google.com/uc?export=download&id=${m[1]}`;
       return null;
     } catch {
       return null;
