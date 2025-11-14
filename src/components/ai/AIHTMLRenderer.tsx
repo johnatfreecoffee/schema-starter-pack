@@ -148,16 +148,31 @@ const convertLucidePlaceholdersToSvg = (input: string) => {
   });
 };
 
-// Replace Google Drive and unresolved placeholder image sources with a visible fallback
+// Replace Google Drive and unresolved placeholder image sources with a visible fallback or direct link
 const replaceBrokenImageSources = (input: string) => {
+  const toDriveDirect = (url: string): string | null => {
+    try {
+      const u = String(url);
+      let m = u.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
+      if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+      m = u.match(/[?&]id=([^&]+)/i);
+      if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
   return input.replace(/<img([^>]*?)\s+src=["']([^"']+)["']([^>]*)>/gi, (full, pre, src, post) => {
     const original = String(src).trim();
-    const isExternal = /^(?:https?:|data:|blob:)/i.test(original) || original.startsWith('/');
-    const looksLikeDrive = /https:\/\/drive\.google\.com\/file\/d\/[^/]+\/preview/i.test(original);
+    const driveDirect = toDriveDirect(original);
     const looksLikePlaceholder = /^(?:\.\/|\.\.)?\/?placeholder[\w-]*\.(?:png|jpe?g|webp|svg)$/i.test(original);
 
-    if (looksLikeDrive || (!isExternal && looksLikePlaceholder)) {
-      // Swap to a local placeholder that always exists, preserve original for tooling
+    if (driveDirect) {
+      return `<img${pre} src="${driveDirect}" data-original-src="${original}"${post}>`;
+    }
+
+    if (looksLikePlaceholder) {
       return `<img${pre} src="/placeholder.svg" data-original-src="${original}"${post}>`;
     }
 
@@ -291,6 +306,30 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
       container.removeEventListener('click', onClick);
     };
   }, [processed.id, openModal]);
+
+  // Add robust <img> error fallback and lazy loading
+  useEffect(() => {
+    const container = document.getElementById(processed.id);
+    if (!container) return;
+    const imgs = Array.from(container.querySelectorAll('img')) as HTMLImageElement[];
+
+    const onErr = (e: Event) => {
+      const img = e.currentTarget as HTMLImageElement;
+      if (img && img.src && !img.dataset.fallbackApplied) {
+        img.dataset.fallbackApplied = '1';
+        img.src = '/placeholder.svg';
+      }
+    };
+
+    imgs.forEach((img) => {
+      if (!img.getAttribute('loading')) img.setAttribute('loading', 'lazy');
+      img.addEventListener('error', onErr);
+    });
+
+    return () => {
+      imgs.forEach((img) => img.removeEventListener('error', onErr));
+    };
+  }, [processed.id]);
 
   return (
     <div
