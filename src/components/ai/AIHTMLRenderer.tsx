@@ -148,6 +148,23 @@ const convertLucidePlaceholdersToSvg = (input: string) => {
   });
 };
 
+// Replace Google Drive and unresolved placeholder image sources with a visible fallback
+const replaceBrokenImageSources = (input: string) => {
+  return input.replace(/<img([^>]*?)\s+src=["']([^"']+)["']([^>]*)>/gi, (full, pre, src, post) => {
+    const original = String(src).trim();
+    const isExternal = /^(?:https?:|data:|blob:)/i.test(original) || original.startsWith('/');
+    const looksLikeDrive = /https:\/\/drive\.google\.com\/file\/d\/[^/]+\/preview/i.test(original);
+    const looksLikePlaceholder = /^(?:\.\/|\.\.)?\/?placeholder[\w-]*\.(?:png|jpe?g|webp|svg)$/i.test(original);
+
+    if (looksLikeDrive || (!isExternal && looksLikePlaceholder)) {
+      // Swap to a local placeholder that always exists, preserve original for tooling
+      return `<img${pre} src="/placeholder.svg" data-original-src="${original}"${post}>`;
+    }
+
+    return full;
+  });
+};
+
 const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
   const { openModal } = useLeadFormModal();
 
@@ -160,22 +177,24 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
     const withIcons = convertLucidePlaceholdersToSvg(withCtas);
     // 4) Strip Tailwind CDN to avoid unsafe runtime styles
     const withoutCdn = stripTailwindCdn(withIcons);
-    // 5) Sanitize while allowing <style> and SVG
-    const sanitized = sanitizeHtml(withoutCdn, {
+    // 5) Replace broken/placeholder image sources with a visible fallback
+    const withImgFallbacks = replaceBrokenImageSources(withoutCdn);
+    // 6) Sanitize while allowing <style> and SVG
+    const sanitized = sanitizeHtml(withImgFallbacks, {
       ADD_TAGS: ['style', 'svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g', 'use', 'defs', 'symbol', 'title', 'desc', 'button', 'a'],
       ADD_ATTR: [
-        'data-lead-form', 'href', 'class', 'style', 'onclick', 'type', 'target', 'rel',
+        'data-lead-form', 'href', 'class', 'style', 'onclick', 'type', 'target', 'rel', 'loading', 'data-original-src',
         // SVG attributes
         'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'd', 'viewBox', 'xmlns',
         'points', 'x', 'y', 'width', 'height', 'aria-hidden', 'focusable', 'role', 'fill-rule', 'clip-rule'
       ],
       ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
     });
-    // 6) Patch unresolved CSS variables like {{...}} to HSL defaults
+    // 7) Patch unresolved CSS variables like {{...}} to HSL defaults
     const varsPatched = patchCssVariables(sanitized);
-    // 7) Keep scoped styles and CSS vars
+    // 8) Keep scoped styles and CSS vars
     const scopedOnly = keepScopedStylesOnly(varsPatched, id);
-    // 8) Inject minimal utility CSS so Tailwind classes used in templates render
+    // 9) Inject minimal utility CSS so Tailwind classes used in templates render
     const utilityCss = `
 <style>
 #${id} .px-10{padding-left:2.5rem;padding-right:2.5rem;} 
