@@ -261,10 +261,14 @@ Build the complete HTML structure for this page. Requirements:
      * ONLY on explicit CTA buttons like "Get Quote", "Request Service", "Book Now"
      * NOT on phone numbers, email addresses, or direct contact information
 
-6. IMAGES
-   - Include <img> tags with placeholder src attributes for all visual elements
-   - Use descriptive naming: src="placeholder-hero.jpg", src="placeholder-service-1.png", etc.
+6. IMAGES (CRITICAL REQUIREMENTS)
+   - **ABSOLUTELY NO EXTERNAL URLS**: Do NOT use Google Drive URLs, Unsplash URLs, Pexels, or any external image services
+   - **ONLY LOCAL PLACEHOLDERS**: Use ONLY local placeholder filenames like:
+     * src="placeholder-hero.jpg"
+     * src="placeholder-service-1.png"
+     * src="placeholder-team-photo.jpg"
    - File extensions: .jpg for photos, .png for graphics/icons, .svg for logos
+   - Use descriptive naming that reflects the image content
    - Write DETAILED alt attributes that describe the ideal image (50-100 chars)
    - Alt text should include: subject, setting, mood, composition, lighting
    - Examples:
@@ -273,6 +277,7 @@ Build the complete HTML structure for this page. Requirements:
      * alt="Before and after comparison of weathered vs new roof tiles in bright daylight"
    - Use placeholders for: hero images, service photos, team photos, process diagrams, before/after images
    - Every major content section should have at least one relevant image
+   - **REPEAT: NEVER use https:// URLs for images - ONLY use placeholder-*.jpg/png/svg filenames**
 
 7. COMPLETE PAGE
    - Include <!DOCTYPE html>, <html>, <head>, and <body>

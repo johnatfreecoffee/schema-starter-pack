@@ -148,31 +148,11 @@ const convertLucidePlaceholdersToSvg = (input: string) => {
   });
 };
 
-// Replace Google Drive and unresolved placeholder image sources with a visible fallback or direct link
+// Replace unresolved placeholder image sources with a visible fallback
 const replaceBrokenImageSources = (input: string) => {
-  const toDriveDirect = (url: string): string | null => {
-    try {
-      const u = String(url);
-      // Keep direct googleusercontent links as-is
-      if (/^https?:\/\/lh3\.googleusercontent\.com\//i.test(u)) return u;
-      let m = u.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
-      if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
-      m = u.match(/[?&]id=([^&]+)/i);
-      if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
-      return null;
-    } catch {
-      return null;
-    }
-  };
-
   return input.replace(/<img([^>]*?)\s+src=["']([^"']+)["']([^>]*)>/gi, (full, pre, src, post) => {
     const original = String(src).trim();
-    const driveDirect = toDriveDirect(original);
     const looksLikePlaceholder = /^(?:\.\/|\.\.)?\/?placeholder[\w-]*\.(?:png|jpe?g|webp|svg)$/i.test(original);
-
-    if (driveDirect) {
-      return `<img${pre} src="${driveDirect}" data-original-src="${original}"${post}>`;
-    }
 
     if (looksLikePlaceholder) {
       return `<img${pre} src="/placeholder.svg" data-original-src="${original}"${post}>`;
@@ -310,6 +290,7 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
   }, [processed.id, openModal]);
 
   // Add robust <img> error fallback and lazy loading
+  // Add robust <img> error fallback and lazy loading
   useEffect(() => {
     const container = document.getElementById(processed.id);
     if (!container) return;
@@ -317,29 +298,6 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
 
     const onErr = (e: Event) => {
       const img = e.currentTarget as HTMLImageElement;
-      if (!img) return;
-      // Ensure safer cross-origin fetch behavior
-      if (!img.getAttribute('referrerpolicy')) img.setAttribute('referrerpolicy', 'no-referrer');
-
-      const original = img.getAttribute('data-original-src') || img.src;
-      const idMatch = String(original).match(/(?:drive\.google\.com\/file\/d\/|[?&]id=)([^\/&#?]+)/i);
-      const id = idMatch?.[1];
-      const retryIndex = parseInt(img.dataset.driveRetry || '0', 10);
-
-      if (id && retryIndex < 3) {
-        const candidates = [
-          `https://drive.google.com/uc?export=view&id=${id}`,
-          `https://drive.google.com/uc?export=download&id=${id}`,
-          `https://drive.google.com/thumbnail?id=${id}&sz=w1000`,
-        ];
-        const next = candidates[retryIndex];
-        img.dataset.driveRetry = String(retryIndex + 1);
-        if (next && img.src !== next) {
-          img.src = next;
-          return; // try next candidate before falling back
-        }
-      }
-
       if (img && img.src && !img.dataset.fallbackApplied) {
         img.dataset.fallbackApplied = '1';
         img.src = '/placeholder.svg';
@@ -348,24 +306,6 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
 
     imgs.forEach((img) => {
       if (!img.getAttribute('loading')) img.setAttribute('loading', 'lazy');
-      if (!img.getAttribute('decoding')) img.setAttribute('decoding', 'async');
-      if (!img.getAttribute('referrerpolicy')) img.setAttribute('referrerpolicy', 'no-referrer');
-      // Normalize any lingering Google Drive page links on first pass
-      const normalized = ((): string | null => {
-        try {
-          const u = String(img.src);
-          if (/^https?:\/\/lh3\.googleusercontent\.com\//i.test(u)) return u;
-          let m = u.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
-          if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
-          m = u.match(/[?&]id=([^&]+)/i);
-          if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
-          return null;
-        } catch { return null; }
-      })();
-      if (normalized && normalized !== img.src) {
-        if (!img.getAttribute('data-original-src')) img.setAttribute('data-original-src', img.src);
-        img.src = normalized;
-      }
       img.addEventListener('error', onErr);
     });
 
