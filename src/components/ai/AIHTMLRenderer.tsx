@@ -182,7 +182,7 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
     const sanitized = sanitizeHtml(withImgFallbacks, {
       ADD_TAGS: ['style', 'svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g', 'use', 'defs', 'symbol', 'title', 'desc', 'button', 'a'],
       ADD_ATTR: [
-        'data-lead-form', 'href', 'class', 'style', 'onclick', 'type', 'target', 'rel', 'loading', 'data-original-src',
+        'data-lead-form', 'data-form-embed', 'data-form-header', 'href', 'class', 'style', 'onclick', 'type', 'target', 'rel', 'loading', 'data-original-src',
         // SVG attributes
         'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'd', 'viewBox', 'xmlns',
         'points', 'x', 'y', 'width', 'height', 'aria-hidden', 'focusable', 'role', 'fill-rule', 'clip-rule'
