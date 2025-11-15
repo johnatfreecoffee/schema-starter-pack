@@ -263,11 +263,17 @@ Build the complete HTML structure for this page. Requirements:
 
 6. IMAGES (CRITICAL REQUIREMENTS)
    - **ABSOLUTELY NO EXTERNAL URLS**: Do NOT use Google Drive URLs, Unsplash URLs, Pexels, or any external image services
-   - **ONLY LOCAL PLACEHOLDERS**: Use ONLY local placeholder filenames like:
-     * src="placeholder-hero.jpg"
-     * src="placeholder-service-1.png"
-     * src="placeholder-team-photo.jpg"
-   - File extensions: .jpg for photos, .png for graphics/icons, .svg for logos
+   - **ONLY LOCAL PLACEHOLDERS**: Use ONLY local placeholder filenames
+   - **FILE EXTENSIONS - CRITICAL**:
+     * .jpg ONLY for photos of people, buildings, landscapes, real-world scenes
+     * .png ONLY for graphics, icons, illustrations, diagrams
+     * .svg ONLY for logos and simple vector graphics
+     * DO NOT use .png for photos - photos MUST be .jpg
+   - Naming examples:
+     * src="placeholder-hero.jpg" (photo of building/scene)
+     * src="placeholder-team-member.jpg" (photo of person)
+     * src="placeholder-icon-wrench.png" (graphic/icon)
+     * src="placeholder-logo.svg" (logo)
    - Use descriptive naming that reflects the image content
    - Write DETAILED alt attributes that describe the ideal image (50-100 chars)
    - Alt text should include: subject, setting, mood, composition, lighting
