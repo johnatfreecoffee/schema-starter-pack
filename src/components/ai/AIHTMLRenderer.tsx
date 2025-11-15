@@ -319,12 +319,24 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
   // Inject on-page form components into data-form-embed placeholders
   useEffect(() => {
     const container = document.getElementById(processed.id);
-    if (!container) return;
+    if (!container) {
+      console.log('Form embed: Container not found', processed.id);
+      return;
+    }
 
     // Find all form embed placeholders
     const formPlaceholders = Array.from(
       container.querySelectorAll('[data-form-embed]')
     ) as HTMLElement[];
+
+    console.log('Form embed detection:', {
+      containerId: processed.id,
+      placeholdersFound: formPlaceholders.length,
+      placeholders: formPlaceholders.map(p => ({
+        header: p.getAttribute('data-form-header'),
+        classes: p.className
+      }))
+    });
 
     if (formPlaceholders.length === 0) return;
 
