@@ -71,10 +71,24 @@ You are building a professional web page WITHOUT photo placeholders. Focus on ri
 - **FOCUS** on compelling copy, clear hierarchy, and icon-driven visual design
 - **EMPHASIZE** call-to-action sections with icons and engaging copy
 
+## CRITICAL ICON & EMOJI PLACEMENT RULES:
+- **NO center-aligned icons at top of pages** - DO NOT place standalone centered icon containers above or before hero headlines
+- **NO emojis starting hero headlines** - The H1 or main hero headline must NEVER begin with an emoji
+- **Icons should be used ONLY in:**
+  - Buttons and CTAs
+  - Feature cards and service descriptions  
+  - Deep content sections (not at page top)
+  - List items and bullet points
+- **Icons should NOT be used:**
+  - As standalone centered decorative elements at page top
+  - In large icon-wrapper containers before headlines
+  - As page-leading elements in hero sections
+
 ## EMOJI USAGE GUIDELINES:
 - Sprinkle 2-4 emojis per page section (not every line)
-- Use in: Hero headlines, section titles, feature lists, CTAs
-- Examples: "🏠 Your Dream Home Starts Here" | "✨ Premium Services" | "📞 Call Us Today"
+- Use in: Section titles (NOT hero H1), feature lists, CTAs, subheadings
+- Examples: "Premium Services ✨" | "Call Us Today 📞" | "What We Offer 🔧"
+- **NEVER start hero H1 with emoji** - Place emojis at END of hero headlines if used at all
 - Keep professional - avoid overuse
 
 ---
@@ -143,7 +157,7 @@ Format your response as a structured wireframe document.
 Write all copy for this web page based on the approved wireframe. Provide:
 
 1. HEADLINES
-   - Main H1 headline (consider adding 1 emoji if appropriate)
+   - Main H1 headline - **NEVER start with emoji** (place emoji at end if needed)
    - Section headlines (H2s) - add emojis to 2-3 key sections
    - Sub-headlines (H3s) where needed
 
@@ -186,8 +200,14 @@ Build the complete HTML structure for this page WITHOUT image placeholders.
 
 ### CRITICAL REQUIREMENTS:
 1. **NO <img> TAGS** for photos/placeholders
-2. **USE Lucide icons** via data-lucide attributes extensively:
-   - Hero section: 1-2 large decorative icons
+
+2. **ICON PLACEMENT RULES** (STRICTLY ENFORCE):
+   - **DO NOT** place standalone centered icons at the top of hero sections
+   - **DO NOT** use icon-wrapper or centered icon containers before headlines
+   - **USE icons ONLY in**: Buttons, CTAs, feature cards, list items, deep content sections
+   - **NEVER** lead the page with a centered decorative icon
+   
+3. **LUCIDE ICON USAGE** (after hero section):
    - Feature sections: icon for each feature
    - CTAs: icons in all buttons
    - Service grids: icon per service
@@ -458,6 +478,7 @@ Build the complete HTML structure for this page. Requirements:
 6. IMAGES (CRITICAL REQUIREMENTS)
    - **ABSOLUTELY NO EXTERNAL URLS**: Do NOT use Google Drive URLs, Unsplash URLs, Pexels, or any external image services
    - **ONLY LOCAL PLACEHOLDERS**: Use ONLY local placeholder filenames
+   - **NO CENTER-ALIGNED IMAGES AT PAGE TOP**: Do not place hero images in centered standalone containers before headlines
    - **FILE EXTENSIONS - CRITICAL**:
      * .jpg ONLY for photos of people, buildings, landscapes, real-world scenes
      * .png ONLY for graphics, icons, illustrations, diagrams
