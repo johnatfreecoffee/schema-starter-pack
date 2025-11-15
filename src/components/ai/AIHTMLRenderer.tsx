@@ -341,12 +341,15 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
       container.querySelectorAll(selector)
     ) as HTMLElement[];
 
-    // If none found, auto-inject a placeholder at the end as a graceful fallback
+    // If none found, auto-inject a placeholder at the TOP as a graceful fallback
     const autoCreated: HTMLElement[] = [];
     if (formPlaceholders.length === 0) {
       const auto = document.createElement('div');
       auto.setAttribute('data-form-embed', '1');
-      container.appendChild(auto);
+      auto.setAttribute('data-form-header', 'Get Your Free Quote');
+      auto.style.cssText = 'display:block;width:100%;max-width:960px;margin:24px auto;';
+      // Insert at top so it’s visible immediately
+      container.insertBefore(auto, container.firstChild);
       formPlaceholders = [auto];
       autoCreated.push(auto);
     }
@@ -384,16 +387,9 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
     // Cleanup on unmount
     return () => {
       roots.forEach(root => {
-        try {
-          root.unmount();
-        } catch (error) {
-          console.error('Failed to unmount form embed:', error);
-        }
+        try { root.unmount(); } catch (error) { console.error('Failed to unmount form embed:', error); }
       });
-      // Remove any auto-injected placeholders
-      autoCreated.forEach((el) => {
-        try { el.remove(); } catch (_) {}
-      });
+      autoCreated.forEach((el) => { try { el.remove(); } catch (_) {} });
     };
   }, [processed.id]);
 
