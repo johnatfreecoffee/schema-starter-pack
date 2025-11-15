@@ -214,16 +214,35 @@ Build the complete HTML structure for this page WITHOUT image placeholders.
    
 3. **INCLUDE EMOJIS** from Stage 2 copy in the HTML
 
-4. **ICON EXAMPLES**:
-   \`\`\`html
-   <div class="icon-wrapper">
-     <i data-lucide="home" class="w-12 h-12"></i>
-   </div>
+4. **BUTTON STRUCTURE** (CRITICAL - STRICTLY ENFORCE):
+   - ALL buttons MUST have SVG icons (w-6 h-6 size - NO OTHER SIZES)
+   - ABSOLUTELY NO EMOJIS in button text
+   - Icon appears BEFORE button text
    
-   <button class="cta-button">
-     <i data-lucide="phone" class="w-5 h-5"></i>
-     📞 Call Us Today
+   **CORRECT BUTTON EXAMPLES:**
+   \`\`\`html
+   <!-- Phone CTA - NO emoji -->
+   <a href="tel:{{phone}}" class="btn-consistent text-white" style="background: var(--color-cta); border-radius: var(--radius-button);">
+     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+     </svg>
+     Call: {{phone}}
+   </a>
+   
+   <!-- Form CTA - NO emoji, w-6 h-6 icon -->
+   <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Quote')" class="btn-consistent text-white" style="background: var(--color-cta); border-radius: var(--radius-button);">
+     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+     </svg>
+     Get Free Quote
    </button>
+   \`\`\`
+   
+   **WRONG EXAMPLES:**
+   \`\`\`html
+   ❌ <button><svg class="w-8 h-8">...</svg>📞 Call</button> <!-- emoji + wrong size -->
+   ❌ <button><svg class="w-5 h-5">...</svg>Call</button> <!-- wrong icon size -->
+   ❌ <button>📝 Get Quote</button> <!-- emoji, no icon -->
    \`\`\`
 
 5. **CRITICAL: PHONE LINKS VS. LEAD FORM CTAs** (STRICTLY ENFORCE):
@@ -248,6 +267,9 @@ Build the complete HTML structure for this page WITHOUT image placeholders.
 
 ### VALIDATION CHECKLIST:
 - [ ] NO <img> tags present
+- [ ] ALL buttons have SVG icons (w-6 h-6)
+- [ ] ZERO emojis in any button text
+- [ ] ALL button icons are consistent w-6 h-6 size
 - [ ] Lucide icons used throughout (minimum 6-8 icons)
 - [ ] Emojis from Stage 2 copy are in the HTML
 - [ ] All company data uses Handlebars variables
@@ -473,27 +495,59 @@ Build the complete HTML structure for this page. Requirements:
    - Use ARIA labels where appropriate
    - Ensure logical tab order
 
-4. STRUCTURE
+4. BUTTON STRUCTURE (CRITICAL - STRICTLY ENFORCE):
+   - ALL buttons MUST have SVG icons with w-6 h-6 sizing (NO exceptions)
+   - ABSOLUTELY NO EMOJIS in button text
+   - Icon appears BEFORE button text
+   - Consistent icon sizing creates professional design
+   
+   **BUTTON ICON VALIDATION:**
+   - [ ] Every button has an SVG icon
+   - [ ] All button icons are exactly w-6 h-6
+   - [ ] Zero emojis in any button text
+   - [ ] Icons appear before text
+
+5. STRUCTURE
    - Add class names for styling (use semantic, BEM-style naming)
    - Include all sections from the wireframe
    - Add container divs for layout purposes
    - Include proper meta tags in <head>
 
-5. CRITICAL: PHONE LINKS VS. LEAD FORM CTAs (STRICTLY ENFORCE)
+6. CRITICAL: PHONE LINKS VS. LEAD FORM CTAs (STRICTLY ENFORCE)
    
    **PHONE NUMBER LINKS (tel: links):**
-   - Structure: <a href="tel:{{phone}}">{{phone}}</a>
+   - Must include SVG phone icon (w-6 h-6)
+   - NO emojis in button text
    - **ABSOLUTELY NO onclick ATTRIBUTE** - Phone links must be pure tel: links
    - **DO NOT ADD window.openLeadFormModal()** - This prevents calls from working
    - Phone links should ONLY initiate phone calls, nothing else
-   - Example CORRECT: <a href="tel:{{phone}}" class="phone-button">📞 Call Us</a>
-   - Example WRONG: <a href="tel:{{phone}}" onclick="...">📞 Call Us</a> ❌
+   - Example CORRECT: 
+     \`\`\`html
+     <a href="tel:{{phone}}" class="btn-consistent text-white" style="background: var(--color-cta); border-radius: var(--radius-button);">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+       </svg>
+       Call: {{phone}}
+     </a>
+     \`\`\`
+   - Example WRONG: <a href="tel:{{phone}}" onclick="...">📞 Call Us</a> ❌ (has emoji and onclick)
    
    **LEAD FORM CTA BUTTONS (NOT phone links):**
+   - Must include relevant SVG icon (w-6 h-6) - calendar, document, clipboard, etc.
+   - NO emojis in button text
    - Use onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Name')"
    - ONLY on explicit form CTAs: "Get Quote", "Request Service", "Schedule Inspection", "Book Now"
    - These should be <button> or <a> WITHOUT href="tel:" or href="mailto:"
-   - Example: <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Quote')">Get Free Quote</button>
+   - Example CORRECT:
+     \`\`\`html
+     <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Quote')" class="btn-consistent text-white" style="background: var(--color-cta); border-radius: var(--radius-button);">
+       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+       </svg>
+       Get Free Quote
+     </button>
+     \`\`\`
+   - Example WRONG: <button onclick="...">📝 Get Free Quote</button> ❌ (has emoji, missing icon)
 
 6. IMAGES (CRITICAL REQUIREMENTS)
    - **ABSOLUTELY NO EXTERNAL URLS**: Do NOT use Google Drive URLs, Unsplash URLs, Pexels, or any external image services
@@ -539,6 +593,9 @@ Output ONLY the HTML code, properly formatted and indented.
 - [ ] Meta tags present (viewport, charset, description)
 - [ ] Structure matches wireframe layout
 - [ ] Class names are semantic and consistent
+- [ ] ALL buttons have SVG icons (w-6 h-6 size ONLY)
+- [ ] ZERO emojis in any button text
+- [ ] Phone links have NO onclick handlers
 
 ### ON VALIDATION FAILURE:
 Send follow-up prompt: "The HTML has these issues: {specific_issues}. Please correct them."
@@ -637,6 +694,9 @@ Store response as STAGE_4_CSS and proceed to Final Assembly.
 - [ ] All template variables are in {{variable}} format
 - [ ] No placeholder or dummy content remains
 - [ ] Code is properly formatted and indented
+- [ ] ALL buttons have SVG icons (w-6 h-6 size - consistent throughout)
+- [ ] ZERO emojis in button text
+- [ ] Phone links use pure tel: with NO onclick handlers
 
 ### OUTPUT FORMAT:
 Return ONLY the complete HTML page with embedded CSS. No explanations, no markdown code fences, just the raw HTML starting with <!DOCTYPE html>.
