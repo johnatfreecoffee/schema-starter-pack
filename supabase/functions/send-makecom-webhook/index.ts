@@ -201,7 +201,14 @@ Build the complete HTML structure for this page WITHOUT image placeholders.
 ### CRITICAL REQUIREMENTS:
 1. **NO <img> TAGS** for photos/placeholders
 
-2. **ICON PLACEMENT RULES** (STRICTLY ENFORCE):
+2. **PAGE STRUCTURE RULES** (STRICTLY ENFORCE):
+   - **NEVER** start page with a top CTA bar, emergency banner, or header section
+   - **FIRST element** in <body> MUST be the hero section
+   - **NO** sticky alerts, warning banners, or promotional bars before hero
+   - **NO** "emergency-alert" divs or similar announcement sections at the top
+   - Page must begin directly with main <section> hero content
+   
+3. **ICON PLACEMENT RULES** (STRICTLY ENFORCE):
    - **DO NOT** place standalone centered icons at the top of hero sections
    - **DO NOT** use icon-wrapper or centered icon containers before headlines
    - **USE icons ONLY in**: Buttons, CTAs, feature cards, list items, deep content sections
@@ -266,6 +273,7 @@ Build the complete HTML structure for this page WITHOUT image placeholders.
    - onclick handlers ONLY for form CTAs (NOT phone links)
 
 ### VALIDATION CHECKLIST:
+- [ ] Page starts with hero section (NO top CTA bars/emergency banners)
 - [ ] NO <img> tags present
 - [ ] ALL buttons have SVG icons (w-6 h-6)
 - [ ] ZERO emojis in any button text
@@ -478,24 +486,32 @@ TEMPLATE VARIABLES AVAILABLE:
 TASK:
 Build the complete HTML structure for this page. Requirements:
 
-1. SEMANTIC HTML5
+1. PAGE STRUCTURE (CRITICAL - STRICTLY ENFORCE):
+   - **FIRST element** inside <body> MUST be the hero <section>
+   - **NEVER** start page with a top CTA bar, emergency banner, or announcement section
+   - **NO** sticky alerts, warning banners, or promotional bars before hero
+   - **NO** "emergency-alert" divs or similar sections at the top
+   - Page must begin directly with main hero content
+   - NO header elements before the hero section
+
+2. SEMANTIC HTML5
    - Use proper semantic elements (<header>, <main>, <section>, <article>, <aside>, <footer>, <nav>)
    - One <h1> element only
    - Proper heading hierarchy (h1 → h2 → h3, no skipping levels)
 
-2. CONTENT INTEGRATION
+3. CONTENT INTEGRATION
    - Place ALL copy from Stage 2 in appropriate HTML elements
    - Follow the wireframe structure exactly
    - Use template variables where company data should appear dynamically
    - Example: <span>{{company_name}}</span> instead of hardcoding "Acme Corp"
 
-3. ACCESSIBILITY
+4. ACCESSIBILITY
    - All images must have descriptive alt attributes
    - Form inputs must have associated labels
    - Use ARIA labels where appropriate
    - Ensure logical tab order
 
-4. BUTTON STRUCTURE (CRITICAL - STRICTLY ENFORCE):
+5. BUTTON STRUCTURE (CRITICAL - STRICTLY ENFORCE):
    - ALL buttons MUST have SVG icons with w-6 h-6 sizing (NO exceptions)
    - ABSOLUTELY NO EMOJIS in button text
    - Icon appears BEFORE button text
@@ -507,7 +523,7 @@ Build the complete HTML structure for this page. Requirements:
    - [ ] Zero emojis in any button text
    - [ ] Icons appear before text
 
-5. STRUCTURE
+6. STRUCTURE
    - Add class names for styling (use semantic, BEM-style naming)
    - Include all sections from the wireframe
    - Add container divs for layout purposes
@@ -583,6 +599,7 @@ Output ONLY the HTML code, properly formatted and indented.
 \`\`\`
 
 ### VALIDATION CHECKLIST:
+- [ ] Page starts with hero section (NO top CTA bars/emergency banners)
 - [ ] Valid HTML5 (proper DOCTYPE, html, head, body structure)
 - [ ] Exactly one <h1> element present
 - [ ] Heading hierarchy is correct (no skipped levels)
@@ -689,6 +706,7 @@ Store response as STAGE_4_CSS and proceed to Final Assembly.
 4. This creates the complete, styled page
 
 ### FINAL VALIDATION CHECKLIST:
+- [ ] Page starts with hero section (NO top CTA bars/emergency banners)
 - [ ] HTML and CSS are properly combined
 - [ ] Page structure is complete (doctype through closing html tag)
 - [ ] All template variables are in {{variable}} format
