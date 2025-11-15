@@ -211,17 +211,38 @@ Build the complete HTML structure for this page WITHOUT image placeholders.
 3. **FORM HANDLING RULES** (CRITICAL - NEVER BUILD FORMS):
    - **NEVER** build custom HTML forms (<form> tags with inputs)
    - **ALL on-page forms** must use the universal lead form placeholder
-   - When user requests an on-page form (contact form, quote form, etc.), use this placeholder:
-     <div data-form-embed="universal-lead-form" data-form-header="Request Your Free Quote" class="form-embed-container"></div>
-   - **DO NOT** create <form>, <input>, <textarea>, <select> elements
-   - **DO NOT** build multi-field forms, even if user specifies field count
-   - Forms are managed in the dashboard, AI only embeds them
-   - Button-triggered forms use onclick="window.openLeadFormModal('Button Text')"
-   - On-page embedded forms use the data-form-embed placeholder above
+   
+   **WHEN TO USE ON-PAGE EMBEDDED FORMS:**
+   - ALWAYS include at least ONE on-page embedded form in every page
+   - Place on-page forms in: Contact sections, "Get Started" sections, bottom of hero sections
+   - Use for primary conversion points where users expect to fill out information
+   - Typical placement: After services section, in contact section, before footer
+   
+   **ON-PAGE FORM PLACEHOLDER:**
+   <div data-form-embed="universal-lead-form" data-form-header="Request Your Free Quote" class="form-embed-container"></div>
+   
+   - Customize data-form-header based on context: "Get Your Free Estimate", "Contact Us Today", "Schedule Your Consultation"
+   - Place in a prominent section with surrounding context/messaging
+   - Style the container to fit the page design
+   
+   **BUTTON-TRIGGERED FORMS:**
+   - Use onclick="window.openLeadFormModal('Button Text')" for CTA buttons throughout page
+   - Buttons complement on-page forms, they don't replace them
+   
+   **DO NOT:**
+   - Create <form>, <input>, <textarea>, <select> elements
+   - Build multi-field forms, even if user specifies field count
+   - Skip on-page forms entirely (every page needs at least one)
    
    **FORM EXAMPLES:**
-   ✅ CORRECT (On-page form):
-      <div data-form-embed="universal-lead-form" data-form-header="Get Your Free Estimate" class="form-embed-container"></div>
+   ✅ CORRECT (On-page form in contact section):
+      <section class="py-20 px-6">
+        <div class="max-w-4xl mx-auto">
+          <h2>Get Your Free Estimate</h2>
+          <p>Fill out the form below and we'll contact you within 24 hours.</p>
+          <div data-form-embed="universal-lead-form" data-form-header="Request Your Free Estimate" class="form-embed-container"></div>
+        </div>
+      </section>
    
    ✅ CORRECT (Button-triggered form):
       <button onclick="window.openLeadFormModal('Schedule Consultation')" class="cta-button">
@@ -229,12 +250,14 @@ Build the complete HTML structure for this page WITHOUT image placeholders.
         Schedule Consultation
       </button>
    
-   ❌ WRONG (Never do this):
+   ❌ WRONG (Custom form - never do this):
       <form>
         <input type="text" name="name">
         <input type="email" name="email">
         <textarea name="message"></textarea>
       </form>
+   
+   ❌ WRONG (No on-page form on entire page - always include at least one)
    
 4. **ICON PLACEMENT RULES** (STRICTLY ENFORCE):
    - **DO NOT** place standalone centered icons at the top of hero sections
@@ -304,7 +327,8 @@ Build the complete HTML structure for this page WITHOUT image placeholders.
 - [ ] Page starts with hero section (NO top CTA bars/emergency banners)
 - [ ] NO <img> tags present
 - [ ] NO custom HTML forms (no <form> tags with inputs)
-- [ ] On-page forms use data-form-embed placeholder only
+- [ ] At least ONE on-page form using data-form-embed placeholder
+- [ ] On-page form is in a prominent section (contact/get-started/conversion section)
 - [ ] ALL buttons have SVG icons (w-6 h-6)
 - [ ] ZERO emojis in any button text
 - [ ] ALL button icons are consistent w-6 h-6 size
@@ -543,12 +567,24 @@ Build the complete HTML structure for this page. Requirements:
 
 5. FORM HANDLING (CRITICAL - NEVER BUILD FORMS):
    - **NEVER** create custom HTML forms with <form> tags
-   - For on-page forms, use the universal lead form placeholder:
-      <div data-form-embed="universal-lead-form" data-form-header="Your CTA Text Here" class="form-embed-container"></div>
-   - This placeholder will be replaced with the actual universal lead form at render time
-   - Even if user requests "a 20-field form" or doesn't specify form type, use this placeholder
-   - Forms are managed in the dashboard, not built by AI
-   - Button CTAs use: onclick="window.openLeadFormModal('Button Text')"
+   - **ALWAYS include at least ONE on-page embedded form per page**
+   
+   **ON-PAGE EMBEDDED FORMS:**
+   - Use this placeholder: <div data-form-embed="universal-lead-form" data-form-header="Your CTA Text Here" class="form-embed-container"></div>
+   - Place in contact sections, get-started sections, or primary conversion areas
+   - Typical placement: After services, in contact section, before footer
+   - Customize data-form-header based on context
+   - This will be replaced with actual form at render time
+   
+   **BUTTON-TRIGGERED FORMS:**
+   - Use for CTA buttons: onclick="window.openLeadFormModal('Button Text')"
+   - These complement on-page forms, don't replace them
+   
+   **NEVER:**
+   - Build custom <form> elements with inputs/textareas
+   - Skip on-page forms entirely
+   - Create multi-field forms even if user specifies field count
+   - Forms are managed in dashboard, not by AI
 
 6. BUTTON STRUCTURE (CRITICAL - STRICTLY ENFORCE):
    - ALL buttons MUST have SVG icons with w-6 h-6 sizing (NO exceptions)
@@ -749,6 +785,7 @@ Store response as STAGE_4_CSS and proceed to Final Assembly.
 - [ ] HTML and CSS are properly combined
 - [ ] Page structure is complete (doctype through closing html tag)
 - [ ] NO custom HTML forms (only data-form-embed placeholders)
+- [ ] At least ONE on-page form embed present in a prominent section
 - [ ] All template variables are in {{variable}} format
 - [ ] No placeholder or dummy content remains
 - [ ] Code is properly formatted and indented
