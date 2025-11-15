@@ -62,11 +62,10 @@ const keepScopedStylesOnly = (input: string, wrapperId: string) => {
     const hasScope = new RegExp(`#${wrapperId}\\b`).test(css);
     const definesRootVars = /:root\b|--color-|--radius-|--icon-/i.test(css);
 
-    // Always keep styles that define CSS variables or are already scoped
+    // Keep styles but don't scope them - let them cascade naturally
+    // This ensures portal content has access to CSS variables
     if (definesRootVars || hasScope) {
-      // Scope CSS variables to the wrapper so they cascade within this section only
-      const scopedCss = css.replace(/:root\b/gi, `#${wrapperId}`);
-      return `<style>${scopedCss}</style>`;
+      return full;
     }
 
     // Also keep other utility styles (gradients, classes, etc.)
