@@ -187,6 +187,8 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
         'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'd', 'viewBox', 'xmlns',
         'points', 'x', 'y', 'width', 'height', 'aria-hidden', 'focusable', 'role', 'fill-rule', 'clip-rule'
       ],
+      // Allow data-* so custom placeholders survive sanitization
+      ALLOW_DATA_ATTR: true,
       ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
     });
     // 7) Patch unresolved CSS variables like {{...}} to HSL defaults
@@ -324,10 +326,30 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
       return;
     }
 
-    // Find all form embed placeholders
-    const formPlaceholders = Array.from(
-      container.querySelectorAll('[data-form-embed]')
+    // Find all form embed placeholders (support several common variants)
+    const selector = [
+      '[data-form-embed]',
+      '[data-form="embed"]',
+      '.form-embed',
+      '#form-embed',
+      '[data-form-placeholder]',
+      '[data-widget="lead-form"]',
+      '[data-component="lead-form"]',
+    ].join(',');
+
+    let formPlaceholders = Array.from(
+      container.querySelectorAll(selector)
     ) as HTMLElement[];
+
+    // If none found, auto-inject a placeholder at the end as a graceful fallback
+    const autoCreated: HTMLElement[] = [];
+    if (formPlaceholders.length === 0) {
+      const auto = document.createElement('div');
+      auto.setAttribute('data-form-embed', '1');
+      container.appendChild(auto);
+      formPlaceholders = [auto];
+      autoCreated.push(auto);
+    }
 
     console.log('Form embed detection:', {
       containerId: processed.id,
@@ -335,10 +357,9 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
       placeholders: formPlaceholders.map(p => ({
         header: p.getAttribute('data-form-header'),
         classes: p.className
-      }))
+      })),
+      autoInjected: autoCreated.length,
     });
-
-    if (formPlaceholders.length === 0) return;
 
     // Create roots and render forms
     const roots: Root[] = [];
@@ -368,6 +389,10 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
         } catch (error) {
           console.error('Failed to unmount form embed:', error);
         }
+      });
+      // Remove any auto-injected placeholders
+      autoCreated.forEach((el) => {
+        try { el.remove(); } catch (_) {}
       });
     };
   }, [processed.id]);
