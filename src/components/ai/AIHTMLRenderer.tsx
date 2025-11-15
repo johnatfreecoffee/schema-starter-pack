@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo } from 'react';
+import { createRoot, Root } from 'react-dom/client';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { useLeadFormModal } from '@/hooks/useLeadFormModal';
+import { LeadFormEmbed } from '@/components/lead-form/LeadFormEmbed';
 
 interface AIHTMLRendererProps {
   html: string;
@@ -311,6 +313,50 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
 
     return () => {
       imgs.forEach((img) => img.removeEventListener('error', onErr));
+    };
+  }, [processed.id]);
+
+  // Inject on-page form components into data-form-embed placeholders
+  useEffect(() => {
+    const container = document.getElementById(processed.id);
+    if (!container) return;
+
+    // Find all form embed placeholders
+    const formPlaceholders = Array.from(
+      container.querySelectorAll('[data-form-embed]')
+    ) as HTMLElement[];
+
+    if (formPlaceholders.length === 0) return;
+
+    // Create roots and render forms
+    const roots: Root[] = [];
+    
+    formPlaceholders.forEach((placeholder) => {
+      const header = placeholder.getAttribute('data-form-header') || 'Get Your Free Quote';
+      
+      try {
+        const root = createRoot(placeholder);
+        root.render(
+          <LeadFormEmbed 
+            headerText={header}
+            showHeader={true}
+          />
+        );
+        roots.push(root);
+      } catch (error) {
+        console.error('Failed to render form embed:', error);
+      }
+    });
+
+    // Cleanup on unmount
+    return () => {
+      roots.forEach(root => {
+        try {
+          root.unmount();
+        } catch (error) {
+          console.error('Failed to unmount form embed:', error);
+        }
+      });
     };
   }, [processed.id]);
 
