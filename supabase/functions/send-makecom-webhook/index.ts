@@ -207,8 +207,36 @@ Build the complete HTML structure for this page WITHOUT image placeholders.
    - **NO** sticky alerts, warning banners, or promotional bars before hero
    - **NO** "emergency-alert" divs or similar announcement sections at the top
    - Page must begin directly with main <section> hero content
+
+3. **FORM HANDLING RULES** (CRITICAL - NEVER BUILD FORMS):
+   - **NEVER** build custom HTML forms (<form> tags with inputs)
+   - **ALL on-page forms** must use the universal lead form placeholder
+   - When user requests an on-page form (contact form, quote form, etc.), use this placeholder:
+     <div data-form-embed="universal-lead-form" data-form-header="Request Your Free Quote" class="form-embed-container"></div>
+   - **DO NOT** create <form>, <input>, <textarea>, <select> elements
+   - **DO NOT** build multi-field forms, even if user specifies field count
+   - Forms are managed in the dashboard, AI only embeds them
+   - Button-triggered forms use onclick="window.openLeadFormModal('Button Text')"
+   - On-page embedded forms use the data-form-embed placeholder above
    
-3. **ICON PLACEMENT RULES** (STRICTLY ENFORCE):
+   **FORM EXAMPLES:**
+   ✅ CORRECT (On-page form):
+      <div data-form-embed="universal-lead-form" data-form-header="Get Your Free Estimate" class="form-embed-container"></div>
+   
+   ✅ CORRECT (Button-triggered form):
+      <button onclick="window.openLeadFormModal('Schedule Consultation')" class="cta-button">
+        <svg class="w-6 h-6">...</svg>
+        Schedule Consultation
+      </button>
+   
+   ❌ WRONG (Never do this):
+      <form>
+        <input type="text" name="name">
+        <input type="email" name="email">
+        <textarea name="message"></textarea>
+      </form>
+   
+4. **ICON PLACEMENT RULES** (STRICTLY ENFORCE):
    - **DO NOT** place standalone centered icons at the top of hero sections
    - **DO NOT** use icon-wrapper or centered icon containers before headlines
    - **USE icons ONLY in**: Buttons, CTAs, feature cards, list items, deep content sections
@@ -275,6 +303,8 @@ Build the complete HTML structure for this page WITHOUT image placeholders.
 ### VALIDATION CHECKLIST:
 - [ ] Page starts with hero section (NO top CTA bars/emergency banners)
 - [ ] NO <img> tags present
+- [ ] NO custom HTML forms (no <form> tags with inputs)
+- [ ] On-page forms use data-form-embed placeholder only
 - [ ] ALL buttons have SVG icons (w-6 h-6)
 - [ ] ZERO emojis in any button text
 - [ ] ALL button icons are consistent w-6 h-6 size
@@ -511,7 +541,16 @@ Build the complete HTML structure for this page. Requirements:
    - Use ARIA labels where appropriate
    - Ensure logical tab order
 
-5. BUTTON STRUCTURE (CRITICAL - STRICTLY ENFORCE):
+5. FORM HANDLING (CRITICAL - NEVER BUILD FORMS):
+   - **NEVER** create custom HTML forms with <form> tags
+   - For on-page forms, use the universal lead form placeholder:
+      <div data-form-embed="universal-lead-form" data-form-header="Your CTA Text Here" class="form-embed-container"></div>
+   - This placeholder will be replaced with the actual universal lead form at render time
+   - Even if user requests "a 20-field form" or doesn't specify form type, use this placeholder
+   - Forms are managed in the dashboard, not built by AI
+   - Button CTAs use: onclick="window.openLeadFormModal('Button Text')"
+
+6. BUTTON STRUCTURE (CRITICAL - STRICTLY ENFORCE):
    - ALL buttons MUST have SVG icons with w-6 h-6 sizing (NO exceptions)
    - ABSOLUTELY NO EMOJIS in button text
    - Icon appears BEFORE button text
@@ -523,7 +562,7 @@ Build the complete HTML structure for this page. Requirements:
    - [ ] Zero emojis in any button text
    - [ ] Icons appear before text
 
-6. STRUCTURE
+7. STRUCTURE
    - Add class names for styling (use semantic, BEM-style naming)
    - Include all sections from the wireframe
    - Add container divs for layout purposes
@@ -709,6 +748,7 @@ Store response as STAGE_4_CSS and proceed to Final Assembly.
 - [ ] Page starts with hero section (NO top CTA bars/emergency banners)
 - [ ] HTML and CSS are properly combined
 - [ ] Page structure is complete (doctype through closing html tag)
+- [ ] NO custom HTML forms (only data-form-embed placeholders)
 - [ ] All template variables are in {{variable}} format
 - [ ] No placeholder or dummy content remains
 - [ ] Code is properly formatted and indented
