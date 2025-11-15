@@ -370,6 +370,45 @@ Create comprehensive, responsive CSS to style the HTML. Use provided CSS variabl
 
 Execute sequentially. Do not proceed to next stage until current stage passes validation.`;
 
+// Stage-Specific Task Instructions
+const stage1Task = `TASK:
+Based on all the context provided, create a detailed wireframe and content structure for the web page requested by the user. Your output must include:
+
+1. PAGE LAYOUT STRUCTURE
+2. CONTENT BLOCKS
+3. INFORMATION HIERARCHY
+4. CALL-TO-ACTION STRATEGY
+5. NAVIGATION STRUCTURE
+
+Format your response as a structured wireframe document.`;
+
+const stage2Task = `TASK:
+Write all copy for this web page based on the approved wireframe and all the provided context. Provide:
+
+1. HEADLINES
+2. BODY COPY
+3. CALLS-TO-ACTION
+4. NAVIGATION & UI TEXT
+5. META CONTENT
+
+Format each piece of copy clearly labeled by section and element type.`;
+
+const stage3Task = `TASK:
+Build the complete HTML structure for this page. Follow all rules in the context. Use Handlebars variables for all dynamic data.
+
+Output ONLY the HTML code, properly formatted and indented.
+
+CRITICAL: Complete the ENTIRE HTML document. Do not leave any sections incomplete. Every opening tag must have a closing tag. Every section must be fully finished.`;
+
+const stage4Task = `TASK:
+1. Create comprehensive, responsive, mobile-first CSS to style the provided HTML.
+2. Use the provided CSS variables from the DESIGN CONTEXT for all colors and design tokens.
+3. Follow all rules from the SYSTEM INSTRUCTIONS regarding CSS variables, Tailwind usage, and responsive design.
+4. Embed the generated CSS inside a <style> tag within the <head> section of the original HTML.
+5. Output ONLY the complete, final HTML file with the embedded CSS and replaced image URLs. Do not add any markdown or explanations.
+
+CRITICAL: Complete the ENTIRE styled HTML document. Ensure all CSS is embedded. Ensure the HTML is complete from <!DOCTYPE html> to </html>. Do not leave anything incomplete.`;
+
 // Stage 1: Wireframe Planning Instructions
 const stage1Instructions = `# STAGE 1: WIREFRAME & CONTENT PLANNING
 
@@ -969,6 +1008,26 @@ serve(async (req) => {
             content: builderInstructions,
             type: "builder_stages",
             length: builderInstructions?.length || null
+          },
+          stage1Task: {
+            content: stage1Task,
+            type: "stage_1_task",
+            length: stage1Task?.length || null
+          },
+          stage2Task: {
+            content: stage2Task,
+            type: "stage_2_task",
+            length: stage2Task?.length || null
+          },
+          stage3Task: {
+            content: stage3Task,
+            type: "stage_3_task",
+            length: stage3Task?.length || null
+          },
+          stage4Task: {
+            content: stage4Task,
+            type: "stage_4_task",
+            length: stage4Task?.length || null
           },
           // Only include imageGenInstructions if images are enabled
           ...(includeImages && {
