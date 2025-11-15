@@ -162,6 +162,7 @@ const UnifiedPageEditor = ({
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [editorMode, setEditorMode] = useState<EditorMode>(aiEditorPreferences.editorMode || 'build');
   const [aiMode, setAiMode] = useState<AIMode>('build');
+  const [includeImages, setIncludeImages] = useState(false);
   const [tokenCount, setTokenCount] = useState(0);
   const [currentHtml, setCurrentHtml] = useState('');
   const [previousHtml, setPreviousHtml] = useState('');
@@ -1669,7 +1670,8 @@ You're building a TEMPLATE ENGINE, not a static website:
             aiTraining: requestBody.context.aiTraining || {},
             systemInstructions,
             userPrompt: currentCommand,
-            supabaseData
+            supabaseData,
+            includeImages
           };
           
           // Get webhook URL from secrets
@@ -2479,6 +2481,31 @@ You're building a TEMPLATE ENGINE, not a static website:
                   </Button>
                 </div>
               </div>
+              
+              {/* Image Toggle - only show in build mode */}
+              {aiMode === 'build' && (
+                <div className="mb-3 p-2 bg-muted/50 rounded-md border">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex-1">
+                      <Label htmlFor="include-images" className="text-xs font-medium">
+                        Include Images in Page
+                      </Label>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        {includeImages 
+                          ? '📸 Generate page with photo placeholders + emojis' 
+                          : '✨ Copy-rich design with icons + emojis only'
+                        }
+                      </p>
+                    </div>
+                    <Switch
+                      id="include-images"
+                      checked={includeImages}
+                      onCheckedChange={setIncludeImages}
+                      className="data-[state=checked]:bg-primary"
+                    />
+                  </div>
+                </div>
+              )}
               
               <p className="text-xs text-muted-foreground mb-2">
                 {aiMode === 'build' 
