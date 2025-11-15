@@ -226,11 +226,25 @@ Build the complete HTML structure for this page WITHOUT image placeholders.
    </button>
    \`\`\`
 
-5. Follow all system instructions for:
+5. **CRITICAL: PHONE LINKS VS. LEAD FORM CTAs** (STRICTLY ENFORCE):
+   
+   **PHONE NUMBER LINKS:**
+   - Structure: <a href="tel:{{phone}}">{{phone}}</a>
+   - **ABSOLUTELY NO onclick ATTRIBUTE** - Phone links must be pure tel: links
+   - **DO NOT ADD window.openLeadFormModal()** - This prevents calls from working
+   - Example CORRECT: <a href="tel:{{phone}}" class="btn">📞 Call: {{phone}}</a>
+   - Example WRONG: <a href="tel:{{phone}}" onclick="...">Call</a> ❌
+   
+   **LEAD FORM CTA BUTTONS:**
+   - Use onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Name')"
+   - ONLY on form CTAs: "Get Quote", "Request Service", "Schedule Inspection"
+   - NOT on phone/email links
+
+6. Follow all system instructions for:
    - Handlebars variables
    - CSS custom properties
    - Semantic HTML
-   - onclick handlers for CTAs
+   - onclick handlers ONLY for form CTAs (NOT phone links)
 
 ### VALIDATION CHECKLIST:
 - [ ] NO <img> tags present
@@ -465,15 +479,21 @@ Build the complete HTML structure for this page. Requirements:
    - Add container divs for layout purposes
    - Include proper meta tags in <head>
 
-5. CRITICAL: PHONE LINKS VS. LEAD FORM CTAs
-   - Phone numbers: Use ONLY <a href="tel:{{phone}}">{{phone}}</a>
-     * NO onclick handlers on phone links
-     * NO window.openLeadFormModal() calls
-     * Phone links should directly initiate calls when clicked
+5. CRITICAL: PHONE LINKS VS. LEAD FORM CTAs (STRICTLY ENFORCE)
    
-   - Lead Form CTAs: Use onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Name')"
-     * ONLY on explicit CTA buttons like "Get Quote", "Request Service", "Book Now"
-     * NOT on phone numbers, email addresses, or direct contact information
+   **PHONE NUMBER LINKS (tel: links):**
+   - Structure: <a href="tel:{{phone}}">{{phone}}</a>
+   - **ABSOLUTELY NO onclick ATTRIBUTE** - Phone links must be pure tel: links
+   - **DO NOT ADD window.openLeadFormModal()** - This prevents calls from working
+   - Phone links should ONLY initiate phone calls, nothing else
+   - Example CORRECT: <a href="tel:{{phone}}" class="phone-button">📞 Call Us</a>
+   - Example WRONG: <a href="tel:{{phone}}" onclick="...">📞 Call Us</a> ❌
+   
+   **LEAD FORM CTA BUTTONS (NOT phone links):**
+   - Use onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Name')"
+   - ONLY on explicit form CTAs: "Get Quote", "Request Service", "Schedule Inspection", "Book Now"
+   - These should be <button> or <a> WITHOUT href="tel:" or href="mailto:"
+   - Example: <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Quote')">Get Free Quote</button>
 
 6. IMAGES (CRITICAL REQUIREMENTS)
    - **ABSOLUTELY NO EXTERNAL URLS**: Do NOT use Google Drive URLs, Unsplash URLs, Pexels, or any external image services
