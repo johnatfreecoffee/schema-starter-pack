@@ -58,6 +58,200 @@ Generate a valid JSON array of objects. Each object represents one image that ne
 ## Context
 The HTML content represents a {{business_name}} web page focused on {{service_or_topic}}. Tailor image prompts to match the business industry and service offerings while maintaining photorealistic quality suitable for a professional website.`;
 
+// Stage Instructions without Images
+const stageInstructionsNoImages = `# MULTI-STAGE WEB PAGE BUILDER - ICON & COPY FOCUSED (NO IMAGES)
+
+You are building a professional web page WITHOUT photo placeholders. Focus on rich copywriting, strategic icon usage, and well-placed emojis for visual interest.
+
+## CRITICAL RULES FOR NO-IMAGE MODE:
+- **DO NOT** include any <img> tags for photos or placeholders
+- **DO NOT** reference photo generation or image sourcing
+- **USE** Lucide icons extensively via data-lucide attributes
+- **USE** emojis sparingly but strategically (in headlines, section breaks, CTAs)
+- **FOCUS** on compelling copy, clear hierarchy, and icon-driven visual design
+- **EMPHASIZE** call-to-action sections with icons and engaging copy
+
+## EMOJI USAGE GUIDELINES:
+- Sprinkle 2-4 emojis per page section (not every line)
+- Use in: Hero headlines, section titles, feature lists, CTAs
+- Examples: "🏠 Your Dream Home Starts Here" | "✨ Premium Services" | "📞 Call Us Today"
+- Keep professional - avoid overuse
+
+---
+
+## STAGE 1: WIREFRAME & CONTENT PLANNING
+
+### Your Role
+You are creating the structural blueprint for a web page. DO NOT write any code in this stage.
+
+### Input Context
+You will receive:
+- Company information (name, industry, services)
+- Brand voice and target audience
+- User's page request
+- System instructions for reference
+
+### Your Task
+Create a detailed wireframe that includes:
+
+1. PAGE LAYOUT STRUCTURE
+   - Hero section
+   - Main content sections (3-5 sections minimum)
+   - Call-to-action placements
+   - Footer structure
+
+2. CONTENT BLOCKS
+   - Name each content block
+   - Define the purpose of each block
+   - Specify what information goes in each block
+   - Note any special features (forms, icon grids, etc.)
+   - **ICON STRATEGY**: Identify where icons will replace traditional images
+
+3. INFORMATION HIERARCHY
+   - What's the primary message?
+   - What are secondary messages?
+   - What supporting details are needed?
+   - Priority order of content sections
+   - **EMOJI PLACEMENT**: Where emojis will enhance headlines
+
+4. CALL-TO-ACTION STRATEGY
+   - Primary CTA placement and purpose
+   - Secondary CTAs (if any)
+   - Contact points locations
+   - Icon usage in CTAs
+
+5. NAVIGATION STRUCTURE
+   - Main navigation items
+   - Footer navigation items
+   - Any special navigation features
+
+Format your response as a structured wireframe document.
+
+### VALIDATION CHECKLIST:
+- [ ] All 5 required sections are present
+- [ ] At least 3 main content sections are defined
+- [ ] Icon strategy clearly outlined
+- [ ] Emoji placement identified
+- [ ] At least one primary CTA is identified
+- [ ] NO image/photo placeholders mentioned
+
+---
+
+## STAGE 2: COPYWRITING
+
+### Your Task
+Write all copy for this web page based on the approved wireframe. Provide:
+
+1. HEADLINES
+   - Main H1 headline (consider adding 1 emoji if appropriate)
+   - Section headlines (H2s) - add emojis to 2-3 key sections
+   - Sub-headlines (H3s) where needed
+
+2. BODY COPY
+   - Write complete copy for each content block
+   - Match the brand voice and tone
+   - Rich, engaging paragraphs
+   - Include key messages naturally
+   - **Add emojis to feature lists and bullet points where appropriate**
+
+3. CALLS-TO-ACTION
+   - Primary CTA button text (consider emoji: "📞 Call Now" or "✨ Get Started")
+   - Secondary CTA text
+   - Supporting CTA microcopy
+
+4. NAVIGATION & UI TEXT
+   - Navigation menu labels
+   - Button labels
+   - Form field labels and placeholders
+   - Footer text
+
+5. META CONTENT
+   - Page title (for browser tab)
+   - Meta description (150-160 characters)
+
+### VALIDATION CHECKLIST:
+- [ ] Copy for every content block from Stage 1
+- [ ] H1 headline is compelling and includes primary keyword
+- [ ] 2-4 emojis strategically placed throughout copy
+- [ ] Body copy matches brand voice/tone
+- [ ] At least one clear, action-oriented CTA
+- [ ] Meta description is 150-160 characters
+
+---
+
+## STAGE 3: HTML STRUCTURE
+
+### Your Task
+Build the complete HTML structure for this page WITHOUT image placeholders.
+
+### CRITICAL REQUIREMENTS:
+1. **NO <img> TAGS** for photos/placeholders
+2. **USE Lucide icons** via data-lucide attributes extensively:
+   - Hero section: 1-2 large decorative icons
+   - Feature sections: icon for each feature
+   - CTAs: icons in all buttons
+   - Service grids: icon per service
+   
+3. **INCLUDE EMOJIS** from Stage 2 copy in the HTML
+
+4. **ICON EXAMPLES**:
+   \`\`\`html
+   <div class="icon-wrapper">
+     <i data-lucide="home" class="w-12 h-12"></i>
+   </div>
+   
+   <button class="cta-button">
+     <i data-lucide="phone" class="w-5 h-5"></i>
+     📞 Call Us Today
+   </button>
+   \`\`\`
+
+5. Follow all system instructions for:
+   - Handlebars variables
+   - CSS custom properties
+   - Semantic HTML
+   - onclick handlers for CTAs
+
+### VALIDATION CHECKLIST:
+- [ ] NO <img> tags present
+- [ ] Lucide icons used throughout (minimum 6-8 icons)
+- [ ] Emojis from Stage 2 copy are in the HTML
+- [ ] All company data uses Handlebars variables
+- [ ] All CTAs have icons
+- [ ] Proper semantic HTML5 structure
+
+---
+
+## STAGE 4: CSS STYLING
+
+### Your Task
+Create comprehensive, responsive CSS to style the HTML. Use provided CSS variables.
+
+### ICON-FOCUSED STYLING:
+- Style icon containers with backgrounds, shadows, gradients
+- Make icons prominent and visually appealing
+- Use color variables for icon theming
+- Ensure icons are responsive
+
+### VALIDATION CHECKLIST:
+- [ ] All colors use CSS custom properties
+- [ ] Icon styles are prominent and attractive
+- [ ] Mobile-first responsive design
+- [ ] Proper spacing and typography
+- [ ] Visual hierarchy is clear without images
+
+---
+
+## EXECUTION ORDER
+
+1. Format Stage 1 prompt → Send to model → Validate → Store
+2. Format Stage 2 prompt (include Stage 1 output) → Send to model → Validate → Store
+3. Format Stage 3 prompt (include Stages 1 & 2 outputs) → Send to model → Validate → Store
+4. Format Stage 4 prompt (include Stages 1 & 3 outputs) → Send to model → Validate → Store
+5. Combine HTML + CSS → Final validation → Return complete page
+
+Execute sequentially. Do not proceed to next stage until current stage passes validation.`;
+
 // Stage 1: Wireframe Planning Instructions
 const stage1Instructions = `# STAGE 1: WIREFRAME & CONTENT PLANNING
 
@@ -499,6 +693,13 @@ This output will be sent directly to the database webhook which expects this exa
 
 ---
 
+## EMOJI USAGE GUIDELINES (APPLIES TO ALL STAGES):
+- Sprinkle 2-4 emojis per page section for visual interest
+- Use in: Hero headlines, section titles, feature lists, call-to-actions
+- Examples: "🏠 Your Dream Home" | "✨ Premium Quality" | "📞 Call Now"
+- Keep it professional and tasteful - avoid emoji overload
+- Emojis should complement, not replace, professional copy
+
 ## EXECUTION ORDER
 
 1. Format Stage 1 prompt → Send to model → Validate → Store
@@ -516,7 +717,7 @@ serve(async (req) => {
   }
 
   try {
-    const { companyData, socialMedia, aiTraining, systemInstructions, userPrompt, supabaseData } = await req.json();
+    const { companyData, socialMedia, aiTraining, systemInstructions, userPrompt, supabaseData, includeImages = false } = await req.json();
 
     // Get webhook URL from environment
     const webhookUrl = Deno.env.get('BREW_PAGE_BUILDER_WEBHOOK');
@@ -532,6 +733,9 @@ serve(async (req) => {
       );
     }
 
+    // Choose instructions based on includeImages flag
+    const builderInstructions = includeImages ? stage1Instructions : stageInstructionsNoImages;
+    
     // Prepare webhook payload in exact format requested by user
     const webhookPayload = [
       {
@@ -566,21 +770,25 @@ serve(async (req) => {
             length: systemInstructions?.length || null
           },
           builderStageInstructions: {
-            content: stage1Instructions || "",
+            content: builderInstructions,
             type: "builder_stages",
-            length: stage1Instructions?.length || null
+            length: builderInstructions?.length || null
           },
-          imageGenInstructions: {
-            content: imageGenInstructions || "",
-            type: "image_generation",
-            length: imageGenInstructions?.length || null
-          },
+          // Only include imageGenInstructions if images are enabled
+          ...(includeImages && {
+            imageGenInstructions: {
+              content: imageGenInstructions || "",
+              type: "image_generation",
+              length: imageGenInstructions?.length || null
+            }
+          }),
           supabaseData: {
             pageType: supabaseData?.pageType || "",
             pageTitle: supabaseData?.pageTitle || "",
             table: supabaseData?.table || "",
             pageId: supabaseData?.pageId || "",
-            pageRowId: supabaseData?.pageRowId || ""
+            pageRowId: supabaseData?.pageRowId || "",
+            includeImages: includeImages
           }
         }
       }
