@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLeadFormModal } from '@/hooks/useLeadFormModal';
 import { MessageSquare } from 'lucide-react';
-import { sanitizeHtml } from '@/lib/sanitize';
+import AIHTMLRenderer from '@/components/ai/AIHTMLRenderer';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 
@@ -104,7 +104,7 @@ const ServiceOverviewPage = () => {
         { serviceId: service.id }
       );
       
-      content = sanitizeHtml(content);
+      // content = sanitizeHtml(content); // Sanitization + CTA normalization handled by AIHTMLRenderer
       
       // Add lazy loading to images
       content = content.replace(
@@ -209,10 +209,7 @@ const ServiceOverviewPage = () => {
         </div>
 
         {renderedContent ? (
-          <div
-            className="prose prose-lg max-w-none mb-12"
-            dangerouslySetInnerHTML={{ __html: renderedContent }}
-          />
+          <AIHTMLRenderer html={renderedContent} className="prose prose-lg max-w-none mb-12" />
         ) : (
           <div className="mb-12">
             <h2 className="text-2xl font-bold mb-4">About Our {service.name} Services</h2>
