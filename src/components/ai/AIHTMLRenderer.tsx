@@ -21,14 +21,33 @@ const ensureWrapper = (input: string) => {
   return { id, html: wrapped };
 };
 
-// Replace inline onclick openLeadFormModal calls with data-lead-form attributes
+// Replace inline onclick openLeadFormModal calls and tel: handlers with data attributes
 const normalizeCTAs = (input: string) => {
   let out = input;
-  // capture single-quoted
-  out = out.replace(/onclick\s*=\s*"[^"]*openLeadFormModal\(\s*'([^']*)\'[^)]*\)"/gi, (_m, p1) => `data-lead-form="${p1.replace(/"/g, '&quot;')}"`);
-  // capture double-quoted
-  out = out.replace(/onclick\s*=\s*"[^"]*openLeadFormModal\(\s*\"([^\"]*)\"[^)]*\)"/gi, (_m, p1) => `data-lead-form="${p1.replace(/"/g, '&quot;')}"`);
-  // Remove any remaining onclick attributes for safety
+  // 1) Convert openLeadFormModal calls to data-lead-form
+  out = out.replace(/onclick\s*=\s*"[^"]*openLeadFormModal\(\s*'([^']*)\'[^)]*\)"/gi, (_m, p1) => `data-lead-form="${p1.replace(/\"/g, '&quot;')}"`);
+  out = out.replace(/onclick\s*=\s*"[^"]*openLeadFormModal\(\s*\"([^\"]*)\"[^)]*\)"/gi, (_m, p1) => `data-lead-form="${p1.replace(/\"/g, '&quot;')}"`);
+
+  // 2) Convert any onclick handlers that navigate to tel: into data-tel
+  const telExtractor = (attr: string) => {
+    const match = attr.match(/tel:\s*([+\d\s().-]+)/i);
+    if (!match) return null;
+    const digits = match[1].replace(/[^+\d]/g, '');
+    return `tel:${digits}`;
+  };
+
+  out = out.replace(/onclick\s*=\s*"([^"]*)"/gi, (full, attr) => {
+    const telUri = telExtractor(attr);
+    if (telUri) return `data-tel="${telUri}"`;
+    return full;
+  });
+  out = out.replace(/onclick\s*=\s*'([^']*)'/gi, (full, attr) => {
+    const telUri = telExtractor(attr);
+    if (telUri) return `data-tel="${telUri}"`;
+    return full;
+  });
+
+  // 3) Remove any remaining onclick attributes for safety
   out = out.replace(/\sonclick\s*=\s*"[^"]*"/gi, '');
   out = out.replace(/\sonclick\s*=\s*'[^']*'/gi, '');
   return out;
@@ -180,7 +199,7 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
     const sanitized = sanitizeHtml(withImgFallbacks, {
       ADD_TAGS: ['style', 'svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g', 'use', 'defs', 'symbol', 'title', 'desc', 'button', 'a'],
       ADD_ATTR: [
-        'data-lead-form', 'href', 'class', 'style', 'onclick', 'type', 'target', 'rel', 'loading', 'data-original-src',
+        'data-lead-form', 'data-tel', 'href', 'class', 'style', 'onclick', 'type', 'target', 'rel', 'loading', 'data-original-src',
         // SVG attributes
         'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'd', 'viewBox', 'xmlns',
         'points', 'x', 'y', 'width', 'height', 'aria-hidden', 'focusable', 'role', 'fill-rule', 'clip-rule'
@@ -275,11 +294,21 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
 
     const onClick = (e: Event) => {
       const target = e.target as HTMLElement;
-      const el = target.closest('[data-lead-form]') as HTMLElement | null;
-      if (el) {
-        const header = el.getAttribute('data-lead-form') || 'Request a Free Quote';
+      const leadEl = target.closest('[data-lead-form]') as HTMLElement | null;
+      if (leadEl) {
+        const header = leadEl.getAttribute('data-lead-form') || 'Request a Free Quote';
         openModal(header, { originatingUrl: window.location.href });
         e.preventDefault();
+        return;
+      }
+
+      const telEl = target.closest('[data-tel]') as HTMLElement | null;
+      if (telEl) {
+        const tel = telEl.getAttribute('data-tel');
+        if (tel) {
+          window.location.href = tel;
+          e.preventDefault();
+        }
       }
     };
 
