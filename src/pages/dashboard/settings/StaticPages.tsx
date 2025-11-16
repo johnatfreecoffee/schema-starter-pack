@@ -108,6 +108,7 @@ const StaticPages = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['static-pages'] });
+      queryClient.invalidateQueries({ queryKey: ['static-pages-nav'] });
       toast({ title: 'Nesting updated successfully' });
     }
   });
