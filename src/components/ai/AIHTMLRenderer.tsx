@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { sanitizeHtml } from '@/lib/sanitize';
 import { useLeadFormModal } from '@/hooks/useLeadFormModal';
 
@@ -224,6 +224,7 @@ const replaceBrokenImageSources = (input: string) => {
 
 const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
   const { openModal } = useLeadFormModal();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const processed = useMemo(() => {
     // 1) Ensure wrapper id
@@ -237,10 +238,10 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
     // 5) Replace broken/placeholder image sources with a visible fallback
     const withImgFallbacks = replaceBrokenImageSources(withoutCdn);
     // 6) Sanitize while allowing <style> and SVG
-    const sanitized = sanitizeHtml(withImgFallbacks, {
+const sanitized = sanitizeHtml(withImgFallbacks, {
       ADD_TAGS: ['style', 'svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g', 'use', 'defs', 'symbol', 'title', 'desc', 'button', 'a'],
       ADD_ATTR: [
-        'data-lead-form', 'data-href', 'href', 'class', 'style', 'onclick', 'type', 'target', 'rel', 'loading', 'data-original-src',
+        'id', 'data-lead-form', 'data-href', 'href', 'class', 'style', 'onclick', 'type', 'target', 'rel', 'loading', 'data-original-src',
         // SVG attributes
         'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'd', 'viewBox', 'xmlns',
         'points', 'x', 'y', 'width', 'height', 'aria-hidden', 'focusable', 'role', 'fill-rule', 'clip-rule'
@@ -330,7 +331,7 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
       openModal(headerText, { originatingUrl: window.location.href });
     };
 
-    const container = document.getElementById(processed.id);
+    const container = containerRef.current || document.getElementById(processed.id);
     if (!container) return;
 
     const onClick = (e: Event) => {
@@ -369,7 +370,7 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
   // Add robust <img> error fallback and lazy loading
   // Add robust <img> error fallback and lazy loading
   useEffect(() => {
-    const container = document.getElementById(processed.id);
+    const container = containerRef.current || document.getElementById(processed.id);
     if (!container) return;
     const imgs = Array.from(container.querySelectorAll('img')) as HTMLImageElement[];
 
