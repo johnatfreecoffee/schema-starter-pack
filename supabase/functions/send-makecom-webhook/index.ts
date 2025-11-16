@@ -210,54 +210,48 @@ Build the complete HTML structure for this page WITHOUT image placeholders.
 
 3. **FORM HANDLING RULES** (CRITICAL - NEVER BUILD FORMS):
    - **NEVER** build custom HTML forms (<form> tags with inputs)
-   - **ALL on-page forms** must use the universal lead form placeholder
+   - **NEVER EMBED OR INJECT FORMS DIRECTLY ON THE PAGE**
+   - **ALL forms must ONLY appear behind buttons in modal popups**
    
-   **WHEN TO USE ON-PAGE EMBEDDED FORMS:**
-   - ALWAYS include at least ONE on-page embedded form in every page
-   - Place on-page forms in: Contact sections, "Get Started" sections, bottom of hero sections
-   - Use for primary conversion points where users expect to fill out information
-   - Typical placement: After services section, in contact section, before footer
+   **BUTTON-TRIGGERED FORMS (ONLY WAY TO DISPLAY FORMS):**
+   - Use onclick="window.openLeadFormModal()" for all form CTAs
+   - Default: Button opens universal lead form in modal popup
+   - Place buttons throughout page: hero, sections, footer, etc.
+   - Style buttons according to design system
+   - If user specifies a particular form (e.g., "emergency contact form"), tag it with appropriate data attributes
    
-   **ON-PAGE FORM PLACEHOLDER:**
-   <div data-form-embed="universal-lead-form" data-form-header="Request Your Free Quote" class="form-embed-container"></div>
-   
-   - Customize data-form-header based on context: "Get Your Free Estimate", "Contact Us Today", "Schedule Your Consultation"
-   - Place in a prominent section with surrounding context/messaging
-   - Style the container to fit the page design
-   
-   **BUTTON-TRIGGERED FORMS:**
-   - Use onclick="window.openLeadFormModal('Button Text')" for CTA buttons throughout page
-   - Buttons complement on-page forms, they don't replace them
-   
-   **DO NOT:**
-   - Create <form>, <input>, <textarea>, <select> elements
-   - Build multi-field forms, even if user specifies field count
-   - Skip on-page forms entirely (every page needs at least one)
+   **WHAT NOT TO DO:**
+   - ❌ NEVER use <div data-form-embed="true"> or similar iframe-like injections
+   - ❌ NEVER build custom <form>, <input>, <textarea>, or other form elements
+   - ❌ NEVER try to embed forms directly on the page
+   - ❌ NEVER create contact forms, quote forms, or any other forms manually
    
    **FORM EXAMPLES:**
-   ✅ CORRECT (On-page form in contact section):
-      <section class="py-20 px-6">
-        <div class="max-w-4xl mx-auto">
-          <h2>Get Your Free Estimate</h2>
-          <p>Fill out the form below and we'll contact you within 24 hours.</p>
-          <div data-form-embed="universal-lead-form" data-form-header="Request Your Free Estimate" class="form-embed-container"></div>
+   ✅ CORRECT (Button-triggered form in hero):
+      <section class="hero">
+        <h1>Get Your Free Quote Today</h1>
+        <p>Professional service you can trust</p>
+        <button onclick="window.openLeadFormModal()">Request Free Quote</button>
+      </section>
+   
+   ✅ CORRECT (Multiple CTAs with button-triggered forms):
+      <section class="services">
+        <h2>Our Services</h2>
+        <div class="service-card">
+          <h3>Emergency Service</h3>
+          <p>24/7 availability</p>
+          <button onclick="window.openLeadFormModal()">Get Emergency Help</button>
         </div>
       </section>
    
-   ✅ CORRECT (Button-triggered form):
-      <button onclick="window.openLeadFormModal('Schedule Consultation')" class="cta-button">
-        <svg class="w-6 h-6">...</svg>
-        Schedule Consultation
-      </button>
+   ❌ WRONG (Embedded form on page):
+      <div data-form-embed="true" data-form-header="Contact Us"></div>
    
-   ❌ WRONG (Custom form - never do this):
+   ❌ WRONG (Custom HTML form):
       <form>
         <input type="text" name="name">
         <input type="email" name="email">
-        <textarea name="message"></textarea>
       </form>
-   
-   ❌ WRONG (No on-page form on entire page - always include at least one)
    
 4. **ICON PLACEMENT RULES** (STRICTLY ENFORCE):
    - **DO NOT** place standalone centered icons at the top of hero sections
@@ -327,8 +321,9 @@ Build the complete HTML structure for this page WITHOUT image placeholders.
 - [ ] Page starts with hero section (NO top CTA bars/emergency banners)
 - [ ] NO <img> tags present
 - [ ] NO custom HTML forms (no <form> tags with inputs)
-- [ ] At least ONE on-page form using data-form-embed placeholder
-- [ ] On-page form is in a prominent section (contact/get-started/conversion section)
+- [ ] NO embedded forms anywhere (no data-form-embed or iframe-like injections)
+- [ ] All form CTAs use onclick="window.openLeadFormModal()" - buttons only
+- [ ] Multiple CTA buttons throughout page for conversions
 - [ ] ALL buttons have SVG icons (w-6 h-6)
 - [ ] ZERO emojis in any button text
 - [ ] ALL button icons are consistent w-6 h-6 size
@@ -606,23 +601,20 @@ Build the complete HTML structure for this page. Requirements:
 
 5. FORM HANDLING (CRITICAL - NEVER BUILD FORMS):
    - **NEVER** create custom HTML forms with <form> tags
-   - **ALWAYS include at least ONE on-page embedded form per page**
+   - **NEVER EMBED OR INJECT FORMS DIRECTLY ON THE PAGE**
+   - **ALL forms must ONLY appear behind buttons in modal popups**
    
-   **ON-PAGE EMBEDDED FORMS:**
-   - Use this placeholder: <div data-form-embed="universal-lead-form" data-form-header="Your CTA Text Here" class="form-embed-container"></div>
-   - Place in contact sections, get-started sections, or primary conversion areas
-   - Typical placement: After services, in contact section, before footer
-   - Customize data-form-header based on context
-   - This will be replaced with actual form at render time
+   **BUTTON-TRIGGERED FORMS (ONLY WAY TO DISPLAY FORMS):**
+   - Use onclick="window.openLeadFormModal('Button Text')" for all form CTAs
+   - Default: Button opens universal lead form in modal popup
+   - Place buttons throughout page for conversion: hero, sections, footer, etc.
+   - If user specifies a particular form (e.g., "emergency contact form"), tag appropriately with data attributes
    
-   **BUTTON-TRIGGERED FORMS:**
-   - Use for CTA buttons: onclick="window.openLeadFormModal('Button Text')"
-   - These complement on-page forms, don't replace them
-   
-   **NEVER:**
-   - Build custom <form> elements with inputs/textareas
-   - Skip on-page forms entirely
-   - Create multi-field forms even if user specifies field count
+   **WHAT NOT TO DO:**
+   - ❌ NEVER use <div data-form-embed="..."> or similar iframe-like injections
+   - ❌ NEVER build custom <form> elements with inputs/textareas
+   - ❌ NEVER try to embed forms directly on the page
+   - ❌ NEVER create multi-field forms even if user specifies field count
    - Forms are managed in dashboard, not by AI
 
 6. BUTTON STRUCTURE (CRITICAL - STRICTLY ENFORCE):
@@ -724,6 +716,9 @@ Output ONLY the HTML code, properly formatted and indented.
 - [ ] Meta tags present (viewport, charset, description)
 - [ ] Structure matches wireframe layout
 - [ ] Class names are semantic and consistent
+- [ ] NO embedded forms anywhere (no data-form-embed or iframe-like injections)
+- [ ] All form CTAs use onclick="window.openLeadFormModal()" - buttons only
+- [ ] Multiple CTA buttons placed strategically for conversions
 - [ ] ALL buttons have SVG icons (w-6 h-6 size ONLY)
 - [ ] ZERO emojis in any button text
 - [ ] Phone links have NO onclick handlers
