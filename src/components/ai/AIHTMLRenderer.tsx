@@ -283,17 +283,32 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className = '' })
         ref={containerRef}
         id={processed.id}
         className={className}
+        style={{ 
+          colorScheme: 'light',
+          color: 'hsl(var(--foreground))',
+          backgroundColor: 'hsl(var(--background))'
+        }}
         dangerouslySetInnerHTML={{ __html: processed.sanitized }}
       />
       
       {/* Create portals for each form placeholder */}
       {portalTargets.map(target => 
         createPortal(
-          <LeadFormEmbed 
+          <div 
             key={target.id}
-            headerText={target.headerText}
-            showHeader={true}
-          />,
+            style={{
+              all: 'initial',
+              color: 'hsl(var(--foreground))',
+              fontFamily: 'inherit'
+            }}
+          >
+            <div style={{ all: 'revert' }}>
+              <LeadFormEmbed 
+                headerText={target.headerText}
+                showHeader={true}
+              />
+            </div>
+          </div>,
           target.node,
           target.id
         )
