@@ -68,6 +68,26 @@ const StaticPage = () => {
     return <Navigate to="/404" replace />;
   }
 
+  // Helper function to extract body content from full HTML documents
+  const extractBodyContent = (html: string): string => {
+    // Check if this is a full HTML document
+    if (html.includes('<!DOCTYPE') || html.match(/<html[^>]*>/i)) {
+      // Extract body content
+      const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+      let bodyContent = bodyMatch ? bodyMatch[1] : html;
+      
+      // Extract and prepend style tags from head
+      const styleMatches = html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi);
+      let styles = '';
+      for (const match of styleMatches) {
+        styles += match[0];
+      }
+      
+      return styles + bodyContent;
+    }
+    return html;
+  };
+
   // Replace Handlebars variables in content using template engine
   // Static pages use ONLY company variables (no service/area variables)
   // Reference: src/templates/STATIC_PAGES_TEMPLATE_GUIDE.md
@@ -156,6 +176,9 @@ const StaticPage = () => {
       // Fallback to original content if template rendering fails
     }
   }
+
+  // Extract body content from full HTML documents
+  renderedContent = extractBodyContent(renderedContent);
 
   // Add lazy loading to images in rendered HTML
   renderedContent = renderedContent.replace(
