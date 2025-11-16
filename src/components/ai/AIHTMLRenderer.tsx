@@ -21,23 +21,51 @@ const ensureWrapper = (input: string) => {
   return { id, html: wrapped };
 };
 
-// Replace inline onclick openLeadFormModal calls and tel: handlers with data attributes
+// Replace inline onclick openLeadFormModal calls and common navigation handlers with safe data attributes
 const normalizeCTAs = (input: string) => {
   let out = input;
   
   // 1) Convert openLeadFormModal calls to data-lead-form (handle both quote styles)
   // Double-quoted onclick with single-quoted argument: onclick="openLeadFormModal('text')"
-  out = out.replace(/onclick\s*=\s*"[^"]*openLeadFormModal\(\s*'([^']*)\'[^)]*\)"/gi, (_m, p1) => `data-lead-form="${p1.replace(/"/g, '&quot;')}"`);
+  out = out.replace(/onclick\s*=\s*"[^"]*openLeadFormModal\(\s*'([^']*)'[^)]*\)"/gi, (_m, p1) => `data-lead-form="${p1.replace(/"/g, '&quot;')}"`);
   // Double-quoted onclick with double-quoted argument: onclick="openLeadFormModal(\"text\")"
   out = out.replace(/onclick\s*=\s*"[^"]*openLeadFormModal\(\s*\"([^\"]*)\"[^)]*\)"/gi, (_m, p1) => `data-lead-form="${p1.replace(/"/g, '&quot;')}"`);
   // Single-quoted onclick with double-quoted argument: onclick='openLeadFormModal("text")'
-  out = out.replace(/onclick\s*=\s*'[^']*openLeadFormModal\(\s*"([^"]*)\"[^)]*\)'/gi, (_m, p1) => `data-lead-form="${p1.replace(/"/g, '&quot;')}"`);
+  out = out.replace(/onclick\s*=\s*'[^']*openLeadFormModal\(\s*"([^"]*)"[^)]*\)'/gi, (_m, p1) => `data-lead-form="${p1.replace(/"/g, '&quot;')}"`);
   // Single-quoted onclick with single-quoted argument: onclick='openLeadFormModal(\'text\')'
   out = out.replace(/onclick\s*=\s*'[^']*openLeadFormModal\(\s*\'([^']*)\'[^)]*\)'/gi, (_m, p1) => `data-lead-form="${p1.replace(/"/g, '&quot;')}"`);
 
-  // 2) Keep tel: href links as-is, but remove onclick handlers for tel: (they should use href instead)
-  // Just remove tel:-related onclick, don't convert them (tel: links work natively via href)
-  out = out.replace(/\sonclick\s*=\s*["'][^"']*(?:window\.location|location\.href|document\.location)[^"']*tel:[^"']*["']/gi, '');
+  // 2) Convert common navigation onclicks into data-href
+  const toDataHref = (attr: string): string | null => {
+    // window.open('url', '_blank'?)
+    let m = attr.match(/window\.open\(\s*['\"]([^'\"]+)['\"][^)]*\)/i);
+    if (m) return m[1];
+
+    // location/assign/replace = 'url' or ('url')
+    m = attr.match(/(?:window\.)?(?:location(?:\.href)?|document\.location(?:\.href)?)\s*=\s*['\"]([^'\"]+)['\"]/i);
+    if (m) return m[1];
+
+    m = attr.match(/(?:window\.)?location\.(?:assign|replace)\(\s*['\"]([^'\"]+)['\"]\s*\)/i);
+    if (m) return m[1];
+
+    // explicit tel/mailto
+    m = attr.match(/(tel:[^'\"\s)]+|mailto:[^'\"\s)]+)/i);
+    if (m) return m[1];
+
+    return null;
+  };
+
+  // Replace onclick="..." with data-href when safe
+  out = out.replace(/onclick\s*=\s*"([^"]*)"/gi, (full, attr) => {
+    const url = toDataHref(attr);
+    if (url) return `data-href="${url.replace(/"/g, '&quot;')}"`;
+    return full;
+  });
+  out = out.replace(/onclick\s*=\s*'([^']*)'/gi, (full, attr) => {
+    const url = toDataHref(attr);
+    if (url) return `data-href="${url.replace(/"/g, '&quot;')}"`;
+    return full;
+  });
 
   // 3) Remove any remaining onclick attributes for safety
   out = out.replace(/\sonclick\s*=\s*"[^"]*"/gi, '');
@@ -192,7 +220,7 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
     const sanitized = sanitizeHtml(withImgFallbacks, {
       ADD_TAGS: ['style', 'svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g', 'use', 'defs', 'symbol', 'title', 'desc', 'button', 'a'],
       ADD_ATTR: [
-        'data-lead-form', 'href', 'class', 'style', 'onclick', 'type', 'target', 'rel', 'loading', 'data-original-src',
+        'data-lead-form', 'data-href', 'href', 'class', 'style', 'onclick', 'type', 'target', 'rel', 'loading', 'data-original-src',
         // SVG attributes
         'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'd', 'viewBox', 'xmlns',
         'points', 'x', 'y', 'width', 'height', 'aria-hidden', 'focusable', 'role', 'fill-rule', 'clip-rule'
@@ -292,6 +320,21 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
         const header = leadEl.getAttribute('data-lead-form') || 'Request a Free Quote';
         openModal(header, { originatingUrl: window.location.href });
         e.preventDefault();
+        return;
+      }
+
+      const hrefEl = target.closest('[data-href]') as HTMLElement | null;
+      if (hrefEl) {
+        const url = hrefEl.getAttribute('data-href');
+        if (url) {
+          const tgt = hrefEl.getAttribute('target');
+          if (tgt === '_blank') {
+            window.open(url, '_blank', 'noopener,noreferrer');
+          } else {
+            window.location.href = url;
+          }
+          e.preventDefault();
+        }
       }
     };
 
