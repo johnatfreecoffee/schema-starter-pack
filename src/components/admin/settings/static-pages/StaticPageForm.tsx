@@ -76,8 +76,23 @@ const StaticPageForm = ({ page, onClose }: StaticPageFormProps) => {
 
   const savePage = useMutation({
     mutationFn: async (data: any) => {
+      // For new pages, get the max display_order and add 1
+      let displayOrder = data.display_order;
+      if (!page) {
+        const { data: existingPages } = await supabase
+          .from('static_pages')
+          .select('display_order')
+          .order('display_order', { ascending: false })
+          .limit(1);
+        
+        displayOrder = existingPages && existingPages.length > 0 
+          ? existingPages[0].display_order + 1 
+          : 0;
+      }
+
       const pageData = {
         ...data,
+        display_order: displayOrder,
         url_path: '/' + data.slug,
         updated_at: new Date().toISOString(),
         published_at: new Date().toISOString(),
@@ -167,15 +182,6 @@ const StaticPageForm = ({ page, onClose }: StaticPageFormProps) => {
           onCheckedChange={(checked) => setValue('show_in_menu', checked)}
         />
         <Label htmlFor="show_in_menu">Show in Navigation Menu</Label>
-      </div>
-
-      <div>
-        <Label htmlFor="display_order">Menu Display Order</Label>
-        <Input
-          id="display_order"
-          type="number"
-          {...register('display_order', { valueAsNumber: true })}
-        />
       </div>
 
       <div>

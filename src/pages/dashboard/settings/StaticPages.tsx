@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Eye, Edit, Archive, ArchiveRestore, Sparkles, FileUp } from 'lucide-react';
+import { Plus, Eye, Edit, Archive, ArchiveRestore, Sparkles, FileUp, ChevronUp, ChevronDown } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import StaticPageForm from '@/components/admin/settings/static-pages/StaticPageForm';
 import HTMLImporter from '@/components/admin/settings/static-pages/HTMLImporter';
@@ -63,6 +63,37 @@ const StaticPages = () => {
       toast({ 
         title: variables.archived ? 'Page archived successfully' : 'Page restored successfully' 
       });
+    }
+  });
+
+  const reorderPage = useMutation({
+    mutationFn: async ({ pageId, direction }: { pageId: string; direction: 'up' | 'down' }) => {
+      if (!pages) return;
+      
+      const currentIndex = pages.findIndex(p => p.id === pageId);
+      if (currentIndex === -1) return;
+      
+      const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+      if (targetIndex < 0 || targetIndex >= pages.length) return;
+      
+      const currentPage = pages[currentIndex];
+      const targetPage = pages[targetIndex];
+      
+      // Swap display orders
+      const { error: error1 } = await supabase
+        .from('static_pages')
+        .update({ display_order: targetPage.display_order })
+        .eq('id', currentPage.id);
+      
+      const { error: error2 } = await supabase
+        .from('static_pages')
+        .update({ display_order: currentPage.display_order })
+        .eq('id', targetPage.id);
+      
+      if (error1 || error2) throw error1 || error2;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['static-pages'] });
     }
   });
 
@@ -153,7 +184,26 @@ const StaticPages = () => {
                               {page.show_in_menu ? 'Yes' : 'No'}
                             </Badge>
                           </TableCell>
-                          <TableCell>{page.display_order}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => reorderPage.mutate({ pageId: page.id, direction: 'up' })}
+                                disabled={pages?.indexOf(page) === 0}
+                              >
+                                <ChevronUp className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => reorderPage.mutate({ pageId: page.id, direction: 'down' })}
+                                disabled={pages?.indexOf(page) === pages.length - 1}
+                              >
+                                <ChevronDown className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
                               <Button variant="ghost" size="sm" onClick={() => window.open(page.url_path, '_blank')}>
