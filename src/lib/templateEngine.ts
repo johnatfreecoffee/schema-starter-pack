@@ -1,5 +1,16 @@
 import Handlebars from 'handlebars';
 
+// Register formatPhone as a Handlebars helper
+Handlebars.registerHelper('formatPhone', function(phone: string) {
+  if (!phone) return '';
+  const cleaned = phone.replace(/\D/g, '');
+  const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+  if (match) {
+    return `(${match[1]}) ${match[2]}-${match[3]}`;
+  }
+  return phone;
+});
+
 /**
  * Renders a Handlebars template with provided data
  * @param templateHtml - The HTML template with {{variables}}
@@ -7,12 +18,20 @@ import Handlebars from 'handlebars';
  * @returns Rendered HTML string
  */
 export function renderTemplate(templateHtml: string, data: Record<string, any>): string {
+  // Format all phone number fields before rendering
+  const formattedData = { ...data };
+  Object.keys(formattedData).forEach(key => {
+    if (key.toLowerCase().includes('phone') && typeof formattedData[key] === 'string') {
+      formattedData[key] = formatPhone(formattedData[key]);
+    }
+  });
+
   try {
     // Compile the Handlebars template
     const template = Handlebars.compile(templateHtml);
     
-    // Render with data
-    const renderedHtml = template(data);
+    // Render with formatted data
+    const renderedHtml = template(formattedData);
     
     return renderedHtml;
   } catch (error) {
