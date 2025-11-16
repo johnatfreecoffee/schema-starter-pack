@@ -6,6 +6,7 @@ import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { renderTemplate, formatPhone } from '@/lib/templateEngine';
 import AIHTMLRenderer from '@/components/ai/AIHTMLRenderer';
+import SiteHTMLIframeRenderer from '@/components/ai/SiteHTMLIframeRenderer';
 
 const StaticPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -177,14 +178,20 @@ const StaticPage = () => {
     }
   }
 
-  // Extract body content from full HTML documents
-  renderedContent = extractBodyContent(renderedContent);
+  // Decide rendering mode: use iframe when Tailwind CDN or full doc is present
+  const needsIframe = /cdn\.tailwindcss\.com/i.test(page.content_html) || /<!DOCTYPE|<html/i.test(page.content_html);
 
-  // Add lazy loading to images in rendered HTML
-  renderedContent = renderedContent.replace(
-    /<img(?![^>]*loading=)/gi,
-    '<img loading="lazy"'
-  );
+  if (!needsIframe) {
+    // Extract body content from full HTML documents for inline rendering
+    renderedContent = extractBodyContent(renderedContent);
+
+    // Add lazy loading to images in rendered HTML
+    renderedContent = renderedContent.replace(
+      /<img(?![^>]*loading=)/gi,
+      '<img loading="lazy"'
+    );
+  }
+
 
   const canonicalUrl = `${window.location.origin}/${page.slug}`;
 
@@ -200,7 +207,11 @@ const StaticPage = () => {
         canonical={canonicalUrl}
         ogImage={companySettings?.logo_url}
       />
-      {isRichLandingPage ? (
+      {needsIframe ? (
+        <div className={isRichLandingPage ? '' : 'container mx-auto px-4 py-8'}>
+          <SiteHTMLIframeRenderer html={renderedContent} />
+        </div>
+      ) : isRichLandingPage ? (
         <AIHTMLRenderer html={renderedContent} />
       ) : (
         // Traditional article-style pages - use prose styling
