@@ -366,7 +366,9 @@ Create comprehensive, responsive CSS to style the HTML. Use provided CSS variabl
 Execute sequentially. Do not proceed to next stage until current stage passes validation.`;
 
 // Stage-Specific Task Instructions
-const stage1Task = `TASK:
+const stage1Task = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Complete your entire wireframe in one response - no partial outputs.
+
+TASK:
 Based on all the context provided, create a detailed wireframe and content structure for the web page requested by the user. Your output must include:
 
 1. PAGE LAYOUT STRUCTURE
@@ -375,9 +377,13 @@ Based on all the context provided, create a detailed wireframe and content struc
 4. CALL-TO-ACTION STRATEGY
 5. NAVIGATION STRUCTURE
 
-Format your response as a structured wireframe document.`;
+Format your response as a structured wireframe document.
 
-const stage2Task = `TASK:
+CRITICAL: Complete ALL 5 sections fully. This is an automation - you cannot stop mid-way or ask for more information.`;
+
+const stage2Task = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Write ALL copy completely in one response - no partial outputs or placeholders.
+
+TASK:
 Write all copy for this web page based on the approved wireframe and all the provided context. Provide:
 
 1. HEADLINES
@@ -386,23 +392,41 @@ Write all copy for this web page based on the approved wireframe and all the pro
 4. NAVIGATION & UI TEXT
 5. META CONTENT
 
-Format each piece of copy clearly labeled by section and element type.`;
+Format each piece of copy clearly labeled by section and element type.
 
-const stage3Task = `TASK:
+CRITICAL: Provide complete, polished copy for EVERY section from the wireframe. This is an automation - you cannot stop mid-way or use placeholders.`;
+
+const stage3Task = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Build the COMPLETE HTML from <!DOCTYPE html> to </html> in one response.
+
+TASK:
 Build the complete HTML structure for this page. Follow all rules in the context. Use Handlebars variables for all dynamic data.
 
 Output ONLY the HTML code, properly formatted and indented.
 
-CRITICAL: Complete the ENTIRE HTML document. Do not leave any sections incomplete. Every opening tag must have a closing tag. Every section must be fully finished.`;
+CRITICAL COMPLETION REQUIREMENTS:
+- Complete the ENTIRE HTML document from <!DOCTYPE html> to </html>
+- Every opening tag MUST have a closing tag
+- Every section MUST be fully finished - no partial sections, no abrupt endings
+- This is an automation - you CANNOT stop mid-way or leave placeholders
+- The HTML must end with a proper footer and closing tags, not a "dull point"
+- ALL content sections from the wireframe must be present and complete`;
 
-const stage4Task = `TASK:
+const stage4Task = `🤖 AUTOMATION MODE: This is the FINAL stage of an automated pipeline. Output the COMPLETE, production-ready HTML page with embedded CSS.
+
+TASK:
 1. Create comprehensive, responsive, mobile-first CSS to style the provided HTML.
 2. Use the provided CSS variables from the DESIGN CONTEXT for all colors and design tokens.
 3. Follow all rules from the SYSTEM INSTRUCTIONS regarding CSS variables, Tailwind usage, and responsive design.
 4. Embed the generated CSS inside a <style> tag within the <head> section of the original HTML.
 5. Output ONLY the complete, final HTML file with the embedded CSS and replaced image URLs. Do not add any markdown or explanations.
 
-CRITICAL: Complete the ENTIRE styled HTML document. Ensure all CSS is embedded. Ensure the HTML is complete from <!DOCTYPE html> to </html>. Do not leave anything incomplete.`;
+CRITICAL COMPLETION REQUIREMENTS:
+- Output the ENTIRE styled HTML document from <!DOCTYPE html> to </html>
+- All CSS must be properly embedded in the <head> section
+- Every section must have complete styles - no missing or incomplete CSS rules
+- This is an automation - this MUST be the final, complete, production-ready page
+- The output must end with a proper closing </html> tag, not a partial page
+- Double-check that ALL sections from previous stages are present and styled`;
 
 // Stage 1: Wireframe Planning Instructions
 const stage1Instructions = `# STAGE 1: WIREFRAME & CONTENT PLANNING
@@ -1039,7 +1063,8 @@ serve(async (req) => {
             pageId: supabaseData?.pageId || "",
             pageRowId: supabaseData?.pageRowId || "",
             includeImages: includeImages
-          }
+          },
+          output_tokens: 80000
         }
       }
     ];
