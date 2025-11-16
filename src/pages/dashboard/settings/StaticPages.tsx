@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Eye, Edit, Archive, ArchiveRestore, Sparkles, FileUp, ChevronUp, ChevronDown } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import StaticPageForm from '@/components/admin/settings/static-pages/StaticPageForm';
 import HTMLImporter from '@/components/admin/settings/static-pages/HTMLImporter';
 import UnifiedPageEditor from '@/components/admin/ai-editor/UnifiedPageEditor';
@@ -28,7 +29,7 @@ const StaticPages = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('static_pages')
-        .select('*')
+        .select('*, parent:parent_page_id(id, title)')
         .eq('archived', activeTab === 'archived')
         .order('display_order', { ascending: true });
       if (error) throw error;
@@ -97,6 +98,20 @@ const StaticPages = () => {
     }
   });
 
+  const updateParentPage = useMutation({
+    mutationFn: async ({ pageId, parentId }: { pageId: string; parentId: string | null }) => {
+      const { error } = await supabase
+        .from('static_pages')
+        .update({ parent_page_id: parentId })
+        .eq('id', pageId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['static-pages'] });
+      toast({ title: 'Nesting updated successfully' });
+    }
+  });
+
   const handleEdit = (page: any) => {
     setSelectedPage(page);
     setShowForm(true);
@@ -157,6 +172,7 @@ const StaticPages = () => {
                         <TableHead>URL Path</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Show in Menu</TableHead>
+                        <TableHead>Nest</TableHead>
                         <TableHead>Order</TableHead>
                         <TableHead>Actions</TableHead>
                       </TableRow>
@@ -183,6 +199,31 @@ const StaticPages = () => {
                             <Badge variant={page.show_in_menu ? 'default' : 'outline'}>
                               {page.show_in_menu ? 'Yes' : 'No'}
                             </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={page.parent_page_id || 'none'}
+                              onValueChange={(value) => 
+                                updateParentPage.mutate({ 
+                                  pageId: page.id, 
+                                  parentId: value === 'none' ? null : value 
+                                })
+                              }
+                            >
+                              <SelectTrigger className="w-[180px] bg-background">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-background z-50">
+                                <SelectItem value="none">None</SelectItem>
+                                {pages
+                                  ?.filter(p => p.id !== page.id && !p.parent_page_id)
+                                  .map(p => (
+                                    <SelectItem key={p.id} value={p.id}>
+                                      {p.title}
+                                    </SelectItem>
+                                  ))}
+                              </SelectContent>
+                            </Select>
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-1">

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { User } from 'lucide-react';
+import { User, ChevronDown } from 'lucide-react';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { Session } from '@supabase/supabase-js';
@@ -24,16 +25,26 @@ const Header = ({ session }: HeaderProps) => {
     return phone;
   };
   
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
   const { data: staticPages } = useQuery({
     queryKey: ['static-pages-nav'],
     queryFn: async () => {
       const { data } = await supabase
         .from('static_pages')
-        .select('id, title, slug, display_order')
+        .select('id, title, slug, display_order, parent_page_id')
         .eq('show_in_menu', true)
         .eq('status', true)
         .order('display_order', { ascending: true });
-      return data || [];
+      
+      // Organize into parent and child pages
+      const parentPages = data?.filter(p => !p.parent_page_id) || [];
+      const childPages = data?.filter(p => p.parent_page_id) || [];
+      
+      return parentPages.map(parent => ({
+        ...parent,
+        children: childPages.filter(child => child.parent_page_id === parent.id)
+      }));
     }
   });
 
@@ -73,15 +84,51 @@ const Header = ({ session }: HeaderProps) => {
                 <Link to="/" className="text-sm font-medium hover:text-primary transition-colors touch-manipulation">
                   Home
                 </Link>
-                {staticPages?.map(page => (
-                  <Link 
-                    key={page.id} 
-                    to={`/${page.slug}`} 
-                    className="text-sm font-medium hover:text-primary transition-colors touch-manipulation"
-                  >
-                    {page.title}
-                  </Link>
-                ))}
+                {staticPages?.map(page => {
+                  const hasChildren = page.children && page.children.length > 0;
+                  
+                  if (hasChildren) {
+                    return (
+                      <div 
+                        key={page.id}
+                        className="relative"
+                        onMouseEnter={() => setOpenDropdown(page.id)}
+                        onMouseLeave={() => setOpenDropdown(null)}
+                      >
+                        <Link 
+                          to={`/${page.slug}`} 
+                          className="text-sm font-medium hover:text-primary transition-colors touch-manipulation flex items-center gap-1"
+                        >
+                          {page.title}
+                          <ChevronDown className="h-3 w-3" />
+                        </Link>
+                        {openDropdown === page.id && (
+                          <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg py-2 min-w-[200px] z-50">
+                            {page.children?.map(child => (
+                              <Link
+                                key={child.id}
+                                to={`/${child.slug}`}
+                                className="block px-4 py-2 text-sm hover:bg-accent transition-colors"
+                              >
+                                {child.title}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+                  
+                  return (
+                    <Link 
+                      key={page.id} 
+                      to={`/${page.slug}`} 
+                      className="text-sm font-medium hover:text-primary transition-colors touch-manipulation"
+                    >
+                      {page.title}
+                    </Link>
+                  );
+                })}
               </nav>
             </div>
 
