@@ -3170,6 +3170,7 @@ export type Database = {
           meta_description: string | null
           meta_keywords: string | null
           meta_title: string | null
+          parent_page_id: string | null
           published_at: string | null
           show_in_menu: boolean | null
           slug: string
@@ -3191,6 +3192,7 @@ export type Database = {
           meta_description?: string | null
           meta_keywords?: string | null
           meta_title?: string | null
+          parent_page_id?: string | null
           published_at?: string | null
           show_in_menu?: boolean | null
           slug: string
@@ -3212,6 +3214,7 @@ export type Database = {
           meta_description?: string | null
           meta_keywords?: string | null
           meta_title?: string | null
+          parent_page_id?: string | null
           published_at?: string | null
           show_in_menu?: boolean | null
           slug?: string
@@ -3221,7 +3224,15 @@ export type Database = {
           updated_by?: string | null
           url_path?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "static_pages_parent_page_id_fkey"
+            columns: ["parent_page_id"]
+            isOneToOne: false
+            referencedRelation: "static_pages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {

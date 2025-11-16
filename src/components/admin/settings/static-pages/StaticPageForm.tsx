@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Editor from '@monaco-editor/react';
 
 /**
@@ -48,6 +49,7 @@ const StaticPageForm = ({ page, onClose }: StaticPageFormProps) => {
       status: true,
       show_in_menu: true,
       is_homepage: false,
+      parent_page_id: null,
       display_order: 0
     }
   });
@@ -58,6 +60,20 @@ const StaticPageForm = ({ page, onClose }: StaticPageFormProps) => {
   const isHomepage = watch('is_homepage');
   const showInMenu = watch('show_in_menu');
   const status = watch('status');
+  const parentPageId = watch('parent_page_id');
+
+  const { data: availablePages } = useQuery({
+    queryKey: ['static-pages-for-parent'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('static_pages')
+        .select('id, title')
+        .eq('archived', false)
+        .is('parent_page_id', null)
+        .order('title');
+      return data || [];
+    }
+  });
 
   const generateSlug = (text: string) => {
     return text
@@ -182,6 +198,28 @@ const StaticPageForm = ({ page, onClose }: StaticPageFormProps) => {
           onCheckedChange={(checked) => setValue('show_in_menu', checked)}
         />
         <Label htmlFor="show_in_menu">Show in Navigation Menu</Label>
+      </div>
+
+      <div>
+        <Label htmlFor="parent_page_id">Nested Under (Parent Page)</Label>
+        <Select
+          value={parentPageId || 'none'}
+          onValueChange={(value) => setValue('parent_page_id', value === 'none' ? null : value)}
+        >
+          <SelectTrigger className="bg-background">
+            <SelectValue placeholder="Select parent page" />
+          </SelectTrigger>
+          <SelectContent className="bg-background z-50">
+            <SelectItem value="none">None (Top Level)</SelectItem>
+            {availablePages
+              ?.filter(p => p.id !== page?.id)
+              .map(p => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.title}
+                </SelectItem>
+              ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div>
