@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { useCachedQuery } from '@/hooks/useCachedQuery';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import AIHTMLRenderer from '@/components/ai/AIHTMLRenderer';
+import SiteHTMLIframeRenderer from '@/components/ai/SiteHTMLIframeRenderer';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { renderTemplate } from '@/lib/templateEngine';
 
@@ -118,7 +119,13 @@ const Services = () => {
       }
     }
 
-    renderedContent = renderedContent.replace(/<img(?![^>]*loading=)/gi, '<img loading="lazy"');
+    // Decide rendering mode: use iframe when Tailwind CDN or full doc is present
+    const needsIframe = /cdn\.tailwindcss\.com/i.test(staticServices.content_html) || /<!DOCTYPE|<html/i.test(staticServices.content_html);
+
+    if (!needsIframe) {
+      // Lazy-load images
+      renderedContent = renderedContent.replace(/<img(?![^>]*loading=)/gi, '<img loading="lazy"');
+    }
 
     const canonicalUrl = `${window.location.origin}/services`;
     const isRichLandingPage = renderedContent.includes('class="min-h-screen"') || renderedContent.includes('className="min-h-screen"');
@@ -131,7 +138,11 @@ const Services = () => {
           canonical={canonicalUrl}
           ogImage={company?.logo_url}
         />
-        {isRichLandingPage ? (
+        {needsIframe ? (
+          <div className={isRichLandingPage ? '' : 'container mx-auto px-4 py-8'}>
+            <SiteHTMLIframeRenderer html={renderedContent} />
+          </div>
+        ) : isRichLandingPage ? (
           <AIHTMLRenderer html={renderedContent} />
         ) : (
           <div className="container mx-auto px-4 py-8">
