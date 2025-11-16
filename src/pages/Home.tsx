@@ -7,6 +7,7 @@ import { SEOHead } from '@/components/seo/SEOHead';
 import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 import { renderTemplate, formatPhone } from '@/lib/templateEngine';
 import AIHTMLRenderer from '@/components/ai/AIHTMLRenderer';
+import SiteHTMLIframeRenderer from '@/components/ai/SiteHTMLIframeRenderer';
 
 const Home = () => {
   const { data: homepage, isLoading } = useCachedQuery({
@@ -157,11 +158,13 @@ const Home = () => {
       }
     }
 
-    // Add lazy loading to images in rendered HTML
-    renderedContent = renderedContent.replace(
-      /<img(?![^>]*loading=)/gi,
-      '<img loading="lazy"'
-    );
+    // Decide rendering mode: use iframe when Tailwind CDN or full doc is present
+    const needsIframe = /cdn\.tailwindcss\.com/i.test(homepage.content_html) || /<!DOCTYPE|<html/i.test(homepage.content_html);
+
+    if (!needsIframe) {
+      // Lazy-load images
+      renderedContent = renderedContent.replace(/<img(?![^>]*loading=)/gi, '<img loading="lazy"');
+    }
 
     // Check if this is a rich landing page (starts with specific container classes)
     const isRichLandingPage = renderedContent.includes('class="min-h-screen"') || 
@@ -184,7 +187,9 @@ const Home = () => {
           url={window.location.origin}
           logo={companySettings?.logo_url}
         />
-        {isRichLandingPage ? (
+        {needsIframe ? (
+          <SiteHTMLIframeRenderer html={renderedContent} />
+        ) : isRichLandingPage ? (
           <AIHTMLRenderer html={renderedContent} />
         ) : (
           <div className="container mx-auto px-4 py-8">
