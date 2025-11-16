@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { User, ChevronDown } from 'lucide-react';
+import { User, ChevronDown, Menu, X } from 'lucide-react';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { Session } from '@supabase/supabase-js';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { LazyImage } from '@/components/ui/lazy-image';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 interface HeaderProps {
   session: Session | null;
@@ -26,6 +27,7 @@ const Header = ({ session }: HeaderProps) => {
   };
   
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { data: staticPages } = useQuery({
     queryKey: ['static-pages-nav'],
@@ -157,6 +159,51 @@ const Header = ({ session }: HeaderProps) => {
                   </Link>
                 </Button>
               )}
+              
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="md:hidden min-h-touch min-w-touch">
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Toggle menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[280px]">
+                  <nav className="flex flex-col gap-4 mt-8">
+                    <Link 
+                      to="/" 
+                      className="text-base font-medium hover:text-primary transition-colors py-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Home
+                    </Link>
+                    {staticPages?.map(page => (
+                      <div key={page.id}>
+                        <Link 
+                          to={`/${page.slug}`}
+                          className="text-base font-medium hover:text-primary transition-colors py-2 block"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {page.title}
+                        </Link>
+                        {page.children && page.children.length > 0 && (
+                          <div className="ml-4 mt-2 flex flex-col gap-2">
+                            {page.children.map(child => (
+                              <Link
+                                key={child.id}
+                                to={`/${child.slug}`}
+                                className="text-sm text-muted-foreground hover:text-primary transition-colors py-1 block"
+                                onClick={() => setMobileMenuOpen(false)}
+                              >
+                                {child.title}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </nav>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
         </div>
