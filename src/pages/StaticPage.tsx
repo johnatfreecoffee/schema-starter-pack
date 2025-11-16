@@ -208,9 +208,7 @@ const StaticPage = () => {
         ogImage={companySettings?.logo_url}
       />
       {needsIframe ? (
-        <div className={isRichLandingPage ? '' : 'container mx-auto px-4 py-8'}>
-          <SiteHTMLIframeRenderer html={renderedContent} />
-        </div>
+        <SiteHTMLIframeRenderer html={renderedContent} />
       ) : isRichLandingPage ? (
         <AIHTMLRenderer html={renderedContent} />
       ) : (
