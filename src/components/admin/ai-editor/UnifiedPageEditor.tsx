@@ -547,7 +547,17 @@ const UnifiedPageEditor = ({
     if (pageType === 'static' || pageType === 'generated') {
       console.log('Setting preview for', {
         pageType,
-        length: htmlToRender.length
+        length: htmlToRender.length,
+        hasSiteSettings: !!siteSettings,
+        hasCompanySettings: !!companySettings,
+        siteSettingsSample: siteSettings ? {
+          primary_color: siteSettings.primary_color,
+          button_border_radius: siteSettings.button_border_radius
+        } : 'missing',
+        companySettingsSample: companySettings ? {
+          business_name: companySettings.business_name,
+          phone: companySettings.phone
+        } : 'missing'
       });
       
       // Always attempt to process Handlebars variables with available data (use sane fallbacks)
@@ -577,20 +587,20 @@ const UnifiedPageEditor = ({
             primary_color: normalizeCssColor(siteSettings?.primary_color) || 'hsl(221 83% 53%)',
             secondary_color: normalizeCssColor(siteSettings?.secondary_color) || 'hsl(210 40% 96%)',
             accent_color: normalizeCssColor(siteSettings?.accent_color) || 'hsl(280 65% 60%)',
-            success_color: normalizeCssColor(siteSettings?.success_color) || '#10b981',
-            warning_color: normalizeCssColor(siteSettings?.warning_color) || '#f59e0b',
-            info_color: normalizeCssColor(siteSettings?.info_color) || '#3b82f6',
-            danger_color: normalizeCssColor(siteSettings?.danger_color) || '#ef4444',
-            bg_primary_color: normalizeCssColor((siteSettings as any)?.bg_primary_color) || '#ffffff',
-            bg_secondary_color: normalizeCssColor((siteSettings as any)?.bg_secondary_color) || '#f8f9fa',
-            bg_tertiary_color: normalizeCssColor((siteSettings as any)?.bg_tertiary_color) || '#e9ecef',
-            text_primary_color: normalizeCssColor((siteSettings as any)?.text_primary_color) || '#212529',
-            text_secondary_color: normalizeCssColor((siteSettings as any)?.text_secondary_color) || '#6c757d',
-            text_muted_color: normalizeCssColor((siteSettings as any)?.text_muted_color) || '#adb5bd',
-            border_color: normalizeCssColor((siteSettings as any)?.border_color) || '#dee2e6',
-            card_bg_color: normalizeCssColor((siteSettings as any)?.card_bg_color) || '#ffffff',
-            feature_color: normalizeCssColor((siteSettings as any)?.feature_color) || '#0d6efd',
-            cta_color: normalizeCssColor((siteSettings as any)?.cta_color) || '#198754',
+            success_color: normalizeCssColor(siteSettings?.success_color) || 'hsl(142 71% 45%)',
+            warning_color: normalizeCssColor(siteSettings?.warning_color) || 'hsl(38 92% 50%)',
+            info_color: normalizeCssColor(siteSettings?.info_color) || 'hsl(221 83% 53%)',
+            danger_color: normalizeCssColor(siteSettings?.danger_color) || 'hsl(0 84% 60%)',
+            bg_primary_color: normalizeCssColor((siteSettings as any)?.bg_primary_color) || 'hsl(0 0% 100%)',
+            bg_secondary_color: normalizeCssColor((siteSettings as any)?.bg_secondary_color) || 'hsl(210 17% 98%)',
+            bg_tertiary_color: normalizeCssColor((siteSettings as any)?.bg_tertiary_color) || 'hsl(214 15% 91%)',
+            text_primary_color: normalizeCssColor((siteSettings as any)?.text_primary_color) || 'hsl(222 47% 11%)',
+            text_secondary_color: normalizeCssColor((siteSettings as any)?.text_secondary_color) || 'hsl(215 14% 34%)',
+            text_muted_color: normalizeCssColor((siteSettings as any)?.text_muted_color) || 'hsl(215 9% 61%)',
+            border_color: normalizeCssColor((siteSettings as any)?.border_color) || 'hsl(214 32% 91%)',
+            card_bg_color: normalizeCssColor((siteSettings as any)?.card_bg_color) || 'hsl(0 0% 100%)',
+            feature_color: normalizeCssColor((siteSettings as any)?.feature_color) || 'hsl(217 91% 60%)',
+            cta_color: normalizeCssColor((siteSettings as any)?.cta_color) || 'hsl(142 76% 36%)',
             button_border_radius: siteSettings?.button_border_radius || 8,
             card_border_radius: siteSettings?.card_border_radius || 12,
             icon_stroke_width: siteSettings?.icon_stroke_width || 2,
@@ -603,6 +613,15 @@ const UnifiedPageEditor = ({
           aiTraining: aiTraining || {},
           serviceAreas: serviceAreas || [],
         };
+        
+        console.log('Rendering template with data:', {
+          siteSettingsInData: templateData.siteSettings,
+          companyInData: {
+            business_name: templateData.business_name,
+            phone: templateData.phone
+          }
+        });
+        
         const rendered = renderTemplate(htmlToRender, templateData);
         setRenderedPreview(rendered);
       } catch (error) {
@@ -610,7 +629,6 @@ const UnifiedPageEditor = ({
         // Fallback to raw HTML if rendering fails
         setRenderedPreview(htmlToRender);
       }
-      return;
       return;
     }
 
