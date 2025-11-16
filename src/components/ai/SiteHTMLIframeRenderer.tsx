@@ -118,7 +118,7 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
       className={className || 'w-full border-0'}
       style={{ width: '100%', display: 'block', height: '100vh' }}
       title="Static Page Content"
-      sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+      sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation"
     />
   );
 };
