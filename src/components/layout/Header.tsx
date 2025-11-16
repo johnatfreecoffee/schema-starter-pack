@@ -103,7 +103,7 @@ const Header = ({ session }: HeaderProps) => {
                           <ChevronDown className="h-3 w-3" />
                         </Link>
                         {openDropdown === page.id && (
-                          <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg py-2 min-w-[200px] z-50">
+                          <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg py-2 min-w-[200px] z-[9999]">
                             {page.children?.map(child => (
                               <Link
                                 key={child.id}
