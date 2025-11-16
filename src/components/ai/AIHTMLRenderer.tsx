@@ -41,6 +41,20 @@ const normalizeCTAs = (input: string) => {
     return `data-lead-form="${headerText.replace(/"/g, '&quot;')}"`;
   });
 
+  // Also convert href="javascript:openLeadFormModal(...)" patterns to data-lead-form + safe href
+  out = out.replace(/href\s*=\s*"javascript:[^"]*openLeadFormModal\(([^)]*)\)[^"]*"/gi, (match, args) => {
+    let header = 'Request a Free Quote';
+    const m = String(args).match(/['"]\s*([^'"\)]*?)\s*['"]/);
+    if (m) header = m[1];
+    return `data-lead-form="${header.replace(/"/g, '&quot;')}" href="#"`;
+  });
+  out = out.replace(/href\s*=\s*'javascript:[^']*openLeadFormModal\(([^)]*)\)[^']*'/gi, (match, args) => {
+    let header = 'Request a Free Quote';
+    const m = String(args).match(/['"]\s*([^'"\)]*?)\s*['"]/);
+    if (m) header = m[1];
+    return `data-lead-form="${header.replace(/"/g, '&quot;')}" href="#"`;
+  });
+
   // 2) Convert common navigation onclicks into data-href
   const toDataHref = (attr: string): string | null => {
     // window.open('url', '_blank'?)
@@ -324,6 +338,7 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
       const leadEl = target.closest('[data-lead-form]') as HTMLElement | null;
       if (leadEl) {
         const header = leadEl.getAttribute('data-lead-form') || 'Request a Free Quote';
+        console.info('[AIHTMLRenderer] Opening lead form', { header, origin: window.location.href });
         openModal(header, { originatingUrl: window.location.href });
         e.preventDefault();
         return;
@@ -334,6 +349,7 @@ const AIHTMLRenderer: React.FC<AIHTMLRendererProps> = ({ html, className }) => {
         const url = hrefEl.getAttribute('data-href');
         if (url) {
           const tgt = hrefEl.getAttribute('target');
+          console.info('[AIHTMLRenderer] Navigating from data-href', { url, target: tgt });
           if (tgt === '_blank') {
             window.open(url, '_blank', 'noopener,noreferrer');
           } else {
