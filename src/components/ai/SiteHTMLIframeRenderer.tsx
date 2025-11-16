@@ -1,12 +1,72 @@
 import React, { useEffect, useRef } from 'react';
+import { useLeadFormModal } from '@/hooks/useLeadFormModal';
 
 interface SiteHTMLIframeRendererProps {
   html: string;
   className?: string;
 }
 
+// Minimal CTA normalization for iframe content
+const normalizeCTAs = (input: string) => {
+  let out = input || '';
+  // openLeadFormModal in onclick
+  out = out.replace(/onclick\s*=\s*"[^"]*openLeadFormModal\([^)]*\)[^"]*"/gi, (m) => {
+    const a = m.match(/openLeadFormModal\(\s*['"]\s*([^'"]*)\s*['"]\s*[,)]/i);
+    const header = a ? a[1] : 'Request a Free Quote';
+    return `data-lead-form="${header.replace(/"/g, '&quot;')}"`;
+  });
+  out = out.replace(/onclick\s*=\s*'[^']*openLeadFormModal\([^)]*\)[^']*'/gi, (m) => {
+    const a = m.match(/openLeadFormModal\(\s*['"]\s*([^'"]*)\s*['"]\s*[,)]/i);
+    const header = a ? a[1] : 'Request a Free Quote';
+    return `data-lead-form="${header.replace(/"/g, '&quot;')}"`;
+  });
+  // href="javascript:openLeadFormModal(...)"
+  out = out.replace(/href\s*=\s*"javascript:[^"]*openLeadFormModal\(([^)]*)\)[^"]*"/gi, (_m, args) => {
+    let header = 'Request a Free Quote';
+    const mm = String(args).match(/['"]\s*([^'"\)]*?)\s*['"]/);
+    if (mm) header = mm[1];
+    return `data-lead-form="${header.replace(/"/g, '&quot;')}" href="#"`;
+  });
+  out = out.replace(/href\s*=\s*'javascript:[^']*openLeadFormModal\(([^)]*)\)[^']*'/gi, (_m, args) => {
+    let header = 'Request a Free Quote';
+    const mm = String(args).match(/['"]\s*([^'"\)]*?)\s*['"]/);
+    if (mm) header = mm[1];
+    return `data-lead-form="${header.replace(/"/g, '&quot;')}" href="#"`;
+  });
+
+  // Convert common navigation onclicks to data-href
+  const toDataHref = (attr: string): string | null => {
+    let m = attr.match(/window\.open\(\s*['\"]([^'\"]+)['\"][^)]*\)/i);
+    if (m) return m[1];
+    m = attr.match(/(?:window\.)?(?:location(?:\.href)?|document\.location(?:\.href)?)\s*=\s*['\"]([^'\"]+)['\"]/i);
+    if (m) return m[1];
+    m = attr.match(/(?:window\.)?location\.(?:assign|replace)\(\s*['\"]([^'\"]+)['\"]\s*\)/i);
+    if (m) return m[1];
+    m = attr.match(/(tel:[^'"\s)]+|mailto:[^'"\s)]+)/i);
+    if (m) return m[1];
+    return null;
+  };
+
+  out = out.replace(/onclick\s*=\s*"([^"]*)"/gi, (full, attr) => {
+    const url = toDataHref(attr);
+    if (url) return `data-href="${url.replace(/"/g, '&quot;')}"`;
+    return full;
+  });
+  out = out.replace(/onclick\s*=\s*'([^']*)'/gi, (full, attr) => {
+    const url = toDataHref(attr);
+    if (url) return `data-href="${url.replace(/"/g, '&quot;')}"`;
+    return full;
+  });
+
+  // Remove remaining onclicks for safety
+  out = out.replace(/\sonclick\s*=\s*"[^"]*"/gi, '');
+  out = out.replace(/\sonclick\s*=\s*'[^']*'/gi, '');
+  return out;
+};
+
 const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, className }) => {
   const ref = useRef<HTMLIFrameElement>(null);
+  const { openModal } = useLeadFormModal();
 
   useEffect(() => {
     const iframe = ref.current;
@@ -25,9 +85,62 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         return;
       }
 
-      // Write the provided HTML as-is (allows Tailwind CDN and any inline styles)
-      doc.write(html);
+      // Normalize CTAs before writing, then write the processed HTML
+      const processed = normalizeCTAs(html);
+      doc.write(processed);
       doc.close();
+
+      // Click handling inside iframe: open lead form, tel/mailto, data-href
+      const onClick = (e: Event) => {
+        const target = e.target as HTMLElement | null;
+        if (!target) return;
+
+        // Lead form buttons
+        const leadEl = (target.closest('[data-lead-form]') as HTMLElement) || null;
+        if (leadEl) {
+          const header = leadEl.getAttribute('data-lead-form') || 'Request a Free Quote';
+          console.info('[SiteHTMLIframeRenderer] Opening lead form', { header, origin: window.location.href });
+          openModal(header, { originatingUrl: window.location.href });
+          e.preventDefault();
+          return;
+        }
+
+        // data-href navigation
+        const hrefEl = (target.closest('[data-href]') as HTMLElement) || null;
+        if (hrefEl) {
+          const url = hrefEl.getAttribute('data-href');
+          const tgt = hrefEl.getAttribute('target');
+          if (url) {
+            console.info('[SiteHTMLIframeRenderer] Navigating from data-href', { url, target: tgt });
+            if (tgt === '_blank') {
+              window.open(url, '_blank', 'noopener,noreferrer');
+            } else {
+              window.location.href = url;
+            }
+            e.preventDefault();
+            return;
+          }
+        }
+
+        // tel:, mailto:, sms:
+        const a = (target.closest('a[href]') as HTMLAnchorElement) || null;
+        if (a) {
+          const href = a.getAttribute('href') || '';
+          const tgt = a.getAttribute('target') || '';
+          if (/^(tel:|mailto:|sms:)/i.test(href)) {
+            console.info('[SiteHTMLIframeRenderer] Handling special link', { href, target: tgt });
+            if (tgt === '_blank') {
+              window.open(href, '_blank', 'noopener,noreferrer');
+            } else {
+              window.location.href = href;
+            }
+            e.preventDefault();
+            return;
+          }
+        }
+      };
+
+      doc.addEventListener('click', onClick, { capture: true });
 
       const resize = () => {
         if (!iframe) return;
@@ -102,6 +215,7 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         if ((iframe as any)._resizeInterval) clearInterval((iframe as any)._resizeInterval);
         if (ro) ro.disconnect();
         if (mo) mo.disconnect();
+        doc.removeEventListener('click', onClick);
         Array.from(doc.images || []).forEach((img) => {
           img.removeEventListener('load', resize);
           img.removeEventListener('error', resize);
