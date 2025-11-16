@@ -13,7 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-import { Loader2, Send, Sparkles, Eye, Code, Trash2, AlertCircle, Copy, Check } from 'lucide-react';
+import { Loader2, Send, Sparkles, Eye, Code, Trash2, AlertCircle, Copy, Check, Download } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
 import TruncatedMessage from './TruncatedMessage';
@@ -2715,6 +2715,30 @@ You're building a TEMPLATE ENGINE, not a static website:
                       >
                         <Trash2 className="h-3 w-3 mr-1" />
                         Clear
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const blob = new Blob([displayedHtml], { type: 'text/html' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `${pageTitle.replace(/\s+/g, '-').toLowerCase()}-draft.html`;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                          URL.revokeObjectURL(url);
+                          toast({
+                            title: 'Downloaded',
+                            description: 'Draft code downloaded successfully',
+                          });
+                        }}
+                        className="h-7 px-2 text-xs"
+                        title="Download draft code"
+                      >
+                        <Download className="h-3 w-3 mr-1" />
+                        Download
                       </Button>
                     </div>
                   </div>
