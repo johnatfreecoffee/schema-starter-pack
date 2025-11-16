@@ -25,15 +25,21 @@ const ensureWrapper = (input: string) => {
 const normalizeCTAs = (input: string) => {
   let out = input;
   
-  // 1) Convert openLeadFormModal calls to data-lead-form (handle both quote styles)
-  // Double-quoted onclick with single-quoted argument: onclick="openLeadFormModal('text')"
-  out = out.replace(/onclick\s*=\s*"[^"]*openLeadFormModal\(\s*'([^']*)'[^)]*\)"/gi, (_m, p1) => `data-lead-form="${p1.replace(/"/g, '&quot;')}"`);
-  // Double-quoted onclick with double-quoted argument: onclick="openLeadFormModal(\"text\")"
-  out = out.replace(/onclick\s*=\s*"[^"]*openLeadFormModal\(\s*\"([^\"]*)\"[^)]*\)"/gi, (_m, p1) => `data-lead-form="${p1.replace(/"/g, '&quot;')}"`);
-  // Single-quoted onclick with double-quoted argument: onclick='openLeadFormModal("text")'
-  out = out.replace(/onclick\s*=\s*'[^']*openLeadFormModal\(\s*"([^"]*)"[^)]*\)'/gi, (_m, p1) => `data-lead-form="${p1.replace(/"/g, '&quot;')}"`);
-  // Single-quoted onclick with single-quoted argument: onclick='openLeadFormModal(\'text\')'
-  out = out.replace(/onclick\s*=\s*'[^']*openLeadFormModal\(\s*\'([^']*)\'[^)]*\)'/gi, (_m, p1) => `data-lead-form="${p1.replace(/"/g, '&quot;')}"`);
+  // 1) Convert openLeadFormModal calls to data-lead-form
+  // Match any onclick containing openLeadFormModal and extract the first string argument (if any)
+  out = out.replace(/onclick\s*=\s*"[^"]*openLeadFormModal\([^)]*\)[^"]*"/gi, (match) => {
+    // Try to extract the first string argument
+    const argMatch = match.match(/openLeadFormModal\(\s*['"]\s*([^'"]*)\s*['"]\s*[,)]/i);
+    const headerText = argMatch ? argMatch[1] : 'Request a Free Quote';
+    return `data-lead-form="${headerText.replace(/"/g, '&quot;')}"`;
+  });
+  
+  out = out.replace(/onclick\s*=\s*'[^']*openLeadFormModal\([^)]*\)[^']*'/gi, (match) => {
+    // Try to extract the first string argument
+    const argMatch = match.match(/openLeadFormModal\(\s*['"]\s*([^'"]*)\s*['"]\s*[,)]/i);
+    const headerText = argMatch ? argMatch[1] : 'Request a Free Quote';
+    return `data-lead-form="${headerText.replace(/"/g, '&quot;')}"`;
+  });
 
   // 2) Convert common navigation onclicks into data-href
   const toDataHref = (attr: string): string | null => {
