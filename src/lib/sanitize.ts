@@ -21,6 +21,7 @@ export const sanitizeHtml = (
   dirty: string,
   options?: Parameters<typeof DOMPurify.sanitize>[1]
 ): string => {
+  const allowDataAttrs = Array.isArray(options?.ADD_ATTR) && options.ADD_ATTR?.some((attr) => typeof attr === 'string' && attr.startsWith('data-'));
   // Default configuration - removes scripts, event handlers, and unsafe tags
   const defaultConfig: Parameters<typeof DOMPurify.sanitize>[1] = {
     ALLOWED_TAGS: [
@@ -36,7 +37,7 @@ export const sanitizeHtml = (
       'target', 'rel', 'width', 'height', 'loading', 'datetime',
       'type', 'start', 'reversed', 'colspan', 'rowspan'
     ],
-    ALLOW_DATA_ATTR: false, // Prevent data-* attributes that could be used for attacks
+    ALLOW_DATA_ATTR: allowDataAttrs, // Allow data-* when explicitly requested via ADD_ATTR
     ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
     RETURN_TRUSTED_TYPE: false, // Return string instead of TrustedHTML
     ...options
