@@ -1702,6 +1702,62 @@ You're building a TEMPLATE ENGINE, not a static website:
             } else {
               console.warn(`No service instructions found for: ${service.name} (${service.category})`);
             }
+            
+            // Add system revision instructions for template modernization
+            webhookPayload.systemRevisionInstructions = `**INSTRUCTION MODERNIZATION PROMPT**
+
+You are updating legacy page building instructions to align with our new variable-driven design system. Your task is to convert ALL hardcoded business data and styling values into dynamic variables while preserving the original structure, layout specifications, and content strategy.
+
+## CONVERSION RULES:
+
+### 1. Business Data → Handlebars Variables
+Replace ALL hardcoded business information:
+- Company names → \`{{business_name}}\`
+- Phone numbers → \`{{phone}}\`
+- Email addresses → \`{{email}}\`
+- Street addresses → \`{{address_street}}\`
+- Cities → \`{{address_city}}\`
+- States → \`{{address_state}}\`
+- ZIP codes → \`{{address_zip}}\`
+- Full address → \`{{address}}\`
+- Taglines/slogans → \`{{business_slogan}}\`
+- Years in business → \`{{years_experience}}\`
+- Website URLs → \`{{website_url}}\`
+
+### 2. Styling Values → CSS Custom Properties
+Replace ALL hardcoded styling:
+- Primary brand colors → \`var(--color-primary)\`
+- Secondary colors → \`var(--color-secondary)\`
+- Accent colors → \`var(--color-accent)\`
+- Success/warning/info/danger colors → \`var(--color-success)\`, \`var(--color-warning)\`, \`var(--color-info)\`, \`var(--color-danger)\`
+- Border radius for buttons → \`var(--radius-button)\`
+- Border radius for cards/containers → \`var(--radius-card)\`
+- Any hex codes, RGB values, or Tailwind color classes → appropriate CSS variable
+
+### 3. Typography & Design Specs
+Keep pixel values, layout ratios, and responsive breakpoints AS-IS. Only convert:
+- Color specifications
+- Border radius values
+- Brand-specific data
+
+### 4. Social Media
+Replace hardcoded social links with:
+\`\`\`
+{{#each socialMedia}}
+  {{this.outlet_type_name}}
+{{/each}}
+\`\`\`
+
+### 5. What to PRESERVE:
+- Section layout specifications (two-column, 60/40 split, etc.)
+- Typography sizes (48px, 16px, etc.)
+- Spacing values (padding, margins)
+- Responsive breakpoints
+- Content structure and hierarchy
+- Strategic copy recommendations
+
+## OUTPUT FORMAT:
+Return the modernized instructions maintaining the EXACT same structure and format as the original, but with all business data and styling values replaced by variables.`;
           }
           
           // Get webhook URL from secrets
