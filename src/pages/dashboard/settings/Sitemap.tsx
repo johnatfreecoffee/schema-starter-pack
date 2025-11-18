@@ -487,6 +487,7 @@ const SitemapPage = () => {
           service={selectedService}
           pageType="service"
           pageTitle={selectedService.name}
+          pageId={selectedService.template_id}
           onSave={async (html) => {
             // Save handled by UnifiedPageEditor
           }}

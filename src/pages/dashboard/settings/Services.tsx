@@ -370,6 +370,7 @@ const ServicesSettings = () => {
             service={selectedService}
             pageType="service"
             pageTitle={selectedService.name}
+            pageId={selectedService.template_id}
             onSave={async (html) => {
               // Handle save logic if needed
             }}
