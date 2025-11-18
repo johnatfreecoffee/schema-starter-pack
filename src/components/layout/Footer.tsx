@@ -4,12 +4,14 @@ import { Link } from 'react-router-dom';
 import { LazyImage } from '@/components/ui/lazy-image';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useMemo } from 'react';
-import { MapPin, Phone, Mail } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { MapPin, Phone, Mail, ChevronDown, ChevronUp } from 'lucide-react';
 const Footer = () => {
   const { data: company } = useCompanySettings();
   const { data: siteSettings } = useSiteSettings();
   const footerLogoSize = siteSettings?.footer_logo_size || 32;
+  const [servicesExpanded, setServicesExpanded] = useState(false);
+  const [areasExpanded, setAreasExpanded] = useState(false);
 
   const formatPhoneNumber = (phone: string) => {
     const cleaned = phone.replace(/\D/g, '');
@@ -271,31 +273,103 @@ const Footer = () => {
             )}
           </div>
 
-          {/* Right Section - Links */}
-          <div className="grid grid-cols-2 gap-8">
+          {/* Right Section - Services and Service Areas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Services Section */}
             <div>
               <h4 className="font-semibold mb-4">Services</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                {services.map((service: any) => (
-                  <li key={service.id}>
-                    <Link to={`/services/${service.slug}`} className="hover:text-primary transition-colors">
-                      {service.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <div className={`grid ${services.length > 6 ? 'grid-cols-2' : 'grid-cols-1'} gap-x-4`}>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  {services.slice(0, servicesExpanded ? services.length : Math.min(12, services.length)).map((service: any, index: number) => {
+                    // Split into columns if more than 6 items
+                    if (services.length > 6 && index >= Math.ceil(Math.min(servicesExpanded ? services.length : 12, services.length) / 2)) {
+                      return null;
+                    }
+                    return (
+                      <li key={service.id}>
+                        <Link to={`/services/${service.slug}`} className="hover:text-primary transition-colors">
+                          {service.name}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {services.length > 6 && (
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    {services.slice(0, servicesExpanded ? services.length : Math.min(12, services.length)).map((service: any, index: number) => {
+                      const halfPoint = Math.ceil(Math.min(servicesExpanded ? services.length : 12, services.length) / 2);
+                      if (index < halfPoint) return null;
+                      return (
+                        <li key={service.id}>
+                          <Link to={`/services/${service.slug}`} className="hover:text-primary transition-colors">
+                            {service.name}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+              {services.length > 12 && (
+                <button
+                  onClick={() => setServicesExpanded(!servicesExpanded)}
+                  className="mt-3 flex items-center gap-1 text-sm text-primary hover:underline"
+                >
+                  {servicesExpanded ? (
+                    <>Show Less <ChevronUp className="w-4 h-4" /></>
+                  ) : (
+                    <>Show All ({services.length}) <ChevronDown className="w-4 h-4" /></>
+                  )}
+                </button>
+              )}
             </div>
+
+            {/* Service Areas Section */}
             <div>
               <h4 className="font-semibold mb-4">Service Areas</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                {serviceAreas.map((area: any) => (
-                  <li key={area.id}>
-                    <Link to={`/service-areas/${area.city_slug}`} className="hover:text-primary transition-colors">
-                      {area.display_name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <div className={`grid ${serviceAreas.length > 6 ? 'grid-cols-2' : 'grid-cols-1'} gap-x-4`}>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  {serviceAreas.slice(0, areasExpanded ? serviceAreas.length : Math.min(12, serviceAreas.length)).map((area: any, index: number) => {
+                    if (serviceAreas.length > 6 && index >= Math.ceil(Math.min(areasExpanded ? serviceAreas.length : 12, serviceAreas.length) / 2)) {
+                      return null;
+                    }
+                    return (
+                      <li key={area.id}>
+                        <Link to={`/service-areas/${area.city_slug}`} className="hover:text-primary transition-colors">
+                          {area.display_name}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {serviceAreas.length > 6 && (
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    {serviceAreas.slice(0, areasExpanded ? serviceAreas.length : Math.min(12, serviceAreas.length)).map((area: any, index: number) => {
+                      const halfPoint = Math.ceil(Math.min(areasExpanded ? serviceAreas.length : 12, serviceAreas.length) / 2);
+                      if (index < halfPoint) return null;
+                      return (
+                        <li key={area.id}>
+                          <Link to={`/service-areas/${area.city_slug}`} className="hover:text-primary transition-colors">
+                            {area.display_name}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+              {serviceAreas.length > 12 && (
+                <button
+                  onClick={() => setAreasExpanded(!areasExpanded)}
+                  className="mt-3 flex items-center gap-1 text-sm text-primary hover:underline"
+                >
+                  {areasExpanded ? (
+                    <>Show Less <ChevronUp className="w-4 h-4" /></>
+                  ) : (
+                    <>Show All ({serviceAreas.length}) <ChevronDown className="w-4 h-4" /></>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         </div>
