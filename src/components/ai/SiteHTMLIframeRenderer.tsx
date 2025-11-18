@@ -125,6 +125,14 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         if (dataHrefEl) {
           const url = dataHrefEl.getAttribute('data-href');
           if (url) {
+            // Special handling for tel:, mailto:, sms: protocols - trigger from parent window
+            if (url.startsWith('tel:') || url.startsWith('mailto:') || url.startsWith('sms:')) {
+              console.log('[SiteHTMLIframeRenderer] Triggering special protocol from parent:', url);
+              window.top!.location.href = url;
+              e.preventDefault();
+              return;
+            }
+            
             const targetAttr = dataHrefEl.getAttribute('target');
             if (targetAttr === '_blank') {
               window.open(url, '_blank', 'noopener,noreferrer');
