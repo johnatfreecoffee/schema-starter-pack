@@ -125,13 +125,23 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         if (dataHrefEl) {
           const url = dataHrefEl.getAttribute('data-href');
           if (url) {
-            // Special handling for tel:, mailto:, sms: protocols - use postMessage for Safari private mode
+            // Special handling for tel:, mailto:, sms: protocols - synchronous anchor click within iframe
             if (url.startsWith('tel:') || url.startsWith('mailto:') || url.startsWith('sms:')) {
-              console.log('[SiteHTMLIframeRenderer] Triggering special protocol via postMessage:', url);
-              window.parent.postMessage({ 
-                type: 'TRIGGER_PROTOCOL_LINK', 
-                url: url 
-              }, '*');
+              console.log('[SiteHTMLIframeRenderer] Triggering special protocol via iframe anchor:', url);
+              
+              // Create anchor within iframe's own document to preserve user gesture
+              const iframeDoc = (e.target as HTMLElement).ownerDocument;
+              const tempLink = iframeDoc.createElement('a');
+              tempLink.href = url;
+              tempLink.style.display = 'none';
+              
+              iframeDoc.body.appendChild(tempLink);
+              tempLink.click();
+              
+              setTimeout(() => {
+                iframeDoc.body.removeChild(tempLink);
+              }, 100);
+              
               e.preventDefault();
               return;
             }
@@ -266,17 +276,6 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         openModal(event.data.header || 'Request a Free Quote', { 
           originatingUrl: window.location.href 
         });
-      } else if (event.data.type === 'TRIGGER_PROTOCOL_LINK') {
-        console.log('[SiteHTMLIframeRenderer] Received protocol link request:', event.data.url);
-        // Create temporary anchor in parent context to trigger tel:/mailto:/sms:
-        const tempLink = document.createElement('a');
-        tempLink.href = event.data.url;
-        tempLink.style.display = 'none';
-        document.body.appendChild(tempLink);
-        tempLink.click();
-        setTimeout(() => {
-          document.body.removeChild(tempLink);
-        }, 100);
       }
     };
 
