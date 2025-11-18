@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { User, ChevronDown, Menu, X } from 'lucide-react';
@@ -17,6 +17,7 @@ interface HeaderProps {
 const Header = ({ session }: HeaderProps) => {
   const { data: company } = useCompanySettings();
   const { data: siteSettings } = useSiteSettings();
+  const location = useLocation();
   
   const formatPhoneNumber = (phone: string) => {
     const cleaned = phone.replace(/\D/g, '');
@@ -28,6 +29,8 @@ const Header = ({ session }: HeaderProps) => {
   
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const isActivePath = (path: string) => location.pathname === path;
 
   const { data: staticPages } = useQuery({
     queryKey: ['static-pages-nav'],
@@ -83,7 +86,14 @@ const Header = ({ session }: HeaderProps) => {
               </Link>
               
               <nav className="hidden md:flex items-center gap-6">
-                <Link to="/" className="text-sm font-medium hover:text-primary transition-colors touch-manipulation">
+                <Link 
+                  to="/" 
+                  className={`text-sm font-medium transition-colors touch-manipulation px-4 py-2 rounded-full ${
+                    isActivePath('/') 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'hover:text-primary'
+                  }`}
+                >
                   Home
                 </Link>
                 {staticPages?.map(page => {
@@ -125,7 +135,11 @@ const Header = ({ session }: HeaderProps) => {
                     <Link 
                       key={page.id} 
                       to={`/${page.slug}`} 
-                      className="text-sm font-medium hover:text-primary transition-colors touch-manipulation"
+                      className={`text-sm font-medium transition-colors touch-manipulation px-4 py-2 rounded-full ${
+                        isActivePath(`/${page.slug}`)
+                          ? 'bg-primary text-primary-foreground'
+                          : 'hover:text-primary'
+                      }`}
                     >
                       {page.title}
                     </Link>
@@ -171,7 +185,11 @@ const Header = ({ session }: HeaderProps) => {
                   <nav className="flex flex-col gap-4 mt-8">
                     <Link 
                       to="/" 
-                      className="text-base font-medium hover:text-primary transition-colors py-2"
+                      className={`text-base font-medium transition-colors py-2 px-4 rounded-full ${
+                        isActivePath('/')
+                          ? 'bg-primary text-primary-foreground'
+                          : 'hover:text-primary'
+                      }`}
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Home
@@ -180,7 +198,11 @@ const Header = ({ session }: HeaderProps) => {
                       <div key={page.id}>
                         <Link 
                           to={`/${page.slug}`}
-                          className="text-base font-medium hover:text-primary transition-colors py-2 block"
+                          className={`text-base font-medium transition-colors py-2 px-4 rounded-full block ${
+                            isActivePath(`/${page.slug}`)
+                              ? 'bg-primary text-primary-foreground'
+                              : 'hover:text-primary'
+                          }`}
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           {page.title}
@@ -191,7 +213,11 @@ const Header = ({ session }: HeaderProps) => {
                               <Link
                                 key={child.id}
                                 to={`/${child.slug}`}
-                                className="text-sm text-muted-foreground hover:text-primary transition-colors py-1 block"
+                                className={`text-sm transition-colors py-1 px-3 rounded-full block ${
+                                  isActivePath(`/${child.slug}`)
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'text-muted-foreground hover:text-primary'
+                                }`}
                                 onClick={() => setMobileMenuOpen(false)}
                               >
                                 {child.title}
