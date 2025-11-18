@@ -8,6 +8,7 @@ interface SiteHTMLIframeRendererProps {
 
 // Minimal CTA normalization for iframe content
 const normalizeCTAs = (input: string) => {
+  console.log('[SiteHTMLIframeRenderer] BEFORE normalization:', input.substring(0, 1000));
   let out = input || '';
   // openLeadFormModal in onclick
   out = out.replace(/onclick\s*=\s*"[^"]*openLeadFormModal\([^)]*\)[^"]*"/gi, (m) => {
@@ -61,6 +62,7 @@ const normalizeCTAs = (input: string) => {
   // Remove remaining onclicks for safety
   out = out.replace(/\sonclick\s*=\s*"[^"]*"/gi, '');
   out = out.replace(/\sonclick\s*=\s*'[^']*'/gi, '');
+  console.log('[SiteHTMLIframeRenderer] AFTER normalization:', out.substring(0, 1000));
   return out;
 };
 
@@ -88,6 +90,19 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
       // Normalize CTAs before writing, then write the processed HTML
       const processed = normalizeCTAs(html);
       doc.write(processed);
+      
+      // Inject postMessage bridge for onclick fallback
+      const bridgeScript = doc.createElement('script');
+      bridgeScript.textContent = `
+        window.openLeadFormModal = function(header) {
+          console.log('[Iframe Bridge] openLeadFormModal called with:', header);
+          window.parent.postMessage({ 
+            type: 'OPEN_LEAD_FORM', 
+            header: header || 'Request a Free Quote'
+          }, '*');
+        };
+      `;
+      doc.head.appendChild(bridgeScript);
       doc.close();
 
       // Click handling inside iframe: open lead form, tel/mailto, data-href
@@ -106,13 +121,12 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         }
 
         // data-href navigation
-        const hrefEl = (target.closest('[data-href]') as HTMLElement) || null;
-        if (hrefEl) {
-          const url = hrefEl.getAttribute('data-href');
-          const tgt = hrefEl.getAttribute('target');
+        const dataHrefEl = (target.closest('[data-href]') as HTMLElement) || null;
+        if (dataHrefEl) {
+          const url = dataHrefEl.getAttribute('data-href');
           if (url) {
-            console.info('[SiteHTMLIframeRenderer] Navigating from data-href', { url, target: tgt });
-            if (tgt === '_blank') {
+            const targetAttr = dataHrefEl.getAttribute('target');
+            if (targetAttr === '_blank') {
               window.open(url, '_blank', 'noopener,noreferrer');
             } else {
               window.location.href = url;
@@ -122,25 +136,31 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
           }
         }
 
-        // tel:, mailto:, sms:
-        const a = (target.closest('a[href]') as HTMLAnchorElement) || null;
-        if (a) {
-          const href = a.getAttribute('href') || '';
-          const tgt = a.getAttribute('target') || '';
-          if (/^(tel:|mailto:|sms:)/i.test(href)) {
-            console.info('[SiteHTMLIframeRenderer] Handling special link', { href, target: tgt });
-            if (tgt === '_blank') {
-              window.open(href, '_blank', 'noopener,noreferrer');
-            } else {
-              window.location.href = href;
-            }
-            e.preventDefault();
+        // tel:, mailto:, sms: links
+        const anchor = target.closest('a') as HTMLAnchorElement | null;
+        if (anchor?.href) {
+          const href = anchor.href;
+          if (href.startsWith('tel:') || href.startsWith('mailto:') || href.startsWith('sms:')) {
+            // Allow default behavior for these special protocols
             return;
           }
         }
       };
 
-      doc.addEventListener('click', onClick, { capture: true });
+      // Attach click listener AFTER iframe content loads
+      const attachClickListener = () => {
+        doc.addEventListener('click', onClick, { capture: true });
+        console.log('[SiteHTMLIframeRenderer] Click listener attached');
+      };
+
+      // Use iframe load event for better timing
+      if (iframe.contentWindow) {
+        iframe.contentWindow.addEventListener('load', attachClickListener, { once: true });
+        // Fallback: attach immediately if already loaded
+        if (doc.readyState === 'complete') {
+          attachClickListener();
+        }
+      }
 
       const resize = () => {
         if (!iframe) return;
@@ -212,10 +232,11 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
       return () => {
         iframe.contentWindow?.removeEventListener('load', onLoad);
         iframe.contentWindow?.removeEventListener('resize', onLoad);
+        iframe.contentWindow?.removeEventListener('load', attachClickListener);
         if ((iframe as any)._resizeInterval) clearInterval((iframe as any)._resizeInterval);
         if (ro) ro.disconnect();
         if (mo) mo.disconnect();
-        doc.removeEventListener('click', onClick);
+        doc.removeEventListener('click', onClick, { capture: true });
         Array.from(doc.images || []).forEach((img) => {
           img.removeEventListener('load', resize);
           img.removeEventListener('error', resize);
@@ -224,7 +245,22 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
     } catch (e) {
       console.error('SiteHTMLIframeRenderer write error:', e);
     }
-  }, [html]);
+  }, [html, openModal]);
+
+  // Parent window message listener for postMessage bridge
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === 'OPEN_LEAD_FORM') {
+        console.log('[SiteHTMLIframeRenderer] Received postMessage:', event.data);
+        openModal(event.data.header || 'Request a Free Quote', { 
+          originatingUrl: window.location.href 
+        });
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [openModal]);
 
   return (
     <iframe
