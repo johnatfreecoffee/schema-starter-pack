@@ -7,7 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { Eye, Pencil, Archive, Plus, LayoutGrid, List, FileEdit, ArchiveRestore } from 'lucide-react';
+import { Eye, Edit, Archive, Plus, LayoutGrid, List, Sparkles, ArchiveRestore } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import ServiceForm from '@/components/admin/settings/services/ServiceForm';
@@ -253,17 +253,17 @@ const ServicesSettings = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => { setSelectedService(service); setIsTemplateEditorOpen(true); }}
-                              title="Edit Page Template"
+                              onClick={() => { setSelectedService(service); setIsFormOpen(true); }}
                             >
-                              <FileEdit className="h-4 w-4" />
+                              <Edit className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => { setSelectedService(service); setIsFormOpen(true); }}
+                              onClick={() => { setSelectedService(service); setIsTemplateEditorOpen(true); }}
+                              title="Edit Page Template"
                             >
-                              <Pencil className="h-4 w-4" />
+                              <Sparkles className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
@@ -315,11 +315,11 @@ const ServicesSettings = () => {
                   </Button>
                   {!service.archived ? (
                     <>
-                      <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsTemplateEditorOpen(true); }} title="Edit Page Template">
-                        <FileEdit className="h-4 w-4" />
-                      </Button>
                       <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsFormOpen(true); }}>
-                        <Pencil className="h-4 w-4" />
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsTemplateEditorOpen(true); }} title="Edit Page Template">
+                        <Sparkles className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setArchiveDialogOpen(true); }}>
                         <Archive className="h-4 w-4" />
