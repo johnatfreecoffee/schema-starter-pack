@@ -977,9 +977,10 @@ serve(async (req) => {
       aiTraining, 
       systemInstructions, 
       userPrompt, 
-      supabaseData, 
+      supabaseData,
       includeImages = false,
-      serviceInstructions // Optional: MD instructions for service pages
+      serviceInstructions, // Optional: MD instructions for service pages
+      systemRevisionInstructions // Optional: Modernization instructions for service pages
     } = await req.json();
 
     // Get webhook URL from environment
@@ -1073,6 +1074,14 @@ serve(async (req) => {
               length: serviceInstructions?.length || null
             }
           }),
+          // Include systemRevisionInstructions if provided (for service pages)
+          ...(systemRevisionInstructions && {
+            systemRevisionInstructions: {
+              content: systemRevisionInstructions,
+              type: "system_revision_instructions",
+              length: systemRevisionInstructions?.length || null
+            }
+          }),
           supabaseData: {
             pageType: supabaseData?.pageType || "",
             pageTitle: supabaseData?.pageTitle || "",
@@ -1093,6 +1102,7 @@ serve(async (req) => {
       hasAiTraining: !!aiTraining,
       hasSystemInstructions: !!systemInstructions,
       hasServiceInstructions: !!serviceInstructions,
+      hasSystemRevisionInstructions: !!systemRevisionInstructions,
       supabaseData
     });
 
