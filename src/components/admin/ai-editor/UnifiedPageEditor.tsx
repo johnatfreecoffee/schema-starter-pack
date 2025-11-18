@@ -1285,6 +1285,9 @@ You're building a TEMPLATE ENGINE, not a static website:
             if (template?.id) {
               supabaseData.templatesTable = 'templates';
               supabaseData.templateRowId = template.id;
+              // Add pageId and pageRowId for consistency with static pages
+              supabaseData.pageId = template.id;
+              supabaseData.pageRowId = template.id;
             }
           } else if (pageType === 'static' && pageId) {
             supabaseData.table = 'static_pages';
