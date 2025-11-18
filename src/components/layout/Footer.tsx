@@ -335,9 +335,9 @@ const Footer = () => {
                     }
                     return (
                       <li key={area.id}>
-                        <Link to={`/service-areas/${area.city_slug}`} className="hover:text-primary transition-colors">
+                        <span>
                           {area.display_name}
-                        </Link>
+                        </span>
                       </li>
                     );
                   })}
@@ -349,9 +349,9 @@ const Footer = () => {
                       if (index < halfPoint) return null;
                       return (
                         <li key={area.id}>
-                          <Link to={`/service-areas/${area.city_slug}`} className="hover:text-primary transition-colors">
+                          <span>
                             {area.display_name}
-                          </Link>
+                          </span>
                         </li>
                       );
                     })}
