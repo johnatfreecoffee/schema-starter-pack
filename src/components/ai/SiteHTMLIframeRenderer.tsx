@@ -125,10 +125,24 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         if (dataHrefEl) {
           const url = dataHrefEl.getAttribute('data-href');
           if (url) {
-            // Special handling for tel:, mailto:, sms: protocols - trigger from parent window
+            // Special handling for tel:, mailto:, sms: protocols - use temp anchor for Safari compatibility
             if (url.startsWith('tel:') || url.startsWith('mailto:') || url.startsWith('sms:')) {
-              console.log('[SiteHTMLIframeRenderer] Triggering special protocol from parent:', url);
-              window.top!.location.href = url;
+              console.log('[SiteHTMLIframeRenderer] Triggering special protocol via temp anchor:', url);
+              
+              // Create temporary anchor to preserve user gesture for Safari
+              const tempLink = document.createElement('a');
+              tempLink.href = url;
+              tempLink.style.display = 'none';
+              
+              // For Safari iOS: must append to body before clicking
+              document.body.appendChild(tempLink);
+              tempLink.click();
+              
+              // Clean up immediately
+              setTimeout(() => {
+                document.body.removeChild(tempLink);
+              }, 100);
+              
               e.preventDefault();
               return;
             }
