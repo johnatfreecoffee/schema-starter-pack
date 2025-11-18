@@ -1277,7 +1277,10 @@ You're building a TEMPLATE ENGINE, not a static website:
           
           // Add page-specific database info
           if (pageType === 'service' && service) {
-            supabaseData.table = 'services';
+            // For service templates, we update the templates table, not services
+            supabaseData.table = 'templates';
+            supabaseData.id = template?.id; // This is what the webhook expects
+            supabaseData.field = 'template_html_draft'; // Specify which field to update
             supabaseData.serviceId = service.id;
             supabaseData.serviceName = service.name;
             supabaseData.serviceSlug = service.slug;
@@ -1291,6 +1294,8 @@ You're building a TEMPLATE ENGINE, not a static website:
             }
           } else if (pageType === 'static' && pageId) {
             supabaseData.table = 'static_pages';
+            supabaseData.id = pageId; // This is what the webhook expects
+            supabaseData.field = 'content_html_draft'; // Specify which field to update
             supabaseData.pageId = pageId;
             supabaseData.pageRowId = pageId;
           }
