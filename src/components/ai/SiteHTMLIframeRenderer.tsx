@@ -125,25 +125,13 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         if (dataHrefEl) {
           const url = dataHrefEl.getAttribute('data-href');
           if (url) {
-            // Special handling for tel:, mailto:, sms: protocols - use temp anchor for Safari compatibility
+            // Special handling for tel:, mailto:, sms: protocols - use postMessage for Safari private mode
             if (url.startsWith('tel:') || url.startsWith('mailto:') || url.startsWith('sms:')) {
-              console.log('[SiteHTMLIframeRenderer] Triggering special protocol via temp anchor:', url);
-              
-              // Create temporary anchor in PARENT window context to preserve user gesture for Safari
-              const parentDoc = window.parent.document;
-              const tempLink = parentDoc.createElement('a');
-              tempLink.href = url;
-              tempLink.style.display = 'none';
-              
-              // For Safari iOS: must append to body before clicking
-              parentDoc.body.appendChild(tempLink);
-              tempLink.click();
-              
-              // Clean up immediately
-              setTimeout(() => {
-                parentDoc.body.removeChild(tempLink);
-              }, 100);
-              
+              console.log('[SiteHTMLIframeRenderer] Triggering special protocol via postMessage:', url);
+              window.parent.postMessage({ 
+                type: 'TRIGGER_PROTOCOL_LINK', 
+                url: url 
+              }, '*');
               e.preventDefault();
               return;
             }
@@ -278,6 +266,17 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         openModal(event.data.header || 'Request a Free Quote', { 
           originatingUrl: window.location.href 
         });
+      } else if (event.data.type === 'TRIGGER_PROTOCOL_LINK') {
+        console.log('[SiteHTMLIframeRenderer] Received protocol link request:', event.data.url);
+        // Create temporary anchor in parent context to trigger tel:/mailto:/sms:
+        const tempLink = document.createElement('a');
+        tempLink.href = event.data.url;
+        tempLink.style.display = 'none';
+        document.body.appendChild(tempLink);
+        tempLink.click();
+        setTimeout(() => {
+          document.body.removeChild(tempLink);
+        }, 100);
       }
     };
 
