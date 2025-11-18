@@ -48,6 +48,34 @@ const Footer = () => {
     },
   });
 
+  // Fetch services
+  const { data: services = [] } = useQuery({
+    queryKey: ['services-footer'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('services')
+        .select('id, name, slug')
+        .eq('is_active', true)
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch service areas
+  const { data: serviceAreas = [] } = useQuery({
+    queryKey: ['service-areas-footer'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('service_areas')
+        .select('id, display_name, city_slug')
+        .eq('status', true)
+        .order('display_name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   const iconByName = useMemo(() => {
     const map: Record<string, { iconUrl: string; iconSvg?: string }> = {};
     (outletTypes as any[]).forEach((ot) => {
@@ -248,21 +276,25 @@ const Footer = () => {
             <div>
               <h4 className="font-semibold mb-4">Services</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <Link to="/services" className="hover:text-primary transition-colors">
-                    View All Services
-                  </Link>
-                </li>
+                {services.map((service: any) => (
+                  <li key={service.id}>
+                    <Link to={`/services/${service.slug}`} className="hover:text-primary transition-colors">
+                      {service.name}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Service Areas</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <Link to="/services" className="hover:text-primary transition-colors">
-                    View Coverage Areas
-                  </Link>
-                </li>
+                {serviceAreas.map((area: any) => (
+                  <li key={area.id}>
+                    <Link to={`/service-areas/${area.city_slug}`} className="hover:text-primary transition-colors">
+                      {area.display_name}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
