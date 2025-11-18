@@ -129,18 +129,19 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
             if (url.startsWith('tel:') || url.startsWith('mailto:') || url.startsWith('sms:')) {
               console.log('[SiteHTMLIframeRenderer] Triggering special protocol via temp anchor:', url);
               
-              // Create temporary anchor to preserve user gesture for Safari
-              const tempLink = document.createElement('a');
+              // Create temporary anchor in PARENT window context to preserve user gesture for Safari
+              const parentDoc = window.parent.document;
+              const tempLink = parentDoc.createElement('a');
               tempLink.href = url;
               tempLink.style.display = 'none';
               
               // For Safari iOS: must append to body before clicking
-              document.body.appendChild(tempLink);
+              parentDoc.body.appendChild(tempLink);
               tempLink.click();
               
               // Clean up immediately
               setTimeout(() => {
-                document.body.removeChild(tempLink);
+                parentDoc.body.removeChild(tempLink);
               }, 100);
               
               e.preventDefault();
