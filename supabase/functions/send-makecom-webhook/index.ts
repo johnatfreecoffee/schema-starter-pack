@@ -971,7 +971,16 @@ serve(async (req) => {
   }
 
   try {
-    const { companyData, socialMedia, aiTraining, systemInstructions, userPrompt, supabaseData, includeImages = false } = await req.json();
+    const { 
+      companyData, 
+      socialMedia, 
+      aiTraining, 
+      systemInstructions, 
+      userPrompt, 
+      supabaseData, 
+      includeImages = false,
+      serviceInstructions // Optional: MD instructions for service pages
+    } = await req.json();
 
     // Get webhook URL from environment
     const webhookUrl = Deno.env.get('BREW_PAGE_BUILDER_WEBHOOK');
@@ -1056,6 +1065,14 @@ serve(async (req) => {
               length: imageGenInstructions?.length || null
             }
           }),
+          // Include serviceInstructions if provided (for service pages)
+          ...(serviceInstructions && {
+            serviceInstructions: {
+              content: serviceInstructions,
+              type: "service_instructions",
+              length: serviceInstructions?.length || null
+            }
+          }),
           supabaseData: {
             pageType: supabaseData?.pageType || "",
             pageTitle: supabaseData?.pageTitle || "",
@@ -1075,6 +1092,7 @@ serve(async (req) => {
       hasSocialMedia: !!socialMedia,
       hasAiTraining: !!aiTraining,
       hasSystemInstructions: !!systemInstructions,
+      hasServiceInstructions: !!serviceInstructions,
       supabaseData
     });
 

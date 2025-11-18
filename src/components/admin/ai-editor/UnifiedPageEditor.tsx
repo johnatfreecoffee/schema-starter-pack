@@ -1682,7 +1682,7 @@ You're building a TEMPLATE ENGINE, not a static website:
 **REMEMBER:** You're creating a TEMPLATE that dynamically renders with company data. When users update their settings, the entire website updates automatically!`.trim();
           
           // Prepare webhook payload
-          const webhookPayload = {
+          const webhookPayload: any = {
             companyData,
             socialMedia: socialMedia || [],
             aiTraining: requestBody.context.aiTraining || {},
@@ -1691,6 +1691,18 @@ You're building a TEMPLATE ENGINE, not a static website:
             supabaseData,
             includeImages
           };
+          
+          // Add service-specific MD instructions if this is a service page
+          if (pageType === 'service' && service) {
+            const { getServiceInstructions } = await import('@/lib/serviceInstructionFiles');
+            const serviceInstructions = getServiceInstructions(service.name, service.category);
+            if (serviceInstructions) {
+              webhookPayload.serviceInstructions = serviceInstructions;
+              console.log(`Added service instructions for: ${service.name} (${service.category})`);
+            } else {
+              console.warn(`No service instructions found for: ${service.name} (${service.category})`);
+            }
+          }
           
           // Get webhook URL from secrets
           const response = await callEdgeFunction<any>({
