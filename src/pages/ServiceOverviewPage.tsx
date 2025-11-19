@@ -22,12 +22,13 @@ const ServiceOverviewPage = () => {
     queryKey: ['rendered-service-overview', serviceSlug],
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke('render-page', {
-        body: { urlPath },
+        body: { urlPath: `/services/${serviceSlug}` },
       });
       
       if (error) throw error;
       return data;
     },
+    enabled: !!serviceSlug, // Only run when serviceSlug is available
   });
 
   const service = pageContent?.pageData?.service;
