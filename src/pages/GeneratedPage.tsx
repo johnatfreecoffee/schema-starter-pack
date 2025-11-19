@@ -13,7 +13,7 @@ import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 
 const GeneratedPage = () => {
   const { citySlug, serviceSlug } = useParams<{ citySlug: string; serviceSlug: string }>();
-  const urlPath = `/${citySlug}/${serviceSlug}`;
+  const urlPath = `/services/${serviceSlug}/${citySlug}`;
   const { openModal } = useLeadFormModal();
 
   // Fetch server-rendered content + minimal page data via backend function

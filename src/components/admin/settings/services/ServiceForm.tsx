@@ -171,7 +171,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         const generatedPages = serviceAreas.map(area => ({
           service_id: newService.id,
           service_area_id: area.id,
-          url_path: `/${area.city_slug}/${values.slug}`,
+          url_path: `/services/${values.slug}/${area.city_slug}`,
           page_title: `${values.name} in ${area.city_name} | ${companySettings?.business_name || 'Our Company'}`,
           meta_description: values.full_description.substring(0, 160),
           status: area.status && values.is_active, // Page active only if both are active
@@ -250,7 +250,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
             const citySlug = (page.service_areas as any).city_slug;
             await supabase
               .from('generated_pages')
-              .update({ url_path: `/${citySlug}/${values.slug}` })
+              .update({ url_path: `/services/${values.slug}/${citySlug}` })
               .eq('id', page.id);
           }
         }
