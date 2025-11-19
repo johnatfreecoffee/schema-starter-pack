@@ -70,7 +70,6 @@ const formSchema = z.object({
   area_name: z.string().max(100).optional(),
   city_name: z.string().min(1, 'City name is required').max(100),
   state: z.string().length(2, 'State must be a 2-letter code'),
-  zip_code: z.string().regex(/^\d{5}(-\d{4})?$/, 'ZIP code must be 5 digits or ZIP+4 format').optional().or(z.literal('')),
   city_slug: z.string().min(1, 'URL slug is required').max(100).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase with hyphens only'),
   display_name: z.string().min(1, 'Display name is required').max(150),
   local_description: z.string().max(1000).optional(),
@@ -95,7 +94,6 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
       area_name: area?.area_name || '',
       city_name: area?.city_name || '',
       state: area?.state || 'LA',
-      zip_code: area?.zip_code || '',
       city_slug: area?.city_slug || '',
       display_name: area?.display_name || '',
       local_description: area?.local_description || '',
@@ -155,7 +153,6 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
             area_name: data.area_name || null,
             city_name: data.city_name,
             state: data.state,
-            zip_code: data.zip_code || null,
             city_slug: data.city_slug,
             display_name: data.display_name,
             local_description: data.local_description,
@@ -197,20 +194,19 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
       } else {
         // Create new area
         const { data: newArea, error: insertError } = await supabase
-          .from('service_areas')
-          .insert({
-            area_name: data.area_name || null,
-            city_name: data.city_name,
-            state: data.state,
-            zip_code: data.zip_code || null,
-            city_slug: data.city_slug,
-            display_name: data.display_name,
-            local_description: data.local_description,
-            status: data.status,
-            is_default: data.is_default,
-          })
-          .select()
-          .single();
+        .from('service_areas')
+        .insert({
+          area_name: data.area_name || null,
+          city_name: data.city_name,
+          state: data.state,
+          city_slug: data.city_slug,
+          display_name: data.display_name,
+          local_description: data.local_description,
+          status: data.status,
+          is_default: data.is_default,
+        })
+        .select()
+        .single();
 
         if (insertError) throw insertError;
 
@@ -352,20 +348,6 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="zip_code"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>ZIP Code (Optional)</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., 70112" {...field} />
-                </FormControl>
-                <FormDescription>5 digits or ZIP+4 format</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </div>
 
         <FormField

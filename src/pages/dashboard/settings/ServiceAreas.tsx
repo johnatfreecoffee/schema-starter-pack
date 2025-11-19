@@ -252,7 +252,6 @@ const ServiceAreas = () => {
                 <TableRow>
                   <TableHead>City</TableHead>
                   <TableHead>State</TableHead>
-                  <TableHead>ZIP</TableHead>
                   <TableHead>Pages</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Default</TableHead>
@@ -267,7 +266,6 @@ const ServiceAreas = () => {
                       {area.archived && <span className="ml-2 text-xs text-muted-foreground">(Archived)</span>}
                     </TableCell>
                     <TableCell>{area.state}</TableCell>
-                    <TableCell>{area.zip_code || '-'}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">{getPagesCount(area)} pages</Badge>
                     </TableCell>
@@ -336,7 +334,7 @@ const ServiceAreas = () => {
                     <h3 className="font-semibold text-lg">{area.city_name}</h3>
                     {area.archived && <span className="text-xs text-muted-foreground">(Archived)</span>}
                     <p className="text-xs text-muted-foreground mt-1">
-                      {area.state} {area.zip_code || ''}
+                      {area.state}
                     </p>
                   </div>
                   <div className="flex flex-col gap-2">
