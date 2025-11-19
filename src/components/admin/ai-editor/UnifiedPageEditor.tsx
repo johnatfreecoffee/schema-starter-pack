@@ -33,6 +33,7 @@ interface UnifiedPageEditorProps {
   onSave: (html: string) => Promise<void>;
   initialHtml?: string; // For static pages
   pageId?: string; // For static pages
+  fullScreen?: boolean; // New prop to disable Dialog wrapper
 }
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -145,7 +146,8 @@ const UnifiedPageEditor = ({
   pageTitle,
   onSave,
   initialHtml,
-  pageId
+  pageId,
+  fullScreen = false
 }: UnifiedPageEditorProps) => {
   const [user, setUser] = useState<any>(null);
   const [templateHtml, setTemplateHtml] = useState('');
@@ -2443,6 +2445,13 @@ Return the modernized instructions maintaining the EXACT same structure and form
     }
   });
   if (isLoading) {
+    if (fullScreen) {
+      return (
+        <div className="w-full h-screen flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      );
+    }
     return <Dialog open={open} onOpenChange={onClose}>
         <DialogContent className="max-w-[95vw] h-[90vh]">
           <DialogHeader className="px-6 py-4 border-b">
@@ -2455,8 +2464,10 @@ Return the modernized instructions maintaining the EXACT same structure and form
         </DialogContent>
       </Dialog>;
   }
-  return <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] h-[90vh] p-0 overflow-hidden flex flex-col">
+  // Render the main editor content
+  const editorContent = (
+    <>
+      {!fullScreen && (
         <DialogHeader className="px-6 py-4 border-b">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 flex-1">
@@ -2503,8 +2514,9 @@ Return the modernized instructions maintaining the EXACT same structure and form
             
           </div>
         </DialogHeader>
+      )}
 
-        <div className="flex flex-1 overflow-hidden">
+      <div className={`flex ${fullScreen ? 'flex-1 h-full' : 'flex-1'} overflow-hidden`}>
           {/* Left Panel - AI Chat */}
           <div className="w-2/5 border-r flex flex-col min-h-0">
             <div className="p-4 border-b flex-shrink-0 overflow-y-auto max-h-[40vh]">
@@ -3096,7 +3108,23 @@ Return the modernized instructions maintaining the EXACT same structure and form
             </div>
           </div>
         </div>
+      </>
+  );
+
+  if (fullScreen) {
+    return (
+      <div className="w-full h-screen flex flex-col overflow-hidden bg-background">
+        {editorContent}
+      </div>
+    );
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-[95vw] h-[90vh] p-0 overflow-hidden flex flex-col">
+        {editorContent}
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+  );
 };
 export default UnifiedPageEditor;

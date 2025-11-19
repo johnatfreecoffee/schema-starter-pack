@@ -13,14 +13,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import StaticPageForm from '@/components/admin/settings/static-pages/StaticPageForm';
 import HTMLImporter from '@/components/admin/settings/static-pages/HTMLImporter';
-import UnifiedPageEditor from '@/components/admin/ai-editor/UnifiedPageEditor';
+import { useNavigate } from 'react-router-dom';
 
 const StaticPages = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [showImporter, setShowImporter] = useState(false);
-  const [showAIEditor, setShowAIEditor] = useState(false);
   const [selectedPage, setSelectedPage] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'active' | 'archived'>('active');
 
@@ -119,8 +119,7 @@ const StaticPages = () => {
   };
 
   const handleAIEdit = (page: any) => {
-    setSelectedPage(page);
-    setShowAIEditor(true);
+    navigate(`/dashboard/ai-editor/static/${page.id}`);
   };
 
   const handleArchive = async (id: string, currentlyArchived: boolean) => {
@@ -293,22 +292,8 @@ const StaticPages = () => {
             <HTMLImporter onClose={() => setShowImporter(false)} />
           </DialogContent>
         </Dialog>
-
-        {showAIEditor && selectedPage && (
-          <UnifiedPageEditor
-            open={showAIEditor}
-            pageId={selectedPage.id}
-            pageType="static"
-            pageTitle={selectedPage.title}
-            initialHtml={selectedPage.content_html_draft || selectedPage.content_html}
-            onClose={() => setShowAIEditor(false)}
-            onSave={async () => {
-              queryClient.invalidateQueries({ queryKey: ['static-pages'] });
-            }}
-        />
-      )}
-    </div>
-  );
-};
+      </div>
+    );
+  };
 
 export default StaticPages;
