@@ -2471,54 +2471,53 @@ Return the modernized instructions maintaining the EXACT same structure and form
   // Render the main editor content
   const editorContent = (
     <>
-      {!fullScreen && (
-        <DialogHeader className="px-6 py-4 border-b">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 flex-1">
-              <DialogTitle>Editing: {pageTitle}</DialogTitle>
-              <div className="flex items-center gap-3">
-                {/* Status Badge */}
-                {currentHtml !== publishedHtml ? (
-                  <span className="text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 font-medium">
-                    Draft - Unpublished Changes
-                  </span>
-                ) : (
-                  <span className="text-xs px-2 py-1 rounded-full bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/20 font-medium">
-                    Published
-                  </span>
-                )}
-                
-                <div className="text-xs text-muted-foreground">
-                  {isSaving ? <span className="flex items-center gap-1">
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      Saving draft...
-                     </span> : lastSaved ? <span>Auto-saved {new Date(lastSaved).toLocaleTimeString()}</span> : currentHtml !== originalHtml ? <span>Unsaved changes</span> : null}
-                </div>
-                
-                {publishedHtml && (
-                  <Button 
-                    onClick={handleLoadPublished} 
-                    size="sm" 
-                    variant="outline" 
-                    className="gap-2"
-                    disabled={currentHtml === publishedHtml}
-                  >
-                    Load Published
-                  </Button>
-                )}
-                
-                <Button onClick={handlePublish} disabled={isPublishing || currentHtml === publishedHtml} size="sm" variant="default" className="gap-2">
-                  {isPublishing ? <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Publishing...
-                    </> : <>Publish</>}
-                </Button>
+      {/* Header - shown in both Dialog and fullScreen modes */}
+      <div className={`px-6 py-4 border-b ${fullScreen ? 'bg-background' : ''}`}>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 flex-1">
+            <h2 className="text-lg font-semibold">Editing: {pageTitle}</h2>
+            <div className="flex items-center gap-3">
+              {/* Status Badge */}
+              {currentHtml !== publishedHtml ? (
+                <span className="text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 font-medium">
+                  Draft - Unpublished Changes
+                </span>
+              ) : (
+                <span className="text-xs px-2 py-1 rounded-full bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/20 font-medium">
+                  Published
+                </span>
+              )}
+              
+              <div className="text-xs text-muted-foreground">
+                {isSaving ? <span className="flex items-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Saving draft...
+                   </span> : lastSaved ? <span>Auto-saved {new Date(lastSaved).toLocaleTimeString()}</span> : currentHtml !== originalHtml ? <span>Unsaved changes</span> : null}
               </div>
+              
+              {publishedHtml && (
+                <Button 
+                  onClick={handleLoadPublished} 
+                  size="sm" 
+                  variant="outline" 
+                  className="gap-2"
+                  disabled={currentHtml === publishedHtml}
+                >
+                  Load Published
+                </Button>
+              )}
+              
+              <Button onClick={handlePublish} disabled={isPublishing || currentHtml === publishedHtml} size="sm" variant="default" className="gap-2">
+                {isPublishing ? <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Publishing...
+                  </> : <>Publish</>}
+              </Button>
             </div>
-            
           </div>
-        </DialogHeader>
-      )}
+          
+        </div>
+      </div>
 
       <div className={`flex ${fullScreen ? 'flex-1 h-full' : 'flex-1'} overflow-hidden`} id="editor-container">
           {/* Collapsed Chat Button - Shows when chat is hidden */}
