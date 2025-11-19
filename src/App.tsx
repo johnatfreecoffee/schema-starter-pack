@@ -23,6 +23,7 @@ import AcceptInvite from "./pages/AcceptInvite";
 import ReviewsPage from "./pages/Reviews";
 import UpdateCommercialTemplate from "./pages/UpdateCommercialTemplate";
 import BulkTemplateUpdater from "./pages/BulkTemplateUpdater";
+import { AIEditorStaticPage, AIEditorServicePage } from "./pages/dashboard/AIEditorPage";
 
 // Lazy load heavy dashboard pages for better initial load time
 import * as LazyRoutes from './lib/lazyRoutes';
@@ -130,6 +131,8 @@ const AppContent = () => {
             <Route path="settings/security" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Security /></Suspense>} />
             <Route path="settings/seo" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.SEO /></Suspense>} />
             <Route path="settings/ai-config" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.AdminAIConfig /></Suspense>} />
+            <Route path="ai-editor/static/:pageId" element={<AIEditorStaticPage />} />
+            <Route path="ai-editor/service/:serviceId" element={<AIEditorServicePage />} />
             <Route path="email-queue" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.EmailQueue /></Suspense>} />
             <Route path="regenerate-pages" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.PageRegenerator /></Suspense>} />
             <Route path="system-health" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.SystemHealth /></Suspense>} />

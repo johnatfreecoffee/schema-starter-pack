@@ -12,17 +12,17 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import ServiceForm from '@/components/admin/settings/services/ServiceForm';
 import ServicePreview from '@/components/admin/settings/services/ServicePreview';
-import UnifiedPageEditor from '@/components/admin/ai-editor/UnifiedPageEditor';
 import { cacheInvalidation } from '@/lib/cacheInvalidation';
+import { useNavigate } from 'react-router-dom';
 
 const ServicesSettings = () => {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showArchived, setShowArchived] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [isTemplateEditorOpen, setIsTemplateEditorOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [unarchiveDialogOpen, setUnarchiveDialogOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
@@ -260,7 +260,7 @@ const ServicesSettings = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => { setSelectedService(service); setIsTemplateEditorOpen(true); }}
+                              onClick={() => navigate(`/dashboard/ai-editor/service/${service.id}`)}
                               title="Edit Page Template"
                             >
                               <Sparkles className="h-4 w-4" />
@@ -318,7 +318,7 @@ const ServicesSettings = () => {
                       <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsFormOpen(true); }}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsTemplateEditorOpen(true); }} title="Edit Page Template">
+                      <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/ai-editor/service/${service.id}`)} title="Edit Page Template">
                         <Sparkles className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setArchiveDialogOpen(true); }}>
@@ -359,23 +359,6 @@ const ServicesSettings = () => {
             <ServicePreview service={selectedService} />
           </DialogContent>
         </Dialog>
-
-        {selectedService && (
-          <UnifiedPageEditor
-            open={isTemplateEditorOpen}
-            onClose={() => {
-              setIsTemplateEditorOpen(false);
-              setSelectedService(null);
-            }}
-            service={selectedService}
-            pageType="service"
-            pageTitle={selectedService.name}
-            pageId={selectedService.template_id}
-            onSave={async (html) => {
-              // Handle save logic if needed
-            }}
-          />
-        )}
 
         <AlertDialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
           <AlertDialogContent>
