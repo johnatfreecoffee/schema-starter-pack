@@ -197,16 +197,16 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
           htmlEl?.offsetHeight || 0
         );
 
-        // Also account for absolutely/fixed positioned elements that don't
-        // contribute to scroll/offset heights
+        // Also account for absolutely/fixed positioned elements relative to iframe document
         let maxBottom = 0;
         const nodes = body?.getElementsByTagName('*') || [];
         for (let i = 0; i < (nodes as any).length; i++) {
           const el = (nodes as any)[i] as HTMLElement;
-          if (!el || typeof el.getBoundingClientRect !== 'function') continue;
-          const rect = el.getBoundingClientRect();
-          if (rect && isFinite(rect.bottom)) {
-            if (rect.bottom > maxBottom) maxBottom = rect.bottom;
+          if (!el || typeof el.offsetTop !== 'number') continue;
+          // Calculate bottom edge relative to iframe document
+          const elementBottom = el.offsetTop + (el.offsetHeight || 0);
+          if (isFinite(elementBottom) && elementBottom > maxBottom) {
+            maxBottom = elementBottom;
           }
         }
 
