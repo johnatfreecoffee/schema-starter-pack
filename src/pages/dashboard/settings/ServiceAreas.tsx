@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -20,7 +21,7 @@ const ServiceAreas = () => {
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [showArchived, setShowArchived] = useState(false);
+  const [archiveTab, setArchiveTab] = useState<'active' | 'archived'>('active');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPagesOpen, setIsPagesOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
@@ -29,9 +30,9 @@ const ServiceAreas = () => {
   const queryClient = useQueryClient();
 
   const { data: serviceAreas, isLoading } = useQuery({
-    queryKey: ['service-areas', showArchived],
+    queryKey: ['service-areas'],
     queryFn: async () => {
-      let query = supabase
+      const query = supabase
         .from('service_areas')
         .select(`
           *,
@@ -49,13 +50,8 @@ const ServiceAreas = () => {
               archived
             )
           )
-        `);
-      
-      if (!showArchived) {
-        query = query.eq('archived', false);
-      }
-      
-      query = query.order('city_name', { ascending: true });
+        `)
+        .order('city_name', { ascending: true });
       
       const { data, error } = await query;
       if (error) throw error;
@@ -158,8 +154,15 @@ const ServiceAreas = () => {
   });
 
   const filteredAreas = serviceAreas?.filter(area => {
+    // Filter by archive tab
+    if (archiveTab === 'active' && area.archived) return false;
+    if (archiveTab === 'archived' && !area.archived) return false;
+    
+    // Filter by status
     if (statusFilter === 'active' && !area.status) return false;
     if (statusFilter === 'inactive' && area.status) return false;
+    
+    // Filter by search query
     if (searchQuery && !area.city_name.toLowerCase().includes(searchQuery.toLowerCase()) && 
         !area.display_name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
@@ -197,6 +200,13 @@ const ServiceAreas = () => {
         </div>
 
         <div className="flex gap-4 mb-6 flex-wrap">
+          <Tabs value={archiveTab} onValueChange={(value) => setArchiveTab(value as 'active' | 'archived')}>
+            <TabsList>
+              <TabsTrigger value="active">Active</TabsTrigger>
+              <TabsTrigger value="archived">Archived</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
           <div className="flex gap-2">
             <Button
               variant={viewMode === 'table' ? 'default' : 'outline'}
@@ -224,14 +234,6 @@ const ServiceAreas = () => {
               <SelectItem value="inactive">Inactive</SelectItem>
             </SelectContent>
           </Select>
-
-          <Button
-            variant={showArchived ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setShowArchived(!showArchived)}
-          >
-            {showArchived ? 'Hide Archived' : 'Show Archived'}
-          </Button>
 
           <Input
             placeholder="Search areas..."
