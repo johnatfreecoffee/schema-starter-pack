@@ -168,6 +168,11 @@ serve(async (req) => {
       serviceSlug = pathParts[2];
       citySlug = pathParts[3];
       urlPath = `/services/${serviceSlug}/${citySlug}`;
+    } else if (pathParts.length >= 3 && pathParts[1] === 'services') {
+      // Handle /render-page/services/service-slug (no city)
+      serviceSlug = pathParts[2];
+      citySlug = undefined;
+      urlPath = `/services/${serviceSlug}`;
     } else if (req.method === 'POST') {
       // Fallback: read from JSON body
       let body: any = null;
@@ -183,11 +188,15 @@ serve(async (req) => {
         if (parts.length >= 3 && parts[0] === 'services') {
           serviceSlug = parts[1];
           citySlug = parts[2];
+        } else if (parts.length >= 2 && parts[0] === 'services') {
+          // Handle /services/service-slug (no city)
+          serviceSlug = parts[1];
+          citySlug = undefined;
         }
       }
     }
 
-    if (!citySlug || !serviceSlug || !urlPath) {
+    if (!serviceSlug || !urlPath) {
       return new Response(JSON.stringify({ error: 'Invalid URL format' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -196,38 +205,89 @@ serve(async (req) => {
 
     console.log(`Rendering page: ${urlPath}`);
 
-    // Look up the generated page with localized content
-    const { data: page, error: pageError } = await supabase
-      .from('generated_pages')
-      .select(`
-        *,
-        service:services(
+    let page: any = null;
+    let pageError: any = null;
+    let localizedContent: any = null;
+
+    if (citySlug) {
+      // Look up the specific city+service generated page
+      const { data: generatedPage, error: genPageError } = await supabase
+        .from('generated_pages')
+        .select(`
+          *,
+          service:services(
+            *,
+            template:templates(*)
+          ),
+          service_area:service_areas(*)
+        `)
+        .eq('url_path', urlPath)
+        .single();
+
+      if (genPageError || !generatedPage) {
+        console.error('Page not found:', genPageError);
+        return new Response(
+          `<html><body><h1>404 - Page Not Found</h1><p>The page you're looking for doesn't exist.</p></body></html>`,
+          {
+            status: 404,
+            headers: { ...corsHeaders, 'Content-Type': 'text/html' },
+          }
+        );
+      }
+
+      page = generatedPage;
+
+      // Fetch localized content from service_area_services
+      const { data: locContent } = await supabase
+        .from('service_area_services')
+        .select('*')
+        .eq('service_id', page.service_id)
+        .eq('service_area_id', page.service_area_id)
+        .single();
+      
+      localizedContent = locContent;
+    } else {
+      // No city: fetch service template only with blank service area variables
+      const { data: serviceData, error: serviceErr } = await supabase
+        .from('services')
+        .select(`
           *,
           template:templates(*)
-        ),
-        service_area:service_areas(*)
-      `)
-      .eq('url_path', urlPath)
-      .single();
+        `)
+        .eq('slug', serviceSlug)
+        .eq('is_active', true)
+        .single();
 
-    if (pageError || !page) {
-      console.error('Page not found:', pageError);
-      return new Response(
-        `<html><body><h1>404 - Page Not Found</h1><p>The page you're looking for doesn't exist.</p></body></html>`,
-        {
-          status: 404,
-          headers: { ...corsHeaders, 'Content-Type': 'text/html' },
-        }
-      );
+      if (serviceErr || !serviceData) {
+        console.error('Service not found:', serviceErr);
+        return new Response(
+          `<html><body><h1>404 - Service Not Found</h1><p>The service you're looking for doesn't exist.</p></body></html>`,
+          {
+            status: 404,
+            headers: { ...corsHeaders, 'Content-Type': 'text/html' },
+          }
+        );
+      }
+
+      // Create a mock page object with blank service area data
+      page = {
+        service_id: serviceData.id,
+        service: serviceData,
+        service_area: {
+          city_name: '',
+          city_slug: '',
+          display_name: '',
+          state: '',
+          zip_code: ''
+        },
+        status: true,
+        rendered_html: null,
+        needs_regeneration: false,
+        url_path: urlPath,
+        page_title: `${serviceData.name} | Professional Service`,
+        meta_description: serviceData.full_description?.substring(0, 160) || ''
+      };
     }
-
-    // Fetch localized content from service_area_services
-    const { data: localizedContent } = await supabase
-      .from('service_area_services')
-      .select('*')
-      .eq('service_id', page.service_id)
-      .eq('service_area_id', page.service_area_id)
-      .single();
 
 
     if (!page.status) {
@@ -303,16 +363,16 @@ serve(async (req) => {
       service_starting_price: formatPrice(page.service.starting_price || 0),
       service_category: page.service.category,
 
-      // Area variables
-      city_name: page.service_area.city_name,
-      city_slug: page.service_area.city_slug,
-      display_name: page.service_area.display_name || page.service_area.city_name,
-      area_display_name: page.service_area.display_name || page.service_area.city_name,
-      state: page.service_area.state || 'LA',
-      zip_code: page.service_area.zip_code || '',
+      // Area variables (blank if no city)
+      city_name: page.service_area?.city_name || '',
+      city_slug: page.service_area?.city_slug || '',
+      display_name: page.service_area?.display_name || page.service_area?.city_name || '',
+      area_display_name: page.service_area?.display_name || page.service_area?.city_name || '',
+      state: page.service_area?.state || '',
+      zip_code: page.service_area?.zip_code || '',
 
-      // Localized content from service_area_services
-      local_description: localizedContent?.local_description || page.service_area.local_description || '',
+      // Localized content from service_area_services (blank if no city)
+      local_description: localizedContent?.local_description || '',
       local_benefits: localizedContent?.local_benefits || [],
       response_time: localizedContent?.response_time || '',
       completion_time: localizedContent?.completion_time || '',
