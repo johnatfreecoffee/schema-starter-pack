@@ -135,27 +135,6 @@ const ServiceOverviewPage = () => {
           </div>
         )}
 
-        {/* Bottom CTA */}
-        <div className="bg-muted/30 rounded-lg p-8 text-center mb-12">
-          <h2 className="text-2xl font-bold mb-4">Ready to Get Started?</h2>
-          <p className="text-muted-foreground mb-6">
-            Request a free quote and we'll get back to you within 24 hours
-          </p>
-          <Button 
-            size="lg"
-            onClick={() => openModal(
-              `Get a Free Quote for ${service.name}`,
-              {
-                serviceId: service.id,
-                serviceName: service.name,
-                originatingUrl: window.location.href,
-              }
-            )}
-          >
-            <MessageSquare className="mr-2 h-5 w-5" />
-            Request Service
-          </Button>
-        </div>
 
         {/* Service Areas */}
         {serviceAreas && serviceAreas.length > 0 && (
