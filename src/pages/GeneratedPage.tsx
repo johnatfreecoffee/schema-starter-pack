@@ -132,32 +132,6 @@ const GeneratedPage = () => {
         )}
       </div>
 
-      {/* Bottom CTA Section */}
-      <div className="bg-muted/30 border-y">
-        <div className="container mx-auto px-4 py-12 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Ready for Expert {pageData.service_name} in {pageData.city_name}?
-          </h2>
-          <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-            Contact us today for a free consultation and quote
-          </p>
-          <Button 
-            size="lg"
-            onClick={() => openModal(
-              `Get a Free Quote for ${pageData.service_name} in ${pageData.city_name}`,
-              {
-                serviceId: pageRecord?.service_id,
-                serviceName: pageData.service_name,
-                city: pageData.city_name,
-                originatingUrl: window.location.href,
-              }
-            )}
-          >
-            <MessageSquare className="mr-2 h-5 w-5" />
-            Request Service Now
-          </Button>
-        </div>
-      </div>
 
     </>
   );
