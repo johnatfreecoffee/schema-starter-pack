@@ -158,16 +158,16 @@ serve(async (req) => {
     const url = new URL(req.url);
     const pathParts = url.pathname.split('/').filter(Boolean);
 
-    // Accept either path params (/render-page/city/service) or POST body { urlPath }
+    // Accept either path params or POST body { urlPath }
     let citySlug: string | undefined;
     let serviceSlug: string | undefined;
     let urlPath: string | undefined;
 
-    if (pathParts.length >= 3) {
-      // Expect format: /render-page/city-slug/service-slug
-      citySlug = pathParts[1];
+    if (pathParts.length >= 4) {
+      // Expect format: /render-page/services/service-slug/city-slug
       serviceSlug = pathParts[2];
-      urlPath = `/${citySlug}/${serviceSlug}`;
+      citySlug = pathParts[3];
+      urlPath = `/services/${serviceSlug}/${citySlug}`;
     } else if (req.method === 'POST') {
       // Fallback: read from JSON body
       let body: any = null;
@@ -180,9 +180,9 @@ serve(async (req) => {
         const tempUrlPath = body.urlPath as string;
         urlPath = tempUrlPath;
         const parts = tempUrlPath.split('/').filter(Boolean);
-        if (parts.length >= 2) {
-          citySlug = parts[0];
+        if (parts.length >= 3 && parts[0] === 'services') {
           serviceSlug = parts[1];
+          citySlug = parts[2];
         }
       }
     }
