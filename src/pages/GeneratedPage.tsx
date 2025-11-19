@@ -124,7 +124,7 @@ const GeneratedPage = () => {
       )}
 
       {/* Rendered Content */}
-      <div className="container mx-auto px-4 pt-8">
+      <div>
         {needsIframe ? (
           <SiteHTMLIframeRenderer html={processedContent} />
         ) : (
