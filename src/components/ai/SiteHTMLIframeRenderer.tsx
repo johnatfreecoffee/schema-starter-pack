@@ -91,6 +91,30 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
       const processed = normalizeCTAs(html);
       doc.write(processed);
       
+      // Inject CSS to eliminate all bottom spacing and whitespace
+      const cleanupStyle = doc.createElement('style');
+      cleanupStyle.textContent = `
+        html, body {
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow-x: hidden !important;
+        }
+        body > *:last-child {
+          margin-bottom: 0 !important;
+          padding-bottom: 0 !important;
+        }
+        * {
+          margin-bottom: 0 !important;
+        }
+        body::after {
+          content: '';
+          display: block;
+          height: 0;
+          clear: both;
+        }
+      `;
+      doc.head.appendChild(cleanupStyle);
+      
       // Inject postMessage bridge for onclick fallback
       const bridgeScript = doc.createElement('script');
       bridgeScript.textContent = `
