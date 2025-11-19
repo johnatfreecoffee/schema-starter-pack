@@ -210,47 +210,19 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
           return;
         }
 
-        // Get all content-bearing elements (skip scripts, styles, empty divs)
-        const allElements = Array.from(doc.body?.getElementsByTagName('*') || []);
-        const contentElements = allElements.filter((el: any) => {
-          const tagName = el.tagName.toLowerCase();
-          // Skip non-visual elements
-          if (['script', 'style', 'link', 'meta', 'noscript'].includes(tagName)) {
-            return false;
-          }
-          // Skip empty divs without children
-          if (tagName === 'div' && el.children.length === 0 && !el.textContent?.trim()) {
-            return false;
-          }
-          return true;
-        });
-
-        // Calculate height based on actual visible content
-        let maxBottom = 0;
-        contentElements.forEach((el: any) => {
-          const rect = el.getBoundingClientRect();
-          const bottom = rect.bottom;
-          if (bottom > maxBottom) {
-            maxBottom = bottom;
-          }
-        });
-
-        // Fallback to scrollHeight
+        // Use scrollHeight for accurate content height measurement
         const scrollHeight = Math.max(
           body?.scrollHeight || 0,
           htmlEl?.scrollHeight || 0
         );
 
-        // Use the larger of bounding box calculation or scrollHeight
-        const height = Math.max(maxBottom, scrollHeight, 100);
+        const height = Math.max(scrollHeight, 100);
 
         console.log('[SiteHTMLIframeRenderer] Height calculation:', {
           hasReactRoot,
           rootHasContent,
-          maxBottom,
           scrollHeight,
           finalHeight: height,
-          contentElementsCount: contentElements.length,
         });
 
         iframe.style.height = `${height}px`;
