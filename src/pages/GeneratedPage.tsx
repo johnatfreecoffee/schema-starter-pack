@@ -124,16 +124,16 @@ const GeneratedPage = () => {
       )}
 
       {/* Rendered Content */}
-      <div className="m-0 p-0">
+      <div className="container mx-auto px-4 py-8">
         {needsIframe ? (
-          <SiteHTMLIframeRenderer html={processedContent} className="block m-0" />
+          <SiteHTMLIframeRenderer html={processedContent} />
         ) : (
           <AIHTMLRenderer html={processedContent} />
         )}
       </div>
 
       {/* Bottom CTA Section */}
-      <div className="bg-muted/30 border-y mt-0">
+      <div className="bg-muted/30 border-y">
         <div className="container mx-auto px-4 py-12 text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
             Ready for Expert {pageData.service_name} in {pageData.city_name}?

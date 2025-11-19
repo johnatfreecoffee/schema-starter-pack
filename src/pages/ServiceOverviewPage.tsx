@@ -118,11 +118,11 @@ const ServiceOverviewPage = () => {
       />
 
       {/* Service Overview Content */}
-      <div className="m-0 p-0">
+      <div className="container mx-auto px-4 py-8">
 
         {renderedContent ? (
           needsIframe ? (
-            <SiteHTMLIframeRenderer html={renderedContent} className="block m-0" />
+            <SiteHTMLIframeRenderer html={renderedContent} />
           ) : (
             <AIHTMLRenderer html={renderedContent} className="prose prose-lg max-w-none mb-12" />
           )
@@ -136,7 +136,7 @@ const ServiceOverviewPage = () => {
         )}
 
         {/* Bottom CTA */}
-        <div className="bg-muted/30 rounded-lg p-8 text-center mb-12 mt-0">
+        <div className="bg-muted/30 rounded-lg p-8 text-center mb-12">
           <h2 className="text-2xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-muted-foreground mb-6">
             Request a free quote and we'll get back to you within 24 hours
