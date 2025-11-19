@@ -55,7 +55,7 @@ const ServiceAreas = () => {
         query = query.eq('archived', false);
       }
       
-      query = query.order('created_at', { ascending: false });
+      query = query.order('city_name', { ascending: true });
       
       const { data, error } = await query;
       if (error) throw error;
@@ -248,7 +248,6 @@ const ServiceAreas = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Area Name</TableHead>
                   <TableHead>City</TableHead>
                   <TableHead>State</TableHead>
                   <TableHead>ZIP</TableHead>
@@ -263,10 +262,9 @@ const ServiceAreas = () => {
                 {filteredAreas?.map((area) => (
                   <TableRow key={area.id} className={area.archived ? 'opacity-50' : ''}>
                     <TableCell className="font-medium">
-                      {area.area_name || '-'}
+                      {area.city_name}
                       {area.archived && <span className="ml-2 text-xs text-muted-foreground">(Archived)</span>}
                     </TableCell>
-                    <TableCell>{area.city_name}</TableCell>
                     <TableCell>{area.state}</TableCell>
                     <TableCell>{area.zip_code || '-'}</TableCell>
                     <TableCell>{area.display_name}</TableCell>
