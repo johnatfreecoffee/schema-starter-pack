@@ -244,8 +244,8 @@ const UnifiedPageEditor = ({
       const containerRect = container.getBoundingClientRect();
       const newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
       
-      // Constrain between 20% and 60%
-      const constrainedWidth = Math.min(Math.max(newWidth, 20), 60);
+      // Constrain between 30% and 60%
+      const constrainedWidth = Math.min(Math.max(newWidth, 30), 60);
       setChatPanelWidth(constrainedWidth);
     };
 
