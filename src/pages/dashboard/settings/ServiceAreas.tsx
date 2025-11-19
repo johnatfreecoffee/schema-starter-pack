@@ -254,7 +254,6 @@ const ServiceAreas = () => {
                   <TableHead>ZIP</TableHead>
                   <TableHead>Display Name</TableHead>
                   <TableHead>Pages</TableHead>
-                  <TableHead>Services</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Default</TableHead>
                   <TableHead>Actions</TableHead>
@@ -273,9 +272,6 @@ const ServiceAreas = () => {
                     <TableCell>{area.display_name}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">{getPagesCount(area)} pages</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{getServicesCount(area)} services</Badge>
                     </TableCell>
                     <TableCell>
                       <Switch
