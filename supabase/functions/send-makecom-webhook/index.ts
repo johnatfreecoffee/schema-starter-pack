@@ -1165,8 +1165,10 @@ Before finalizing copy, mentally remove ALL city/area variables and read it thro
             pageType: supabaseData?.pageType || "",
             pageTitle: supabaseData?.pageTitle || "",
             table: supabaseData?.table || "",
+            id: supabaseData?.id || supabaseData?.pageRowId || "",
             pageId: supabaseData?.pageId || "",
             pageRowId: supabaseData?.pageRowId || "",
+            field: supabaseData?.field || "",
             includeImages: includeImages
           },
           output_tokens: 80000
