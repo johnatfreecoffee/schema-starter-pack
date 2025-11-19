@@ -188,29 +188,15 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         const body = doc.body;
         const htmlEl = doc.documentElement;
 
-        // Measure traditional document heights
-        const baseHeight = Math.max(
+        // Use scrollHeight - the most reliable measure of content height
+        // This correctly accounts for overflow and actual content without
+        // being affected by absolutely/fixed positioned elements
+        const height = Math.max(
           body?.scrollHeight || 0,
-          body?.offsetHeight || 0,
-          htmlEl?.clientHeight || 0,
           htmlEl?.scrollHeight || 0,
-          htmlEl?.offsetHeight || 0
+          500 // Minimum reasonable height
         );
 
-        // Also account for absolutely/fixed positioned elements relative to iframe document
-        let maxBottom = 0;
-        const nodes = body?.getElementsByTagName('*') || [];
-        for (let i = 0; i < (nodes as any).length; i++) {
-          const el = (nodes as any)[i] as HTMLElement;
-          if (!el || typeof el.offsetTop !== 'number') continue;
-          // Calculate bottom edge relative to iframe document
-          const elementBottom = el.offsetTop + (el.offsetHeight || 0);
-          if (isFinite(elementBottom) && elementBottom > maxBottom) {
-            maxBottom = elementBottom;
-          }
-        }
-
-        const height = Math.ceil(Math.max(baseHeight, maxBottom));
         iframe.style.height = `${height}px`;
       };
 
@@ -287,7 +273,7 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
     <iframe
       ref={ref}
       className={className || 'w-full border-0'}
-      style={{ width: '100%', display: 'block', minHeight: '200px', margin: 0, padding: 0 }}
+      style={{ width: '100%', display: 'block', height: '0px', margin: 0, padding: 0 }}
       title="Static Page Content"
       sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation"
     />
