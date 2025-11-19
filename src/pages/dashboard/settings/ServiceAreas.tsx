@@ -251,7 +251,6 @@ const ServiceAreas = () => {
                   <TableHead>City</TableHead>
                   <TableHead>State</TableHead>
                   <TableHead>ZIP</TableHead>
-                  <TableHead>Display Name</TableHead>
                   <TableHead>Pages</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Default</TableHead>
@@ -267,7 +266,6 @@ const ServiceAreas = () => {
                     </TableCell>
                     <TableCell>{area.state}</TableCell>
                     <TableCell>{area.zip_code || '-'}</TableCell>
-                    <TableCell>{area.display_name}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">{getPagesCount(area)} pages</Badge>
                     </TableCell>
@@ -333,21 +331,32 @@ const ServiceAreas = () => {
               <div key={area.id} className={`border rounded-lg p-4 hover:shadow-lg transition-shadow ${area.archived ? 'opacity-50' : ''}`}>
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h3 className="font-semibold text-lg">{area.area_name || area.city_name}</h3>
+                    <h3 className="font-semibold text-lg">{area.city_name}</h3>
                     {area.archived && <span className="text-xs text-muted-foreground">(Archived)</span>}
-                    <p className="text-sm text-muted-foreground">{area.display_name}</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {area.city_name}, {area.state} {area.zip_code}
+                      {area.state} {area.zip_code || ''}
                     </p>
                   </div>
-                  <Switch
-                    checked={area.status}
-                    onCheckedChange={(checked) => updateStatusMutation.mutate({ id: area.id, status: checked })}
-                  />
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Active</span>
+                      <Switch
+                        checked={area.status}
+                        onCheckedChange={(checked) => updateStatusMutation.mutate({ id: area.id, status: checked })}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Default</span>
+                      <Switch
+                        checked={area.is_default || false}
+                        onCheckedChange={(checked) => updateDefaultMutation.mutate({ id: area.id, isDefault: checked })}
+                        disabled={area.archived}
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className="flex gap-2 mb-3">
                   <Badge variant="secondary">{getPagesCount(area)} pages</Badge>
-                  <Badge variant="outline">{getServicesCount(area)} services</Badge>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="ghost" size="sm" onClick={() => { setSelectedArea(area); setIsPagesOpen(true); }} title="View Pages">
