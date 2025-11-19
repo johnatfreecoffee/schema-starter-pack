@@ -15,23 +15,26 @@ import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 const ServiceOverviewPage = () => {
   const { serviceSlug } = useParams<{ serviceSlug: string }>();
   const { openModal } = useLeadFormModal();
+  const urlPath = `/services/${serviceSlug}`;
 
-  const { data: service, isLoading: serviceLoading, error: serviceError } = useCachedQuery({
-    queryKey: ['service', serviceSlug],
-    cacheKey: `services:${serviceSlug}`,
-    cacheTTL: 60 * 60 * 1000, // 1 hour
+  // Fetch server-rendered content via backend function (same as GeneratedPage but without city)
+  const { data: pageContent, isLoading: isRendering, error: renderError } = useQuery({
+    queryKey: ['rendered-service-overview', serviceSlug],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('services')
-        .select('*, template:templates(*)')
-        .eq('slug', serviceSlug)
-        .eq('is_active', true)
-        .single();
-
+      const { data, error } = await supabase.functions.invoke('render-page', {
+        body: { urlPath },
+      });
+      
       if (error) throw error;
       return data;
     },
   });
+
+  const service = pageContent?.pageData?.service;
+  const serviceError = renderError;
+  const serviceLoading = isRendering;
+
+  const renderedContent = pageContent?.content;
 
   const { data: serviceAreas, isLoading: areasLoading } = useCachedQuery({
     queryKey: ['service-areas', service?.id],
@@ -69,54 +72,6 @@ const ServiceOverviewPage = () => {
     },
   });
 
-  // Build page data for template rendering (without city-specific data)
-  const pageData = service && company ? {
-    service_name: service.name,
-    service_slug: service.slug,
-    service_description: service.full_description || '',
-    service_starting_price: formatPrice(service.starting_price || 0),
-    service_category: service.category,
-    company_name: company.business_name,
-    company_phone: formatPhone(company.phone),
-    company_email: company.email,
-    company_address: company.address,
-    company_description: company.description || '',
-    company_slogan: company.business_slogan || '',
-    years_experience: company.years_experience || 0,
-    logo_url: company.logo_url || '',
-    icon_url: company.icon_url || '',
-    // Placeholder for city-specific variables
-    city_name: '[Select a city below]',
-    city_slug: '',
-    display_name: '',
-    local_description: '',
-  } : null;
-
-  // Render template with async review variables
-  const { data: renderedContent, isLoading: isRendering } = useQuery({
-    queryKey: ['rendered-service', serviceSlug, pageData],
-    queryFn: async () => {
-      if (!service?.template?.template_html || !pageData) return '';
-      
-      let content = await renderTemplateWithReviews(
-        service.template.template_html,
-        pageData,
-        { serviceId: service.id }
-      );
-      
-      // content = sanitizeHtml(content); // Sanitization + CTA normalization handled by AIHTMLRenderer
-      
-      // Add lazy loading to images
-      content = content.replace(
-        /<img(?![^>]*loading=)/gi,
-        '<img loading="lazy"'
-      );
-      
-      return content;
-    },
-    enabled: !!(service?.template?.template_html && pageData),
-  });
-
   if (serviceLoading || areasLoading || isRendering) {
     return (
       <div className="container mx-auto px-4 py-12">
@@ -129,7 +84,7 @@ const ServiceOverviewPage = () => {
     );
   }
 
-  if (serviceError || !service || !company || !pageData) {
+  if (serviceError || !service || !company) {
     return <NotFound />;
   }
 

@@ -1082,6 +1082,70 @@ serve(async (req) => {
               length: systemRevisionInstructions?.length || null
             }
           }),
+          // Include servicePageDynamicCopyInstructions for service template pages
+          ...(supabaseData?.pageType === 'service' && {
+            servicePageDynamicCopyInstructions: {
+              content: `# DYNAMIC SERVICE PAGE COPY GUIDELINES
+
+**CRITICAL CONTEXT**: This service template page will be displayed in TWO scenarios:
+1. **Generic Service Page** (/services/{service}) - With NO city-specific variables (all {{city_name}}, {{display_name}}, {{local_description}}, etc. will be BLANK)
+2. **City-Specific Page** (/services/{service}/{city}) - With city-specific variables populated
+
+## YOUR COPYWRITING TASK:
+
+Write copy that reads naturally and professionally in BOTH scenarios. The reader should never feel like content is missing or incomplete when viewing the generic service page.
+
+### STRATEGIES FOR DUAL-CONTEXT COPY:
+
+**1. USE CONDITIONAL PHRASING:**
+- ✅ GOOD: "Serving homeowners across the region" (works with or without city)
+- ✅ GOOD: "Trusted by local communities" (works universally)
+- ❌ BAD: "Serving homeowners in" (reads incomplete without city name)
+
+**2. MAKE CITY REFERENCES ADDITIVE, NOT REQUIRED:**
+- ✅ GOOD: "Professional service {{#if city_name}}in {{city_name}}{{/if}}" 
+- ✅ GOOD: "Expert solutions for your home{{#if city_name}} in {{city_name}}{{/if}}"
+- Place city references where their absence doesn't break sentence flow
+
+**3. WRITE STRONG STANDALONE SENTENCES:**
+- Focus on service quality, expertise, process, and benefits
+- City-specific details should enhance, not define, the core message
+- Headlines should be compelling without needing city context
+
+**4. USE SMART VARIABLE PLACEMENT:**
+- Place city/area variables at the END of sentences when possible
+- Avoid starting sentences with city variables
+- Use variables in supplementary phrases, not core statements
+
+### EXAMPLES:
+
+**HERO SECTION:**
+- ✅ "Professional Roofing Services" (headline works everywhere)
+- ✅ "Get a free quote for your home{{#if city_name}} in {{city_name}}{{/if}}" (CTA works with or without)
+- ❌ "{{city_name}} Roofing Experts" (broken without city)
+
+**SERVICE DESCRIPTIONS:**
+- ✅ "We provide expert installations backed by industry certifications{{#if local_description}}. {{local_description}}{{/if}}"
+- ✅ "Trusted by homeowners{{#if city_name}} throughout {{city_name}}{{/if}} for quality workmanship"
+- ❌ "Providing service to {{city_name}} residents" (incomplete without city)
+
+**BENEFITS/FEATURES:**
+- ✅ "Fast response times" (universal benefit)
+- ✅ "{{#if response_time}}{{response_time}} response time{{else}}Rapid service when you need it{{/if}}"
+- Use fallback copy for conditional variables
+
+### VALIDATION CHECKLIST:
+Before finalizing copy, mentally remove ALL city/area variables and read it through:
+- [ ] Does every sentence still make grammatical sense?
+- [ ] Are there any awkward gaps or incomplete thoughts?
+- [ ] Does the page still convey value and professionalism?
+- [ ] Would a reader on the generic page feel well-informed?
+
+**REMEMBER**: The generic service page is NOT inferior—it's an overview showcasing your expertise. The city-specific page adds localized context. Both should feel complete and professional.`,
+              type: "service_page_copy_guidelines",
+              length: null
+            }
+          }),
           supabaseData: {
             pageType: supabaseData?.pageType || "",
             pageTitle: supabaseData?.pageTitle || "",
