@@ -247,7 +247,7 @@ serve(async (req) => {
       
       localizedContent = locContent;
     } else {
-      // No city: fetch service template only with blank service area variables
+      // No city: fetch service template with New Orleans as default service area
       const { data: serviceData, error: serviceErr } = await supabase
         .from('services')
         .select(`
@@ -269,11 +269,30 @@ serve(async (req) => {
         );
       }
 
-      // Create a mock page object with blank service area data
+      // Fetch New Orleans service area as default
+      const { data: defaultArea } = await supabase
+        .from('service_areas')
+        .select('*')
+        .eq('city_name', 'New Orleans')
+        .single();
+
+      // Fetch localized content for New Orleans + this service
+      if (defaultArea) {
+        const { data: locContent } = await supabase
+          .from('service_area_services')
+          .select('*')
+          .eq('service_id', serviceData.id)
+          .eq('service_area_id', defaultArea.id)
+          .single();
+        
+        localizedContent = locContent;
+      }
+
+      // Create a page object with New Orleans data as defaults
       page = {
         service_id: serviceData.id,
         service: serviceData,
-        service_area: {
+        service_area: defaultArea || {
           city_name: '',
           city_slug: '',
           display_name: '',
