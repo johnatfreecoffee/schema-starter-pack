@@ -130,6 +130,33 @@ const ServiceAreas = () => {
     },
   });
 
+  const updateDefaultMutation = useMutation({
+    mutationFn: async ({ id, isDefault }: { id: string; isDefault: boolean }) => {
+      if (isDefault) {
+        // First, unset any existing default
+        const { error: unsetError } = await supabase
+          .from('service_areas')
+          .update({ is_default: false })
+          .eq('is_default', true)
+          .neq('id', id);
+        
+        if (unsetError) throw unsetError;
+      }
+
+      // Then set the new default
+      const { error } = await supabase
+        .from('service_areas')
+        .update({ is_default: isDefault })
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ['service-areas'] });
+      toast({ title: 'Default area updated' });
+    },
+  });
+
   const filteredAreas = serviceAreas?.filter(area => {
     if (statusFilter === 'active' && !area.status) return false;
     if (statusFilter === 'inactive' && area.status) return false;
@@ -229,6 +256,7 @@ const ServiceAreas = () => {
                   <TableHead>Pages</TableHead>
                   <TableHead>Services</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Default</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -253,6 +281,13 @@ const ServiceAreas = () => {
                       <Switch
                         checked={area.status}
                         onCheckedChange={(checked) => updateStatusMutation.mutate({ id: area.id, status: checked })}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={area.is_default || false}
+                        onCheckedChange={(checked) => updateDefaultMutation.mutate({ id: area.id, isDefault: checked })}
+                        disabled={area.archived}
                       />
                     </TableCell>
                     <TableCell>

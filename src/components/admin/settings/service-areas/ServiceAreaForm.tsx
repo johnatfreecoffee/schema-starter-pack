@@ -75,6 +75,7 @@ const formSchema = z.object({
   display_name: z.string().min(1, 'Display name is required').max(150),
   local_description: z.string().max(1000).optional(),
   status: z.boolean().default(true),
+  is_default: z.boolean().default(false),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -99,6 +100,7 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
       display_name: area?.display_name || '',
       local_description: area?.local_description || '',
       status: area?.status ?? true,
+      is_default: area?.is_default ?? false,
     },
   });
 
@@ -130,6 +132,17 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
+      // If marking this area as default, first unset any existing default
+      if (data.is_default) {
+        const { error: unsetError } = await supabase
+          .from('service_areas')
+          .update({ is_default: false })
+          .eq('is_default', true)
+          .neq('id', area?.id || '');
+        
+        if (unsetError) throw unsetError;
+      }
+
       if (area) {
         // Update existing area
         const { error: updateError } = await supabase
@@ -143,6 +156,7 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
             display_name: data.display_name,
             local_description: data.local_description,
             status: data.status,
+            is_default: data.is_default,
             updated_at: new Date().toISOString(),
           })
           .eq('id', area.id);
@@ -189,6 +203,7 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
             display_name: data.display_name,
             local_description: data.local_description,
             status: data.status,
+            is_default: data.is_default,
           })
           .select()
           .single();
@@ -409,6 +424,27 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
                 <FormLabel className="text-base">Active</FormLabel>
                 <FormDescription>
                   When inactive, all pages for this area are hidden
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="is_default"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">Default Area</FormLabel>
+                <FormDescription>
+                  Use this area's variables for service pages without a city slug (only one can be default)
                 </FormDescription>
               </div>
               <FormControl>
