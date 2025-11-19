@@ -894,26 +894,27 @@ When all stages pass validation, you MUST format your response in this EXACT str
 \`\`\`json
 {
   "data": {
-    "id": "USE_THE_ID_FROM_SUPABASE_DATA",
+    "id": "USE_supabaseData.id_OR_supabaseData.pageRowId",
     "updates": {
-      "content_html_draft": "PLACE_THE_COMPLETE_HTML_PAGE_HERE_AS_A_STRING"
+      "FIELD_NAME_FROM_supabaseData.field": "PLACE_THE_COMPLETE_HTML_PAGE_HERE_AS_A_STRING"
     }
   },
-  "table": "static_pages"
+  "table": "VALUE_FROM_supabaseData.table"
 }
 \`\`\`
 
 ### CRITICAL FORMATTING REQUIREMENTS:
 
-1. **Extract the ID**: Use \`supabaseData.id\` value for the \`"id"\` field
-2. **Place HTML**: Put the ENTIRE final assembled HTML page (with embedded CSS) inside \`"content_html_draft"\` as a plain string
-3. **Table name**: Always use \`"static_pages"\` for the \`"table"\` field
-4. **No escaping**: Do NOT escape quotes or special characters in the HTML - send it as a raw string
-5. **Complete structure**: Include the entire HTML from \`<!DOCTYPE html>\` through closing \`</html>\` tag
-6. **NO MARKDOWN**: DO NOT wrap the HTML in markdown code fences like \`\`\`html or \`\`\`css - output RAW HTML ONLY
-7. **NO CODE BLOCKS**: The HTML must start directly with \`<!DOCTYPE html>\` NOT with \`\`\`html
+1. **Extract the ID**: Use \`supabaseData.id\` or \`supabaseData.pageRowId\` value for the \`"id"\` field
+2. **Place HTML**: Put the ENTIRE final assembled HTML page (with embedded CSS) inside the field specified by \`supabaseData.field\` as a plain string
+3. **Table name**: Use \`supabaseData.table\` value for the \`"table"\` field (will be "static_pages" for static pages, "templates" for service pages)
+4. **Field name**: Use \`supabaseData.field\` value as the key in the updates object (will be "content_html_draft" for static pages, "template_html_draft" for service pages)
+5. **No escaping**: Do NOT escape quotes or special characters in the HTML - send it as a raw string
+6. **Complete structure**: Include the entire HTML from \`<!DOCTYPE html>\` through closing \`</html>\` tag
+7. **NO MARKDOWN**: DO NOT wrap the HTML in markdown code fences like \`\`\`html or \`\`\`css - output RAW HTML ONLY
+8. **NO CODE BLOCKS**: The HTML must start directly with \`<!DOCTYPE html>\` NOT with \`\`\`html
 
-### EXAMPLE OUTPUT:
+### EXAMPLE OUTPUT FOR STATIC PAGES:
 
 \`\`\`json
 {
@@ -924,6 +925,20 @@ When all stages pass validation, you MUST format your response in this EXACT str
     }
   },
   "table": "static_pages"
+}
+\`\`\`
+
+### EXAMPLE OUTPUT FOR SERVICE TEMPLATE PAGES:
+
+\`\`\`json
+{
+  "data": {
+    "id": "c95f9a73-09da-4dbc-817f-1da0f97adc33",
+    "updates": {
+      "template_html_draft": "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>{{service_name}} in {{city_name}}</title><style>body { margin: 0; font-family: Arial, sans-serif; } .hero { padding: 60px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; }</style></head><body><section class=\"hero\"><h1>{{service_name}} in {{city_name}}</h1><p>Professional service for your home</p></section></body></html>"
+    }
+  },
+  "table": "templates"
 }
 \`\`\`
 
