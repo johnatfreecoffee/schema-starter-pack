@@ -159,12 +159,6 @@ const GeneratedPage = () => {
         </div>
       </div>
 
-      {pageRecord?.service_id && (
-        <ServiceReviews 
-          serviceId={pageRecord.service_id} 
-          serviceName={pageData.service_name}
-        />
-      )}
     </>
   );
 };
