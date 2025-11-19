@@ -415,6 +415,18 @@ serve(async (req) => {
       years_experience: companyData.years_experience || 0,
       logo_url: companyData.logo_url || '',
       icon_url: companyData.icon_url || '',
+      
+      // Company address breakdown
+      address: companyData.address || '',
+      address_street: companyData.address_street || '',
+      address_city: companyData.address_city || '',
+      address_state: companyData.address_state || '',
+      address_zip: companyData.address_zip || '',
+      address_unit: companyData.address_unit || '',
+      
+      // Service radius
+      service_radius: companyData.service_radius || 0,
+      service_radius_unit: companyData.service_radius_unit || 'miles',
 
       // Site settings for colors and styling
       siteSettings: siteSettingsData,
