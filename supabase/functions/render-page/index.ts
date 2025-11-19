@@ -237,6 +237,13 @@ serve(async (req) => {
 
       page = generatedPage;
 
+      console.log('City-specific page found:', {
+        urlPath: page.url_path,
+        serviceAreaId: page.service_area_id,
+        cityName: page.service_area?.city_name,
+        serviceId: page.service_id
+      });
+
       // Fetch localized content from service_area_services
       const { data: locContent } = await supabase
         .from('service_area_services')
@@ -246,6 +253,7 @@ serve(async (req) => {
         .single();
       
       localizedContent = locContent;
+      console.log('Localized content fetched:', locContent ? 'found' : 'not found');
     } else {
       // No city: fetch service template with New Orleans as default service area
       const { data: serviceData, error: serviceErr } = await supabase
@@ -436,6 +444,12 @@ serve(async (req) => {
       meta_description: localizedContent?.meta_description_override || page.meta_description || '',
       url_path: page.url_path,
     };
+    
+    console.log('Template data being used:', {
+      city_name: pageData.city_name,
+      address_city: pageData.address_city,
+      urlPath: pageData.url_path
+    });
 
     // Compile template content (separate from layout wrapping)
     const template = compileTemplate(page.service.template.template_html);
