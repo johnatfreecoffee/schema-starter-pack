@@ -287,7 +287,7 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
     <iframe
       ref={ref}
       className={className || 'w-full border-0'}
-      style={{ width: '100%', display: 'block', minHeight: '200px' }}
+      style={{ width: '100%', display: 'block', minHeight: '200px', margin: 0, padding: 0 }}
       title="Static Page Content"
       sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation"
     />
