@@ -188,23 +188,74 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         const body = doc.body;
         const htmlEl = doc.documentElement;
 
-        // Use scrollHeight - the most reliable measure of content height
-        // This correctly accounts for overflow and actual content without
-        // being affected by absolutely/fixed positioned elements
-        const height = Math.max(
+        // Reset iframe document margins to prevent extra space
+        if (body) {
+          body.style.margin = '0';
+          body.style.padding = '0';
+        }
+        if (htmlEl) {
+          htmlEl.style.margin = '0';
+          htmlEl.style.padding = '0';
+        }
+
+        // Get the last element in the body to measure actual content end
+        const lastElement = body?.lastElementChild;
+        let contentHeight = 0;
+
+        if (lastElement) {
+          // Use getBoundingClientRect for accurate measurements
+          const rect = lastElement.getBoundingClientRect();
+          const iframeDoc = iframe.contentWindow?.document;
+          if (iframeDoc) {
+            // Calculate from document top to bottom of last element
+            contentHeight = rect.bottom + (iframeDoc.documentElement?.scrollTop || 0);
+          }
+        }
+
+        // Fallback to scrollHeight if rect measurement fails
+        const scrollHeight = Math.max(
           body?.scrollHeight || 0,
-          htmlEl?.scrollHeight || 0,
-          500 // Minimum reasonable height
+          htmlEl?.scrollHeight || 0
         );
+
+        // Use the more accurate measurement
+        const height = Math.max(contentHeight, scrollHeight, 500);
+
+        console.log('[SiteHTMLIframeRenderer] Height calculation:', {
+          contentHeight,
+          scrollHeight,
+          finalHeight: height,
+          bodyScrollHeight: body?.scrollHeight,
+          htmlScrollHeight: htmlEl?.scrollHeight,
+        });
 
         iframe.style.height = `${height}px`;
       };
 
-      // Initial resize and then schedule another after scripts/styles settle
+      // Wait for all images to load before final resize
+      const waitForImages = () => {
+        const images = Array.from(doc.images || []);
+        const imagePromises = images.map((img) => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.addEventListener('load', () => resolve(null));
+            img.addEventListener('error', () => resolve(null));
+          });
+        });
+
+        Promise.all(imagePromises).then(() => {
+          console.log('[SiteHTMLIframeRenderer] All images loaded, final resize');
+          resize();
+        });
+      };
+
+      // Initial resize and then schedule more after scripts/styles/images settle
       resize();
-      setTimeout(resize, 100);
-      setTimeout(resize, 300);
-      setTimeout(resize, 800);
+      setTimeout(resize, 50);
+      setTimeout(resize, 150);
+      setTimeout(resize, 400);
+      setTimeout(resize, 1000);
+      setTimeout(waitForImages, 100);
 
       const win: any = iframe.contentWindow as any;
 
