@@ -6,6 +6,7 @@ import { Routes, Route } from "react-router-dom";
 import { GlobalLeadFormModal } from "@/components/lead-form/GlobalLeadFormModal";
 import { useCacheWarming } from "@/hooks/useCacheWarming";
 import { PageLoadingSkeleton } from "@/components/ui/page-loading-skeleton";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import AdminLayout from "./components/layout/AdminLayout";
 import CustomerLayout from "./components/layout/CustomerLayout";
 import PublicLayout from "./components/layout/PublicLayout";
@@ -34,6 +35,7 @@ const AppContent = () => {
   
   return (
     <div className="w-full max-w-full overflow-x-hidden min-h-screen">
+      <ScrollToTop />
       <Toaster />
       <Sonner />
       <GlobalLeadFormModal />
