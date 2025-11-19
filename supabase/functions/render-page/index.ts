@@ -277,14 +277,14 @@ serve(async (req) => {
         );
       }
 
-      // Fetch New Orleans service area as default
+      // Fetch default service area (marked as is_default = true)
       const { data: defaultArea } = await supabase
         .from('service_areas')
         .select('*')
-        .eq('city_name', 'New Orleans')
+        .eq('is_default', true)
         .single();
 
-      // Fetch localized content for New Orleans + this service
+      // Fetch localized content for default area + this service
       if (defaultArea) {
         const { data: locContent } = await supabase
           .from('service_area_services')
@@ -296,7 +296,7 @@ serve(async (req) => {
         localizedContent = locContent;
       }
 
-      // Create a page object with New Orleans data as defaults
+      // Create a page object with default area data
       page = {
         service_id: serviceData.id,
         service: serviceData,

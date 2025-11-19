@@ -2842,6 +2842,7 @@ export type Database = {
           created_at: string
           display_name: string
           id: string
+          is_default: boolean
           local_description: string | null
           state: string
           status: boolean
@@ -2858,6 +2859,7 @@ export type Database = {
           created_at?: string
           display_name: string
           id?: string
+          is_default?: boolean
           local_description?: string | null
           state?: string
           status?: boolean
@@ -2874,6 +2876,7 @@ export type Database = {
           created_at?: string
           display_name?: string
           id?: string
+          is_default?: boolean
           local_description?: string | null
           state?: string
           status?: boolean
