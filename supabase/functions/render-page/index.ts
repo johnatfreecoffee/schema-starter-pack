@@ -356,6 +356,9 @@ serve(async (req) => {
 
     // Build comprehensive page data with localized content
     const pageData: any = {
+      // Service object (full object for frontend)
+      service: page.service,
+      
       // Service variables
       service_name: page.service.name,
       service_slug: page.service.slug,
