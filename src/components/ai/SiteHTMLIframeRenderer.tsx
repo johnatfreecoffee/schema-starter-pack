@@ -198,38 +198,93 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
           htmlEl.style.padding = '0';
         }
 
-        // Get the last element in the body to measure actual content end
-        const lastElement = body?.lastElementChild;
-        let contentHeight = 0;
+        // Check if this is a React app with a root element
+        const rootEl = doc.getElementById('root') || doc.querySelector('[id*="root"]');
+        const hasReactRoot = rootEl !== null;
+        const rootHasContent = rootEl && rootEl.children.length > 0;
 
-        if (lastElement) {
-          // Use getBoundingClientRect for accurate measurements
-          const rect = lastElement.getBoundingClientRect();
-          const iframeDoc = iframe.contentWindow?.document;
-          if (iframeDoc) {
-            // Calculate from document top to bottom of last element
-            contentHeight = rect.bottom + (iframeDoc.documentElement?.scrollTop || 0);
-          }
+        // For React apps, don't measure until content is actually rendered
+        if (hasReactRoot && !rootHasContent) {
+          console.log('[SiteHTMLIframeRenderer] React root detected but empty, waiting for content...');
+          iframe.style.height = '100px'; // Minimal height while loading
+          return;
         }
 
-        // Fallback to scrollHeight if rect measurement fails
+        // Get all content-bearing elements (skip scripts, styles, empty divs)
+        const allElements = Array.from(doc.body?.getElementsByTagName('*') || []);
+        const contentElements = allElements.filter((el: any) => {
+          const tagName = el.tagName.toLowerCase();
+          // Skip non-visual elements
+          if (['script', 'style', 'link', 'meta', 'noscript'].includes(tagName)) {
+            return false;
+          }
+          // Skip empty divs without children
+          if (tagName === 'div' && el.children.length === 0 && !el.textContent?.trim()) {
+            return false;
+          }
+          return true;
+        });
+
+        // Calculate height based on actual visible content
+        let maxBottom = 0;
+        contentElements.forEach((el: any) => {
+          const rect = el.getBoundingClientRect();
+          const bottom = rect.bottom;
+          if (bottom > maxBottom) {
+            maxBottom = bottom;
+          }
+        });
+
+        // Fallback to scrollHeight
         const scrollHeight = Math.max(
           body?.scrollHeight || 0,
           htmlEl?.scrollHeight || 0
         );
 
-        // Use the more accurate measurement
-        const height = Math.max(contentHeight, scrollHeight, 500);
+        // Use the larger of bounding box calculation or scrollHeight
+        const height = Math.max(maxBottom, scrollHeight, 100);
 
         console.log('[SiteHTMLIframeRenderer] Height calculation:', {
-          contentHeight,
+          hasReactRoot,
+          rootHasContent,
+          maxBottom,
           scrollHeight,
           finalHeight: height,
-          bodyScrollHeight: body?.scrollHeight,
-          htmlScrollHeight: htmlEl?.scrollHeight,
+          contentElementsCount: contentElements.length,
         });
 
         iframe.style.height = `${height}px`;
+      };
+
+      // Wait for React root to have content
+      const waitForReactContent = () => {
+        const rootEl = doc.getElementById('root') || doc.querySelector('[id*="root"]');
+        if (!rootEl) {
+          console.log('[SiteHTMLIframeRenderer] No React root found, proceeding normally');
+          return;
+        }
+
+        let attempts = 0;
+        const maxAttempts = 50; // 50 attempts * 100ms = 5 seconds max
+        const checkInterval = setInterval(() => {
+          attempts++;
+          const hasContent = rootEl.children.length > 0;
+
+          if (hasContent) {
+            console.log('[SiteHTMLIframeRenderer] React content rendered!');
+            clearInterval(checkInterval);
+            resize();
+            // Do additional resizes as content may still be loading
+            setTimeout(resize, 100);
+            setTimeout(resize, 300);
+            setTimeout(resize, 600);
+            setTimeout(resize, 1200);
+          } else if (attempts >= maxAttempts) {
+            console.log('[SiteHTMLIframeRenderer] React content timeout, measuring anyway');
+            clearInterval(checkInterval);
+            resize();
+          }
+        }, 100);
       };
 
       // Wait for all images to load before final resize
@@ -249,13 +304,18 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         });
       };
 
-      // Initial resize and then schedule more after scripts/styles/images settle
+      // Initial resize
       resize();
-      setTimeout(resize, 50);
-      setTimeout(resize, 150);
-      setTimeout(resize, 400);
+
+      // Wait for React content to render if applicable
+      setTimeout(waitForReactContent, 50);
+
+      // Also do periodic checks
+      setTimeout(resize, 200);
+      setTimeout(resize, 500);
       setTimeout(resize, 1000);
-      setTimeout(waitForImages, 100);
+      setTimeout(resize, 2000);
+      setTimeout(waitForImages, 300);
 
       const win: any = iframe.contentWindow as any;
 
