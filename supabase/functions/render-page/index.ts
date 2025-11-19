@@ -424,12 +424,12 @@ serve(async (req) => {
       logo_url: companyData.logo_url || '',
       icon_url: companyData.icon_url || '',
       
-      // Company address breakdown
+      // Company address breakdown (use service area city if available, otherwise company address)
       address: companyData.address || '',
       address_street: companyData.address_street || '',
-      address_city: companyData.address_city || '',
-      address_state: companyData.address_state || '',
-      address_zip: companyData.address_zip || '',
+      address_city: page.service_area?.city_name || companyData.address_city || '',
+      address_state: page.service_area?.state || companyData.address_state || '',
+      address_zip: page.service_area?.zip_code || companyData.address_zip || '',
       address_unit: companyData.address_unit || '',
       
       // Service radius
