@@ -407,8 +407,8 @@ serve(async (req) => {
     const template = compileTemplate(page.service.template.template_html);
     const contentHtml = template(pageData);
 
-    // Cache the compiled content if needed
-    if (needsRegeneration) {
+    // Cache the compiled content if needed (only for actual generated pages with cities)
+    if (needsRegeneration && page.id) {
       console.log('Regenerating page content...');
       await supabase
         .from('generated_pages')
@@ -421,14 +421,16 @@ serve(async (req) => {
       console.log('Page content regenerated and cached');
     }
 
-    // Track view
-    await supabase
-      .from('generated_pages')
-      .update({
-        view_count: (page.view_count || 0) + 1,
-        last_viewed_at: new Date().toISOString(),
-      })
-      .eq('id', page.id);
+    // Track view (only for actual generated pages with cities)
+    if (page.id) {
+      await supabase
+        .from('generated_pages')
+        .update({
+          view_count: (page.view_count || 0) + 1,
+          last_viewed_at: new Date().toISOString(),
+        })
+        .eq('id', page.id);
+    }
 
     // For POST requests: return just content + data for client-side hydration
     if (req.method === 'POST') {
