@@ -141,6 +141,10 @@ const ServiceAreaForm = ({ area, onSuccess }: ServiceAreaFormProps) => {
           .neq('id', area?.id || '');
         
         if (unsetError) throw unsetError;
+        
+        // Invalidate all service overview page caches since default area changed
+        queryClient.invalidateQueries({ queryKey: ['rendered-service-overview'] });
+        queryClient.invalidateQueries({ queryKey: ['default-service-area'] });
       }
 
       if (area) {

@@ -482,6 +482,9 @@ serve(async (req) => {
 
     // For POST requests: return just content + data for client-side hydration
     if (req.method === 'POST') {
+      // Use shorter cache for service overview pages (no city slug) since they depend on default area
+      const cacheMaxAge = citySlug ? 3600 : 300; // 1 hour for city pages, 5 minutes for service overview
+      
       return new Response(
         JSON.stringify({
           content: contentHtml,
@@ -492,20 +495,23 @@ serve(async (req) => {
           headers: {
             ...corsHeaders,
             'Content-Type': 'application/json',
-            'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+            'Cache-Control': `public, max-age=${cacheMaxAge}`,
           },
         }
       );
     }
 
     // For GET requests: wrap in full layout and return complete HTML
+    // Use shorter cache for service overview pages (no city slug) since they depend on default area
+    const cacheMaxAge = citySlug ? 3600 : 300; // 1 hour for city pages, 5 minutes for service overview
+    
     finalHtml = wrapWithLayout(contentHtml, pageData);
     return new Response(finalHtml, {
       status: 200,
       headers: {
         ...corsHeaders,
         'Content-Type': 'text/html',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        'Cache-Control': `public, max-age=${cacheMaxAge}`,
       },
     });
   } catch (error) {

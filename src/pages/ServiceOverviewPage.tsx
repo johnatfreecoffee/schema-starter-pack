@@ -18,9 +18,24 @@ const ServiceOverviewPage = () => {
   const { openModal } = useLeadFormModal();
   const urlPath = `/services/${serviceSlug}`;
 
+  // Fetch default service area to include in cache key
+  const { data: defaultArea } = useQuery({
+    queryKey: ['default-service-area'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('service_areas')
+        .select('id')
+        .eq('is_default', true)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
   // Fetch server-rendered content via backend function (same as GeneratedPage but without city)
   const { data: pageContent, isLoading: isRendering, error: renderError } = useQuery({
-    queryKey: ['rendered-service-overview', serviceSlug],
+    queryKey: ['rendered-service-overview', serviceSlug, defaultArea?.id],
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke('render-page', {
         body: { urlPath: `/services/${serviceSlug}` },
