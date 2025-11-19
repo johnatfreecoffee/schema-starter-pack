@@ -111,58 +111,8 @@ const ServiceOverviewPage = () => {
         services={[service.name]}
       />
 
-      {/* Breadcrumbs */}
-      <nav aria-label="Breadcrumb" className="bg-muted/30 border-b">
-        <div className="container mx-auto px-4 py-3">
-          <ol className="flex items-center gap-2 text-sm">
-            <li>
-              <Link to="/" className="text-primary hover:underline">
-                Home
-              </Link>
-            </li>
-            <li className="text-muted-foreground">›</li>
-            <li>
-              <Link to="/services" className="text-primary hover:underline">
-                Services
-              </Link>
-            </li>
-            <li className="text-muted-foreground">›</li>
-            <li className="font-medium" aria-current="page">
-              {service.name}
-            </li>
-          </ol>
-        </div>
-      </nav>
-
       {/* Service Overview Content */}
       <div className="container mx-auto px-4 py-8">
-        {/* Hero CTA Section */}
-        <div className="text-center mb-12 bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg p-8 border">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">{service.name} Services</h1>
-          <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
-            {service.full_description || `Professional ${service.name} services from ${company.business_name}`}
-          </p>
-          {service.starting_price && (
-            <p className="text-2xl font-bold mb-6 text-primary">
-              Starting at {formatPrice(service.starting_price)}
-            </p>
-          )}
-          <Button 
-            size="lg" 
-            className="text-lg py-6 px-8"
-            onClick={() => openModal(
-              `Get a Free Quote for ${service.name}`,
-              {
-                serviceId: service.id,
-                serviceName: service.name,
-                originatingUrl: window.location.href,
-              }
-            )}
-          >
-            <MessageSquare className="mr-2 h-5 w-5" />
-            Get Your Free Quote
-          </Button>
-        </div>
 
         {renderedContent ? (
           <AIHTMLRenderer html={renderedContent} className="prose prose-lg max-w-none mb-12" />
