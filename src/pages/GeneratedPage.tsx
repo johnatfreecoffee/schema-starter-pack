@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useLeadFormModal } from '@/hooks/useLeadFormModal';
 import { MessageSquare } from 'lucide-react';
 import AIHTMLRenderer from '@/components/ai/AIHTMLRenderer';
+import SiteHTMLIframeRenderer from '@/components/ai/SiteHTMLIframeRenderer';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 
@@ -86,6 +87,11 @@ const GeneratedPage = () => {
   );
 
   const canonicalUrl = `${window.location.origin}${pageData.url_path}`;
+  
+  // Check if content needs iframe rendering (full HTML document)
+  const needsIframe = processedContent && (
+    processedContent.includes('<!DOCTYPE') || processedContent.includes('<html')
+  );
 
   return (
     <>
@@ -117,66 +123,13 @@ const GeneratedPage = () => {
         />
       )}
 
-      {/* Breadcrumbs */}
-      <nav aria-label="Breadcrumb" className="bg-muted/30 border-b">
-        <div className="container mx-auto px-4 py-3">
-          <ol className="flex items-center gap-2 text-sm">
-            <li>
-              <a href="/" className="text-primary hover:underline">
-                Home
-              </a>
-            </li>
-            <li className="text-muted-foreground">›</li>
-            <li>
-              <a href="/services" className="text-primary hover:underline">
-                Services
-              </a>
-            </li>
-            <li className="text-muted-foreground">›</li>
-            <li>
-              <a href={`/services/${pageData.service_slug}`} className="text-primary hover:underline">
-                {pageData.service_name}
-              </a>
-            </li>
-            <li className="text-muted-foreground">›</li>
-            <li className="font-medium" aria-current="page">
-              {pageData.city_name}
-            </li>
-          </ol>
-        </div>
-      </nav>
-
-      {/* Hero CTA Section */}
-      <div className="bg-gradient-to-br from-primary/5 to-primary/10 border-b">
-        <div className="container mx-auto px-4 py-12 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            {pageData.service_name} in {pageData.city_name}
-          </h1>
-          <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
-            Professional {pageData.service_name} services serving {pageData.city_name} and surrounding areas
-          </p>
-          <Button 
-            size="lg"
-            className="text-lg py-6 px-8"
-            onClick={() => openModal(
-              `Get a Free Quote for ${pageData.service_name} in ${pageData.city_name}`,
-              {
-                serviceId: pageRecord?.service_id,
-                serviceName: pageData.service_name,
-                city: pageData.city_name,
-                originatingUrl: window.location.href,
-              }
-            )}
-          >
-            <MessageSquare className="mr-2 h-5 w-5" />
-            Get Your Free Quote
-          </Button>
-        </div>
-      </div>
-
       {/* Rendered Content */}
       <div className="container mx-auto px-4 py-8">
-        <AIHTMLRenderer html={processedContent} />
+        {needsIframe ? (
+          <SiteHTMLIframeRenderer html={processedContent} />
+        ) : (
+          <AIHTMLRenderer html={processedContent} />
+        )}
       </div>
 
       {/* Bottom CTA Section */}
