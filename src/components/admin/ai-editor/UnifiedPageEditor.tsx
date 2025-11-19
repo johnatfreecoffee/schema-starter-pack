@@ -13,7 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-import { Loader2, Send, Sparkles, Eye, Code, Trash2, AlertCircle, Copy, Check, Download } from 'lucide-react';
+import { Loader2, Send, Sparkles, Eye, Code, Trash2, AlertCircle, Copy, Check, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import VariablePicker from './VariablePicker';
 import Editor from '@monaco-editor/react';
 import TruncatedMessage from './TruncatedMessage';
@@ -157,6 +157,11 @@ const UnifiedPageEditor = ({
   const [isAiLoading, setIsAiLoading] = useState(false);
   const { aiEditorPreferences, saveAiEditorPreferences } = useUserPreferences();
   
+  // Resizable panel states
+  const [chatPanelWidth, setChatPanelWidth] = useState(40); // percentage
+  const [isChatCollapsed, setIsChatCollapsed] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  
   const [viewMode, setViewMode] = useState<'preview' | 'code' | 'published' | 'debug' | 'workflow'>('preview');
   const [publishedHtml, setPublishedHtml] = useState('');
   const [renderedPreview, setRenderedPreview] = useState('');
@@ -227,6 +232,41 @@ const UnifiedPageEditor = ({
       setEditorMode(aiEditorPreferences.editorMode);
     }
   }, [aiEditorPreferences]);
+
+  // Handle divider drag
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      
+      const container = document.getElementById('editor-container');
+      if (!container) return;
+      
+      const containerRect = container.getBoundingClientRect();
+      const newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+      
+      // Constrain between 20% and 60%
+      const constrainedWidth = Math.min(Math.max(newWidth, 20), 60);
+      setChatPanelWidth(constrainedWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isDragging]);
 
   // Load template for service or static page
   const {
@@ -2516,10 +2556,29 @@ Return the modernized instructions maintaining the EXACT same structure and form
         </DialogHeader>
       )}
 
-      <div className={`flex ${fullScreen ? 'flex-1 h-full' : 'flex-1'} overflow-hidden`}>
+      <div className={`flex ${fullScreen ? 'flex-1 h-full' : 'flex-1'} overflow-hidden`} id="editor-container">
+          {/* Collapsed Chat Button - Shows when chat is hidden */}
+          {isChatCollapsed && (
+            <div className="w-12 border-r flex items-center justify-center bg-muted/20">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-10 w-10 p-0"
+                onClick={() => setIsChatCollapsed(false)}
+                title="Expand chat panel"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+          
           {/* Left Panel - AI Chat */}
-          <div className="w-2/5 border-r flex flex-col min-h-0">
-            <div className="p-4 border-b flex-shrink-0 overflow-y-auto max-h-[40vh]">
+          {!isChatCollapsed && (
+            <div 
+              className="border-r flex flex-col min-h-0 transition-all duration-300" 
+              style={{ width: `${chatPanelWidth}%` }}
+            >
+              <div className="p-4 border-b flex-shrink-0 overflow-y-auto max-h-[40vh]">
               {settingsChanged && (
                 <div className="mb-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md flex items-start gap-2">
                   <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
@@ -2736,9 +2795,31 @@ Return the modernized instructions maintaining the EXACT same structure and form
               </div>
             </div>
           </div>
+        )}
 
-          {/* Right Panel - Preview/Code */}
-          <div className="w-3/5 flex flex-col min-h-0">
+        {/* Resizable Divider - Only show when chat is expanded */}
+        {!isChatCollapsed && (
+          <div 
+            className={`w-1 bg-border hover:bg-primary cursor-col-resize relative group flex items-center justify-center transition-colors ${isDragging ? 'bg-primary' : ''}`}
+            onMouseDown={() => setIsDragging(true)}
+          >
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute z-10 h-10 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity bg-background border shadow-md rounded-md"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsChatCollapsed(true);
+              }}
+              title="Collapse chat panel"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+
+        {/* Right Panel - Preview/Code */}
+        <div className="flex-1 flex flex-col min-h-0">
             <div className="p-4 border-b">
               {/* Preview/Code/Published/Debug/Workflow Tabs */}
               <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'preview' | 'code' | 'published' | 'debug' | 'workflow')}>
