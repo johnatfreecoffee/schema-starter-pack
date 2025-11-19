@@ -157,10 +157,8 @@ const UnifiedPageEditor = ({
   const [isAiLoading, setIsAiLoading] = useState(false);
   const { aiEditorPreferences, saveAiEditorPreferences } = useUserPreferences();
   
-  // Resizable panel states
-  const [chatPanelWidth, setChatPanelWidth] = useState(40); // percentage
+  // Collapsible panel state
   const [isChatCollapsed, setIsChatCollapsed] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
   
   const [viewMode, setViewMode] = useState<'preview' | 'code' | 'published' | 'debug' | 'workflow'>('preview');
   const [publishedHtml, setPublishedHtml] = useState('');
@@ -233,40 +231,6 @@ const UnifiedPageEditor = ({
     }
   }, [aiEditorPreferences]);
 
-  // Handle divider drag
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      
-      const container = document.getElementById('editor-container');
-      if (!container) return;
-      
-      const containerRect = container.getBoundingClientRect();
-      const newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
-      
-      // Constrain between 30% and 60%
-      const constrainedWidth = Math.min(Math.max(newWidth, 30), 60);
-      setChatPanelWidth(constrainedWidth);
-    };
-
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      document.body.style.cursor = 'col-resize';
-      document.body.style.userSelect = 'none';
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.body.style.cursor = '';
-      document.body.style.userSelect = '';
-    };
-  }, [isDragging]);
 
   // Load template for service or static page
   const {
@@ -2575,8 +2539,7 @@ Return the modernized instructions maintaining the EXACT same structure and form
           {/* Left Panel - AI Chat */}
           {!isChatCollapsed && (
             <div 
-              className="border-r flex flex-col min-h-0 transition-all duration-300" 
-              style={{ width: `${chatPanelWidth}%` }}
+              className="w-96 border-r flex flex-col min-h-0"
             >
               <div className="p-4 border-b flex-shrink-0 overflow-y-auto max-h-[40vh]">
               {settingsChanged && (
@@ -2797,20 +2760,16 @@ Return the modernized instructions maintaining the EXACT same structure and form
           </div>
         )}
 
-        {/* Resizable Divider - Only show when chat is expanded */}
+        {/* Divider with Collapse Button - Only show when chat is expanded */}
         {!isChatCollapsed && (
           <div 
-            className={`w-1 bg-border hover:bg-primary cursor-col-resize relative group flex items-center justify-center transition-colors ${isDragging ? 'bg-primary' : ''}`}
-            onMouseDown={() => setIsDragging(true)}
+            className="w-1 bg-border relative group flex items-center justify-center"
           >
             <Button
               variant="ghost"
               size="sm"
               className="absolute z-10 h-10 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity bg-background border shadow-md rounded-md"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsChatCollapsed(true);
-              }}
+              onClick={() => setIsChatCollapsed(true)}
               title="Collapse chat panel"
             >
               <ChevronLeft className="h-4 w-4" />
