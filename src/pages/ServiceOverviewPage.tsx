@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useLeadFormModal } from '@/hooks/useLeadFormModal';
 import { MessageSquare } from 'lucide-react';
 import AIHTMLRenderer from '@/components/ai/AIHTMLRenderer';
+import SiteHTMLIframeRenderer from '@/components/ai/SiteHTMLIframeRenderer';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
 
@@ -90,6 +91,11 @@ const ServiceOverviewPage = () => {
   }
 
   const canonicalUrl = `${window.location.origin}/services/${service.slug}`;
+  
+  // Check if content needs iframe rendering (full HTML document)
+  const needsIframe = renderedContent && (
+    renderedContent.includes('<!DOCTYPE') || renderedContent.includes('<html')
+  );
 
   return (
     <>
@@ -115,7 +121,11 @@ const ServiceOverviewPage = () => {
       <div className="container mx-auto px-4 py-8">
 
         {renderedContent ? (
-          <AIHTMLRenderer html={renderedContent} className="prose prose-lg max-w-none mb-12" />
+          needsIframe ? (
+            <SiteHTMLIframeRenderer html={renderedContent} />
+          ) : (
+            <AIHTMLRenderer html={renderedContent} className="prose prose-lg max-w-none mb-12" />
+          )
         ) : (
           <div className="mb-12">
             <h2 className="text-2xl font-bold mb-4">About Our {service.name} Services</h2>
