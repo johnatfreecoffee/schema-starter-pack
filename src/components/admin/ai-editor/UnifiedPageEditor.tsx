@@ -217,7 +217,7 @@ const UnifiedPageEditor = ({
   });
   const [isPublishing, setIsPublishing] = useState(false);
   const [settingsChanged, setSettingsChanged] = useState(false);
-  const selectedModel = 'makecom'; // Always use Make.com
+  const selectedModel = 'makecom';
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -799,7 +799,7 @@ const UnifiedPageEditor = ({
       userId: user?.id
     };
     
-    // Define system instructions once for both Make.com and OpenRouter
+    // Define system instructions
     const systemInstructions = `# AI PAGE DESIGNER - COMPREHENSIVE BUILD INSTRUCTIONS
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1204,7 +1204,7 @@ You're building a TEMPLATE ENGINE, not a static website:
     };
 
     // Show request data immediately in debug panel and reset pipeline stages
-    const modelName = 'Make.com';
+    const modelName = 'AI Builder';
     const baseDebug = {
       fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nModel: ${modelName}\nPage Type: ${pageType}`,
       requestPayload: requestContext,
@@ -1315,15 +1315,15 @@ You're building a TEMPLATE ENGINE, not a static website:
         return;
       }
       
-      // Make.com webhook - send payload externally (for full page builds)
+      // Send payload externally (for full page builds)
       if (selectedModel === 'makecom') {
-        console.log('🌐 Sending request to Make.com webhook');
+        console.log('🌐 Sending request to AI Builder');
         
         setIsAiLoading(true);
         setDebugData({
-          fullPrompt: `Make.com webhook processing\n\nCommand: ${currentCommand}`,
+          fullPrompt: `AI Builder processing\n\nCommand: ${currentCommand}`,
           requestPayload: requestContext,
-          responseData: { status: 'Sending to Make.com...' },
+          responseData: { status: 'Sending to AI Builder...' },
           generatedHtml: 'Processing externally...'
         });
         
@@ -1839,33 +1839,33 @@ Return the modernized instructions maintaining the EXACT same structure and form
           }
           
           toast({
-            title: "✨ Request sent to Make.com",
-            description: "Your page is being processed externally",
+            title: "✨ Request sent",
+            description: "Your page is being processed",
           });
           
           setDebugData({
-            fullPrompt: `Make.com webhook sent successfully`,
+            fullPrompt: `AI Builder request sent successfully`,
             requestPayload: {
               systemMessage: requestBody.context.companyInfo || {},
               userPrompt: currentCommand,
               supabaseData
             },
             responseData: response,
-            generatedHtml: 'Waiting for Make.com automation to complete...'
+            generatedHtml: 'Processing your page...'
           });
           
         } catch (error: any) {
-          console.error('Make.com webhook failed:', error);
+          console.error('AI Builder request failed:', error);
           toast({
             variant: "destructive",
-            title: "❌ Webhook failed",
-            description: error.message || "Failed to send request to Make.com",
+            title: "❌ Request failed",
+            description: error.message || "Failed to send request",
           });
           setDebugData({
-            fullPrompt: `Make.com webhook failed`,
+            fullPrompt: `AI Builder request failed`,
             requestPayload: requestContext,
             responseData: { error: error.message },
-            generatedHtml: 'Webhook failed'
+            generatedHtml: 'Request failed'
           });
         } finally {
           setIsAiLoading(false);
@@ -2688,59 +2688,8 @@ Return the modernized instructions maintaining the EXACT same structure and form
               )}
               
               <p className="text-xs text-muted-foreground mb-2">
-                {aiMode === 'build' 
-                  ? '🚀 Full creative rebuild via Make.com (slower, more creative)'
-                  : '⚡ Quick targeted edits via local AI (faster, preserves structure)'
-                }
+                {editorMode === 'chat' ? 'Chat about your page and get feedback' : 'Describe changes to build your page'}
               </p>
-              
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-muted-foreground">
-                  {editorMode === 'chat' ? 'Chat about your page and get feedback' : 'Describe changes to build your page'}
-                </p>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">
-                    Context: <span className={inputTokenCount >= TOKEN_SOFT_LIMIT ? 'text-destructive font-semibold' : inputTokenCount >= 150000 ? 'text-yellow-600 font-semibold' : ''}>
-                      {(inputTokenCount / 1000).toFixed(1)}K
-                    </span> / 200K
-                  </span>
-                  {(chatMessages.length > 0 || debugData) && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={resetChat} 
-                      className="text-xs h-6 px-2 gap-1"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                      Clear History
-                    </Button>
-                  )}
-                </div>
-              </div>
-              
-              {/* Live Input Token Visualizer */}
-              <div className="mb-2 p-2 bg-muted/50 rounded-md border border-border/50">
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="text-muted-foreground font-medium">Input Tokens</span>
-                  <span className="font-mono font-semibold text-primary">
-                    {inputTokenCount.toLocaleString()}
-                  </span>
-                </div>
-                <div className="space-y-0.5 text-xs text-muted-foreground">
-                  <div className="flex justify-between">
-                    <span>System Instructions:</span>
-                    <span className="font-mono">{estimateTokens(getSystemInstructionsLength()).toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Chat History:</span>
-                    <span className="font-mono">{estimateTokens(chatMessages.reduce((sum, msg) => sum + msg.content.length, 0)).toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Current Input:</span>
-                    <span className="font-mono">{estimateTokens(aiPrompt.length).toLocaleString()}</span>
-                  </div>
-                </div>
-              </div>
               
               {inputTokenCount >= 150000 && inputTokenCount < TOKEN_SOFT_LIMIT && (
                 <div className="mb-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
