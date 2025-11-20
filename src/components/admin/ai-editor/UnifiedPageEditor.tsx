@@ -538,6 +538,48 @@ const UnifiedPageEditor = ({
     setInputTokenCount(total);
   }, [chatMessages, aiPrompt, currentHtml]);
 
+  // Real-time updates: Listen for webhook responses updating the draft HTML
+  useEffect(() => {
+    if (!open || !template?.id) return;
+
+    const tableName = pageType === 'static' ? 'static_pages' : 'templates';
+    const fieldName = pageType === 'static' ? 'content_html_draft' : 'template_html_draft';
+    
+    console.log('Setting up realtime subscription', { tableName, id: template.id });
+
+    const channel = supabase
+      .channel(`${tableName}-${template.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: tableName,
+          filter: `id=eq.${template.id}`
+        },
+        (payload) => {
+          console.log('Realtime update received:', payload);
+          const newHtml = (payload.new as any)?.[fieldName];
+          if (newHtml && newHtml !== currentHtml) {
+            console.log('Updating preview with new HTML from webhook');
+            setPreviousHtml(currentHtml);
+            setCurrentHtml(newHtml);
+            setTemplateHtml(newHtml);
+            toast({
+              title: 'Page updated',
+              description: 'Your AI-generated page is ready',
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      console.log('Cleaning up realtime subscription');
+      supabase.removeChannel(channel);
+    };
+  }, [open, template?.id, pageType, currentHtml]);
+
   // Compute displayed HTML based on version toggle
   const displayedHtml = isShowingPrevious ? previousHtml : currentHtml;
 
