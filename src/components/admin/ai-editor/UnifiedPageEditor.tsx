@@ -160,7 +160,7 @@ const UnifiedPageEditor = ({
   // Collapsible panel state
   const [isChatCollapsed, setIsChatCollapsed] = useState(false);
   
-  const [viewMode, setViewMode] = useState<'preview' | 'code' | 'published' | 'debug' | 'workflow'>('preview');
+  const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
   const [publishedHtml, setPublishedHtml] = useState('');
   const [renderedPreview, setRenderedPreview] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -168,6 +168,8 @@ const UnifiedPageEditor = ({
   const [editorMode, setEditorMode] = useState<EditorMode>(aiEditorPreferences.editorMode || 'build');
   const [aiMode, setAiMode] = useState<AIMode>('build');
   const [includeImages, setIncludeImages] = useState(false);
+  const [pageUrl, setPageUrl] = useState<string>('');
+  const [copiedUrl, setCopiedUrl] = useState(false);
   const [tokenCount, setTokenCount] = useState(0);
   const [currentHtml, setCurrentHtml] = useState('');
   const [previousHtml, setPreviousHtml] = useState('');
@@ -254,6 +256,9 @@ const UnifiedPageEditor = ({
             console.warn('Static page fetch error, falling back to initialHtml:', error.message);
           }
           if (data) {
+            // Set page URL
+            setPageUrl(data.url_path || '');
+            
             // Always use DB content_html as the published version (never use initialHtml)
             const publishedCandidate = data.content_html || '';
             
@@ -287,6 +292,12 @@ const UnifiedPageEditor = ({
         };
       }
       if (!service?.id) return null;
+      
+      // Set page URL for service using service object
+      if (service?.url_slug) {
+        setPageUrl(`/services/${service.url_slug}`);
+      }
+      
       const {
         data: serviceData
       } = await supabase.from('services').select('template_id, templates(id, name, template_html, template_html_draft, template_type)').eq('id', service.id).single();
@@ -2820,9 +2831,43 @@ Return the modernized instructions maintaining the EXACT same structure and form
 
         {/* Right Panel - Preview/Code */}
         <div className="flex-1 flex flex-col min-h-0">
-            <div className="p-4 border-b">
-              {/* Preview/Code/Published/Debug/Workflow Tabs */}
-              <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'preview' | 'code' | 'published' | 'debug' | 'workflow')}>
+            <div className="p-4 border-b space-y-3">
+              {/* Page URL Info */}
+              {pageUrl && (
+                <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md border">
+                  <span className="text-xs text-muted-foreground flex-1 font-mono truncate">
+                    {pageUrl}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.origin + pageUrl);
+                      setCopiedUrl(true);
+                      setTimeout(() => setCopiedUrl(false), 2000);
+                      toast({
+                        title: 'URL copied',
+                        description: 'Page URL copied to clipboard',
+                      });
+                    }}
+                    className="h-7 px-2 text-xs"
+                  >
+                    {copiedUrl ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => window.open(pageUrl, '_blank')}
+                    className="h-7 px-2 text-xs"
+                  >
+                    <Eye className="h-3 w-3 mr-1" />
+                    View
+                  </Button>
+                </div>
+              )}
+              
+              {/* Preview/Code Tabs */}
+              <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'preview' | 'code')}>
                 <TabsList>
                   <TabsTrigger value="preview">
                     <Eye className="mr-2 h-4 w-4" />
@@ -2831,17 +2876,6 @@ Return the modernized instructions maintaining the EXACT same structure and form
                   <TabsTrigger value="code">
                     <Code className="mr-2 h-4 w-4" />
                     Draft Code
-                  </TabsTrigger>
-                  <TabsTrigger value="published">
-                    <Eye className="mr-2 h-4 w-4" />
-                    Published Page
-                  </TabsTrigger>
-                  <TabsTrigger value="debug">
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Debug
-                  </TabsTrigger>
-                  <TabsTrigger value="workflow">
-                    <Sparkles className="mr-2 h-4 w-4" />
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -2954,238 +2988,7 @@ Return the modernized instructions maintaining the EXACT same structure and form
                     />
                   </div>
                 </div>
-              ) : viewMode === 'published' ? (
-                <div className="h-full flex flex-col">
-                  <div className="bg-green-500/10 border-b border-green-500/20 px-4 py-2 flex items-center justify-between">
-                    <p className="text-xs text-green-700 dark:text-green-400 font-medium">
-                      ✅ Published Version - Live on website
-                    </p>
-                    {!publishedHtml && (
-                      <span className="text-xs text-muted-foreground italic">No published version yet</span>
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    {publishedHtml ? (
-                      <PreviewIframe key="published" html={publishedHtml} />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-muted-foreground">
-                        <p>No published version available</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : viewMode === 'workflow' ? (
-                <div className="flex-1 min-h-0 overflow-y-auto max-h-[80vh] p-6">
-                  <WorkflowVisualizer />
-                </div>
-              ) : (
-                <div className="flex-1 min-h-0 overflow-y-auto max-h-[80vh] max-w-full">
-                  <div className="flex-1 min-h-0">
-                    <div className="p-6 bg-muted/20 max-w-full">
-                      {!debugData ? (
-                        <div className="text-center text-muted-foreground py-12">
-                          <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                          <p className="text-lg font-medium">No Debug Data Yet</p>
-                          <p className="text-sm mt-2">Send a command to the AI to see the full request and response</p>
-                        </div>
-                      ) : Array.isArray((debugData as any)?.stages) && (debugData as any).stages.length > 0 ? (
-                        <div className="space-y-4">
-                          <Tabs defaultValue={"0"}>
-                            <TabsList className="flex flex-wrap gap-2">
-                              {(debugData as any).stages.map((stage: any, idx: number) => (
-                                <TabsTrigger key={idx} value={String(idx)}>
-                                  {stage?.name || stage?.title || `Stage ${idx + 1}`}
-                                </TabsTrigger>
-                              ))}
-                            </TabsList>
-
-                            {(debugData as any).stages.map((stage: any, idx: number) => (
-                              <TabsContent key={idx} value={String(idx)}>
-                                <Accordion type="multiple" className="space-y-4 max-w-full">
-                                  <AccordionItem value={`request-${idx}`} className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
-                                    <AccordionTrigger className="px-4 hover:no-underline">
-                                      <div className="flex items-center justify-between w-full">
-                                        <div className="flex items-center gap-2">
-                                          <div className="h-6 w-1 bg-blue-500 rounded-full" />
-                                          <h3 className="font-semibold">Request Context</h3>
-                                        </div>
-                                        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => {
-                                              const content = JSON.stringify(stage?.debug?.requestPayload ?? stage?.requestPayload ?? stage?.request ?? {}, null, 2);
-                                              navigator.clipboard.writeText(content);
-                                              toast({
-                                                title: "Copied!",
-                                                description: "Request Context copied to clipboard",
-                                              });
-                                            }}
-                                            className="h-7 px-2"
-                                            title="Copy to clipboard"
-                                          >
-                                            <Copy className="h-3 w-3" />
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent>
-                                      <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
-{JSON.stringify(stage?.debug?.requestPayload ?? stage?.requestPayload ?? stage?.request ?? {}, null, 2)}
-                                      </pre>
-                                    </AccordionContent>
-                                  </AccordionItem>
-
-                                   <AccordionItem value={`response-${idx}`} className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
-                                    <AccordionTrigger className="px-4 hover:no-underline">
-                                      <div className="flex items-center justify-between w-full">
-                                        <div className="flex items-center gap-2">
-                                          <div className="h-6 w-1 bg-green-500 rounded-full" />
-                                          <h3 className="font-semibold">AI Response</h3>
-                                          {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
-                                        </div>
-                                        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => {
-                                              const responseData = stage?.debug?.responseData ?? stage?.responseData;
-                                              const content = typeof responseData === 'string' ? responseData : JSON.stringify(responseData ?? stage?.response ?? {}, null, 2);
-                                              navigator.clipboard.writeText(content);
-                                              toast({
-                                                title: "Copied!",
-                                                description: "AI Response copied to clipboard",
-                                              });
-                                            }}
-                                            className="h-7 px-2"
-                                            title="Copy to clipboard"
-                                          >
-                                            <Copy className="h-3 w-3" />
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent>
-                                      <div className="space-y-4 p-4">
-                                        <div>
-                                          <h4 className="text-sm font-semibold mb-2 text-muted-foreground">Response Data:</h4>
-                                          <pre className="overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[200px] bg-muted/30 rounded p-3">
-{typeof (stage?.debug?.responseData ?? stage?.responseData) === 'string' ? (stage?.debug?.responseData ?? stage?.responseData) : JSON.stringify(stage?.debug?.responseData ?? stage?.responseData ?? stage?.response ?? {}, null, 2)}
-                                          </pre>
-                                        </div>
-                                        {(stage?.debug?.generatedHtml ?? stage?.generatedHtml) && (
-                                          <div>
-                                            <h4 className="text-sm font-semibold mb-2 text-muted-foreground">
-                                              {idx === 0 ? 'Generated Plan:' : 
-                                               idx === 1 ? 'Generated Content:' :
-                                               idx === 2 ? 'Generated HTML:' :
-                                               'Styled HTML:'}
-                                            </h4>
-                                            <pre className="overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded p-3">
-{stage?.debug?.generatedHtml ?? stage?.generatedHtml}
-                                            </pre>
-                                          </div>
-                                        )}
-                                      </div>
-                                    </AccordionContent>
-                                  </AccordionItem>
-                                </Accordion>
-                              </TabsContent>
-                            ))}
-                          </Tabs>
-                        </div>
-                      ) : (
-                        <Accordion 
-                          type="multiple" 
-                          value={debugAccordionValue}
-                          onValueChange={(value) => {
-                            setDebugAccordionValue(value);
-                            localStorage.setItem('ai-editor-debug-accordion', JSON.stringify(value));
-                          }}
-                          className="space-y-4 max-w-full"
-                        >
-                          <AccordionItem value="request" className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
-                            <AccordionTrigger className="px-4 hover:no-underline">
-                              <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center gap-2">
-                                  <div className="h-6 w-1 bg-blue-500 rounded-full" />
-                                  <h3 className="font-semibold">Request Context</h3>
-                                </div>
-                                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleCopyDebug('request', JSON.stringify(debugData?.requestPayload, null, 2) || '', 'Request Context', 'content')}
-                                    className="h-7 px-2"
-                                    title="Copy content only"
-                                  >
-                                    {copiedStates['request'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleCopyDebug('request', JSON.stringify(debugData?.requestPayload, null, 2) || '', 'Request Context', 'header')}
-                                    className="h-7 px-2 gap-1"
-                                    title="Copy header + content (all)"
-                                  >
-                                    {copiedStates['request'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                                    <span className="text-[10px] font-medium">ALL</span>
-                                  </Button>
-                                </div>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="overflow-hidden max-w-full">
-                                <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
-                                {JSON.stringify(debugData.requestPayload, null, 2)}
-                              </pre>
-                            </AccordionContent>
-                          </AccordionItem>
-
-                          <AccordionItem value="response" className="bg-background rounded-lg border shadow-sm overflow-hidden max-w-full">
-                            <AccordionTrigger className="px-4 hover:no-underline">
-                              <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center gap-2">
-                                  <div className="h-6 w-1 bg-green-500 rounded-full" />
-                                  <h3 className="font-semibold">AI Response</h3>
-                                  {isAiLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
-                                </div>
-                                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "AI Raw Response", 'content')}
-                                    className="h-7 px-2"
-                                    title="Copy content only"
-                                  >
-                                    {copiedStates['response'] === 'content' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleCopyDebug('response', typeof debugData?.responseData === 'string' ? debugData.responseData : JSON.stringify(debugData?.responseData, null, 2), "AI Raw Response", 'header')}
-                                    className="h-7 px-2 gap-1"
-                                    title="Copy header + content (all)"
-                                  >
-                                    {copiedStates['response'] === 'header' ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                                    <span className="text-[10px] font-medium">ALL</span>
-                                  </Button>
-                                </div>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="overflow-hidden max-w-full">
-                                <pre className="p-4 overflow-x-auto max-w-full text-xs font-mono whitespace-pre-wrap break-all max-h-[400px] bg-muted/30 rounded">
-                                {typeof debugData.responseData === 'string' 
-                                  ? debugData.responseData 
-                                  : JSON.stringify(debugData.responseData, null, 2)}
-                              </pre>
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
+              ) : null}
             </div>
           </div>
         </div>
