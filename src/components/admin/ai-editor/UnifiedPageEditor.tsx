@@ -2871,9 +2871,7 @@ Return the modernized instructions maintaining the EXACT same structure and form
                         onClick={() => {
                           if (confirm('Are you sure you want to clear all draft code?')) {
                             setCurrentHtml('');
-                            if (pageType === 'static' || pageType === 'generated') {
-                              setRenderedPreview('');
-                            }
+                            setRenderedPreview('');
                             toast({
                               title: 'Draft cleared',
                               description: 'All draft code has been cleared',
@@ -2921,9 +2919,7 @@ Return the modernized instructions maintaining the EXACT same structure and form
                       onChange={value => {
                         if (!isShowingPrevious && value !== undefined) {
                           setCurrentHtml(value);
-                          if (pageType === 'static' || pageType === 'generated') {
-                            setRenderedPreview(value);
-                          }
+                          setRenderedPreview(value);
                         }
                       }}
                       theme="vs-dark"
