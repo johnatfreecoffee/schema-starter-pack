@@ -2730,8 +2730,8 @@ Return the modernized instructions maintaining the EXACT same structure and form
               </div>
             </ScrollArea>
 
-            <ScrollArea className="max-h-[35vh] overflow-y-auto flex-shrink-0 border-t">
-              <div className="p-4 space-y-2 bg-background pb-2">
+            <ScrollArea className="max-h-[35vh] flex-shrink-0 border-t">
+              <div className="p-4 space-y-2 bg-background pb-6">
                 <div className="flex gap-2 mb-2 items-center justify-between">
                   <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
                 </div>
@@ -2746,7 +2746,7 @@ Return the modernized instructions maintaining the EXACT same structure and form
                   }
                 }} disabled={isAiLoading} className="min-h-[80px] resize-none" />
                 </div>
-                <div className="flex justify-end items-center gap-2">
+                <div className="flex justify-end items-center gap-2 pb-4">
                   <div className="flex items-center gap-1.5 scale-75">
                     <Label htmlFor="send-on-enter" className="text-xs text-muted-foreground cursor-pointer w-[180px] text-right whitespace-nowrap">
                       {sendOnEnter ? 'Cmd/Ctrl + Enter to send' : 'Enter to send'}
