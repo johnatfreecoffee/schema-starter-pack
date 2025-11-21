@@ -15,26 +15,15 @@ import {
   ChevronRight,
   Layers,
   Zap,
-  AlertTriangle,
-  FileEdit
+  AlertTriangle
 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { getTemplateForService, serviceNameToFileName, getCategoryFolder } from '@/lib/templateFiles';
-import UnifiedPageEditor from '@/components/admin/ai-editor/UnifiedPageEditor';
 
 interface PageNode {
   id: string;
@@ -52,8 +41,6 @@ const SitemapPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
   const [openServices, setOpenServices] = useState<Set<string>>(new Set());
-  const [isTemplateEditorOpen, setIsTemplateEditorOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<any>(null);
 
   // Fetch static pages
   const { data: staticPages } = useQuery({
@@ -342,36 +329,11 @@ const SitemapPage = () => {
                                         </div>
                                       </div>
                                     </div>
-                                     <div className="flex items-center gap-2">
-                                       <Button
-                                         variant="ghost"
-                                         size="sm"
-                                         className="h-auto py-1 px-2"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          if (serviceObject) {
-                                            setSelectedService(serviceObject);
-                                            setIsTemplateEditorOpen(true);
-                                          } else {
-                                            toast({
-                                              title: "Service not found",
-                                              description: "Could not load service data for template editing.",
-                                              variant: "destructive"
-                                            });
-                                          }
-                                        }}
-                                       >
-                                         <div className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                                           <FileEdit className="h-3 w-3" />
-                                           <span className="hidden sm:inline">Template</span>
-                                         </div>
-                                       </Button>
-                                       <Badge variant={
-                                         pages.every(p => p.status === 'active') ? 'default' : 'secondary'
-                                       }>
-                                         {pages.filter(p => p.status === 'active').length} active
-                                       </Badge>
-                                     </div>
+                                     <Badge variant={
+                                       pages.every(p => p.status === 'active') ? 'default' : 'secondary'
+                                     }>
+                                       {pages.filter(p => p.status === 'active').length} active
+                                     </Badge>
                                   </div>
                                 </CollapsibleTrigger>
                                  <CollapsibleContent>
@@ -475,24 +437,6 @@ const SitemapPage = () => {
           </TabsContent>
         </Tabs>
       </Card>
-
-      {/* Template Editor */}
-      {selectedService && (
-        <UnifiedPageEditor
-          open={isTemplateEditorOpen}
-          onClose={() => {
-            setIsTemplateEditorOpen(false);
-            setSelectedService(null);
-          }}
-          service={selectedService}
-          pageType="service"
-          pageTitle={selectedService.name}
-          pageId={selectedService.template_id}
-          onSave={async (html) => {
-            // Save handled by UnifiedPageEditor
-          }}
-        />
-      )}
     </div>
   );
 };
