@@ -1189,7 +1189,8 @@ Before finalizing copy, mentally remove ALL city/area variables and read it thro
       hasSystemInstructions: !!systemInstructions,
       hasServiceInstructions: !!serviceInstructions,
       hasSystemRevisionInstructions: !!systemRevisionInstructions,
-      supabaseData
+      supabaseData,
+      timestamp: new Date().toISOString()
     });
 
     // Send to Make.com webhook
