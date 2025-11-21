@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -84,8 +83,7 @@ const WorkflowTemplates = () => {
   };
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <div className="flex items-center gap-4 mb-6">
           <Button
             variant="ghost"
@@ -174,11 +172,10 @@ const WorkflowTemplates = () => {
             >
               Create Custom Workflow
             </Button>
-          </CardContent>
-        </Card>
-      </div>
-    </AdminLayout>
-  );
-};
-
-export default WorkflowTemplates;
+           </CardContent>
+         </Card>
+       </div>
+     );
+   };
+   
+   export default WorkflowTemplates;
