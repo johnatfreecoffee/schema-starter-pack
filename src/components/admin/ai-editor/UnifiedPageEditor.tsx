@@ -2573,7 +2573,7 @@ Return the modernized instructions maintaining the EXACT same structure and form
   const editorContent = (
     <>
       {/* Header - shown in both Dialog and fullScreen modes */}
-      <div className={`px-6 py-4 border-b ${fullScreen ? 'bg-background' : ''}`}>
+      <div className={`px-6 py-4 border-b ${fullScreen ? 'bg-background sticky top-0 z-50' : ''}`}>
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-1">
             <h2 className="text-lg font-semibold">Editing: {pageTitle}</h2>
