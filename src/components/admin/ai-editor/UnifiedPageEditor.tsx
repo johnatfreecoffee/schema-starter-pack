@@ -2592,7 +2592,7 @@ Return the modernized instructions maintaining the EXACT same structure and form
             <div 
               className="w-96 border-r flex flex-col min-h-0"
             >
-              <div className="p-4 border-b flex-shrink-0 overflow-y-auto max-h-[40vh]">
+              <div className="p-4 border-b flex-shrink-0 overflow-y-auto max-h-[25vh]">
               {settingsChanged && (
                 <div className="mb-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md flex items-start gap-2">
                   <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
@@ -2730,33 +2730,35 @@ Return the modernized instructions maintaining the EXACT same structure and form
               </div>
             </ScrollArea>
 
-            <div className="p-4 border-t space-y-2 flex-shrink-0 bg-background pb-2">
-              <div className="flex gap-2 mb-2 items-center justify-between">
-                <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
-              </div>
-              <div className="flex gap-2 items-start">
-                <Textarea ref={textareaRef} placeholder="Ask AI to build something..." value={aiPrompt} onChange={e => setAiPrompt(e.target.value)} onKeyDown={e => {
-                if (sendOnEnter && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                  e.preventDefault();
-                  sendToAi();
-                } else if (!sendOnEnter && e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  sendToAi();
-                }
-              }} disabled={isAiLoading} className="min-h-[80px] resize-none" />
-              </div>
-              <div className="flex justify-end items-center gap-2">
-                <div className="flex items-center gap-1.5 scale-75">
-                  <Label htmlFor="send-on-enter" className="text-xs text-muted-foreground cursor-pointer w-[180px] text-right whitespace-nowrap">
-                    {sendOnEnter ? 'Cmd/Ctrl + Enter to send' : 'Enter to send'}
-                  </Label>
-                  <Switch id="send-on-enter" checked={sendOnEnter} onCheckedChange={toggleSendOnEnter} />
+            <ScrollArea className="max-h-[35vh] overflow-y-auto flex-shrink-0 border-t">
+              <div className="p-4 space-y-2 bg-background pb-2">
+                <div className="flex gap-2 mb-2 items-center justify-between">
+                  <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
                 </div>
-                <Button onClick={sendToAi} disabled={isAiLoading || !aiPrompt.trim()} size="sm">
-                  {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="mr-2 h-4 w-4" /> Send</>}
-                </Button>
+                <div className="flex gap-2 items-start">
+                  <Textarea ref={textareaRef} placeholder="Ask AI to build something..." value={aiPrompt} onChange={e => setAiPrompt(e.target.value)} onKeyDown={e => {
+                  if (sendOnEnter && e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                    e.preventDefault();
+                    sendToAi();
+                  } else if (!sendOnEnter && e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendToAi();
+                  }
+                }} disabled={isAiLoading} className="min-h-[80px] resize-none" />
+                </div>
+                <div className="flex justify-end items-center gap-2">
+                  <div className="flex items-center gap-1.5 scale-75">
+                    <Label htmlFor="send-on-enter" className="text-xs text-muted-foreground cursor-pointer w-[180px] text-right whitespace-nowrap">
+                      {sendOnEnter ? 'Cmd/Ctrl + Enter to send' : 'Enter to send'}
+                    </Label>
+                    <Switch id="send-on-enter" checked={sendOnEnter} onCheckedChange={toggleSendOnEnter} />
+                  </div>
+                  <Button onClick={sendToAi} disabled={isAiLoading || !aiPrompt.trim()} size="sm">
+                    {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="mr-2 h-4 w-4" /> Send</>}
+                  </Button>
+                </div>
               </div>
-            </div>
+            </ScrollArea>
           </div>
         )}
 
