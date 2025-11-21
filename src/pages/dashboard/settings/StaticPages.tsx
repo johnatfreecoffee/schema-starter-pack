@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import StaticPageForm from '@/components/admin/settings/static-pages/StaticPageForm';
 import HTMLImporter from '@/components/admin/settings/static-pages/HTMLImporter';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const StaticPages = () => {
   const { toast } = useToast();
@@ -116,10 +116,6 @@ const StaticPages = () => {
   const handleEdit = (page: any) => {
     setSelectedPage(page);
     setShowForm(true);
-  };
-
-  const handleAIEdit = (page: any) => {
-    navigate(`/dashboard/ai-editor/static/${page.id}`);
   };
 
   const handleArchive = async (id: string, currentlyArchived: boolean) => {
@@ -253,8 +249,10 @@ const StaticPages = () => {
                               <Button variant="ghost" size="sm" onClick={() => handleEdit(page)}>
                                 <Edit className="h-4 w-4" />
                               </Button>
-                              <Button variant="ghost" size="sm" onClick={() => handleAIEdit(page)}>
-                                <Sparkles className="h-4 w-4" />
+                              <Button variant="ghost" size="sm" asChild>
+                                <Link to={`/dashboard/ai-editor/static/${page.id}`}>
+                                  <Sparkles className="h-4 w-4" />
+                                </Link>
                               </Button>
                               <Button 
                                 variant="ghost" 

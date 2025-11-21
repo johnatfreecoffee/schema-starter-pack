@@ -13,7 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import ServiceForm from '@/components/admin/settings/services/ServiceForm';
 import ServicePreview from '@/components/admin/settings/services/ServicePreview';
 import { cacheInvalidation } from '@/lib/cacheInvalidation';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const ServicesSettings = () => {
   const navigate = useNavigate();
@@ -260,10 +260,12 @@ const ServicesSettings = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => navigate(`/dashboard/ai-editor/service/${service.id}`)}
                               title="Edit Page Template"
+                              asChild
                             >
-                              <Sparkles className="h-4 w-4" />
+                              <Link to={`/dashboard/ai-editor/service/${service.id}`}>
+                                <Sparkles className="h-4 w-4" />
+                              </Link>
                             </Button>
                             <Button
                               variant="ghost"
@@ -318,8 +320,10 @@ const ServicesSettings = () => {
                       <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setIsFormOpen(true); }}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/ai-editor/service/${service.id}`)} title="Edit Page Template">
-                        <Sparkles className="h-4 w-4" />
+                      <Button variant="ghost" size="sm" title="Edit Page Template" asChild>
+                        <Link to={`/dashboard/ai-editor/service/${service.id}`}>
+                          <Sparkles className="h-4 w-4" />
+                        </Link>
                       </Button>
                       <Button variant="ghost" size="sm" onClick={() => { setSelectedService(service); setArchiveDialogOpen(true); }}>
                         <Archive className="h-4 w-4" />
