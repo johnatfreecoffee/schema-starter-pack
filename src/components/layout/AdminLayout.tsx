@@ -259,7 +259,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
   const DesktopSidebar = () => (
     <aside 
       className={cn(
-        "hidden md:flex flex-col border-r transition-all duration-300 sticky top-0 h-screen",
+        "hidden md:flex flex-col border-r transition-all duration-300 fixed left-0 top-0 h-screen z-40",
         desktopSidebarCollapsed ? "w-16" : "w-60"
       )}
       style={{
@@ -395,12 +395,17 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
   );
 
   return (
-    <div className="flex min-h-screen">
+    <div className="min-h-screen">
       {/* Desktop Sidebar */}
       <DesktopSidebar />
 
       {/* Main Content Area */}
-      <div className="flex flex-col flex-1 min-w-0">
+      <div 
+        className={cn(
+          "flex flex-col min-h-screen transition-all duration-300",
+          desktopSidebarCollapsed ? "md:ml-16" : "md:ml-60"
+        )}
+      >
         {/* Header */}
         <header 
           className="border-b backdrop-blur sticky top-0 z-50"
@@ -473,7 +478,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 pb-20 md:pb-4 overflow-auto">
+        <main className="flex-1 pb-20 md:pb-4 p-6">
           {children || <Outlet />}
         </main>
       </div>
