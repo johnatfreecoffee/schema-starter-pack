@@ -1171,7 +1171,7 @@ Before finalizing copy, mentally remove ALL city/area variables and read it thro
             field: supabaseData?.field || "",
             includeImages: includeImages
           },
-          output_tokens: 80000
+          output_tokens: 150000
         }
       }
     ];
