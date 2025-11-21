@@ -2619,7 +2619,7 @@ Return the modernized instructions maintaining the EXACT same structure and form
         </div>
       </div>
 
-      <div className={`flex ${fullScreen ? 'flex-1 h-full' : 'flex-1'} overflow-hidden`} id="editor-container">
+      <div className={`flex ${fullScreen ? 'flex-1 h-full mb-16' : 'flex-1'} overflow-hidden`} id="editor-container">
           {/* Collapsed Chat Button - Shows when chat is hidden */}
           {isChatCollapsed && (
             <div className="w-12 border-r flex items-center justify-center bg-muted/20">
@@ -2806,7 +2806,7 @@ Return the modernized instructions maintaining the EXACT same structure and form
             </ScrollArea>
 
             <ScrollArea className="max-h-[35vh] flex-shrink-0 border-t">
-              <div className="p-4 space-y-2 bg-background pb-6">
+              <div className={`p-4 space-y-2 bg-background ${fullScreen ? 'pb-20' : 'pb-6'}`}>
                 <div className="flex gap-2 mb-2 items-center justify-between">
                   <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
                 </div>
