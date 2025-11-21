@@ -156,6 +156,7 @@ const UnifiedPageEditor = ({
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const { aiEditorPreferences, saveAiEditorPreferences } = useUserPreferences();
+  const [useTestWebhook, setUseTestWebhook] = useState(true);
   
   // Collapsible panel state
   const [isChatCollapsed, setIsChatCollapsed] = useState(false);
@@ -225,6 +226,53 @@ const UnifiedPageEditor = ({
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const hasLoadedHistory = useRef(false);
+
+  // Fetch user webhook preference
+  const { data: userPreference } = useQuery({
+    queryKey: ['user-webhook-preference'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      
+      const { data } = await supabase
+        .from('user_preferences')
+        .select('use_test_webhook')
+        .eq('user_id', user.id)
+        .single();
+      
+      return data;
+    },
+    enabled: open
+  });
+
+  // Update local state when preference is loaded
+  useEffect(() => {
+    if (userPreference !== undefined && userPreference !== null) {
+      setUseTestWebhook(userPreference.use_test_webhook ?? true);
+    }
+  }, [userPreference]);
+
+  // Mutation to update webhook preference
+  const updateWebhookPreferenceMutation = useMutation({
+    mutationFn: async (useTest: boolean) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('user_preferences')
+        .upsert({ 
+          user_id: user.id, 
+          use_test_webhook: useTest 
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-webhook-preference'] });
+    }
+  });
 
   // Sync state with loaded preferences
   useEffect(() => {
@@ -1830,7 +1878,7 @@ Return the modernized instructions maintaining the EXACT same structure and form
           // Get webhook URL from secrets
           const response = await callEdgeFunction<any>({
             name: 'send-makecom-webhook',
-            body: webhookPayload,
+            body: { ...webhookPayload, useTestWebhook },
             timeoutMs: 60000, // 1 minute timeout
           });
           
@@ -2663,27 +2711,54 @@ Return the modernized instructions maintaining the EXACT same structure and form
               
               {/* Image Toggle - only show in build mode */}
               {aiMode === 'build' && (
-                <div className="mb-3 p-2 bg-muted/50 rounded-md border">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex-1">
-                      <Label htmlFor="include-images" className="text-xs font-medium">
-                        Include Images in Page
-                      </Label>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">
-                        {includeImages 
-                          ? '📸 Generate page with photo placeholders + emojis' 
-                          : '✨ Copy-rich design with icons + emojis only'
-                        }
-                      </p>
+                <>
+                  <div className="mb-3 p-2 bg-muted/50 rounded-md border">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1">
+                        <Label htmlFor="include-images" className="text-xs font-medium">
+                          Include Images in Page
+                        </Label>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                          {includeImages 
+                            ? '📸 Generate page with photo placeholders + emojis' 
+                            : '✨ Copy-rich design with icons + emojis only'
+                          }
+                        </p>
+                      </div>
+                      <Switch
+                        id="include-images"
+                        checked={includeImages}
+                        onCheckedChange={setIncludeImages}
+                        className="data-[state=checked]:bg-primary"
+                      />
                     </div>
-                    <Switch
-                      id="include-images"
-                      checked={includeImages}
-                      onCheckedChange={setIncludeImages}
-                      className="data-[state=checked]:bg-primary"
-                    />
                   </div>
-                </div>
+
+                  <div className="mb-3 p-2 bg-muted/50 rounded-md border">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1">
+                        <Label htmlFor="use-test-webhook" className="text-xs font-medium">
+                          Use Test Webhook
+                        </Label>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                          {useTestWebhook 
+                            ? '🧪 Using test webhook for page generation' 
+                            : '🚀 Using production webhook for page generation'
+                          }
+                        </p>
+                      </div>
+                      <Switch
+                        id="use-test-webhook"
+                        checked={useTestWebhook}
+                        onCheckedChange={(checked) => {
+                          setUseTestWebhook(checked);
+                          updateWebhookPreferenceMutation.mutate(checked);
+                        }}
+                        className="data-[state=checked]:bg-primary"
+                      />
+                    </div>
+                  </div>
+                </>
               )}
               
               <p className="text-xs text-muted-foreground mb-2">
