@@ -995,16 +995,20 @@ serve(async (req) => {
       supabaseData,
       includeImages = false,
       serviceInstructions, // Optional: MD instructions for service pages
-      systemRevisionInstructions // Optional: Modernization instructions for service pages
+      systemRevisionInstructions, // Optional: Modernization instructions for service pages
+      useTestWebhook = true // Default to test webhook
     } = await req.json();
 
-    // Get webhook URL from environment
-    const webhookUrl = Deno.env.get('BREW_PAGE_BUILDER_WEBHOOK');
+    // Get webhook URL from environment based on mode
+    const webhookUrl = useTestWebhook 
+      ? Deno.env.get('TEST_WEBHOOK_PAGE_BUILDER')
+      : Deno.env.get('PRODUCTION_WEBHOOK_PAGE_BUILDER');
     
     if (!webhookUrl) {
-      console.error('BREW_PAGE_BUILDER_WEBHOOK secret not configured');
+      const webhookType = useTestWebhook ? 'test' : 'production';
+      console.error(`${webhookType.toUpperCase()}_WEBHOOK_PAGE_BUILDER secret not configured`);
       return new Response(
-        JSON.stringify({ error: 'Make.com webhook URL not configured' }),
+        JSON.stringify({ error: `${webhookType} webhook URL not configured` }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -1176,7 +1180,8 @@ Before finalizing copy, mentally remove ALL city/area variables and read it thro
       }
     ];
 
-    console.log('Sending webhook to Make.com:', {
+    console.log('Sending webhook to n8n:', {
+      webhookType: useTestWebhook ? 'TEST' : 'PRODUCTION',
       url: webhookUrl.substring(0, 50) + '...',
       hasCompanyData: !!companyData,
       hasSocialMedia: !!socialMedia,
@@ -1213,12 +1218,14 @@ Before finalizing copy, mentally remove ALL city/area variables and read it thro
 
     const responseData = await webhookResponse.json().catch(() => ({}));
 
-    console.log('Webhook sent successfully');
+    const webhookType = useTestWebhook ? 'test' : 'production';
+    console.log(`Webhook sent successfully to ${webhookType} endpoint`);
 
     return new Response(
       JSON.stringify({ 
         success: true,
-        message: 'Webhook sent to Make.com successfully',
+        message: `Webhook sent to ${webhookType} endpoint successfully`,
+        webhookType,
         response: responseData
       }),
       { 

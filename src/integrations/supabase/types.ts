@@ -3622,6 +3622,7 @@ export type Database = {
           id: string
           sidebar_state: Json | null
           updated_at: string
+          use_test_webhook: boolean
           user_id: string
         }
         Insert: {
@@ -3630,6 +3631,7 @@ export type Database = {
           id?: string
           sidebar_state?: Json | null
           updated_at?: string
+          use_test_webhook?: boolean
           user_id: string
         }
         Update: {
@@ -3638,6 +3640,7 @@ export type Database = {
           id?: string
           sidebar_state?: Json | null
           updated_at?: string
+          use_test_webhook?: boolean
           user_id?: string
         }
         Relationships: []
