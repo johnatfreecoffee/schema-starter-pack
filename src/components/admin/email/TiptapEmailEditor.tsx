@@ -2,8 +2,6 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
-import { TextStyle } from '@tiptap/extension-text-style';
-import { Extension } from '@tiptap/core';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,61 +18,13 @@ import {
   Tablet,
   Smartphone,
   ImageIcon,
-  Type,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 interface TiptapEmailEditorProps {
   value: string;
   onChange: (value: string) => void;
 }
-
-const FontSize = Extension.create({
-  name: 'fontSize',
-  addOptions() {
-    return {
-      types: ['textStyle'],
-    };
-  },
-  addGlobalAttributes() {
-    return [
-      {
-        types: this.options.types,
-        attributes: {
-          fontSize: {
-            default: null,
-            parseHTML: element => element.style.fontSize.replace('px', ''),
-            renderHTML: attributes => {
-              if (!attributes.fontSize) {
-                return {};
-              }
-              return {
-                style: `font-size: ${attributes.fontSize}px`,
-              };
-            },
-          },
-        },
-      },
-    ];
-  },
-  addCommands() {
-    return {
-      setFontSize: (fontSize: string) => ({ chain }) => {
-        return chain().setMark('textStyle', { fontSize }).run();
-      },
-      unsetFontSize: () => ({ chain }) => {
-        return chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
-      },
-    };
-  },
-});
 
 const TiptapEmailEditor = ({ value, onChange }: TiptapEmailEditorProps) => {
   const [deviceView, setDeviceView] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
@@ -96,8 +46,6 @@ const TiptapEmailEditor = ({ value, onChange }: TiptapEmailEditorProps) => {
         inline: true,
         allowBase64: true,
       }),
-      TextStyle,
-      FontSize,
     ],
     content: value,
     editorProps: {
@@ -143,10 +91,6 @@ const TiptapEmailEditor = ({ value, onChange }: TiptapEmailEditorProps) => {
       }
     };
     input.click();
-  };
-
-  const setFontSize = (size: string) => {
-    editor.chain().focus().setFontSize(size).run();
   };
 
   const getDeviceWidth = () => {
@@ -237,23 +181,6 @@ const TiptapEmailEditor = ({ value, onChange }: TiptapEmailEditorProps) => {
           >
             <ImageIcon className="h-4 w-4" />
           </Button>
-          <div className="w-px h-6 bg-border mx-1" />
-          <Select onValueChange={setFontSize}>
-            <SelectTrigger className="h-8 w-[100px]">
-              <Type className="h-4 w-4 mr-1" />
-              <SelectValue placeholder="Size" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="12">12px</SelectItem>
-              <SelectItem value="14">14px</SelectItem>
-              <SelectItem value="16">16px</SelectItem>
-              <SelectItem value="18">18px</SelectItem>
-              <SelectItem value="20">20px</SelectItem>
-              <SelectItem value="24">24px</SelectItem>
-              <SelectItem value="32">32px</SelectItem>
-              <SelectItem value="48">48px</SelectItem>
-            </SelectContent>
-          </Select>
           <div className="w-px h-6 bg-border mx-1" />
           <Button
             type="button"
