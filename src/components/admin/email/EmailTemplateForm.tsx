@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Sparkles, Code, Eye } from 'lucide-react';
 import Editor from '@monaco-editor/react';
-import GrapesEditor from './GrapesEditor';
+import TiptapEmailEditor from './TiptapEmailEditor';
 import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
@@ -333,13 +333,13 @@ const EmailTemplateForm = ({ template, onSuccess, onCancel }: EmailTemplateFormP
             />
           </div>
         ) : (
-          <GrapesEditor value={body} onChange={setBody} />
+          <TiptapEmailEditor value={body} onChange={setBody} />
         )}
         
         <p className="text-xs text-muted-foreground">
           {editorMode === 'code' 
             ? 'Edit HTML directly with syntax highlighting' 
-            : 'Drag and drop components, style with visual CSS tools, and build professional email templates'}
+            : 'Use the rich text editor with formatting tools and device preview'}
         </p>
       </div>
 
