@@ -2640,28 +2640,27 @@ Return the modernized instructions maintaining the EXACT same structure and form
             <div 
               className="w-96 border-r flex flex-col min-h-0"
             >
-              <div className="p-4 border-b flex-shrink-0 overflow-y-auto max-h-[25vh]">
+              <div className="p-2 border-b flex-shrink-0 space-y-1.5">
               {settingsChanged && (
-                <div className="mb-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1 text-xs text-yellow-700 dark:text-yellow-500">
-                    <p className="font-medium">Company settings updated</p>
-                    <p className="mt-0.5">Consider clearing history for best results with updated information.</p>
+                <div className="p-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded flex items-start gap-1.5">
+                  <AlertCircle className="h-3 w-3 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 text-[10px] text-yellow-700 dark:text-yellow-500">
+                    <p className="font-medium">Settings updated</p>
                   </div>
                 </div>
               )}
               
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold">AI Assistant</h3>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5 text-primary" />
+                  <h3 className="text-xs font-semibold">AI Assistant</h3>
                   {chatMessages.length > 0 && (
-                    <span className="text-xs text-muted-foreground">
-                      ({chatMessages.length} messages)
+                    <span className="text-[10px] text-muted-foreground">
+                      ({chatMessages.length})
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   <Button 
                     variant={editorMode === 'chat' ? 'default' : 'outline'} 
                     size="sm" 
@@ -2669,7 +2668,7 @@ Return the modernized instructions maintaining the EXACT same structure and form
                       setEditorMode('chat');
                       saveAiEditorPreferences({ editorMode: 'chat' });
                     }} 
-                    className="text-xs h-7"
+                    className="text-[10px] h-6 px-2"
                   >
                     Chat
                   </Button>
@@ -2680,7 +2679,7 @@ Return the modernized instructions maintaining the EXACT same structure and form
                       setEditorMode('build');
                       saveAiEditorPreferences({ editorMode: 'build' });
                     }} 
-                    className="text-xs h-7"
+                    className="text-[10px] h-6 px-2"
                   >
                     Build
                   </Button>
@@ -2688,95 +2687,71 @@ Return the modernized instructions maintaining the EXACT same structure and form
               </div>
               
               {/* AI Mode Toggle */}
-              <div className="flex items-center gap-2 mb-3 p-2 bg-muted/50 rounded-md border">
-                <div className="flex-1 flex items-center gap-2">
-                  <Button 
-                    variant={aiMode === 'build' ? 'default' : 'outline'} 
-                    size="sm" 
-                    onClick={() => setAiMode('build')} 
-                    className="text-xs h-7 flex-1"
-                  >
-                    Build New Page
-                  </Button>
-                  <Button 
-                    variant={aiMode === 'edit' ? 'default' : 'outline'} 
-                    size="sm" 
-                    onClick={() => setAiMode('edit')} 
-                    className="text-xs h-7 flex-1"
-                  >
-                    Edit Existing
-                  </Button>
-                </div>
+              <div className="flex items-center gap-1 p-1 bg-muted/50 rounded border">
+                <Button 
+                  variant={aiMode === 'build' ? 'default' : 'outline'} 
+                  size="sm" 
+                  onClick={() => setAiMode('build')} 
+                  className="text-[10px] h-6 flex-1"
+                >
+                  Build New
+                </Button>
+                <Button 
+                  variant={aiMode === 'edit' ? 'default' : 'outline'} 
+                  size="sm" 
+                  onClick={() => setAiMode('edit')} 
+                  className="text-[10px] h-6 flex-1"
+                >
+                  Edit
+                </Button>
               </div>
               
               {/* Image Toggle - only show in build mode */}
               {aiMode === 'build' && (
                 <>
-                  <div className="mb-3 p-2 bg-muted/50 rounded-md border">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex-1">
-                        <Label htmlFor="include-images" className="text-xs font-medium">
-                          Include Images in Page
-                        </Label>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">
-                          {includeImages 
-                            ? '📸 Generate page with photo placeholders + emojis' 
-                            : '✨ Copy-rich design with icons + emojis only'
-                          }
-                        </p>
-                      </div>
-                      <Switch
-                        id="include-images"
-                        checked={includeImages}
-                        onCheckedChange={setIncludeImages}
-                        className="data-[state=checked]:bg-primary"
-                      />
-                    </div>
+                  <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">
+                    <Label htmlFor="include-images" className="text-[10px] font-medium cursor-pointer">
+                      Images: {includeImages ? '📸 On' : '✨ Off'}
+                    </Label>
+                    <Switch
+                      id="include-images"
+                      checked={includeImages}
+                      onCheckedChange={setIncludeImages}
+                      className="data-[state=checked]:bg-primary scale-75"
+                    />
                   </div>
 
-                  <div className="mb-3 p-2 bg-muted/50 rounded-md border">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex-1">
-                        <Label htmlFor="use-test-webhook" className="text-xs font-medium">
-                          Use Test Webhook
-                        </Label>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">
-                          {useTestWebhook 
-                            ? '🧪 Using test webhook for page generation' 
-                            : '🚀 Using production webhook for page generation'
-                          }
-                        </p>
-                      </div>
-                      <Switch
-                        id="use-test-webhook"
-                        checked={useTestWebhook}
-                        onCheckedChange={(checked) => {
-                          setUseTestWebhook(checked);
-                          updateWebhookPreferenceMutation.mutate(checked);
-                        }}
-                        className="data-[state=checked]:bg-primary"
-                      />
-                    </div>
+                  <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">
+                    <Label htmlFor="use-test-webhook" className="text-[10px] font-medium cursor-pointer">
+                      {useTestWebhook ? '🧪 Test' : '🚀 Prod'}
+                    </Label>
+                    <Switch
+                      id="use-test-webhook"
+                      checked={useTestWebhook}
+                      onCheckedChange={(checked) => {
+                        setUseTestWebhook(checked);
+                        updateWebhookPreferenceMutation.mutate(checked);
+                      }}
+                      className="data-[state=checked]:bg-primary scale-75"
+                    />
                   </div>
                 </>
               )}
               
-              <p className="text-xs text-muted-foreground mb-2">
-                {editorMode === 'chat' ? 'Chat about your page and get feedback' : 'Describe changes to build your page'}
-              </p>
-              
               {inputTokenCount >= 150000 && inputTokenCount < TOKEN_SOFT_LIMIT && (
-                <div className="mb-2 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
-                  <p className="text-xs text-yellow-700 dark:text-yellow-500">
-                    ⚠️ Context is at {((inputTokenCount / 200000) * 100).toFixed(0)}% capacity. Consider clearing history soon to prevent truncation.
+                <div className="p-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded">
+                  <p className="text-[10px] text-yellow-700 dark:text-yellow-500">
+                    ⚠️ {((inputTokenCount / 200000) * 100).toFixed(0)}% capacity
                   </p>
                 </div>
               )}
-              {inputTokenCount >= TOKEN_SOFT_LIMIT && <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded-md">
-                  <p className="text-xs text-destructive">
-                    {inputTokenCount >= TOKEN_HARD_LIMIT ? 'Token limit reached. Please reset the chat to continue.' : 'Approaching token limit. Consider resetting the chat soon.'}
+              {inputTokenCount >= TOKEN_SOFT_LIMIT && (
+                <div className="p-1.5 bg-destructive/10 border border-destructive/20 rounded">
+                  <p className="text-[10px] text-destructive">
+                    {inputTokenCount >= TOKEN_HARD_LIMIT ? 'Limit reached' : 'Near limit'}
                   </p>
-                </div>}
+                </div>
+              )}
             </div>
 
             <ScrollArea className="flex-1 min-h-0 overflow-y-auto">
@@ -2805,9 +2780,9 @@ Return the modernized instructions maintaining the EXACT same structure and form
               </div>
             </ScrollArea>
 
-            <ScrollArea className="max-h-[35vh] flex-shrink-0 border-t">
-              <div className={`p-4 space-y-2 bg-background ${fullScreen ? 'pb-20' : 'pb-6'}`}>
-                <div className="flex gap-2 mb-2 items-center justify-between">
+            <div className={`flex-shrink-0 border-t ${fullScreen ? 'pb-20' : 'pb-6'}`}>
+              <div className="p-3 space-y-2 bg-background">
+                <div className="flex gap-2 items-center justify-between">
                   <VariablePicker onInsert={handleInsertVariable} includeServiceVars={pageType === 'service'} includeServiceAreaVars={pageType === 'service'} />
                 </div>
                 <div className="flex gap-2 items-start">
@@ -2819,12 +2794,12 @@ Return the modernized instructions maintaining the EXACT same structure and form
                     e.preventDefault();
                     sendToAi();
                   }
-                }} disabled={isAiLoading} className="min-h-[80px] resize-none" />
+                }} disabled={isAiLoading} className="min-h-[80px] resize-none text-sm" />
                 </div>
-                <div className="flex justify-end items-center gap-2 pb-4">
+                <div className="flex justify-end items-center gap-2">
                   <div className="flex items-center gap-1.5 scale-75">
                     <Label htmlFor="send-on-enter" className="text-xs text-muted-foreground cursor-pointer w-[180px] text-right whitespace-nowrap">
-                      {sendOnEnter ? 'Cmd/Ctrl + Enter to send' : 'Enter to send'}
+                      {sendOnEnter ? 'Cmd/Ctrl + Enter' : 'Enter to send'}
                     </Label>
                     <Switch id="send-on-enter" checked={sendOnEnter} onCheckedChange={toggleSendOnEnter} />
                   </div>
@@ -2833,7 +2808,7 @@ Return the modernized instructions maintaining the EXACT same structure and form
                   </Button>
                 </div>
               </div>
-            </ScrollArea>
+            </div>
           </div>
         )}
 
