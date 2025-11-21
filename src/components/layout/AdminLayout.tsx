@@ -212,10 +212,10 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
     ...(isAdmin ? [{
       title: 'Automation',
       items: [
-        { path: '/dashboard/automation/workflows', icon: Workflow, label: 'Workflows' },
-        { path: '/dashboard/automation/monitor', icon: Activity, label: 'Execution Log' },
-        { path: '/dashboard/automation/templates', icon: LayoutTemplate, label: 'Templates' },
-        { path: '/dashboard/automation/testing', icon: TestTube, label: 'Testing' },
+        { path: '/admin/automation/workflows', icon: Workflow, label: 'Workflows' },
+        { path: '/admin/automation/monitor', icon: Activity, label: 'Execution Log' },
+        { path: '/admin/automation/templates', icon: LayoutTemplate, label: 'Templates' },
+        { path: '/admin/automation/testing', icon: TestTube, label: 'Testing' },
       ]
     }] : []),
     ...(isAdmin ? [{
