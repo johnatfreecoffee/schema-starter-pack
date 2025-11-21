@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -103,8 +102,7 @@ const WorkflowMonitor = () => {
   };
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Button
@@ -282,11 +280,10 @@ const WorkflowMonitor = () => {
                 No executions found
               </div>
             )}
-          </CardContent>
-        </Card>
-      </div>
-    </AdminLayout>
-  );
-};
-
-export default WorkflowMonitor;
+           </CardContent>
+         </Card>
+       </div>
+     );
+   };
+   
+   export default WorkflowMonitor;

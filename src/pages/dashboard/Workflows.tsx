@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -97,8 +96,7 @@ const Workflows = () => {
   };
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-4xl font-bold mb-2">Workflow Automation</h1>
@@ -264,11 +262,10 @@ const Workflows = () => {
                 Create Your First Workflow
               </Button>
             </CardContent>
-          </Card>
-        )}
-      </div>
-    </AdminLayout>
-  );
-};
-
-export default Workflows;
+           </Card>
+         )}
+       </div>
+     );
+   };
+   
+   export default Workflows;
