@@ -108,9 +108,6 @@ const AppContent = () => {
             <Route path="tickets" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Tickets /></Suspense>} />
             <Route path="tickets/new" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.TicketNew /></Suspense>} />
             <Route path="tickets/:id" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.TicketDetail /></Suspense>} />
-            <Route path="settings/canned-responses" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.CannedResponses /></Suspense>} />
-            <Route path="settings/ticket-templates" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.TicketTemplates /></Suspense>} />
-            <Route path="settings/auto-assignment" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.AutoAssignment /></Suspense>} />
             <Route path="settings/company" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Company /></Suspense>} />
             <Route path="settings/ai-training" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.AITraining /></Suspense>} />
             <Route path="settings/site-settings" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.SiteSettings /></Suspense>} />
@@ -122,14 +119,11 @@ const AppContent = () => {
             <Route path="settings/form-fields" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.FormFields /></Suspense>} />
             <Route path="settings/email-templates" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.EmailTemplates /></Suspense>} />
             <Route path="settings/email-settings" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.EmailSettings /></Suspense>} />
-            <Route path="settings/document-templates" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.DocumentTemplates /></Suspense>} />
             <Route path="settings/notifications" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Notifications /></Suspense>} />
             <Route path="settings/qa-testing" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.QATesting /></Suspense>} />
             <Route path="settings/performance" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Performance /></Suspense>} />
             <Route path="settings/backup-management" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.BackupManagement /></Suspense>} />
             <Route path="settings/permissions" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Permissions /></Suspense>} />
-            <Route path="settings/security" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Security /></Suspense>} />
-            <Route path="settings/seo" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.SEO /></Suspense>} />
             <Route path="settings/ai-config" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.AdminAIConfig /></Suspense>} />
             <Route path="ai-editor/static/:pageId" element={<AIEditorStaticPage />} />
             <Route path="ai-editor/service/:serviceId" element={<AIEditorServicePage />} />
