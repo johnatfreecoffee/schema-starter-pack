@@ -49,7 +49,6 @@ export const WorkflowTesting = lazy(() => import('@/pages/dashboard/WorkflowTest
 // Settings
 export const Settings = lazy(() => import('@/pages/dashboard/Settings'));
 export const Permissions = lazy(() => import('@/pages/dashboard/settings/Permissions'));
-export const Security = lazy(() => import('@/pages/dashboard/settings/Security'));
 export const Company = lazy(() => import('@/pages/dashboard/settings/Company'));
 export const AdminAIConfig = lazy(() => import('@/pages/AdminAIConfig'));
 export const Services = lazy(() => import('@/pages/dashboard/settings/Services'));
@@ -59,7 +58,6 @@ export const SiteSettings = lazy(() => import('@/pages/dashboard/settings/SiteSe
 export { default as StaticPages } from '@/pages/dashboard/settings/StaticPages';
 export const Sitemap = lazy(() => import('@/pages/dashboard/settings/Sitemap'));
 export const EmailTemplates = lazy(() => import('@/pages/dashboard/settings/EmailTemplates'));
-export const DocumentTemplates = lazy(() => import('@/pages/dashboard/settings/DocumentTemplates'));
 export const FormFields = lazy(() => import('@/pages/dashboard/settings/FormFields'));
 export const Notifications = lazy(() => import('@/pages/dashboard/settings/Notifications'));
 export const EmailSettings = lazy(() => import('@/pages/dashboard/settings/EmailSettings'));
@@ -70,17 +68,13 @@ export const QATesting = lazy(() => import('@/pages/dashboard/settings/QATesting
 
 // Admin tools
 export const Team = lazy(() => import('@/pages/dashboard/Team'));
-export const SEO = lazy(() => import('@/pages/dashboard/SEO'));
 export const Calendars = lazy(() => import('@/pages/dashboard/Calendars'));
-export const CannedResponses = lazy(() => import('@/pages/dashboard/CannedResponses'));
-export const TicketTemplates = lazy(() => import('@/pages/dashboard/TicketTemplates'));
 export const EmailQueue = lazy(() => import('@/pages/dashboard/EmailQueue'));
 export const Import = lazy(() => import('@/pages/dashboard/Import'));
 export const ImportHistory = lazy(() => import('@/pages/dashboard/ImportHistory'));
 export const Logs = lazy(() => import('@/pages/dashboard/Logs'));
 export const SystemHealth = lazy(() => import('@/pages/dashboard/SystemHealth'));
 export const PageRegenerator = lazy(() => import('@/pages/dashboard/PageRegenerator'));
-export const AutoAssignment = lazy(() => import('@/pages/dashboard/AutoAssignment'));
 
 // Customer portal
 export const CustomerAuth = lazy(() => import('@/pages/customer/CustomerAuth'));
