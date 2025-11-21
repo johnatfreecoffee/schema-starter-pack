@@ -294,8 +294,8 @@ const UnifiedPageEditor = ({
       if (!service?.id) return null;
       
       // Set page URL for service using service object
-      if (service?.url_slug) {
-        setPageUrl(`/services/${service.url_slug}`);
+      if (service?.slug) {
+        setPageUrl(`/services/${service.slug}`);
       }
       
       const {

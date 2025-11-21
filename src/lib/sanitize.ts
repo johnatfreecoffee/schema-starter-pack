@@ -1,14 +1,5 @@
 import DOMPurify from 'dompurify';
 
-// Extend Window interface to include DOMPurify types
-declare global {
-  interface Window {
-    trustedTypes?: {
-      createPolicy: (name: string, rules: unknown) => unknown;
-    };
-  }
-}
-
 /**
  * Sanitizes HTML content to prevent XSS attacks
  * Uses DOMPurify to remove malicious scripts, event handlers, and unsafe content
