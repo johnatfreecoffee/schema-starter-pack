@@ -60,7 +60,6 @@ export { default as StaticPages } from '@/pages/dashboard/settings/StaticPages';
 export const Sitemap = lazy(() => import('@/pages/dashboard/settings/Sitemap'));
 export const EmailTemplates = lazy(() => import('@/pages/dashboard/settings/EmailTemplates'));
 export const DocumentTemplates = lazy(() => import('@/pages/dashboard/settings/DocumentTemplates'));
-export const Templates = lazy(() => import('@/pages/dashboard/settings/Templates'));
 export const FormFields = lazy(() => import('@/pages/dashboard/settings/FormFields'));
 export const Forms = lazy(() => import('@/pages/dashboard/settings/Forms'));
 export const Notifications = lazy(() => import('@/pages/dashboard/settings/Notifications'));

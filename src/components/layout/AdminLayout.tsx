@@ -197,7 +197,6 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
         { path: '/dashboard/settings/site-settings', icon: Globe, label: 'Site Settings' },
         { path: '/dashboard/settings/services', icon: Package, label: 'Services' },
         { path: '/dashboard/settings/service-areas', icon: MapPin, label: 'Service Areas' },
-        { path: '/dashboard/settings/templates', icon: FileCode, label: 'Templates' },
         { path: '/dashboard/settings/static-pages', icon: FileTextAlt, label: 'Static Pages' },
         { path: '/dashboard/settings/sitemap', icon: Map, label: 'Site Map' },
         { path: '/dashboard/settings/forms', icon: FileText, label: 'Forms' },
