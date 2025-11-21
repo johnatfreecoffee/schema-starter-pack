@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import AdminLayout from '@/components/layout/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -86,142 +85,138 @@ const EmailSettings = () => {
 
   if (isLoading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center h-96">
-          <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-      </AdminLayout>
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="mb-6">
-          <div className="flex items-center gap-3 mb-2">
-            <Mail className="h-8 w-8" />
-            <h1 className="text-3xl font-bold">Email Settings</h1>
-          </div>
-          <p className="text-muted-foreground">
-            Configure your email settings and signature
-          </p>
-          {isSaving && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Saving...
-            </div>
-          )}
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-2">
+          <Mail className="h-8 w-8" />
+          <h1 className="text-3xl font-bold">Email Settings</h1>
         </div>
+        <p className="text-muted-foreground">
+          Configure your email settings and signature
+        </p>
+        {isSaving && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Saving...
+          </div>
+        )}
+      </div>
 
-        <div className="space-y-6">
-          {/* Email Configuration */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Email Configuration</CardTitle>
-              <CardDescription>
-                Set default email addresses and sender information
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="from-email">Default "From" Email Address *</Label>
-                <Input
-                  id="from-email"
-                  type="email"
-                  value={formData.email_from_address}
-                  onChange={(e) => handleFieldChange('email_from_address', e.target.value)}
-                  placeholder="noreply@yourdomain.com"
-                />
-                <p className="text-xs text-muted-foreground">
-                  This email address will be used as the sender for all outgoing emails
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="from-name">Default "From" Name *</Label>
-                <Input
-                  id="from-name"
-                  value={formData.email_from_name}
-                  onChange={(e) => handleFieldChange('email_from_name', e.target.value)}
-                  placeholder="Your Company Name"
-                />
-                <p className="text-xs text-muted-foreground">
-                  This name will appear as the sender name in recipient inboxes
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="reply-to">Reply-To Email Address</Label>
-                <Input
-                  id="reply-to"
-                  type="email"
-                  value={formData.email_reply_to}
-                  onChange={(e) => handleFieldChange('email_reply_to', e.target.value)}
-                  placeholder="support@yourdomain.com"
-                />
-                <p className="text-xs text-muted-foreground">
-                  When recipients reply to your emails, responses will go to this address
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Enable Email Notifications</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Turn on/off all automated email notifications globally
-                  </p>
-                </div>
-                <Switch
-                  checked={formData.email_notifications_enabled}
-                  onCheckedChange={(checked) => handleFieldChange('email_notifications_enabled', checked)}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Email Signature */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Email Signature</CardTitle>
-              <CardDescription>
-                This signature will be automatically appended to all outgoing emails
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Label htmlFor="signature">Global Email Signature</Label>
-              <Textarea
-                id="signature"
-                value={formData.email_signature}
-                onChange={(e) => handleFieldChange('email_signature', e.target.value)}
-                placeholder={`Best regards,\n\nYour Company Name\nPhone: (555) 555-5555\nEmail: info@yourcompany.com\nWebsite: www.yourcompany.com`}
-                rows={8}
-                className="font-mono text-sm"
+      <div className="space-y-6">
+        {/* Email Configuration */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Email Configuration</CardTitle>
+            <CardDescription>
+              Set default email addresses and sender information
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="from-email">Default "From" Email Address *</Label>
+              <Input
+                id="from-email"
+                type="email"
+                value={formData.email_from_address}
+                onChange={(e) => handleFieldChange('email_from_address', e.target.value)}
+                placeholder="noreply@yourdomain.com"
               />
               <p className="text-xs text-muted-foreground">
-                Use plain text for best compatibility across email clients
+                This email address will be used as the sender for all outgoing emails
               </p>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* SMTP Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle>SMTP Settings</CardTitle>
-              <CardDescription>
-                Email delivery configuration
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-lg border border-dashed p-6 text-center">
+            <div className="space-y-2">
+              <Label htmlFor="from-name">Default "From" Name *</Label>
+              <Input
+                id="from-name"
+                value={formData.email_from_name}
+                onChange={(e) => handleFieldChange('email_from_name', e.target.value)}
+                placeholder="Your Company Name"
+              />
+              <p className="text-xs text-muted-foreground">
+                This name will appear as the sender name in recipient inboxes
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="reply-to">Reply-To Email Address</Label>
+              <Input
+                id="reply-to"
+                type="email"
+                value={formData.email_reply_to}
+                onChange={(e) => handleFieldChange('email_reply_to', e.target.value)}
+                placeholder="support@yourdomain.com"
+              />
+              <p className="text-xs text-muted-foreground">
+                When recipients reply to your emails, responses will go to this address
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Enable Email Notifications</Label>
                 <p className="text-sm text-muted-foreground">
-                  Using Lovable Cloud email service. SMTP configuration coming soon.
+                  Turn on/off all automated email notifications globally
                 </p>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+              <Switch
+                checked={formData.email_notifications_enabled}
+                onCheckedChange={(checked) => handleFieldChange('email_notifications_enabled', checked)}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Email Signature */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Email Signature</CardTitle>
+            <CardDescription>
+              This signature will be automatically appended to all outgoing emails
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Label htmlFor="signature">Global Email Signature</Label>
+            <Textarea
+              id="signature"
+              value={formData.email_signature}
+              onChange={(e) => handleFieldChange('email_signature', e.target.value)}
+              placeholder={`Best regards,\n\nYour Company Name\nPhone: (555) 555-5555\nEmail: info@yourcompany.com\nWebsite: www.yourcompany.com`}
+              rows={8}
+              className="font-mono text-sm"
+            />
+            <p className="text-xs text-muted-foreground">
+              Use plain text for best compatibility across email clients
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* SMTP Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle>SMTP Settings</CardTitle>
+            <CardDescription>
+              Email delivery configuration
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-lg border border-dashed p-6 text-center">
+              <p className="text-sm text-muted-foreground">
+                Using Lovable Cloud email service. SMTP configuration coming soon.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </AdminLayout>
+    </div>
   );
 };
 
