@@ -2526,9 +2526,40 @@ Return the modernized instructions maintaining the EXACT same structure and form
     <>
       {/* Header - shown in both Dialog and fullScreen modes */}
       <div className={`px-6 py-4 border-b ${fullScreen ? 'bg-background' : ''}`}>
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 flex-1">
-            <h2 className="text-lg font-semibold">Editing: {pageTitle}</h2>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 flex-1">
+              <h2 className="text-lg font-semibold">Editing: {pageTitle}</h2>
+              {pageUrl && (
+                <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-md">
+                  <span className="text-xs text-muted-foreground font-mono">{pageUrl}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0"
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(window.location.origin + pageUrl);
+                      setCopiedUrl(true);
+                      setTimeout(() => setCopiedUrl(false), 2000);
+                      toast({
+                        title: "URL copied",
+                        description: "The page URL has been copied to your clipboard."
+                      });
+                    }}
+                  >
+                    {copiedUrl ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0"
+                    onClick={() => window.open(pageUrl, '_blank')}
+                  >
+                    <Eye className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
+            </div>
             <div className="flex items-center gap-3">
               {/* Status Badge */}
               {currentHtml !== publishedHtml ? (
@@ -2568,7 +2599,6 @@ Return the modernized instructions maintaining the EXACT same structure and form
               </Button>
             </div>
           </div>
-          
         </div>
       </div>
 
