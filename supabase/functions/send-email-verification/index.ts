@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import { Resend } from 'https://esm.sh/resend@2.0.0';
+import { wrapEmailContent } from '../_shared/email-template.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -94,48 +95,46 @@ serve(async (req) => {
     // Get company settings for branding
     const { data: company } = await supabase
       .from('company_settings')
-      .select('business_name')
+      .select('business_name, icon_url, logo_url')
       .single();
 
     const businessName = company?.business_name || 'Our Company';
     const verificationUrl = `https://clearhome.pro/verify-email?token=${verificationToken}`;
+
+    // Build email content
+    const emailContent = `
+      <h1 style="color: #1f2937; margin-bottom: 20px;">Verify Your New Email Address</h1>
+      <p>Hello,</p>
+      <p>You recently requested to change your email address to <strong>${newEmail}</strong>.</p>
+      <p>To complete this change, please click the button below to verify your new email address:</p>
+      <div style="text-align: center;">
+        <a href="${verificationUrl}" class="button">Verify Email Address</a>
+      </div>
+      <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
+        Or copy and paste this link into your browser:<br>
+        <a href="${verificationUrl}" style="color: #2563eb; word-break: break-all;">${verificationUrl}</a>
+      </p>
+      <div style="margin-top: 30px; padding: 15px; background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px;">
+        <p style="margin: 0; color: #92400e; font-weight: 600;">⏰ This link will expire in 24 hours.</p>
+      </div>
+      <p style="margin-top: 20px; color: #6b7280; font-size: 14px;">
+        If you didn't request this change, you can safely ignore this email. Your current email address will remain unchanged.
+      </p>
+    `;
+
+    // Wrap content with header and footer
+    const html = wrapEmailContent(emailContent, {
+      companyName: businessName,
+      logoUrl: company?.logo_url,
+      iconUrl: company?.icon_url,
+    });
 
     // Send verification email using Resend
     const { error: emailError } = await resend.emails.send({
       from: `${businessName} <onboarding@resend.dev>`,
       to: [newEmail],
       subject: 'Verify Your New Email Address',
-      html: `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
-              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-              .button { display: inline-block; padding: 12px 24px; background-color: #0066cc; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-              .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <h1>Verify Your New Email Address</h1>
-              <p>Hello,</p>
-              <p>You recently requested to change your email address to <strong>${newEmail}</strong>.</p>
-              <p>To complete this change, please click the button below to verify your new email address:</p>
-              <a href="${verificationUrl}" class="button">Verify Email Address</a>
-              <p>Or copy and paste this link into your browser:</p>
-              <p style="word-break: break-all; color: #0066cc;">${verificationUrl}</p>
-              <p><strong>This link will expire in 24 hours.</strong></p>
-              <p>If you didn't request this change, you can safely ignore this email. Your current email address will remain unchanged.</p>
-              <div class="footer">
-                <p>This email was sent by ${businessName}</p>
-              </div>
-            </div>
-          </body>
-        </html>
-      `,
+      html,
     });
 
     if (emailError) {

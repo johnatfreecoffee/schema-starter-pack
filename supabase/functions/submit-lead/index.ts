@@ -272,6 +272,8 @@ serve(async (req) => {
             .replace(/\{\{company_phone\}\}/g, companySettings?.phone || '')
             .replace(/\{\{company_email\}\}/g, companySettings?.email || '')
             .replace(/\{\{company_address\}\}/g, companySettings?.address || '')
+            .replace(/\{\{company_icon_url\}\}/g, companySettings?.icon_url || companySettings?.logo_url || '')
+            .replace(/\{\{company_logo_url\}\}/g, companySettings?.logo_url || '')
             .replace(/\{\{current_date\}\}/g, new Date().toLocaleDateString())
             .replace(/\{\{current_year\}\}/g, new Date().getFullYear().toString());
         };
