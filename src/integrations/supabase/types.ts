@@ -3680,10 +3680,12 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           email: string | null
+          first_name: string | null
           full_name: string
           id: string
           job_title: string | null
           last_login_at: string | null
+          last_name: string | null
           phone: string | null
           require_password_change: boolean | null
           status: string
@@ -3698,10 +3700,12 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          first_name?: string | null
           full_name: string
           id: string
           job_title?: string | null
           last_login_at?: string | null
+          last_name?: string | null
           phone?: string | null
           require_password_change?: boolean | null
           status?: string
@@ -3716,10 +3720,12 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          first_name?: string | null
           full_name?: string
           id?: string
           job_title?: string | null
           last_login_at?: string | null
+          last_name?: string | null
           phone?: string | null
           require_password_change?: boolean | null
           status?: string
