@@ -235,10 +235,20 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         }
       }
 
+      // Debounced resize with stabilization
+      let resizeTimeout: NodeJS.Timeout | null = null;
+      let lastHeight = 0;
+      let heightCache: { value: number; timestamp: number } | null = null;
+      
       const resize = () => {
         if (!iframe) return;
+        
+        // Force reflow to ensure layout is complete
+        doc.body?.offsetHeight;
+        
         const body = doc.body;
         const htmlEl = doc.documentElement;
+        const timestamp = Date.now();
 
         // Measure traditional document heights
         const baseHeight = Math.max(
@@ -249,70 +259,130 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
           htmlEl?.offsetHeight || 0
         );
 
-        // Also account for absolutely/fixed positioned elements that don't
-        // contribute to scroll/offset heights
+        // Optimized element scanning - only check positioned elements and limit iterations
         let maxBottom = 0;
-        const nodes = body?.getElementsByTagName('*') || [];
-        for (let i = 0; i < (nodes as any).length; i++) {
-          const el = (nodes as any)[i] as HTMLElement;
-          if (!el || typeof el.getBoundingClientRect !== 'function') continue;
-          const rect = el.getBoundingClientRect();
-          if (rect && isFinite(rect.bottom)) {
-            if (rect.bottom > maxBottom) maxBottom = rect.bottom;
+        const MAX_ELEMENTS = 100;
+        let checkedCount = 0;
+        
+        // Only check direct children and positioned elements
+        const checkElements = (parent: Element | null) => {
+          if (!parent || checkedCount >= MAX_ELEMENTS) return;
+          
+          const children = parent.children;
+          for (let i = 0; i < children.length && checkedCount < MAX_ELEMENTS; i++) {
+            const el = children[i] as HTMLElement;
+            if (!el || typeof el.getBoundingClientRect !== 'function') continue;
+            
+            const style = win.getComputedStyle(el);
+            const position = style.position;
+            
+            // Only measure positioned elements and direct children
+            if (position === 'absolute' || position === 'fixed' || parent === body) {
+              const rect = el.getBoundingClientRect();
+              if (rect && isFinite(rect.bottom) && rect.bottom > maxBottom) {
+                maxBottom = rect.bottom;
+              }
+              checkedCount++;
+            }
           }
+        };
+        
+        checkElements(body);
+        
+        const calculatedHeight = Math.ceil(Math.max(baseHeight, maxBottom));
+        
+        // Use cached value if within 100ms and height hasn't changed significantly
+        if (heightCache && timestamp - heightCache.timestamp < 100 && Math.abs(heightCache.value - calculatedHeight) < 5) {
+          console.log(`[SiteHTMLIframeRenderer] Using cached height: ${heightCache.value}px`);
+          return;
         }
-
-        const height = Math.ceil(Math.max(baseHeight, maxBottom));
-        iframe.style.height = `${height}px`;
+        
+        // Update cache
+        heightCache = { value: calculatedHeight, timestamp };
+        
+        // Only update if height changed significantly (avoid micro-adjustments)
+        if (Math.abs(lastHeight - calculatedHeight) > 2) {
+          console.log(`[SiteHTMLIframeRenderer] Height update: ${lastHeight}px → ${calculatedHeight}px`);
+          iframe.style.height = `${calculatedHeight}px`;
+          lastHeight = calculatedHeight;
+        }
+      };
+      
+      // Debounced resize wrapper
+      const debouncedResize = () => {
+        if (resizeTimeout) clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          resize();
+          resizeTimeout = null;
+        }, 50);
       };
 
       // Initial resize and then schedule another after scripts/styles settle
+      console.log('[SiteHTMLIframeRenderer] Starting resize sequence');
       resize();
       setTimeout(resize, 100);
       setTimeout(resize, 300);
       setTimeout(resize, 800);
+      
+      // Final stabilization check at 2 seconds
+      setTimeout(() => {
+        const currentHeight = parseInt(iframe.style.height) || 0;
+        doc.body?.offsetHeight; // Force reflow
+        const body = doc.body;
+        const htmlEl = doc.documentElement;
+        const finalHeight = Math.max(
+          body?.scrollHeight || 0,
+          body?.offsetHeight || 0,
+          htmlEl?.scrollHeight || 0
+        );
+        
+        // Only adjust if difference is significant (>20px)
+        if (Math.abs(currentHeight - finalHeight) > 20) {
+          console.log(`[SiteHTMLIframeRenderer] Stabilization adjustment: ${currentHeight}px → ${finalHeight}px`);
+          iframe.style.height = `${finalHeight}px`;
+          lastHeight = finalHeight;
+        } else {
+          console.log(`[SiteHTMLIframeRenderer] Height stabilized at ${currentHeight}px`);
+        }
+      }, 2000);
 
       const win: any = iframe.contentWindow as any;
 
-      // Observe DOM mutations (handles dynamic content injections)
+      // Observe DOM mutations (handles dynamic content injections) - use debounced version
       let mo: MutationObserver | null = null;
       if (win && typeof win.MutationObserver !== 'undefined') {
-        mo = new win.MutationObserver(() => resize());
+        mo = new win.MutationObserver(() => debouncedResize());
         mo.observe(doc.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
       }
 
-      // Observe size changes on both body and html
+      // Observe size changes on both body and html - use debounced version
       let ro: ResizeObserver | null = null;
       if (win && typeof win.ResizeObserver !== 'undefined') {
-        ro = new win.ResizeObserver(() => resize());
+        ro = new win.ResizeObserver(() => debouncedResize());
         if (doc.body) ro.observe(doc.body);
         if (doc.documentElement) ro.observe(doc.documentElement);
       }
 
-      // Recalculate on image loads and window events
+      // Recalculate on image loads and window events - use debounced version
       Array.from(doc.images || []).forEach((img) => {
-        img.addEventListener('load', resize);
-        img.addEventListener('error', resize);
+        img.addEventListener('load', debouncedResize);
+        img.addEventListener('error', debouncedResize);
       });
-      const onLoad = () => resize();
+      const onLoad = () => debouncedResize();
       iframe.contentWindow?.addEventListener('load', onLoad);
       iframe.contentWindow?.addEventListener('resize', onLoad);
 
-      // Fallback: periodic check
-      const interval = setInterval(resize, 1000);
-      (iframe as any)._resizeInterval = interval;
-
       return () => {
+        if (resizeTimeout) clearTimeout(resizeTimeout);
         iframe.contentWindow?.removeEventListener('load', onLoad);
         iframe.contentWindow?.removeEventListener('resize', onLoad);
         iframe.contentWindow?.removeEventListener('load', attachClickListener);
-        if ((iframe as any)._resizeInterval) clearInterval((iframe as any)._resizeInterval);
         if (ro) ro.disconnect();
         if (mo) mo.disconnect();
         doc.removeEventListener('click', onClick, { capture: true });
         Array.from(doc.images || []).forEach((img) => {
-          img.removeEventListener('load', resize);
-          img.removeEventListener('error', resize);
+          img.removeEventListener('load', debouncedResize);
+          img.removeEventListener('error', debouncedResize);
         });
       };
     } catch (e) {
@@ -339,7 +409,7 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
     <iframe
       ref={ref}
       className={className || 'w-full border-0'}
-      style={{ width: '100%', display: 'block', height: '100vh' }}
+      style={{ width: '100%', display: 'block', height: '0' }}
       title="Static Page Content"
       sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation"
     />
