@@ -783,69 +783,52 @@ const Leads = () => {
         ))}
       </div>
 
-      <div className="flex gap-6 min-w-0">
-        {/* Filters Sidebar */}
-        <div className={`transition-all duration-300 ${isFiltersOpen ? 'w-80' : 'w-12'}`}>
-          <Card className={`h-full ${isFiltersOpen ? 'p-4' : 'p-2'}`}>
-            {isFiltersOpen ? (
-              <>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold">Filters</h3>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => setIsFiltersOpen(false)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="hidden lg:block">
-                  <LeadFilters
-                    onFiltersChange={setFilters}
-                    statusCounts={statusCounts}
-                    services={services}
-                    users={users}
-                  />
-                </div>
-              </>
-            ) : (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsFiltersOpen(true)}
-                className="h-8 w-8 p-0"
-              >
-                <Filter className="h-4 w-4" />
+      {/* Filters Section - Top */}
+      <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen} className="mb-4">
+        <Card className="p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold">Filters</h3>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" size="sm">
+                {isFiltersOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </Button>
-            )}
-          </Card>
-          
-          {/* Mobile Sheet */}
-          <Sheet>
-            <SheetTrigger asChild className="lg:hidden fixed bottom-20 right-4 z-50">
-              <Button variant="outline" size="icon" className="h-12 w-12 rounded-full shadow-lg">
-                <Filter className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left">
-              <SheetHeader>
-                <SheetTitle>Filters</SheetTitle>
-              </SheetHeader>
-              <div className="mt-4">
-                <LeadFilters
-                  onFiltersChange={setFilters}
-                  statusCounts={statusCounts}
-                  services={services}
-                  users={users}
-                />
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
+            </CollapsibleTrigger>
+          </div>
+          <CollapsibleContent>
+            <LeadFilters
+              onFiltersChange={setFilters}
+              statusCounts={statusCounts}
+              services={services}
+              users={users}
+            />
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
-        {/* Leads Table */}
-        <div className="flex-1 min-w-0">
+      {/* Mobile Filter Sheet */}
+      <Sheet>
+        <SheetTrigger asChild className="lg:hidden fixed bottom-20 right-4 z-50">
+          <Button variant="outline" size="icon" className="h-12 w-12 rounded-full shadow-lg">
+            <Filter className="h-5 w-5" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left">
+          <SheetHeader>
+            <SheetTitle>Filters</SheetTitle>
+          </SheetHeader>
+          <div className="mt-4">
+            <LeadFilters
+              onFiltersChange={setFilters}
+              statusCounts={statusCounts}
+              services={services}
+              users={users}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Leads Table */}
+      <div className="w-full min-w-0">
           {(!hasLoadedOnce.current && loading) ? (
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (
@@ -858,7 +841,7 @@ const Leads = () => {
               emptyMessage="No leads found"
               renderCard={(lead, index) => (
                 <MobileCard key={lead.id} onClick={() => navigate(`/dashboard/leads/${lead.id}`)}>
-                  <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-start justify-between mb-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 min-w-0">
                         <div onClick={(e) => e.stopPropagation()}>
@@ -867,7 +850,7 @@ const Leads = () => {
                             onCheckedChange={() => bulkSelection.toggleItem(lead.id)}
                           />
                         </div>
-                        <h3 className="font-bold text-lg truncate max-w-full">
+                        <h3 className="font-semibold text-base truncate max-w-full">
                           {lead.first_name} {lead.last_name}
                         </h3>
                       </div>
@@ -880,79 +863,91 @@ const Leads = () => {
                     </div>
                   </div>
                   
-                  <MobileCardField 
-                    label="Service" 
-                    value={
-                      <div className="space-y-1">
-                        <div>{lead.service?.name || lead.service_needed || 'N/A'}</div>
-                        {lead.lead_source && lead.lead_source !== 'web_form' && (
-                          <Badge variant="outline" className="text-xs">
-                            {lead.lead_source === 'service_page' ? 'Service Page' : lead.lead_source}
-                          </Badge>
-                        )}
-                      </div>
-                    } 
-                  />
-                  <MobileCardField 
-                    label="Email" 
-                    value={
-                      <a href={`mailto:${lead.email}`} className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+                    <div className="flex items-center gap-3">
+                      <a href={`mailto:${lead.email}`} className="hover:text-primary" onClick={(e) => e.stopPropagation()}>
+                        <Mail className="h-4 w-4 inline mr-1" />
                         {lead.email}
                       </a>
-                    } 
-                  />
-                  <MobileCardField 
-                    label="Phone" 
-                    value={
-                      <a href={`tel:${lead.phone}`} className="text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
+                      <a href={`tel:${lead.phone}`} className="hover:text-primary" onClick={(e) => e.stopPropagation()}>
+                        <Phone className="h-4 w-4 inline mr-1" />
                         {formatPhone(lead.phone)}
                       </a>
-                    } 
-                  />
-                  <MobileCardField 
-                    label="Location" 
-                    value={`${lead.city}, ${lead.state}`} 
-                  />
-                  <MobileCardField 
-                    label="Created" 
-                    value={formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })} 
-                  />
+                    </div>
+                  </div>
                   
-                  <div className="flex gap-2 mt-3 pt-3 border-t">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
+                  <div className="flex gap-1 mt-2" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = `tel:${lead.phone}`;
+                      }}
+                      title="Call"
+                    >
+                      <Phone className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = `sms:${lead.phone}`;
+                      }}
+                      title="SMS"
+                    >
+                      <MessageSquare className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = `mailto:${lead.email}`;
+                      }}
+                      title="Email"
+                    >
+                      <Mail className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
                       onClick={(e) => {
                         e.stopPropagation();
                         setEditingLead(lead);
                       }}
-                      className="flex-1"
+                      title="Edit"
                     >
-                      <Edit className="h-4 w-4 mr-1" />
-                      Edit
+                      <Edit className="h-4 w-4" />
                     </Button>
                     {lead.status !== 'converted' && (
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
                         onClick={(e) => {
                           e.stopPropagation();
                           setConvertingLead(lead);
                         }}
-                        className="flex-1"
+                        title="Convert"
                       >
-                        <CheckCircle className="h-4 w-4 mr-1" />
-                        Convert
+                        <CheckCircle className="h-4 w-4" />
                       </Button>
                     )}
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDelete(lead.id);
                       }}
-                      className="text-destructive hover:text-destructive"
+                      title="Delete"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -1093,9 +1088,8 @@ const Leads = () => {
             />
           )}
       </div>
-    </div>
 
-    {/* Create/Edit Form */}
+      {/* Create/Edit Form */}
     {(showCreateForm || editingLead) && (
       <LeadForm
         isOpen={true}
