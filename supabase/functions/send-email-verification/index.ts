@@ -98,7 +98,7 @@ serve(async (req) => {
       .single();
 
     const businessName = company?.business_name || 'Our Company';
-    const verificationUrl = `${supabaseUrl.replace('.supabase.co', '.lovableproject.com')}/verify-email?token=${verificationToken}`;
+    const verificationUrl = `https://clearhome.pro/verify-email?token=${verificationToken}`;
 
     // Send verification email using Resend
     const { error: emailError } = await resend.emails.send({
