@@ -96,6 +96,7 @@ const Leads = () => {
   const [services, setServices] = useState<string[]>([]);
   const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [clearAllFlash, setClearAllFlash] = useState(false);
   
   // Search with debouncing
   const [searchTerm, setSearchTerm] = useState('');
@@ -718,7 +719,7 @@ const Leads = () => {
 
       {/* Simple Filter Bar */}
       <Card className="p-4 mb-6">
-        <div className="flex flex-wrap gap-3 items-end">
+        <div className="flex flex-wrap gap-3 items-center">
           {/* Search */}
           <div className="flex-1 min-w-[200px]">
             <Input
@@ -735,7 +736,7 @@ const Leads = () => {
               onValueChange={(value) => updateFilter('status', value === 'all' ? null : value)}
             >
               <SelectTrigger className="bg-background">
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent className="bg-background z-50">
                 <SelectItem value="all">All Statuses</SelectItem>
@@ -755,7 +756,7 @@ const Leads = () => {
               onValueChange={(value) => updateFilter('service', value === 'all' ? null : value)}
             >
               <SelectTrigger className="bg-background">
-                <SelectValue placeholder="Service" />
+                <SelectValue placeholder="All Services" />
               </SelectTrigger>
               <SelectContent className="bg-background z-50">
                 <SelectItem value="all">All Services</SelectItem>
@@ -773,7 +774,7 @@ const Leads = () => {
               onValueChange={(value) => updateFilter('assignedTo', value === 'all' ? null : value)}
             >
               <SelectTrigger className="bg-background">
-                <SelectValue placeholder="Assigned To" />
+                <SelectValue placeholder="All Users" />
               </SelectTrigger>
               <SelectContent className="bg-background z-50">
                 <SelectItem value="all">All Users</SelectItem>
@@ -785,28 +786,38 @@ const Leads = () => {
             </Select>
           </div>
 
-          {/* Emergency Filter */}
-          <div className="flex items-center gap-2">
-            <Checkbox 
-              id="emergency"
-              checked={filters.emergencyOnly || false}
-              onCheckedChange={(checked) => updateFilter('emergencyOnly', checked || null)}
-            />
-            <label htmlFor="emergency" className="text-sm cursor-pointer whitespace-nowrap">
-              Emergency Only
-            </label>
-          </div>
+          {/* Emergency Only Chip */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => updateFilter('emergencyOnly', filters.emergencyOnly ? null : true)}
+            className={`rounded-full px-4 transition-colors ${
+              filters.emergencyOnly 
+                ? 'bg-red-500 text-white border-red-500 hover:bg-red-600' 
+                : 'bg-background hover:bg-muted'
+            }`}
+          >
+            <AlertCircle className="mr-1.5 h-3.5 w-3.5" />
+            Emergency Only
+          </Button>
 
-          {/* Clear Filters */}
-          {activeFilterCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={clearFilters}
-            >
-              Clear All
-            </Button>
-          )}
+          {/* Clear All Chip */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              clearFilters();
+              setClearAllFlash(true);
+              setTimeout(() => setClearAllFlash(false), 500);
+            }}
+            className={`rounded-full px-4 transition-colors ${
+              clearAllFlash 
+                ? 'bg-primary text-primary-foreground border-primary' 
+                : 'bg-background hover:bg-muted'
+            }`}
+          >
+            Clear All
+          </Button>
         </div>
       </Card>
 
