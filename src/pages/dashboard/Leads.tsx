@@ -57,7 +57,8 @@ import {
   AlertCircle,
   Download,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  MessageSquare
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { CRUDLogger } from '@/lib/crudLogger';
@@ -972,17 +973,29 @@ const Leads = () => {
                           </TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Name</TableHead>
-                          <TableHead>Service</TableHead>
                           <TableHead>Contact</TableHead>
-                          <TableHead>Location</TableHead>
-                          <TableHead>Created</TableHead>
+                          <TableHead>Actions</TableHead>
                           <TableHead></TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {leads.map((lead) => (
-                          <TableRow key={lead.id} className="group">
-                            <TableCell>
+                        {leads.map((lead, index) => (
+                          <TableRow 
+                            key={lead.id} 
+                            className={`group cursor-pointer hover:bg-muted/50 ${index % 2 === 0 ? 'bg-muted/20' : ''}`}
+                            onClick={(e) => {
+                              // Don't navigate if clicking on checkbox, buttons, or links
+                              if (
+                                (e.target as HTMLElement).closest('input[type="checkbox"]') ||
+                                (e.target as HTMLElement).closest('button') ||
+                                (e.target as HTMLElement).closest('a')
+                              ) {
+                                return;
+                              }
+                              navigate(`/dashboard/leads/${lead.id}`);
+                            }}
+                          >
+                            <TableCell onClick={(e) => e.stopPropagation()}>
                               <Checkbox
                                 checked={bulkSelection.isSelected(lead.id)}
                                 onCheckedChange={() => bulkSelection.toggleItem(lead.id)}
@@ -997,50 +1010,48 @@ const Leads = () => {
                               </div>
                             </TableCell>
                             <TableCell>
-                              <button
-                                onClick={() => navigate(`/dashboard/leads/${lead.id}`)}
-                                className="font-medium hover:underline text-left"
-                              >
+                              <div className="font-medium">
                                 {lead.first_name} {lead.last_name}
-                              </button>
-                            </TableCell>
-                            <TableCell>
-                              <div className="space-y-1">
-                                <div className="font-medium">
-                                  {lead.service?.name || lead.service_needed}
-                                </div>
-                                {lead.lead_source && lead.lead_source !== 'web_form' && (
-                                  <Badge variant="outline" className="text-xs">
-                                    {lead.lead_source === 'service_page' ? 'Service Page' : lead.lead_source}
-                                  </Badge>
-                                )}
                               </div>
                             </TableCell>
                             <TableCell>
-                              <div className="space-y-1">
-                                <a
-                                  href={`mailto:${lead.email}`}
-                                  className="text-sm hover:underline flex items-center gap-1"
-                                >
-                                  <Mail className="h-3 w-3" />
-                                  {lead.email}
-                                </a>
-                                <a
-                                  href={`tel:${lead.phone}`}
-                                  className="text-sm hover:underline flex items-center gap-1"
-                                >
-                                  <Phone className="h-3 w-3" />
-                                  {formatPhone(lead.phone)}
-                                </a>
+                              <div className="space-y-1 text-sm text-muted-foreground">
+                                <div>{lead.email}</div>
+                                <div>{formatPhone(lead.phone)}</div>
                               </div>
                             </TableCell>
-                            <TableCell>
-                              {lead.city}, {lead.state}
+                            <TableCell onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 w-8 p-0"
+                                  onClick={() => window.location.href = `tel:${lead.phone}`}
+                                  title="Call"
+                                >
+                                  <Phone className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 w-8 p-0"
+                                  onClick={() => window.location.href = `sms:${lead.phone}`}
+                                  title="SMS"
+                                >
+                                  <MessageSquare className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 w-8 p-0"
+                                  onClick={() => window.location.href = `mailto:${lead.email}`}
+                                  title="Email"
+                                >
+                                  <Mail className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </TableCell>
-                            <TableCell className="text-sm text-muted-foreground">
-                              {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}
-                            </TableCell>
-                            <TableCell>
+                            <TableCell onClick={(e) => e.stopPropagation()}>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button variant="ghost" size="sm">
