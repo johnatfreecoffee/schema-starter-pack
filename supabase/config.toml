@@ -46,3 +46,9 @@ verify_jwt = false
 
 [functions.generate-color-palette]
 verify_jwt = true
+
+[functions.send-email-verification]
+verify_jwt = true
+
+[functions.verify-email-change]
+verify_jwt = false

@@ -68,20 +68,24 @@ export default function AccountSettings() {
 
     setSaving(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        email: emailData.newEmail,
+      const { data, error } = await supabase.functions.invoke('send-email-verification', {
+        body: { newEmail: emailData.newEmail }
       });
 
       if (error) throw error;
 
-      toast.success(
-        'Verification email sent! Please check your new email address to confirm the change.',
-        { duration: 6000 }
-      );
-      setEmailData(prev => ({ ...prev, newEmail: '' }));
+      if (data.success) {
+        toast.success(
+          'Verification email sent! Please check your new email address to confirm the change.',
+          { duration: 6000 }
+        );
+        setEmailData(prev => ({ ...prev, newEmail: '' }));
+      } else {
+        throw new Error(data.error || 'Failed to send verification email');
+      }
     } catch (error: any) {
       console.error('Error updating email:', error);
-      toast.error(error.message || 'Failed to update email');
+      toast.error(error.message || 'Failed to send verification email');
     } finally {
       setSaving(false);
     }
