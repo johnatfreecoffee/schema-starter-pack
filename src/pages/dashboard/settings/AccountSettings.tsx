@@ -11,6 +11,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -24,9 +25,18 @@ export default function AccountSettings() {
   
   // Update Profile Dialog State
   const [updateProfileOpen, setUpdateProfileOpen] = useState(false);
+  const [changeEmailOpen, setChangeEmailOpen] = useState(false);
   const [profileData, setProfileData] = useState({
-    fullName: '',
-    email: '',
+    firstName: '',
+    lastName: '',
+    phone: '',
+    avatarUrl: '',
+  });
+  
+  // Email Change Dialog State
+  const [emailData, setEmailData] = useState({
+    currentEmail: '',
+    newEmail: '',
   });
   
   // Change Password Dialog State
@@ -55,8 +65,14 @@ export default function AccountSettings() {
 
       setProfile(profileData);
       setProfileData({
-        fullName: profileData?.full_name || '',
-        email: currentUser.email || '',
+        firstName: profileData?.first_name || '',
+        lastName: profileData?.last_name || '',
+        phone: profileData?.phone || '',
+        avatarUrl: profileData?.avatar_url || '',
+      });
+      setEmailData({
+        currentEmail: currentUser.email || '',
+        newEmail: '',
       });
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -71,48 +87,57 @@ export default function AccountSettings() {
     setSaving(true);
 
     try {
-      // Update full name in user_profiles
-      if (profileData.fullName !== profile?.full_name) {
-        const { error: profileError } = await supabase
-          .from('user_profiles')
-          .update({ full_name: profileData.fullName })
-          .eq('id', user.id);
+      if (!user) return;
 
-        if (profileError) throw profileError;
-      }
+      // Update profile information
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .update({ 
+          first_name: profileData.firstName,
+          last_name: profileData.lastName,
+          phone: profileData.phone,
+          avatar_url: profileData.avatarUrl,
+        })
+        .eq('id', user.id);
 
-      // Update email if changed
-      if (profileData.email !== user.email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(profileData.email)) {
-          toast.error('Please enter a valid email address');
-          setSaving(false);
-          return;
-        }
+      if (profileError) throw profileError;
 
-        const { data, error } = await supabase.functions.invoke('send-email-verification', {
-          body: { newEmail: profileData.email }
-        });
-
-        if (error) throw error;
-
-        if (data.success) {
-          toast.success(
-            'Profile updated! Verification email sent for email change.',
-            { duration: 6000 }
-          );
-        } else {
-          throw new Error(data.error || 'Failed to send verification email');
-        }
-      } else {
-        toast.success('Profile updated successfully');
-      }
-
+      toast.success('Profile updated successfully');
       setUpdateProfileOpen(false);
       await fetchUserData();
     } catch (error: any) {
       console.error('Error updating profile:', error);
       toast.error(error.message || 'Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleEmailChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+
+    try {
+      if (!user) return;
+
+      if (!emailData.newEmail || emailData.newEmail === emailData.currentEmail) {
+        toast.error('Please enter a new email address');
+        return;
+      }
+
+      // Trigger email verification flow
+      const { error: emailError } = await supabase.functions.invoke('send-email-verification', {
+        body: { newEmail: emailData.newEmail }
+      });
+
+      if (emailError) throw emailError;
+
+      toast.success('Verification email sent! Please check your new email to complete the change.');
+      setChangeEmailOpen(false);
+      setEmailData({ ...emailData, newEmail: '' });
+    } catch (error: any) {
+      console.error('Error changing email:', error);
+      toast.error(error.message || 'Failed to send verification email');
     } finally {
       setSaving(false);
     }
@@ -157,11 +182,7 @@ export default function AccountSettings() {
     );
   }
 
-  const initials = profile?.full_name
-    ?.split(' ')
-    .map((n: string) => n[0])
-    .join('')
-    .toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U';
+  const initials = `${profile?.first_name?.[0] || ''}${profile?.last_name?.[0] || ''}`.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U';
 
   return (
     <div className="space-y-6 pb-16">
@@ -187,7 +208,9 @@ export default function AccountSettings() {
             <div className="flex-1 space-y-4">
               <div>
                 <Label className="text-muted-foreground text-sm">Name</Label>
-                <p className="text-lg font-medium">{profile?.full_name || 'Not set'}</p>
+                <p className="text-lg font-medium">
+                  {profile?.first_name} {profile?.last_name}
+                </p>
               </div>
               
               <div>
@@ -195,7 +218,14 @@ export default function AccountSettings() {
                 <p className="text-lg">{user?.email}</p>
               </div>
               
-              <div className="flex gap-3 pt-2">
+              {profile?.phone && (
+                <div>
+                  <Label className="text-muted-foreground text-sm">Phone</Label>
+                  <p className="text-lg">{profile.phone}</p>
+                </div>
+              )}
+              
+              <div className="flex flex-wrap gap-3 pt-2">
                 <Dialog open={updateProfileOpen} onOpenChange={setUpdateProfileOpen}>
                   <DialogTrigger asChild>
                     <Button variant="default">
@@ -207,34 +237,65 @@ export default function AccountSettings() {
                     <DialogHeader>
                       <DialogTitle>Update Profile</DialogTitle>
                       <DialogDescription>
-                        Update your profile information. Email changes require verification.
+                        Update your personal information and profile picture.
                       </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleProfileUpdate} className="space-y-4">
+                      <div className="flex justify-center">
+                        <Avatar className="h-24 w-24">
+                          <AvatarImage src={profileData.avatarUrl} />
+                          <AvatarFallback className="text-2xl">
+                            {profileData.firstName?.[0]}{profileData.lastName?.[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
+                      
                       <div className="grid gap-2">
-                        <Label htmlFor="fullName">Full Name</Label>
+                        <Label htmlFor="avatarUrl">Profile Picture URL</Label>
                         <Input
-                          id="fullName"
-                          value={profileData.fullName}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, fullName: e.target.value }))}
+                          id="avatarUrl"
+                          value={profileData.avatarUrl}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, avatarUrl: e.target.value }))}
+                          placeholder="Enter image URL"
                           disabled={saving}
                         />
                       </div>
                       
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="firstName">First Name</Label>
+                          <Input
+                            id="firstName"
+                            value={profileData.firstName}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, firstName: e.target.value }))}
+                            placeholder="First name"
+                            disabled={saving}
+                            required
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="lastName">Last Name</Label>
+                          <Input
+                            id="lastName"
+                            value={profileData.lastName}
+                            onChange={(e) => setProfileData(prev => ({ ...prev, lastName: e.target.value }))}
+                            placeholder="Last name"
+                            disabled={saving}
+                            required
+                          />
+                        </div>
+                      </div>
+                      
                       <div className="grid gap-2">
-                        <Label htmlFor="email">Email Address</Label>
+                        <Label htmlFor="phone">Phone Number</Label>
                         <Input
-                          id="email"
-                          type="email"
-                          value={profileData.email}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
+                          id="phone"
+                          type="tel"
+                          value={profileData.phone}
+                          onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+                          placeholder="Enter your phone number"
                           disabled={saving}
                         />
-                        {profileData.email !== user?.email && (
-                          <p className="text-xs text-muted-foreground">
-                            You'll receive a verification email at the new address
-                          </p>
-                        )}
                       </div>
                       
                       <div className="flex justify-end gap-3">
@@ -257,6 +318,72 @@ export default function AccountSettings() {
                           )}
                         </Button>
                       </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog open={changeEmailOpen} onOpenChange={setChangeEmailOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">
+                      <Mail className="h-4 w-4 mr-2" />
+                      Change Email Address
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle className="text-xl">Change Email Address</DialogTitle>
+                      <DialogDescription className="text-base">
+                        For security purposes, we'll send a verification link to your new email address.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleEmailChange} className="space-y-6">
+                      <div className="space-y-4 rounded-lg border p-4 bg-muted/50">
+                        <div>
+                          <Label className="text-sm font-medium text-muted-foreground">Current Email</Label>
+                          <p className="text-base font-medium mt-1">{emailData.currentEmail}</p>
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="newEmail">New Email Address</Label>
+                          <Input
+                            id="newEmail"
+                            type="email"
+                            value={emailData.newEmail}
+                            onChange={(e) => setEmailData(prev => ({ ...prev, newEmail: e.target.value }))}
+                            placeholder="Enter new email address"
+                            disabled={saving}
+                            required
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="rounded-lg border border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800 p-4">
+                        <p className="text-sm text-blue-900 dark:text-blue-100">
+                          <strong>Important:</strong> You'll receive a verification email at your new address. 
+                          Click the link in that email to complete the change. Your current email will remain 
+                          active until verification is complete.
+                        </p>
+                      </div>
+                      
+                      <DialogFooter>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setChangeEmailOpen(false)}
+                          disabled={saving}
+                        >
+                          Cancel
+                        </Button>
+                        <Button type="submit" disabled={saving}>
+                          {saving ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Sending...
+                            </>
+                          ) : (
+                            'Send Verification Email'
+                          )}
+                        </Button>
+                      </DialogFooter>
                     </form>
                   </DialogContent>
                 </Dialog>
