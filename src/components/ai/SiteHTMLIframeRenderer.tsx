@@ -317,12 +317,24 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
         }, 50);
       };
 
+      // Set a reasonable minimum height immediately to ensure visibility
+      iframe.style.height = '800px';
+      lastHeight = 800;
+      
       // Initial resize and then schedule another after scripts/styles settle
-      console.log('[SiteHTMLIframeRenderer] Starting resize sequence');
-      resize();
-      setTimeout(resize, 100);
-      setTimeout(resize, 300);
-      setTimeout(resize, 800);
+      console.log('[SiteHTMLIframeRenderer] Starting resize sequence with initial 800px');
+      setTimeout(() => {
+        console.log('[SiteHTMLIframeRenderer] Running first resize at 100ms');
+        resize();
+      }, 100);
+      setTimeout(() => {
+        console.log('[SiteHTMLIframeRenderer] Running second resize at 300ms');
+        resize();
+      }, 300);
+      setTimeout(() => {
+        console.log('[SiteHTMLIframeRenderer] Running third resize at 800ms');
+        resize();
+      }, 800);
       
       // Final stabilization check at 2 seconds
       setTimeout(() => {
@@ -409,7 +421,7 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
     <iframe
       ref={ref}
       className={className || 'w-full border-0'}
-      style={{ width: '100%', display: 'block', height: '0' }}
+      style={{ width: '100%', display: 'block', minHeight: '400px' }}
       title="Static Page Content"
       sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation"
     />
