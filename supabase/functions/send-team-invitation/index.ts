@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.74.0";
+import { wrapEmailContent } from '../_shared/email-template.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -52,7 +53,7 @@ serve(async (req) => {
     // Get company settings
     const { data: companySettings } = await supabase
       .from('company_settings')
-      .select('business_name')
+      .select('business_name, icon_url, logo_url')
       .single();
 
     const companyName = companySettings?.business_name || 'Your Company';
@@ -103,6 +104,49 @@ serve(async (req) => {
     // Build invitation link
     const inviteUrl = `${supabaseUrl.replace('https://', 'https://').split('.')[0]}.lovable.app/accept-invite?token=${inviteToken}`;
 
+    // Build email content
+    const emailContent = `
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #1f2937; font-size: 28px; margin-bottom: 10px;">You're Invited! 🎉</h1>
+      </div>
+      
+      <h2 style="color: #1f2937;">Hi ${full_name},</h2>
+      <p>${inviterName} has invited you to join <strong>${companyName}'s</strong> team.</p>
+      
+      <p style="margin-top: 20px;">You've been assigned the role of:</p>
+      <div style="display: inline-block; padding: 8px 16px; background-color: #dbeafe; color: #1e40af; border-radius: 6px; font-size: 14px; font-weight: 600; margin: 10px 0;">
+        ${role === 'admin' ? 'Administrator' : 'CRM User'}
+      </div>
+      
+      <p style="margin-top: 25px;">Click the button below to accept your invitation and set up your account:</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${inviteUrl}" class="button">Accept Invitation</a>
+      </div>
+      
+      <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
+        Or copy and paste this link into your browser:<br>
+        <a href="${inviteUrl}" style="color: #2563eb; word-break: break-all;">${inviteUrl}</a>
+      </p>
+      
+      <div style="margin-top: 30px; padding: 15px; background-color: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px;">
+        <p style="margin: 0; color: #92400e; font-weight: 600;">⏰ This invitation expires in 7 days</p>
+      </div>
+      
+      <p style="margin-top: 20px; color: #6b7280; font-size: 14px;">
+        If you have any questions, please contact ${inviterName} at ${inviter.email}
+      </p>
+      <p style="color: #6b7280; font-size: 12px;">
+        If you didn't expect this invitation, you can safely ignore this email.
+      </p>
+    `;
+
+    // Wrap content with header and footer
+    const html = wrapEmailContent(emailContent, {
+      companyName,
+      logoUrl: companySettings?.logo_url,
+      iconUrl: companySettings?.icon_url,
+    });
+
     // Send email via Resend
     const emailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -114,92 +158,7 @@ serve(async (req) => {
         from: 'Team Invitations <onboarding@resend.dev>',
         to: [email],
         subject: `You've been invited to join ${companyName}`,
-        html: `
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <style>
-                body {
-                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                  line-height: 1.6;
-                  color: #333;
-                  max-width: 600px;
-                  margin: 0 auto;
-                  padding: 20px;
-                }
-                .header {
-                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                  color: white;
-                  padding: 30px;
-                  border-radius: 8px 8px 0 0;
-                  text-align: center;
-                }
-                .content {
-                  background: #fff;
-                  padding: 30px;
-                  border: 1px solid #e5e7eb;
-                  border-top: none;
-                }
-                .button {
-                  display: inline-block;
-                  padding: 14px 28px;
-                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                  color: white;
-                  text-decoration: none;
-                  border-radius: 6px;
-                  font-weight: 600;
-                  margin: 20px 0;
-                }
-                .footer {
-                  background: #f9fafb;
-                  padding: 20px;
-                  border: 1px solid #e5e7eb;
-                  border-top: none;
-                  border-radius: 0 0 8px 8px;
-                  font-size: 14px;
-                  color: #6b7280;
-                  text-align: center;
-                }
-                .role-badge {
-                  display: inline-block;
-                  padding: 4px 12px;
-                  background: #dbeafe;
-                  color: #1e40af;
-                  border-radius: 4px;
-                  font-size: 14px;
-                  font-weight: 600;
-                  margin: 10px 0;
-                }
-              </style>
-            </head>
-            <body>
-              <div class="header">
-                <h1>You're Invited! 🎉</h1>
-              </div>
-              <div class="content">
-                <h2>Hi ${full_name},</h2>
-                <p>${inviterName} has invited you to join <strong>${companyName}'s</strong> team.</p>
-                <p>You've been assigned the role of:</p>
-                <div class="role-badge">${role === 'admin' ? 'Administrator' : 'CRM User'}</div>
-                <p>Click the button below to accept your invitation and set up your account:</p>
-                <div style="text-align: center;">
-                  <a href="${inviteUrl}" class="button">Accept Invitation</a>
-                </div>
-                <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
-                  Or copy and paste this link into your browser:<br>
-                  <a href="${inviteUrl}" style="color: #667eea; word-break: break-all;">${inviteUrl}</a>
-                </p>
-              </div>
-              <div class="footer">
-                <p><strong>⏰ This invitation expires in 7 days</strong></p>
-                <p>If you have any questions, please contact ${inviterName} at ${inviter.email}</p>
-                <p style="margin-top: 20px; font-size: 12px;">
-                  If you didn't expect this invitation, you can safely ignore this email.
-                </p>
-              </div>
-            </body>
-          </html>
-        `,
+        html,
       }),
     });
 
