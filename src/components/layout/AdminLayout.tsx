@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate, Link, useLocation, Outlet } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session } from '@supabase/supabase-js';
@@ -80,16 +80,24 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
   
   const { data: company } = useCompanySettings();
   const { data: siteSettings } = useSiteSettings();
+  
+  // Track if we're loading initial state to prevent save loops
+  const isLoadingInitialState = useRef(true);
 
   // Load saved preferences when they become available
   useEffect(() => {
     if (!prefsLoading && sidebarState) {
+      isLoadingInitialState.current = true;
       if (sidebarState.desktopCollapsed !== undefined) {
         setDesktopSidebarCollapsed(sidebarState.desktopCollapsed);
       }
       if (sidebarState.expandedSections) {
         setExpandedSections(sidebarState.expandedSections);
       }
+      // Allow saves after initial load completes
+      setTimeout(() => {
+        isLoadingInitialState.current = false;
+      }, 100);
     }
   }, [prefsLoading, sidebarState]);
 
@@ -115,17 +123,20 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
 
   // Save desktop sidebar state when it changes
   useEffect(() => {
-    if (!prefsLoading) {
+    if (!prefsLoading && !isLoadingInitialState.current) {
       saveSidebarState({ desktopCollapsed: desktopSidebarCollapsed });
     }
-  }, [desktopSidebarCollapsed]);
+  }, [desktopSidebarCollapsed, prefsLoading]);
 
-  // Save expanded sections when they change
+  // Save expanded sections when they change (with debounce to prevent loops)
   useEffect(() => {
-    if (!prefsLoading) {
-      saveSidebarState({ expandedSections });
+    if (!prefsLoading && !isLoadingInitialState.current) {
+      const timeoutId = setTimeout(() => {
+        saveSidebarState({ expandedSections });
+      }, 200);
+      return () => clearTimeout(timeoutId);
     }
-  }, [expandedSections]);
+  }, [expandedSections, prefsLoading]);
 
   const toggleSection = (sectionTitle: string) => {
     setExpandedSections(prev => ({
@@ -256,6 +267,39 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
     );
   };
 
+  // Memoize logo rendering to prevent flashing
+  const logoElement = useMemo(() => {
+    if (!company?.logo_url) return null;
+    return (
+      <LazyImage 
+        src={company.logo_url} 
+        alt={company.business_name} 
+        style={{ 
+          height: `${Math.min(siteSettings?.header_logo_size || 32, 48)}px`,
+          maxHeight: '48px'
+        }}
+        className="w-auto object-contain"
+      />
+    );
+  }, [company?.logo_url, company?.business_name, siteSettings?.header_logo_size]);
+
+  const iconElement = useMemo(() => {
+    if (!company?.icon_url) return null;
+    return (
+      <LazyImage 
+        src={company.icon_url} 
+        alt={company.business_name} 
+        style={{ 
+          height: `${Math.min(siteSettings?.header_logo_size || 32, 32)}px`,
+          width: `${Math.min(siteSettings?.header_logo_size || 32, 32)}px`,
+          maxHeight: '32px',
+          maxWidth: '32px'
+        }}
+        className="object-contain"
+      />
+    );
+  }, [company?.icon_url, company?.business_name, siteSettings?.header_logo_size]);
+
   const DesktopSidebar = () => (
     <aside 
       className={cn(
@@ -277,17 +321,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
           {!desktopSidebarCollapsed ? (
             <>
               <Link to="/" className="flex items-center gap-2">
-                {company?.logo_url ? (
-                  <LazyImage 
-                    src={company.logo_url} 
-                    alt={company.business_name} 
-                    style={{ 
-                      height: `${Math.min(siteSettings?.header_logo_size || 32, 48)}px`,
-                      maxHeight: '48px'
-                    }}
-                    className="w-auto object-contain"
-                  />
-                ) : (
+                {logoElement || (
                   <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
                     {company?.business_name || 'CRM'}
                   </span>
@@ -305,19 +339,9 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
             </>
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              {company?.icon_url && (
+              {iconElement && (
                 <Link to="/" className="flex items-center justify-center">
-                  <LazyImage 
-                    src={company.icon_url} 
-                    alt={company.business_name} 
-                    style={{ 
-                      height: `${Math.min(siteSettings?.header_logo_size || 32, 32)}px`,
-                      width: `${Math.min(siteSettings?.header_logo_size || 32, 32)}px`,
-                      maxHeight: '32px',
-                      maxWidth: '32px'
-                    }}
-                    className="object-contain"
-                  />
+                  {iconElement}
                 </Link>
               )}
             </div>
@@ -451,17 +475,7 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
             {/* Mobile Logo (shown when sidebar is hidden) */}
             {isMobile && (
               <Link to="/" className="flex items-center gap-2 md:hidden">
-                {company?.logo_url ? (
-                  <LazyImage 
-                    src={company.logo_url} 
-                    alt={company.business_name} 
-                    style={{ 
-                      height: `${Math.min(siteSettings?.header_logo_size || 32, 48)}px`,
-                      maxHeight: '48px'
-                    }}
-                    className="w-auto object-contain"
-                  />
-                ) : (
+                {logoElement || (
                   <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
                     {company?.business_name || 'CRM'}
                   </span>
