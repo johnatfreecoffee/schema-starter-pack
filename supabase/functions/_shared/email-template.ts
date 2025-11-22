@@ -13,7 +13,7 @@ export interface EmailTemplateOptions {
  */
 export function getEmailHeader(options: EmailTemplateOptions): string {
   const { companyName, logoUrl, iconUrl } = options;
-  const imageUrl = iconUrl || logoUrl; // Prefer icon for email header
+  const imageUrl = logoUrl || iconUrl; // Prefer logo for email header
   
   return `
     <div style="text-align: center; padding: 30px 20px; background-color: #f9fafb; border-bottom: 3px solid #e5e7eb;">
