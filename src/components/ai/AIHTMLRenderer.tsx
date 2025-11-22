@@ -359,6 +359,54 @@ const sanitized = sanitizeHtml(withImgFallbacks, {
           e.preventDefault();
         }
       }
+
+      // Accordion handling
+      const accordionHeader = target.closest('.accordion-header') as HTMLElement;
+      if (accordionHeader) {
+        const content = accordionHeader.nextElementSibling as HTMLElement;
+        const icon = accordionHeader.querySelector('svg');
+        const isActive = content?.classList.contains('active');
+        
+        container.querySelectorAll('.accordion-content').forEach(item => {
+          item.classList.remove('active');
+        });
+        container.querySelectorAll('.accordion-header svg').forEach(svg => {
+          (svg as SVGElement).style.transform = 'rotate(0deg)';
+        });
+        
+        if (!isActive && content) {
+          content.classList.add('active');
+          if (icon) {
+            (icon as SVGElement).style.transform = 'rotate(180deg)';
+          }
+        }
+        
+        e.preventDefault();
+        return;
+      }
+      
+      // Tab handling
+      const tabButton = target.closest('.tab-button') as HTMLElement;
+      if (tabButton) {
+        const tabId = tabButton.getAttribute('data-tab');
+        if (tabId) {
+          container.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+          });
+          container.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+          });
+          
+          tabButton.classList.add('active');
+          const targetContent = container.querySelector(`#${tabId}`);
+          if (targetContent) {
+            targetContent.classList.add('active');
+          }
+        }
+        
+        e.preventDefault();
+        return;
+      }
     };
 
     container.addEventListener('click', onClick);
