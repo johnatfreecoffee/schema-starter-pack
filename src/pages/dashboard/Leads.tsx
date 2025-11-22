@@ -31,14 +31,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { LeadStatusBadge } from '@/components/admin/leads/LeadStatusBadge';
-import { LeadFilters } from '@/components/admin/leads/LeadFilters';
 import { LeadForm } from '@/components/admin/leads/LeadForm';
 import { LeadConvert } from '@/components/admin/leads/LeadConvert';
-import { LeadAdvancedFilters } from '@/components/admin/leads/LeadAdvancedFilters';
-import { FilterPanel } from '@/components/filters/FilterPanel';
-import { FilterChips } from '@/components/filters/FilterChips';
 import { SavedViewsBar } from '@/components/filters/SavedViewsBar';
 import { useUrlFilters } from '@/hooks/useUrlFilters';
 import { supabase } from '@/integrations/supabase/client';
@@ -53,11 +56,8 @@ import {
   Edit, 
   Trash2, 
   CheckCircle, 
-  Filter,
   AlertCircle,
   Download,
-  ChevronDown,
-  ChevronRight,
   MessageSquare
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -95,8 +95,6 @@ const Leads = () => {
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
   const [services, setServices] = useState<string[]>([]);
   const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
-  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   
   // Search with debouncing
@@ -171,21 +169,24 @@ const Leads = () => {
           .select('*, service:services(id, name)');
 
         // Apply advanced filters
-        if (filters.status?.length > 0) {
-          query = query.in('status', filters.status);
+        if (filters.status && filters.status !== 'all') {
+          query = query.eq('status', filters.status);
         }
         if (filters.source) {
           query = query.eq('source', filters.source);
         }
-        if (filters.serviceId) {
-          query = query.eq('service_id', filters.serviceId);
+        if (filters.service && filters.service !== 'all') {
+          query = query.eq('service_needed', filters.service);
         }
-        if (filters.assignedTo) {
+        if (filters.assignedTo && filters.assignedTo !== 'all') {
           if (filters.assignedTo === 'unassigned') {
             query = query.is('assigned_to', null);
           } else {
             query = query.eq('assigned_to', filters.assignedTo);
           }
+        }
+        if (filters.emergencyOnly) {
+          query = query.eq('is_emergency', true);
         }
         if (filters.createdFrom) {
           query = query.gte('created_at', new Date(filters.createdFrom).toISOString());
@@ -693,19 +694,6 @@ const Leads = () => {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
-          <Button
-            variant="outline"
-            onClick={() => setFilterPanelOpen(true)}
-            className="w-full sm:w-auto min-h-[44px]"
-          >
-            <Filter className="mr-2 h-4 w-4" />
-            Filters
-            {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="ml-2">
-                {activeFilterCount}
-              </Badge>
-            )}
-          </Button>
           <ExportButton
               data={leads}
               moduleName="leads"
@@ -728,6 +716,100 @@ const Leads = () => {
         </div>
       </div>
 
+      {/* Simple Filter Bar */}
+      <Card className="p-4 mb-6">
+        <div className="flex flex-wrap gap-3 items-end">
+          {/* Search */}
+          <div className="flex-1 min-w-[200px]">
+            <Input
+              placeholder="Search by name, email, or phone..."
+              value={filters.search || ''}
+              onChange={(e) => updateFilter('search', e.target.value)}
+            />
+          </div>
+
+          {/* Status Filter */}
+          <div className="w-[180px]">
+            <Select 
+              value={filters.status || 'all'} 
+              onValueChange={(value) => updateFilter('status', value === 'all' ? null : value)}
+            >
+              <SelectTrigger className="bg-background">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-50">
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="new">New ({statusCounts.new || 0})</SelectItem>
+                <SelectItem value="contacted">Contacted ({statusCounts.contacted || 0})</SelectItem>
+                <SelectItem value="qualified">Qualified ({statusCounts.qualified || 0})</SelectItem>
+                <SelectItem value="converted">Converted ({statusCounts.converted || 0})</SelectItem>
+                <SelectItem value="lost">Lost ({statusCounts.lost || 0})</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Service Filter */}
+          <div className="w-[180px]">
+            <Select 
+              value={filters.service || 'all'} 
+              onValueChange={(value) => updateFilter('service', value === 'all' ? null : value)}
+            >
+              <SelectTrigger className="bg-background">
+                <SelectValue placeholder="Service" />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-50">
+                <SelectItem value="all">All Services</SelectItem>
+                {services.map(service => (
+                  <SelectItem key={service} value={service}>{service}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Assigned To Filter */}
+          <div className="w-[180px]">
+            <Select 
+              value={filters.assignedTo || 'all'} 
+              onValueChange={(value) => updateFilter('assignedTo', value === 'all' ? null : value)}
+            >
+              <SelectTrigger className="bg-background">
+                <SelectValue placeholder="Assigned To" />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-50">
+                <SelectItem value="all">All Users</SelectItem>
+                <SelectItem value="unassigned">Unassigned</SelectItem>
+                {users.map(user => (
+                  <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Emergency Filter */}
+          <div className="flex items-center gap-2">
+            <Checkbox 
+              id="emergency"
+              checked={filters.emergencyOnly || false}
+              onCheckedChange={(checked) => updateFilter('emergencyOnly', checked || null)}
+            />
+            <label htmlFor="emergency" className="text-sm cursor-pointer whitespace-nowrap">
+              Emergency Only
+            </label>
+          </div>
+
+          {/* Clear Filters */}
+          {activeFilterCount > 0 && (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={clearFilters}
+            >
+              Clear All
+            </Button>
+          )}
+        </div>
+      </Card>
+
 
       {/* Select All Filtered Prompt */}
       {bulkSelection.selectedCount > 0 && bulkSelection.selectedCount < totalCount && (
@@ -743,13 +825,6 @@ const Leads = () => {
           </button>
         </div>
       )}
-
-      {/* Filter Chips */}
-      <FilterChips
-        filters={filters}
-        onRemove={(key) => updateFilter(key, null)}
-        onClearAll={clearFilters}
-      />
 
       {/* Bulk Select All Banner */}
       {bulkSelection.isAllSelected && !bulkSelection.isAllMatchingSelected && totalCount > leads.length && (
@@ -776,50 +851,6 @@ const Leads = () => {
           </Card>
         ))}
       </div>
-
-      {/* Filters Section - Top */}
-      <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen} className="mb-4">
-        <Card className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Filters</h3>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="sm">
-                {isFiltersOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-              </Button>
-            </CollapsibleTrigger>
-          </div>
-          <CollapsibleContent>
-            <LeadFilters
-              onFiltersChange={setFilters}
-              statusCounts={statusCounts}
-              services={services}
-              users={users}
-            />
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
-
-      {/* Mobile Filter Sheet */}
-      <Sheet>
-        <SheetTrigger asChild className="lg:hidden fixed bottom-20 right-4 z-50">
-          <Button variant="outline" size="icon" className="h-12 w-12 rounded-full shadow-lg">
-            <Filter className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left">
-          <SheetHeader>
-            <SheetTitle>Filters</SheetTitle>
-          </SheetHeader>
-          <div className="mt-4">
-            <LeadFilters
-              onFiltersChange={setFilters}
-              statusCounts={statusCounts}
-              services={services}
-              users={users}
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
 
       {/* Leads Table */}
       <div className="w-full min-w-0">
@@ -1109,20 +1140,6 @@ const Leads = () => {
         lead={convertingLead}
       />
     )}
-
-    {/* Advanced Filter Panel */}
-    <FilterPanel
-      open={filterPanelOpen}
-      onClose={() => setFilterPanelOpen(false)}
-      title="Filter Leads"
-      onClearAll={clearFilters}
-    >
-      <LeadAdvancedFilters
-        values={filters}
-        onChange={updateFilter}
-        users={users}
-      />
-    </FilterPanel>
 
     {/* Bulk Actions Bar */}
     <BulkActionsBar
