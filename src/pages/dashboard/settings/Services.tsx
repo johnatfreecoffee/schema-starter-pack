@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -20,7 +21,7 @@ const ServicesSettings = () => {
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [showArchived, setShowArchived] = useState(false);
+  const [archiveTab, setArchiveTab] = useState<'active' | 'archived'>('active');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
@@ -29,21 +30,16 @@ const ServicesSettings = () => {
   const queryClient = useQueryClient();
 
   const { data: services, isLoading } = useQuery({
-    queryKey: ['services', showArchived],
+    queryKey: ['services'],
     queryFn: async () => {
-      let query = supabase
+      const query = supabase
         .from('services')
         .select(`
           *,
           templates:template_id (name, template_type),
           generated_pages (count)
-        `);
-      
-      if (!showArchived) {
-        query = query.eq('archived', false);
-      }
-      
-      query = query.order('name', { ascending: true });
+        `)
+        .order('name', { ascending: true });
       
       const { data, error } = await query;
       if (error) throw error;
@@ -144,6 +140,10 @@ const ServicesSettings = () => {
   };
 
   const filteredServices = services?.filter(service => {
+    // Filter by archive tab
+    if (archiveTab === 'active' && service.archived) return false;
+    if (archiveTab === 'archived' && !service.archived) return false;
+    
     if (categoryFilter !== 'all' && service.category !== categoryFilter) return false;
     if (searchQuery && !service.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
@@ -160,6 +160,13 @@ const ServicesSettings = () => {
         </div>
 
         <div className="flex gap-4 mb-6 flex-wrap">
+          <Tabs value={archiveTab} onValueChange={(value) => setArchiveTab(value as 'active' | 'archived')}>
+            <TabsList>
+              <TabsTrigger value="active">Active</TabsTrigger>
+              <TabsTrigger value="archived">Archived</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
           <div className="flex gap-2">
             <Button
               variant={viewMode === 'table' ? 'default' : 'outline'}
@@ -188,14 +195,6 @@ const ServicesSettings = () => {
               <SelectItem value="Granular Services">Granular Services</SelectItem>
             </SelectContent>
           </Select>
-
-          <Button
-            variant={showArchived ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setShowArchived(!showArchived)}
-          >
-            {showArchived ? 'Hide Archived' : 'Show Archived'}
-          </Button>
 
           <Input
             placeholder="Search services..."
