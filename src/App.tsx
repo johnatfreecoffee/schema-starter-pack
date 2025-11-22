@@ -7,6 +7,7 @@ import { GlobalLeadFormModal } from "@/components/lead-form/GlobalLeadFormModal"
 import { useCacheWarming } from "@/hooks/useCacheWarming";
 import { PageLoadingSkeleton } from "@/components/ui/page-loading-skeleton";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { IOSInstallPrompt } from "@/components/pwa/IOSInstallPrompt";
 import AdminLayout from "./components/layout/AdminLayout";
 import CustomerLayout from "./components/layout/CustomerLayout";
 import PublicLayout from "./components/layout/PublicLayout";
@@ -39,6 +40,7 @@ const AppContent = () => {
       <Toaster />
       <Sonner />
       <GlobalLeadFormModal />
+      <IOSInstallPrompt />
       <Routes>
           {/* Public Routes */}
           <Route element={<PublicLayout />}>
