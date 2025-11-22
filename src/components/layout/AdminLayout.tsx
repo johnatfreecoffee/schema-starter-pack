@@ -163,6 +163,39 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  // Memoize logo rendering to prevent flashing (must be before any conditional returns)
+  const logoElement = useMemo(() => {
+    if (!company?.logo_url) return null;
+    return (
+      <LazyImage 
+        src={company.logo_url} 
+        alt={company.business_name || 'Logo'} 
+        style={{ 
+          height: `${Math.min(siteSettings?.header_logo_size || 32, 48)}px`,
+          maxHeight: '48px'
+        }}
+        className="w-auto object-contain"
+      />
+    );
+  }, [company?.logo_url, company?.business_name, siteSettings?.header_logo_size]);
+
+  const iconElement = useMemo(() => {
+    if (!company?.icon_url) return null;
+    return (
+      <LazyImage 
+        src={company.icon_url} 
+        alt={company.business_name || 'Icon'} 
+        style={{ 
+          height: `${Math.min(siteSettings?.header_logo_size || 32, 32)}px`,
+          width: `${Math.min(siteSettings?.header_logo_size || 32, 32)}px`,
+          maxHeight: '32px',
+          maxWidth: '32px'
+        }}
+        className="object-contain"
+      />
+    );
+  }, [company?.icon_url, company?.business_name, siteSettings?.header_logo_size]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -266,39 +299,6 @@ const AdminLayout = ({ children }: AdminLayoutProps = {}) => {
       </Link>
     );
   };
-
-  // Memoize logo rendering to prevent flashing
-  const logoElement = useMemo(() => {
-    if (!company?.logo_url) return null;
-    return (
-      <LazyImage 
-        src={company.logo_url} 
-        alt={company.business_name} 
-        style={{ 
-          height: `${Math.min(siteSettings?.header_logo_size || 32, 48)}px`,
-          maxHeight: '48px'
-        }}
-        className="w-auto object-contain"
-      />
-    );
-  }, [company?.logo_url, company?.business_name, siteSettings?.header_logo_size]);
-
-  const iconElement = useMemo(() => {
-    if (!company?.icon_url) return null;
-    return (
-      <LazyImage 
-        src={company.icon_url} 
-        alt={company.business_name} 
-        style={{ 
-          height: `${Math.min(siteSettings?.header_logo_size || 32, 32)}px`,
-          width: `${Math.min(siteSettings?.header_logo_size || 32, 32)}px`,
-          maxHeight: '32px',
-          maxWidth: '32px'
-        }}
-        className="object-contain"
-      />
-    );
-  }, [company?.icon_url, company?.business_name, siteSettings?.header_logo_size]);
 
   const DesktopSidebar = () => (
     <aside 
