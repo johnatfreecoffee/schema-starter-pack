@@ -728,12 +728,6 @@ const Leads = () => {
         </div>
       </div>
 
-      {/* Mobile Action Button */}
-      <MobileActionButton
-        onClick={() => setShowCreateForm(true)}
-        icon={<Plus className="h-5 w-5" />}
-        label="Create New Lead"
-      />
 
       {/* Select All Filtered Prompt */}
       {bulkSelection.selectedCount > 0 && bulkSelection.selectedCount < totalCount && (
