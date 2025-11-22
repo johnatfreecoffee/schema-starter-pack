@@ -110,6 +110,7 @@ const AppContent = () => {
             <Route path="tickets" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Tickets /></Suspense>} />
             <Route path="tickets/new" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.TicketNew /></Suspense>} />
             <Route path="tickets/:id" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.TicketDetail /></Suspense>} />
+            <Route path="settings/account" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.AccountSettings /></Suspense>} />
             <Route path="settings/company" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.Company /></Suspense>} />
             <Route path="settings/ai-training" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.AITraining /></Suspense>} />
             <Route path="settings/site-settings" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.SiteSettings /></Suspense>} />

@@ -62,7 +62,7 @@ export const UserMenu = ({ userEmail }: UserMenuProps) => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate('/dashboard/settings')}>
+        <DropdownMenuItem onClick={() => navigate('/dashboard/settings/account')}>
           <Settings className="mr-2 h-4 w-4" />
           <span>Account Settings</span>
         </DropdownMenuItem>
