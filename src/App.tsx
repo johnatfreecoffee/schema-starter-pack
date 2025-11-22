@@ -58,6 +58,9 @@ const AppContent = () => {
             <Route path="/:slug" element={<StaticPage />} />
           </Route>
           
+          {/* Email verification route - outside layouts */}
+          <Route path="/verify-email" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.VerifyEmail /></Suspense>} />
+          
           {/* Customer Portal Routes - Lazy loaded */}
           <Route path="/customer/login" element={<Suspense fallback={<PageLoadingSkeleton />}><LazyRoutes.CustomerAuth /></Suspense>} />
           <Route path="/customer" element={<CustomerLayout />}>

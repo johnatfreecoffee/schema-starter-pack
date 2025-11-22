@@ -90,3 +90,6 @@ export const CustomerSubmitTicket = lazy(() => import('@/pages/customer/Customer
 export const CustomerProfile = lazy(() => import('@/pages/customer/CustomerProfile'));
 export const CustomerSubmitReview = lazy(() => import('@/pages/customer/CustomerSubmitReview'));
 export const CustomerMyReviews = lazy(() => import('@/pages/customer/CustomerMyReviews'));
+
+// Email verification
+export const VerifyEmail = lazy(() => import('@/pages/VerifyEmail'));
