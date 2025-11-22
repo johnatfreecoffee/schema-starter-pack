@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { User, Mail, Lock, Loader2, Edit } from 'lucide-react';
+import { User, Mail, Lock, Loader2, Edit, Upload } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Dialog,
@@ -32,6 +32,9 @@ export default function AccountSettings() {
     phone: '',
     avatarUrl: '',
   });
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Email Change Dialog State
   const [emailData, setEmailData] = useState({
@@ -70,6 +73,7 @@ export default function AccountSettings() {
         phone: profileData?.phone || '',
         avatarUrl: profileData?.avatar_url || '',
       });
+      setAvatarPreview(profileData?.avatar_url || '');
       setEmailData({
         currentEmail: currentUser.email || '',
         newEmail: '',
@@ -82,12 +86,74 @@ export default function AccountSettings() {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select an image file');
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error('Image must be less than 2MB');
+        return;
+      }
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!profileData.firstName.trim()) {
+      toast.error('First name is required');
+      return;
+    }
+    if (!profileData.lastName.trim()) {
+      toast.error('Last name is required');
+      return;
+    }
+    if (!profileData.phone.trim()) {
+      toast.error('Phone number is required');
+      return;
+    }
+    
     setSaving(true);
 
     try {
       if (!user) return;
+
+      let avatarUrl = profileData.avatarUrl;
+
+      // Upload new avatar if file selected
+      if (avatarFile) {
+        // Delete old avatar if exists
+        if (profileData.avatarUrl) {
+          const oldPath = profileData.avatarUrl.split('/').pop();
+          if (oldPath) {
+            await supabase.storage.from('avatars').remove([`${user.id}/${oldPath}`]);
+          }
+        }
+
+        // Upload new avatar
+        const fileExt = avatarFile.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const filePath = `${user.id}/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, avatarFile);
+
+        if (uploadError) throw uploadError;
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
+
+        avatarUrl = publicUrl;
+      }
 
       // Update profile information
       const { error: profileError } = await supabase
@@ -96,7 +162,7 @@ export default function AccountSettings() {
           first_name: profileData.firstName,
           last_name: profileData.lastName,
           phone: profileData.phone,
-          avatar_url: profileData.avatarUrl,
+          avatar_url: avatarUrl,
         })
         .eq('id', user.id);
 
@@ -104,6 +170,7 @@ export default function AccountSettings() {
 
       toast.success('Profile updated successfully');
       setUpdateProfileOpen(false);
+      setAvatarFile(null);
       await fetchUserData();
     } catch (error: any) {
       console.error('Error updating profile:', error);
@@ -241,29 +308,42 @@ export default function AccountSettings() {
                       </DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleProfileUpdate} className="space-y-4">
-                      <div className="flex justify-center">
+                      <div className="flex flex-col items-center gap-4">
                         <Avatar className="h-24 w-24">
-                          <AvatarImage src={profileData.avatarUrl} />
+                          <AvatarImage src={avatarPreview || profileData.avatarUrl} />
                           <AvatarFallback className="text-2xl">
                             {profileData.firstName?.[0]}{profileData.lastName?.[0]}
                           </AvatarFallback>
                         </Avatar>
-                      </div>
-                      
-                      <div className="grid gap-2">
-                        <Label htmlFor="avatarUrl">Profile Picture URL</Label>
-                        <Input
-                          id="avatarUrl"
-                          value={profileData.avatarUrl}
-                          onChange={(e) => setProfileData(prev => ({ ...prev, avatarUrl: e.target.value }))}
-                          placeholder="Enter image URL"
-                          disabled={saving}
-                        />
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={saving}
+                          >
+                            <Upload className="h-4 w-4 mr-2" />
+                            Upload Photo
+                          </Button>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          JPG, PNG or GIF. Max 2MB.
+                        </p>
                       </div>
                       
                       <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="firstName">First Name</Label>
+                          <Label htmlFor="firstName">
+                            First Name <span className="text-destructive">*</span>
+                          </Label>
                           <Input
                             id="firstName"
                             value={profileData.firstName}
@@ -274,7 +354,9 @@ export default function AccountSettings() {
                           />
                         </div>
                         <div className="grid gap-2">
-                          <Label htmlFor="lastName">Last Name</Label>
+                          <Label htmlFor="lastName">
+                            Last Name <span className="text-destructive">*</span>
+                          </Label>
                           <Input
                             id="lastName"
                             value={profileData.lastName}
@@ -287,7 +369,9 @@ export default function AccountSettings() {
                       </div>
                       
                       <div className="grid gap-2">
-                        <Label htmlFor="phone">Phone Number</Label>
+                        <Label htmlFor="phone">
+                          Phone Number <span className="text-destructive">*</span>
+                        </Label>
                         <Input
                           id="phone"
                           type="tel"
@@ -295,6 +379,7 @@ export default function AccountSettings() {
                           onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
                           placeholder="Enter your phone number"
                           disabled={saving}
+                          required
                         />
                       </div>
                       
