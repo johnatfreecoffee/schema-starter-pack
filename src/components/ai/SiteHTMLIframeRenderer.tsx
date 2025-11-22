@@ -166,6 +166,58 @@ const SiteHTMLIframeRenderer: React.FC<SiteHTMLIframeRendererProps> = ({ html, c
             return;
           }
         }
+
+        // Accordion click handling
+        const accordionHeader = target.closest('.accordion-header') as HTMLElement;
+        if (accordionHeader) {
+          const content = accordionHeader.nextElementSibling as HTMLElement;
+          const icon = accordionHeader.querySelector('svg');
+          const isActive = content?.classList.contains('active');
+          
+          // Close all accordions
+          doc.querySelectorAll('.accordion-content').forEach(item => {
+            item.classList.remove('active');
+          });
+          doc.querySelectorAll('.accordion-header svg').forEach(svg => {
+            (svg as SVGElement).style.transform = 'rotate(0deg)';
+          });
+          
+          // Open clicked accordion if it wasn't active
+          if (!isActive && content) {
+            content.classList.add('active');
+            if (icon) {
+              (icon as SVGElement).style.transform = 'rotate(180deg)';
+            }
+          }
+          
+          e.preventDefault();
+          return;
+        }
+
+        // Tab click handling (for templates with tabs)
+        const tabButton = target.closest('.tab-button') as HTMLElement;
+        if (tabButton) {
+          const tabId = tabButton.getAttribute('data-tab');
+          if (tabId) {
+            // Remove active from all tabs
+            doc.querySelectorAll('.tab-button').forEach(btn => {
+              btn.classList.remove('active');
+            });
+            doc.querySelectorAll('.tab-content').forEach(content => {
+              content.classList.remove('active');
+            });
+            
+            // Add active to clicked tab
+            tabButton.classList.add('active');
+            const targetContent = doc.getElementById(tabId);
+            if (targetContent) {
+              targetContent.classList.add('active');
+            }
+          }
+          
+          e.preventDefault();
+          return;
+        }
       };
 
       // Attach click listener AFTER iframe content loads
