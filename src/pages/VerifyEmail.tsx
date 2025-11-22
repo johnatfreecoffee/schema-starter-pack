@@ -31,6 +31,9 @@ export default function VerifyEmail() {
         if (error) throw error;
 
         if (data.success) {
+          // Refresh the user's session to get the updated email
+          await supabase.auth.refreshSession();
+          
           setStatus('success');
           setMessage('Your email has been successfully updated!');
           setNewEmail(data.newEmail);
