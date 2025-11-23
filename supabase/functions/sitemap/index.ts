@@ -32,6 +32,15 @@ serve(async (req) => {
     
     console.log('Static pages found:', staticPages?.length, staticError);
 
+    // Fetch all active services for service overview pages
+    console.log('Fetching services...');
+    const { data: services, error: servicesError } = await supabase
+      .from('services')
+      .select('id, slug, updated_at')
+      .eq('status', true);
+    
+    console.log('Services found:', services?.length, servicesError);
+
     // Fetch all active generated pages
     console.log('Fetching generated pages...');
     const { data: generatedPages, error: generatedError } = await supabase
@@ -81,6 +90,25 @@ serve(async (req) => {
       }
     }
     
+    // Add service overview pages with proper formatting
+    if (services && services.length > 0) {
+      for (const service of services) {
+        const seoData = seoPages?.find(
+          (s: any) => s.page_type === 'service' && s.page_id === service.id
+        );
+        const priority = seoData?.priority || 0.75;
+        const changefreq = seoData?.change_frequency || 'monthly';
+        const lastmod = service.updated_at ? new Date(service.updated_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+        
+        xml += `  <url>
+    <loc>${baseUrl}/services/${service.slug}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
+  </url>\n`;
+      }
+    }
+    
     // Add generated service pages with proper formatting
     if (generatedPages && generatedPages.length > 0) {
       for (const page of generatedPages) {
@@ -100,7 +128,7 @@ serve(async (req) => {
       }
     }
     
-    console.log(`Generated sitemap with ${(staticPages?.length || 0) + (generatedPages?.length || 0) + 1} URLs`);
+    console.log(`Generated sitemap with ${(staticPages?.length || 0) + (services?.length || 0) + (generatedPages?.length || 0) + 1} URLs`);
     
     xml += '</urlset>';
     
