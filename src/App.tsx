@@ -26,6 +26,8 @@ import ReviewsPage from "./pages/Reviews";
 import UpdateCommercialTemplate from "./pages/UpdateCommercialTemplate";
 import BulkTemplateUpdater from "./pages/BulkTemplateUpdater";
 import { AIEditorStaticPage, AIEditorServicePage } from "./pages/dashboard/AIEditorPage";
+import Sitemap from "./pages/Sitemap";
+import Robots from "./pages/Robots";
 
 // Lazy load heavy dashboard pages for better initial load time
 import * as LazyRoutes from './lib/lazyRoutes';
@@ -42,6 +44,10 @@ const AppContent = () => {
       <GlobalLeadFormModal />
       <IOSInstallPrompt />
       <Routes>
+          {/* SEO Routes - Must be first to avoid layout wrappers */}
+          <Route path="/sitemap.xml" element={<Sitemap />} />
+          <Route path="/robots.txt" element={<Robots />} />
+          
           {/* Public Routes */}
           <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
