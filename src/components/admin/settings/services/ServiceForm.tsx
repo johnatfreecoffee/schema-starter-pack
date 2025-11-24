@@ -17,7 +17,7 @@ const formSchema = z.object({
   name: z.string().min(1, 'Service name is required').max(100),
   slug: z.string().min(1, 'Slug is required').regex(/^[a-z0-9-]+$/, 'Slug must be lowercase with hyphens'),
   category: z.enum(['Authority Hub', 'Emergency Services', 'Granular Services']),
-  full_description: z.string().min(10).max(2000),
+  full_description: z.string().max(2000).optional(),
   is_active: z.boolean().default(true),
 });
 
@@ -359,7 +359,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
           name="full_description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Full Description</FormLabel>
+              <FormLabel>Full Description (Optional)</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
