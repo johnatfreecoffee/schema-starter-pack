@@ -1,17 +1,17 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
+# Robots.txt for ClearHome.pro
+# Generated: 2025-11-24T21:59:37.930Z
 
 User-agent: *
 Allow: /
 
+# Sitemaps
 Sitemap: https://clearhome.pro/sitemap.xml
 
+# Disallow admin areas
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /customer/login
+Disallow: /auth
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1

@@ -11,6 +11,7 @@ import AIHTMLRenderer from '@/components/ai/AIHTMLRenderer';
 import SiteHTMLIframeRenderer from '@/components/ai/SiteHTMLIframeRenderer';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { LocalBusinessSchema } from '@/components/seo/LocalBusinessSchema';
+import { BreadcrumbSchema } from '@/components/seo/BreadcrumbSchema';
 
 const GeneratedPage = () => {
   const { citySlug, serviceSlug } = useParams<{ citySlug: string; serviceSlug: string }>();
@@ -87,7 +88,15 @@ const GeneratedPage = () => {
   );
 
   const canonicalUrl = `${window.location.origin}${pageData.url_path}`;
-  
+
+  // Build breadcrumb trail for schema
+  const breadcrumbs = [
+    { name: 'Home', url: window.location.origin },
+    { name: 'Services', url: `${window.location.origin}/services` },
+    { name: pageData.service_name || serviceSlug, url: `${window.location.origin}/services/${serviceSlug}` },
+    { name: pageData.city_name || citySlug, url: canonicalUrl },
+  ];
+
   // Check if content needs iframe rendering (full HTML document)
   const needsIframe = processedContent && (
     processedContent.includes('<!DOCTYPE') || processedContent.includes('<html')
@@ -109,14 +118,20 @@ const GeneratedPage = () => {
         twitterImage={company?.logo_url}
       />
 
+      {/* Breadcrumb Schema */}
+      <BreadcrumbSchema items={breadcrumbs} />
+
       {company && (
         <LocalBusinessSchema
           businessName={company.business_name}
-          description={company.description || ''}
+          description={pageData.meta_description || company.description || ''}
           address={company.address}
+          city={pageData.city_name}
+          state="LA"
+          zip={company.zip_code}
           phone={company.phone}
           email={company.email}
-          url={window.location.origin}
+          url={canonicalUrl}
           logo={company.logo_url || ''}
           serviceArea={[pageData.city_name]}
           services={[pageData.service_name]}
