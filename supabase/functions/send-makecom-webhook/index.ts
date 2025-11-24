@@ -994,6 +994,7 @@ serve(async (req) => {
       userPrompt, 
       supabaseData,
       includeImages = false,
+      needsResearch = false,
       serviceInstructions, // Optional: MD instructions for service pages
       systemRevisionInstructions, // Optional: Modernization instructions for service pages
       useTestWebhook = true // Default to test webhook
@@ -1173,7 +1174,8 @@ Before finalizing copy, mentally remove ALL city/area variables and read it thro
             pageId: supabaseData?.pageId || "",
             pageRowId: supabaseData?.pageRowId || "",
             field: supabaseData?.field || "",
-            includeImages: includeImages
+            includeImages: includeImages,
+            needsResearch: needsResearch
           },
           output_tokens: 150000
         }
@@ -1189,6 +1191,8 @@ Before finalizing copy, mentally remove ALL city/area variables and read it thro
       hasSystemInstructions: !!systemInstructions,
       hasServiceInstructions: !!serviceInstructions,
       hasSystemRevisionInstructions: !!systemRevisionInstructions,
+      includeImages,
+      needsResearch,
       supabaseData,
       timestamp: new Date().toISOString()
     });
