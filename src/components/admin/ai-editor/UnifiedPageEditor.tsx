@@ -36,7 +36,7 @@ interface UnifiedPageEditorProps {
   fullScreen?: boolean; // New prop to disable Dialog wrapper
 }
 interface ChatMessage {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
   suggestion?: string;
 }
@@ -1893,6 +1893,13 @@ Return the modernized instructions maintaining the EXACT same structure and form
             description: "Your page is being processed",
           });
           
+          // Add system message about wait time
+          const systemMessage: ChatMessage = {
+            role: 'system',
+            content: '⏳ **Please wait 15-30 minutes for your page to be built.**\n\nYour page will automatically appear in the preview when ready. You can leave this screen and return later, or stay here and continue working. We\'ll notify you when the build is complete.'
+          };
+          setChatMessages(prev => [...prev, systemMessage]);
+          
           setDebugData({
             fullPrompt: `AI Builder request sent successfully`,
             requestPayload: {
@@ -2790,7 +2797,11 @@ Return the modernized instructions maintaining the EXACT same structure and form
                         <li>Build a beautiful hero section</li>
                       </ul>
                     </div>
-                  </div> : chatMessages.map((msg, idx) => <div key={idx} className={`p-3 rounded-lg max-w-full overflow-hidden break-words ${msg.role === 'user' ? 'bg-primary text-primary-foreground ml-8' : 'bg-muted mr-8'}`}>
+                  </div> : chatMessages.map((msg, idx) => <div key={idx} className={`p-3 rounded-lg max-w-full overflow-hidden break-words ${
+                      msg.role === 'user' ? 'bg-primary text-primary-foreground ml-8' : 
+                      msg.role === 'system' ? 'bg-blue-500/10 border border-blue-500/20 mx-4' : 
+                      'bg-muted mr-8'
+                    }`}>
                       <TruncatedMessage content={msg.content} isUser={msg.role === 'user'} />
                     </div>)}
                 {isAiLoading && (
