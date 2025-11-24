@@ -17,8 +17,8 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get the base URL from the request
-    const baseUrl = new URL(req.url).origin;
+    // Use production domain for sitemap reference
+    const baseUrl = 'https://clearhome.pro';
 
     // Fetch robots.txt content from settings
     const { data: settings } = await supabaseClient
