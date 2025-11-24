@@ -182,10 +182,14 @@ const Home = () => {
           businessName={companySettings?.business_name || ''}
           description={companySettings?.description}
           address={companySettings?.address}
+          city={companySettings?.address_city}
+          state={companySettings?.address_state}
+          zip={companySettings?.address_zip}
           phone={companySettings?.phone}
           email={companySettings?.email}
           url={window.location.origin}
           logo={companySettings?.logo_url}
+          serviceArea={serviceAreasData?.map(area => area.city_name || area.area_name).filter(Boolean)}
         />
         {needsIframe ? (
           <SiteHTMLIframeRenderer html={renderedContent} />

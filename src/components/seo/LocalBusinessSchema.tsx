@@ -39,11 +39,16 @@ export const LocalBusinessSchema = ({
   useEffect(() => {
     const schema = {
       '@context': 'https://schema.org',
-      '@type': 'LocalBusiness',
+      '@type': ['LocalBusiness', 'RoofingContractor', 'Contractor'],
       name: businessName,
       ...(description && { description }),
       ...(url && { url }),
-      ...(logo && { logo }),
+      ...(logo && {
+        logo: {
+          '@type': 'ImageObject',
+          url: logo,
+        }
+      }),
       ...(priceRange && { priceRange }),
       ...(address && {
         address: {
@@ -57,6 +62,9 @@ export const LocalBusinessSchema = ({
       }),
       ...(phone && { telephone: phone }),
       ...(email && { email }),
+      ...(url && {
+        sameAs: [url],
+      }),
       ...(serviceArea && serviceArea.length > 0 && {
         areaServed: serviceArea.map((area) => ({
           '@type': 'City',
@@ -86,6 +94,20 @@ export const LocalBusinessSchema = ({
           })),
         },
       }),
+      openingHoursSpecification: [
+        {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+          opens: '08:00',
+          closes: '17:00',
+        },
+        {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: 'Saturday',
+          opens: '09:00',
+          closes: '15:00',
+        },
+      ],
     };
 
     const scriptId = 'local-business-schema';
