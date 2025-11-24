@@ -18,6 +18,7 @@ const formSchema = z.object({
   slug: z.string().min(1, 'Slug is required').regex(/^[a-z0-9-]+$/, 'Slug must be lowercase with hyphens'),
   category: z.enum(['Authority Hub', 'Emergency Services', 'Granular Services']),
   full_description: z.string().max(2000).optional(),
+  starting_price: z.number().optional(),
   is_active: z.boolean().default(true),
 });
 
@@ -37,6 +38,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
       slug: service?.slug || '',
       category: service?.category || 'Granular Services',
       full_description: service?.full_description || '',
+      starting_price: service?.starting_price || undefined,
       is_active: service?.is_active !== undefined ? service.is_active : true,
     },
   });
@@ -48,6 +50,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         slug: service.slug,
         category: service.category,
         full_description: service.full_description,
+        starting_price: service.starting_price || undefined,
         is_active: service.is_active !== undefined ? service.is_active : true,
       });
       setDescriptionLength(service.full_description?.length || 0);
@@ -134,6 +137,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         slug: values.slug,
         category: values.category,
         full_description: values.full_description,
+        starting_price: values.starting_price,
         is_active: values.is_active,
         template_id: template.id,
       };
@@ -221,6 +225,7 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
         slug: values.slug,
         category: values.category,
         full_description: values.full_description,
+        starting_price: values.starting_price,
         is_active: values.is_active,
       };
 
@@ -372,6 +377,27 @@ export default function ServiceForm({ service, onSuccess }: ServiceFormProps) {
                 />
               </FormControl>
               <FormDescription>{descriptionLength} / 2000 characters</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="starting_price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Starting Price (Optional)</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  type="number"
+                  placeholder="e.g., 150"
+                  value={field.value ?? ''}
+                  onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                />
+              </FormControl>
+              <FormDescription>Enter the starting price for this service</FormDescription>
               <FormMessage />
             </FormItem>
           )}
