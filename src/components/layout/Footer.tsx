@@ -58,6 +58,7 @@ const Footer = () => {
         .from('services')
         .select('id, name, slug')
         .eq('is_active', true)
+        .eq('archived', false)
         .order('name');
       if (error) throw error;
       return data || [];

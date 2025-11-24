@@ -237,6 +237,18 @@ serve(async (req) => {
 
       page = generatedPage;
 
+      // Check if service is archived
+      if (page.service?.archived === true || page.service?.is_active === false) {
+        console.error('Service is archived or inactive');
+        return new Response(
+          `<html><body><h1>404 - Page Not Found</h1><p>This service is no longer available.</p></body></html>`,
+          {
+            status: 404,
+            headers: { ...corsHeaders, 'Content-Type': 'text/html' },
+          }
+        );
+      }
+
       console.log('City-specific page found:', {
         urlPath: page.url_path,
         serviceAreaId: page.service_area_id,
@@ -264,6 +276,7 @@ serve(async (req) => {
         `)
         .eq('slug', serviceSlug)
         .eq('is_active', true)
+        .eq('archived', false)
         .single();
 
       if (serviceErr || !serviceData) {

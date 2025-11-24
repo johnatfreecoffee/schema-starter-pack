@@ -56,10 +56,12 @@ const Services = () => {
   async function loadServicesWithReviews() {
     setLoading(true);
     
-    // Fetch all services
+    // Fetch all active, non-archived services
     const { data: servicesData } = await supabase
       .from('services')
       .select('*')
+      .eq('is_active', true)
+      .eq('archived', false)
       .order('name');
 
     if (servicesData) {
