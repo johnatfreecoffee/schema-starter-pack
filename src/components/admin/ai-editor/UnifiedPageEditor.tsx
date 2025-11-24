@@ -169,6 +169,7 @@ const UnifiedPageEditor = ({
   const [editorMode, setEditorMode] = useState<EditorMode>(aiEditorPreferences.editorMode || 'build');
   const [aiMode, setAiMode] = useState<AIMode>('build');
   const [includeImages, setIncludeImages] = useState(false);
+  const [needsResearch, setNeedsResearch] = useState(false);
   const [pageUrl, setPageUrl] = useState<string>('');
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [tokenCount, setTokenCount] = useState(0);
@@ -1804,7 +1805,8 @@ You're building a TEMPLATE ENGINE, not a static website:
             systemInstructions,
             userPrompt: currentCommand,
             supabaseData,
-            includeImages
+            includeImages,
+            needsResearch
           };
           
           // Add service-specific MD instructions if this is a service page
@@ -2720,6 +2722,26 @@ Return the modernized instructions maintaining the EXACT same structure and form
                       className="data-[state=checked]:bg-primary scale-75"
                     />
                   </div>
+
+                  <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">
+                    <Label htmlFor="needs-research" className="text-[10px] font-medium cursor-pointer">
+                      AI Research: {needsResearch ? '🔍 On' : '✏️ Off'}
+                    </Label>
+                    <Switch
+                      id="needs-research"
+                      checked={needsResearch}
+                      onCheckedChange={setNeedsResearch}
+                      className="data-[state=checked]:bg-primary scale-75"
+                    />
+                  </div>
+                  
+                  {needsResearch && (
+                    <div className="p-1.5 bg-blue-500/10 border border-blue-500/20 rounded">
+                      <p className="text-[10px] text-blue-700 dark:text-blue-400">
+                        💡 AI will research your topic and build a detailed page
+                      </p>
+                    </div>
+                  )}
 
                   <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">
                     <Label htmlFor="use-test-webhook" className="text-[10px] font-medium cursor-pointer">
