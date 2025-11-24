@@ -17,9 +17,8 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get the base URL from the request
-    const url = new URL(req.url);
-    const baseUrl = `${url.protocol}//${url.host}`;
+    // Use production domain for all sitemap URLs
+    const baseUrl = 'https://clearhome.pro';
     
     console.log('Generating sitemap for:', baseUrl);
 
