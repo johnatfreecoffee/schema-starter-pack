@@ -438,6 +438,12 @@ serve(async (req) => {
         localizedContent = locContent;
       }
 
+      // Generate dynamic meta description for service overview page
+      const serviceOverviewMetaDesc = serviceData.template?.meta_description || 
+        (serviceData.short_description 
+          ? `Professional ${serviceData.name} in Greater New Orleans. ${serviceData.short_description}`
+          : '');
+
       // Create a page object with default area data
       page = {
         service_id: serviceData.id,
@@ -454,7 +460,7 @@ serve(async (req) => {
         needs_regeneration: false,
         url_path: urlPath,
         page_title: `${serviceData.name} | Professional Service`,
-        meta_description: serviceData.full_description?.substring(0, 160) || ''
+        meta_description: serviceOverviewMetaDesc
       };
     }
 
@@ -583,7 +589,25 @@ serve(async (req) => {
 
       // Page meta
       page_title: localizedContent?.meta_title_override || page.page_title,
-      meta_description: localizedContent?.meta_description_override || page.meta_description || '',
+      meta_description: (() => {
+        // Priority 1: Override from service_area_services
+        if (localizedContent?.meta_description_override) {
+          return localizedContent.meta_description_override;
+        }
+        
+        // Priority 2: Custom from templates table
+        if (page.service?.template?.meta_description) {
+          return page.service.template.meta_description;
+        }
+        
+        // Priority 3: Dynamic generation for city-specific pages
+        if (page.service_area?.city_name && page.service?.short_description) {
+          return `Professional ${page.service.name} services in ${page.service_area.city_name}, Louisiana. ${page.service.short_description}`;
+        }
+        
+        // Priority 4: Fallback to existing or empty
+        return page.meta_description || '';
+      })(),
       url_path: page.url_path,
     };
     
