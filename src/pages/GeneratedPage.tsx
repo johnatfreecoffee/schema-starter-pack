@@ -128,7 +128,7 @@ const GeneratedPage = () => {
           address={company.address}
           city={pageData.city_name}
           state="LA"
-          zip={company.zip_code}
+          zip={company.address_zip}
           phone={company.phone}
           email={company.email}
           url={canonicalUrl}

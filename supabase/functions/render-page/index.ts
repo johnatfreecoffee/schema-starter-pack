@@ -100,48 +100,177 @@ function renderBreadcrumbs(pageData: PageData): string {
 }
 
 function wrapWithLayout(contentHtml: string, pageData: PageData): string {
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>${pageData.page_title}</title>
-      <meta name="description" content="${pageData.meta_description}">
-      
-      <!-- Open Graph / Facebook -->
-      <meta property="og:type" content="website">
-      <meta property="og:url" content="https://yoursite.com${pageData.url_path}">
-      <meta property="og:title" content="${pageData.page_title}">
-      <meta property="og:description" content="${pageData.meta_description}">
-      
-      <!-- Twitter -->
-      <meta name="twitter:card" content="summary_large_image">
-      <meta name="twitter:title" content="${pageData.page_title}">
-      <meta name="twitter:description" content="${pageData.meta_description}">
-      
-      <!-- Favicon -->
-      <link rel="icon" href="${pageData.icon_url}">
-      
-      <style>
-        body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; }
-        .breadcrumbs { padding: 1rem 2rem; background: #f5f5f5; }
-        .breadcrumbs ol { list-style: none; padding: 0; margin: 0; display: flex; gap: 0.5rem; }
-        .breadcrumbs li::after { content: '›'; margin-left: 0.5rem; color: #666; }
-        .breadcrumbs li:last-child::after { content: ''; }
-        .breadcrumbs a { color: #0066cc; text-decoration: none; }
-        .breadcrumbs a:hover { text-decoration: underline; }
-        main { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-      </style>
-    </head>
-    <body>
-      ${renderBreadcrumbs(pageData)}
-      <main>
-        ${contentHtml}
-      </main>
-    </body>
-    </html>
-  `;
+  const breadcrumbs = renderBreadcrumbs(pageData);
+  const domain = 'https://clearhome.pro';
+  const currentUrl = `${domain}${pageData.url_path}`;
+  
+  // Build JSON-LD structured data
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "LocalBusiness",
+        "@id": `${domain}/#organization`,
+        "name": pageData.company_name,
+        "description": pageData.company_description || '',
+        "url": domain,
+        "logo": pageData.logo_url || '',
+        "image": pageData.logo_url || '',
+        "telephone": pageData.company_phone,
+        "email": pageData.company_email,
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": pageData.company_address || '',
+          "addressLocality": pageData.city_name || '',
+          "addressRegion": "LA",
+          "postalCode": "",
+          "addressCountry": "US"
+        },
+        "areaServed": pageData.city_name ? {
+          "@type": "City",
+          "name": pageData.city_name,
+          "containedInPlace": {
+            "@type": "State",
+            "name": "Louisiana"
+          }
+        } : undefined,
+        "priceRange": "$$"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${currentUrl}/#breadcrumb`,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": domain
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Services",
+            "item": `${domain}/services`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": pageData.service_name,
+            "item": `${domain}/services/${pageData.service_slug}`
+          },
+          ...(pageData.city_name ? [{
+            "@type": "ListItem",
+            "position": 4,
+            "name": pageData.city_name,
+            "item": currentUrl
+          }] : [])
+        ]
+      },
+      {
+        "@type": "Service",
+        "@id": `${currentUrl}/#service`,
+        "serviceType": pageData.service_name,
+        "provider": {
+          "@id": `${domain}/#organization`
+        },
+        "areaServed": pageData.city_name ? {
+          "@type": "City",
+          "name": pageData.city_name
+        } : undefined,
+        "description": pageData.meta_description || pageData.service_description || ''
+      },
+      ...(pageData.city_name ? [{
+        "@type": "Place",
+        "@id": `${currentUrl}/#place`,
+        "name": pageData.city_name,
+        "geo": {
+          "@type": "GeoCoordinates",
+          "addressRegion": "LA"
+        }
+      }] : [])
+    ].filter(item => item !== undefined)
+  };
+  
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${pageData.page_title}</title>
+  <meta name="description" content="${pageData.meta_description || ''}">
+  <link rel="canonical" href="${currentUrl}">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${pageData.page_title}">
+  <meta property="og:description" content="${pageData.meta_description || ''}">
+  <meta property="og:url" content="${currentUrl}">
+  <meta property="og:site_name" content="${pageData.company_name}">
+  <meta property="og:image" content="${pageData.logo_url || ''}">
+  <meta property="og:image:alt" content="${pageData.company_name} logo">
+  <meta property="og:locale" content="en_US">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${pageData.page_title}">
+  <meta name="twitter:description" content="${pageData.meta_description || ''}">
+  <meta name="twitter:image" content="${pageData.logo_url || ''}">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="${pageData.icon_url}">
+  
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">${JSON.stringify(structuredData)}</script>
+  
+  <style>
+    body { 
+      font-family: system-ui, -apple-system, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      line-height: 1.6;
+      color: #333;
+    }
+    .breadcrumbs { 
+      padding: 1rem 2rem; 
+      background: #f5f5f5; 
+    }
+    .breadcrumbs ol { 
+      list-style: none; 
+      padding: 0; 
+      margin: 0; 
+      display: flex; 
+      gap: 0.5rem; 
+    }
+    .breadcrumbs li::after { 
+      content: '›'; 
+      margin-left: 0.5rem; 
+      color: #666; 
+    }
+    .breadcrumbs li:last-child::after { 
+      content: ''; 
+    }
+    .breadcrumbs a { 
+      color: #0066cc; 
+      text-decoration: none; 
+    }
+    .breadcrumbs a:hover { 
+      text-decoration: underline; 
+    }
+    main { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      padding: 2rem; 
+    }
+  </style>
+</head>
+<body>
+  ${breadcrumbs}
+  <main>
+    ${contentHtml}
+  </main>
+</body>
+</html>`;
 }
 
 serve(async (req) => {
