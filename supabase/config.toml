@@ -52,3 +52,12 @@ verify_jwt = true
 
 [functions.verify-email-change]
 verify_jwt = false
+
+# URL Rewrites for Service Pages
+[[edge_runtime.rewrites]]
+source = "/services/:serviceSlug"
+destination = "/functions/v1/render-page"
+
+[[edge_runtime.rewrites]]
+source = "/services/:serviceSlug/:citySlug"
+destination = "/functions/v1/render-page"
