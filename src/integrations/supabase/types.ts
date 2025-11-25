@@ -3388,6 +3388,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          meta_description: string | null
           name: string
           published_at: string | null
           template_html: string
@@ -3398,6 +3399,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          meta_description?: string | null
           name: string
           published_at?: string | null
           template_html: string
@@ -3408,6 +3410,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          meta_description?: string | null
           name?: string
           published_at?: string | null
           template_html?: string
