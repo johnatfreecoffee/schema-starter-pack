@@ -45,8 +45,9 @@ const SitemapPage = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('services')
-        .select('*')
-        .eq('status', true)
+        .select('id, name, slug, category')
+        .eq('is_active', true)
+        .eq('archived', false)
         .order('name');
 
       if (error) throw error;
