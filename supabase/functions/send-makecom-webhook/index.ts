@@ -910,13 +910,7 @@ const validationChecklist = {
   ],
 };
 
-module.exports = {
-  stage1TaskNoImages,
-  stage2TaskNoImages,
-  stage3TaskNoImages,
-  stage4TaskNoImages,
-  validationChecklist,
-};
+// Instructions are used in the webhook payload below
 
 // Stage 1: Wireframe Planning Instructions
 const stage1Instructions = `# STAGE 1: WIREFRAME & CONTENT PLANNING
