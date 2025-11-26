@@ -64,9 +64,9 @@ border-radius: var(--radius-card);
 }
 
 RESPONSIVE BREAKPOINTS:
-@media (min-width: 768px) { /_ tablet _/ }
-@media (min-width: 1024px) { /_ desktop _/ }
-@media (min-width: 1280px) { /_ large _/ }
+@media (min-width: 768px) { /* tablet */ }
+@media (min-width: 1024px) { /* desktop */ }
+@media (min-width: 1280px) { /* large */ }
 
 ═══════════════════════════════════════════════════════════════════════════════
 VALIDATION CHECKLIST
