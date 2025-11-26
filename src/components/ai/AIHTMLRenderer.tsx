@@ -360,7 +360,7 @@ const sanitized = sanitizeHtml(withImgFallbacks, {
         }
       }
 
-      // Accordion handling
+      // Pattern 1: Accordion handling (.accordion-header)
       const accordionHeader = target.closest('.accordion-header') as HTMLElement;
       if (accordionHeader) {
         const content = accordionHeader.nextElementSibling as HTMLElement;
@@ -382,6 +382,22 @@ const sanitized = sanitizeHtml(withImgFallbacks, {
         }
         
         e.preventDefault();
+        return;
+      }
+      
+      // Pattern 2: FAQ handling (.faq-item button)
+      const faqButton = target.closest('.faq-item button, .faq-item .faq-header') as HTMLElement;
+      if (faqButton) {
+        e.preventDefault();
+        const faqAnswer = faqButton.nextElementSibling as HTMLElement;
+        const icon = faqButton.querySelector('svg');
+        
+        if (faqAnswer?.classList.contains('faq-answer')) {
+          const isOpen = faqAnswer.classList.contains('open');
+          faqButton.classList.toggle('active');
+          faqAnswer.classList.toggle('open');
+          if (icon) (icon as SVGElement).style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
         return;
       }
       
