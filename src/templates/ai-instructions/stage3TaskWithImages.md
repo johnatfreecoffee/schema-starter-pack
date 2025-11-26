@@ -1,4 +1,4 @@
-# STAGE 3: HTML STRUCTURE
+🧪 # STAGE 3: HTML STRUCTURE
 
 🤖 AUTOMATION MODE: Build COMPLETE HTML from <!DOCTYPE html> to </html>.
 

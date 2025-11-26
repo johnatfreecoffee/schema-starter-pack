@@ -1,4 +1,4 @@
-# STAGE 2: COPYWRITING
+🧪 # STAGE 2: COPYWRITING
 
 🤖 AUTOMATION MODE: Write ALL copy in ONE response.
 
