@@ -170,6 +170,8 @@ const UnifiedPageEditor = ({
   const [aiMode, setAiMode] = useState<AIMode>('build');
   const [includeImages, setIncludeImages] = useState(false);
   const [needsResearch, setNeedsResearch] = useState(false);
+  const [fixMode, setFixMode] = useState(false);
+  const [fixSource, setFixSource] = useState<'draft' | 'published' | null>(null);
   const [pageUrl, setPageUrl] = useState<string>('');
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [tokenCount, setTokenCount] = useState(0);
@@ -1838,6 +1840,21 @@ You are building a **TEMPLATE ENGINE**, not a static website:
 
 **REMEMBER:** You're creating a TEMPLATE that dynamically renders with company data. When users update their settings, the entire website updates automatically!`.trim();
           
+          // Validate Fix Mode requirements
+          if (fixMode && !fixSource) {
+            toast({
+              variant: "destructive",
+              title: "❌ Selection Required",
+              description: "Please select Draft or Published before sending in Fix Mode",
+            });
+            return;
+          }
+
+          // Get existing HTML based on fix source
+          const existingHtml = fixMode && fixSource 
+            ? (fixSource === 'draft' ? currentHtml : publishedHtml)
+            : undefined;
+
           // Prepare webhook payload
           const webhookPayload: any = {
             companyData,
@@ -1846,8 +1863,11 @@ You are building a **TEMPLATE ENGINE**, not a static website:
             systemInstructions,
             userPrompt: currentCommand,
             supabaseData,
-            includeImages,
-            needsResearch
+            includeImages: fixMode ? false : includeImages,
+            needsResearch: fixMode ? false : needsResearch,
+            fixMode,
+            htmlSource: fixSource,
+            existingHtml
           };
           
           // Get webhook URL from secrets
@@ -2655,8 +2675,8 @@ You are building a **TEMPLATE ENGINE**, not a static website:
                 </Button>
               </div>
               
-              {/* Image Toggle - only show in build mode */}
-              {aiMode === 'build' && (
+              {/* Image Toggle - only show in build mode when Fix Mode is OFF */}
+              {aiMode === 'build' && !fixMode && (
                 <>
                   <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">
                     <Label htmlFor="include-images" className="text-[10px] font-medium cursor-pointer">
@@ -2688,6 +2708,59 @@ You are building a **TEMPLATE ENGINE**, not a static website:
                         💡 AI will research your topic and build a detailed page
                       </p>
                     </div>
+                  )}
+                </>
+              )}
+
+              {/* Fix Mode Toggle - only show in build mode */}
+              {aiMode === 'build' && (
+                <>
+                  <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">
+                    <Label htmlFor="fix-mode" className="text-[10px] font-medium cursor-pointer">
+                      Fix Mode: {fixMode ? '🔧 On' : '✏️ Off'}
+                    </Label>
+                    <Switch
+                      id="fix-mode"
+                      checked={fixMode}
+                      onCheckedChange={(checked) => {
+                        setFixMode(checked);
+                        if (!checked) setFixSource(null);
+                      }}
+                      className="data-[state=checked]:bg-primary scale-75"
+                    />
+                  </div>
+
+                  {fixMode && (
+                    <>
+                      <div className="p-1.5 bg-amber-500/10 border border-amber-500/20 rounded">
+                        <p className="text-[10px] text-amber-700 dark:text-amber-400 mb-2">
+                          🔧 Select which version to fix:
+                        </p>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant={fixSource === 'draft' ? 'default' : 'outline'}
+                            onClick={() => setFixSource('draft')}
+                            className="text-[10px] h-6 flex-1"
+                          >
+                            📝 Draft
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={fixSource === 'published' ? 'default' : 'outline'}
+                            onClick={() => setFixSource('published')}
+                            className="text-[10px] h-6 flex-1"
+                          >
+                            📄 Published
+                          </Button>
+                        </div>
+                        {fixSource && (
+                          <p className="text-[10px] text-amber-700 dark:text-amber-400 mt-2">
+                            ✓ Using: {fixSource === 'draft' ? 'Draft' : 'Published'}
+                          </p>
+                        )}
+                      </div>
+                    </>
                   )}
 
                   <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">

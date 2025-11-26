@@ -6,6 +6,197 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Fix Mode Instructions
+const fixInstructions = `# AI PAGE FIX INSTRUCTIONS
+
+## ROLE
+You are an AI page repair specialist. You have received an existing HTML page that needs corrections based on the user's prompt. Your job is to fix specific issues while **maintaining complete design consistency** with the original page.
+
+## CRITICAL RULES
+
+### Design Consistency (HIGHEST PRIORITY)
+- **PRESERVE** the existing page structure, layout, and visual hierarchy
+- **MAINTAIN** all existing CSS styles, color patterns, spacing, and typography
+- **KEEP** the same design aesthetic - do not introduce new design patterns or styles
+- **MATCH** button styles, section layouts, font sizes, and spacing exactly
+- Only modify what the user specifically requests to fix
+- If adding new sections, match the design patterns used in existing sections
+
+---
+
+## CANONICAL VARIABLE REFERENCE
+
+ALL business data must use these Handlebars variables:
+
+| Variable | Purpose |
+|----------|---------|
+| \`{{business_name}}\` | Company name |
+| \`{{business_slogan}}\` | Tagline |
+| \`{{phone}}\` | Phone number |
+| \`{{email}}\` | Email address |
+| \`{{address}}\` | Full address |
+| \`{{address_street}}\` | Street only |
+| \`{{address_city}}\` | City only |
+| \`{{address_state}}\` | State abbreviation |
+| \`{{address_zip}}\` | ZIP code |
+| \`{{website_url}}\` | Website URL |
+| \`{{years_experience}}\` | Years in business |
+| \`{{description}}\` | Company description |
+| \`{{logo_url}}\` | Logo URL |
+
+### Service Page Variables
+| \`{{service_name}}\` | Service name |
+| \`{{service_slug}}\` | URL-friendly service name |
+| \`{{service_description}}\` | Service description |
+| \`{{service_starting_price}}\` | Starting price |
+
+### Location Page Variables
+| \`{{city}}\` | City/area name |
+| \`{{city_slug}}\` | URL-friendly city name |
+| \`{{state}}\` | State name |
+| \`{{zip}}\` | ZIP/postal code |
+| \`{{country}}\` | Country name |
+
+---
+
+## CSS CUSTOM PROPERTIES
+
+ALL colors and styling must use these CSS variables:
+
+| Property | Purpose |
+|----------|---------|
+| \`var(--color-primary)\` | Primary brand color |
+| \`var(--color-secondary)\` | Secondary brand color |
+| \`var(--color-accent)\` | Accent color |
+| \`var(--color-success)\` | Success/positive color |
+| \`var(--color-warning)\` | Warning/caution color |
+| \`var(--color-info)\` | Info color |
+| \`var(--color-danger)\` | Error/danger color |
+| \`var(--color-text-primary)\` | Primary text color |
+| \`var(--color-text-secondary)\` | Secondary text color |
+| \`var(--color-bg-primary)\` | Primary background |
+| \`var(--color-bg-secondary)\` | Secondary background |
+| \`var(--color-border)\` | Border color |
+| \`var(--color-card-bg)\` | Card background |
+| \`var(--color-feature)\` | Feature highlight color |
+| \`var(--color-cta)\` | CTA button color |
+| \`var(--radius-button)\` | Button border radius |
+| \`var(--radius-card)\` | Card border radius |
+| \`var(--icon-stroke-width)\` | Icon stroke width |
+
+**NEVER use hex codes or Tailwind color classes (e.g., \`bg-blue-500\`)**
+
+---
+
+## REQUIRED PATTERNS
+
+### Button Pattern (MANDATORY)
+ALL buttons must use inline SVG icons and proper onclick handlers:
+
+\`\`\`html
+<button 
+  onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Text')"
+  class="inline-flex items-center gap-2 px-6 py-3 text-lg font-bold text-white shadow-xl hover:scale-105 transition-all"
+  style="background: var(--color-cta); border-radius: var(--radius-button);">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/>
+  </svg>
+  Button Text
+</button>
+\`\`\`
+
+### Phone Link Pattern
+Phone numbers must be pure \`<a>\` tags with \`tel:\` - NO onclick:
+
+\`\`\`html
+<a 
+  href="tel:{{phone}}" 
+  class="inline-flex items-center gap-2 px-6 py-3 text-lg font-bold text-white shadow-xl hover:scale-105 transition-all"
+  style="background: var(--color-cta); border-radius: var(--radius-button);">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+  </svg>
+  {{phone}}
+</a>
+\`\`\`
+
+### Form CTA Pattern
+NEVER build custom HTML forms. Use modal trigger only:
+
+\`\`\`html
+<button 
+  onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Free Quote')" 
+  class="inline-flex items-center gap-2 px-6 py-3 text-lg font-bold text-white shadow-xl hover:scale-105 transition-all"
+  style="background: var(--color-cta); border-radius: var(--radius-button);">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/>
+  </svg>
+  Get Free Quote
+</button>
+\`\`\`
+
+### Accordion Pattern (CANONICAL)
+Use this single standardized accordion pattern:
+
+\`\`\`html
+<div class="accordion-item">
+  <button class="accordion-header">
+    <span>Question text</span>
+    <svg class="accordion-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </button>
+  <div class="accordion-content">
+    <p>Answer content</p>
+  </div>
+</div>
+\`\`\`
+
+**DO NOT use alternative accordion patterns** like \`.faq-item button\` with \`.open\` class.
+
+---
+
+## ANTI-HALLUCINATION CHECKLIST
+
+Before outputting, search your HTML for these violations:
+
+| ❌ If You Find | ✅ Replace With |
+|---------------|-----------------|
+| Any 10-digit phone pattern | \`{{phone}}\` |
+| Any @email.com address | \`{{email}}\` |
+| Any street address with numbers | \`{{address}}\` or components |
+| Any hex color codes (#ffffff) | \`var(--color-*)\` |
+| Tailwind colors (bg-blue-500) | \`var(--color-*)\` |
+| Any company name text | \`{{business_name}}\` |
+| Hard-coded city/location names | \`{{city}}\`, \`{{state}}\`, etc. |
+| Custom \`<form>\` elements | \`onclick="if(window.openLeadFormModal)..."\` |
+
+---
+
+## OUTPUT FORMAT
+
+- Output RAW HTML only, starting with \`<!DOCTYPE html>\`
+- NO markdown code fences
+- NO explanatory text before or after
+- Return the COMPLETE HTML document with your fixes applied
+- Preserve all existing design, CSS variables, and styling patterns
+- Only change what the user specifically requested to fix
+
+---
+
+## FIXING WORKFLOW
+
+1. **Analyze the existing HTML** - Understand the current design patterns, color usage, spacing, typography
+2. **Identify the requested fix** - What specifically does the user want changed?
+3. **Apply minimal changes** - Fix only what's requested, preserve everything else
+4. **Validate variable usage** - Ensure all business data uses Handlebars variables
+5. **Validate CSS usage** - Ensure all colors/styling use CSS custom properties
+6. **Validate patterns** - Ensure buttons, phone links, form CTAs, accordions follow canonical patterns
+7. **Return complete HTML** - Output the full fixed HTML document
+
+Remember: You are REPAIRING, not REBUILDING. Keep the existing design intact.
+`.trim();
+
 // Image Generation Instructions
 const imageGenInstructions = `# IMAGE GENERATION TASK
 
@@ -1210,6 +1401,9 @@ serve(async (req) => {
       supabaseData,
       includeImages = false,
       needsResearch = false,
+      fixMode = false,
+      htmlSource,
+      existingHtml,
       serviceInstructions, // Optional: MD instructions for service pages
       systemRevisionInstructions, // Optional: Modernization instructions for service pages
       useTestWebhook = true, // Default to test webhook
@@ -1229,13 +1423,14 @@ serve(async (req) => {
       });
     }
 
-    // Choose instructions based on includeImages flag
-    const builderInstructions = includeImages ? stage1Instructions : stageInstructionsNoImages;
+    // Choose instructions based on mode
+    const builderInstructions = fixMode 
+      ? fixInstructions 
+      : (includeImages ? stage1Instructions : stageInstructionsNoImages);
 
-    // Prepare webhook payload in exact format requested by user
-    const webhookPayload = [
-      {
-        body: {
+    // Prepare webhook payload based on mode
+    const basePayload = {
+      body: {
           companyData: {
             business_name: companyData?.business_name || "",
             business_slogan: companyData?.business_slogan || "",
@@ -1265,38 +1460,54 @@ serve(async (req) => {
             type: "system_instructions",
             length: systemInstructions?.length || null,
           },
-          builderStageInstructions: {
-            content: builderInstructions,
-            type: "builder_stages",
-            length: builderInstructions?.length || null,
-          },
-          stage1Task: {
-            content: includeImages ? stage1TaskWithImages : stage1TaskNoImages,
-            type: "stage_1_task",
-            length: includeImages ? stage1TaskWithImages?.length || null : stage1TaskNoImages?.length || null,
-          },
-          stage2Task: {
-            content: includeImages ? stage2TaskWithImages : stage2TaskNoImages,
-            type: "stage_2_task",
-            length: includeImages ? stage2TaskWithImages?.length || null : stage2TaskNoImages?.length || null,
-          },
-          stage3Task: {
-            content: includeImages ? stage3TaskWithImages : stage3TaskNoImages,
-            type: "stage_3_task",
-            length: includeImages ? stage3TaskWithImages?.length || null : stage3TaskNoImages?.length || null,
-          },
-          stage4Task: {
-            content: includeImages ? stage4TaskWithImages : stage4TaskNoImages,
-            type: "stage_4_task",
-            length: includeImages ? stage4TaskWithImages?.length || null : stage4TaskNoImages?.length || null,
-          },
-          // Only include imageGenInstructions if images are enabled
-          ...(includeImages && {
-            imageGenInstructions: {
-              content: imageGenInstructions || "",
-              type: "image_generation",
-              length: imageGenInstructions?.length || null,
+          ...(fixMode ? {
+            // Fix Mode: Simple payload with fix instructions and existing HTML
+            fixInstructions: {
+              content: fixInstructions,
+              type: "fix_instructions",
+              length: fixInstructions?.length || null,
             },
+            existingHtml: {
+              content: existingHtml || "",
+              htmlSource: htmlSource || "",
+              type: "existing_html",
+              length: existingHtml?.length || null,
+            },
+          } : {
+            // Build Mode: Full stage-based instructions
+            builderStageInstructions: {
+              content: builderInstructions,
+              type: "builder_stages",
+              length: builderInstructions?.length || null,
+            },
+            stage1Task: {
+              content: includeImages ? stage1TaskWithImages : stage1TaskNoImages,
+              type: "stage_1_task",
+              length: includeImages ? stage1TaskWithImages?.length || null : stage1TaskNoImages?.length || null,
+            },
+            stage2Task: {
+              content: includeImages ? stage2TaskWithImages : stage2TaskNoImages,
+              type: "stage_2_task",
+              length: includeImages ? stage2TaskWithImages?.length || null : stage2TaskNoImages?.length || null,
+            },
+            stage3Task: {
+              content: includeImages ? stage3TaskWithImages : stage3TaskNoImages,
+              type: "stage_3_task",
+              length: includeImages ? stage3TaskWithImages?.length || null : stage3TaskNoImages?.length || null,
+            },
+            stage4Task: {
+              content: includeImages ? stage4TaskWithImages : stage4TaskNoImages,
+              type: "stage_4_task",
+              length: includeImages ? stage4TaskWithImages?.length || null : stage4TaskNoImages?.length || null,
+            },
+            // Only include imageGenInstructions if images are enabled
+            ...(includeImages && {
+              imageGenInstructions: {
+                content: imageGenInstructions || "",
+                type: "image_generation",
+                length: imageGenInstructions?.length || null,
+              },
+            }),
           }),
           supabaseData: {
             pageType: supabaseData?.pageType || "",
@@ -1306,10 +1517,12 @@ serve(async (req) => {
             pageId: supabaseData?.pageId || "",
             pageRowId: supabaseData?.pageRowId || "",
             field: supabaseData?.field || "",
-            includeImages: includeImages,
-            needsResearch: needsResearch,
+            includeImages: fixMode ? false : includeImages,
+            needsResearch: fixMode ? false : needsResearch,
+            fixMode: fixMode,
+            htmlSource: htmlSource || "",
           },
-          researchPrompt: needsResearch
+          researchPrompt: (needsResearch && !fixMode)
             ? `You are a research assistant preparing context for a page builder automation.
 
 TASK:
@@ -1335,9 +1548,10 @@ Your rebuilt prompt should include:
 - Calls-to-action aligned with business objectives`
             : undefined,
           output_tokens: 150000,
-        },
-      },
-    ];
+      }
+    };
+
+    const webhookPayload = [basePayload];
 
     console.log("Sending webhook to n8n:", {
       webhookType: useTestWebhook ? "TEST" : "PRODUCTION",
@@ -1346,9 +1560,12 @@ Your rebuilt prompt should include:
       hasSocialMedia: !!socialMedia,
       hasAiTraining: !!aiTraining,
       hasSystemInstructions: !!systemInstructions,
-      includeImages,
-      needsResearch,
-      hasResearchPrompt: needsResearch,
+      fixMode,
+      htmlSource: fixMode ? htmlSource : undefined,
+      hasExistingHtml: fixMode ? !!existingHtml : undefined,
+      includeImages: fixMode ? false : includeImages,
+      needsResearch: fixMode ? false : needsResearch,
+      hasResearchPrompt: needsResearch && !fixMode,
       supabaseData,
       timestamp: new Date().toISOString(),
     });
