@@ -2,8 +2,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.74.0";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 // Image Generation Instructions
@@ -367,78 +367,290 @@ Create comprehensive responsive CSS embedded in \`<style>\` within \`<head>\`.
 
 **Do not proceed to next stage until current stage passes validation.**`;
 
-// Stage-Specific Task Instructions - WITH IMAGES
-const stage1TaskWithImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Complete your entire wireframe in one response - no partial outputs.
+// =============================================================================
+// STAGE-SPECIFIC TASK INSTRUCTIONS - WITH IMAGES
+// =============================================================================
+// These task prompts are injected into each pipeline stage.
+// All stages use CANONICAL variables from the Specification Sheet.
+// =============================================================================
 
-TASK:
-Based on all the context provided, create a detailed wireframe and content structure for the web page requested by the user. Your output must include:
+// -----------------------------------------------------------------------------
+// STAGE 1: WIREFRAME & CONTENT PLANNING
+// -----------------------------------------------------------------------------
+const stage1TaskWithImages = `🤖 AUTOMATION MODE: Complete entire wireframe in ONE response.
+
+TASK: Create a detailed wireframe and content structure. Output must include:
 
 1. PAGE LAYOUT STRUCTURE
-2. CONTENT BLOCKS (identify where IMAGE PLACEHOLDERS will be needed)
+   - Hero section with image placement
+   - Main content sections (minimum 3)
+   - CTA placements
+
+2. CONTENT BLOCKS
+   - Name and purpose of each block
+   - IMAGE PLACEHOLDERS: Identify hero, service, team, process images
+   - Special features (accordions, grids, etc.)
+
 3. INFORMATION HIERARCHY
+   - Primary message → Secondary messages → Supporting details
+
 4. CALL-TO-ACTION STRATEGY
-5. NAVIGATION STRUCTURE
+   - Primary CTA: Phone button with {{phone}}
+   - Secondary CTAs: Form triggers using window.openLeadFormModal()
 
-Format your response as a structured wireframe document.
+5. NAVIGATION STRUCTURE (reference only - system injects header/footer)
 
-CRITICAL: Complete ALL 5 sections fully. Specify image placement strategy - hero images, service photos, team photos, process diagrams, etc. This is an automation - you cannot stop mid-way or ask for more information.`;
+FORMAT: Structured wireframe document with clear section labels.
 
-const stage2TaskWithImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Write ALL copy completely in one response - no partial outputs or placeholders.
+CRITICAL RULES:
+- NO headers/footers (system injects these)
+- All business data will use Handlebars variables ({{business_name}}, {{phone}}, etc.)
+- Identify 3-6 image placements with descriptive purposes
+- Complete ALL 5 sections - no partial outputs`;
 
-TASK:
-Write all copy for this web page based on the approved wireframe and all the provided context. Provide:
+// -----------------------------------------------------------------------------
+// STAGE 2: COPYWRITING
+// -----------------------------------------------------------------------------
+const stage2TaskWithImages = `🤖 AUTOMATION MODE: Write ALL copy in ONE response.
+
+TASK: Write all copy based on the approved wireframe. Provide:
 
 1. HEADLINES
+   - H1: Primary headline (one only)
+   - H2s: Section headlines
+   - H3s: Sub-headlines where needed
+
 2. BODY COPY
+   - Complete copy for each content block
+   - Match brand voice from context
+   - Use {{business_name}} for company references
+   - Use {{years_experience}} for experience claims
+
 3. CALLS-TO-ACTION
-4. NAVIGATION & UI TEXT
+   - Phone CTA: "Call {{phone}}" or "Call Now"
+   - Form CTAs: "Get Free Quote", "Schedule Service", etc.
+   - NO hardcoded phone numbers or company names
+
+4. IMAGE ALT TEXT (CRITICAL)
+   For each image placeholder, write:
+   - Detailed description (50-100 characters)
+   - Subject, setting, mood, lighting
+   - Example: "Professional roofer inspecting shingles on residential home, clear blue sky"
+
 5. META CONTENT
-6. IMAGE ALT TEXT SUGGESTIONS (for every image placeholder identified in wireframe)
+   - Page title: Include {{business_name}} and primary keyword
+   - Meta description: 150-160 characters
 
-Format each piece of copy clearly labeled by section and element type.
+FORMAT: Label each piece by section and element type.
 
-CRITICAL: Provide complete, polished copy for EVERY section from the wireframe, including detailed alt text descriptions for all images. This is an automation - you cannot stop mid-way or use placeholders.`;
+ANTI-HALLUCINATION CHECK:
+Before finalizing, verify NO hardcoded:
+- Phone numbers (use {{phone}})
+- Email addresses (use {{email}})
+- Company names (use {{business_name}})
+- Street addresses (use {{address}} or components)
+- Years in business (use {{years_experience}})`;
 
-const stage3TaskWithImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Build the COMPLETE HTML from <!DOCTYPE html> to </html> in one response.
+// -----------------------------------------------------------------------------
+// STAGE 3: HTML STRUCTURE
+// -----------------------------------------------------------------------------
+const stage3TaskWithImages = `🤖 AUTOMATION MODE: Build COMPLETE HTML from <!DOCTYPE html> to </html>.
+
+OUTPUT FORMAT: Full HTML Document starting with <!DOCTYPE html>
+NO markdown code fences. NO explanatory text. RAW HTML ONLY.
+
+═══════════════════════════════════════════════════════════════════════════════
+CANONICAL VARIABLES - USE EXACTLY AS SHOWN
+═══════════════════════════════════════════════════════════════════════════════
+
+Company Data:
+{{business_name}}     {{phone}}              {{email}}
+{{address}}           {{address_city}}       {{address_state}}
+{{business_slogan}}   {{years_experience}}   {{description}}
+{{logo_url}}          {{website_url}}
+
+Service Pages Only:
+{{service_name}}      {{service_slug}}       {{service_description}}
+
+Location Pages Only:
+{{city_name}}         {{city_slug}}          {{state}}
+{{zip_code}}          {{display_name}}
+
+═══════════════════════════════════════════════════════════════════════════════
+CSS CUSTOM PROPERTIES - DEFINE IN :root
+═══════════════════════════════════════════════════════════════════════════════
+
+:root {
+  --color-primary: {{siteSettings.primary_color}};
+  --color-secondary: {{siteSettings.secondary_color}};
+  --color-accent: {{siteSettings.accent_color}};
+  --radius-button: {{siteSettings.button_border_radius}};
+  --radius-card: {{siteSettings.card_border_radius}};
+}
+
+═══════════════════════════════════════════════════════════════════════════════
+REQUIRED PATTERNS
+═══════════════════════════════════════════════════════════════════════════════
+
+BUTTON PATTERN (all buttons must follow):
+<a href="tel:{{phone}}" class="btn btn-primary inline-flex items-center gap-2 text-base">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+  </svg>
+  Call {{phone}}
+</a>
+
+FORM CTA PATTERN (no custom forms - modal only):
+<button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Free Quote')" class="btn btn-primary inline-flex items-center gap-2 text-base">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+  </svg>
+  Get Free Quote
+</button>
+
+IMAGE PLACEHOLDER PATTERN:
+<img src="placeholder-hero.jpg" alt="Professional roofer inspecting shingles on residential home under clear blue sky" style="width: 100%; height: auto; object-fit: cover; border-radius: var(--radius-card);">
+
+File extensions:
+- .jpg = photos (people, buildings, scenes)
+- .png = graphics, icons, illustrations
+- .svg = logos only
+
+═══════════════════════════════════════════════════════════════════════════════
+CRITICAL RULES
+═══════════════════════════════════════════════════════════════════════════════
+
+✓ Page starts with hero section (NO top bars, NO emergency banners)
+✓ NO <header> or <footer> tags (system injects these)
+✓ NO custom <form> elements (use window.openLeadFormModal() only)
+✓ ALL icons must be inline SVG (NO data-lucide, NO Font Awesome, NO CDNs)
+✓ ALL buttons use: inline-flex items-center gap-2 text-base
+✓ Phone links: href="tel:{{phone}}" with NO onclick
+✓ Form CTAs: onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Text')" 
+✓ ALL colors use CSS variables (NO hex codes, NO Tailwind colors)
+
+═══════════════════════════════════════════════════════════════════════════════
+ANTI-HALLUCINATION SELF-CHECK
+═══════════════════════════════════════════════════════════════════════════════
+
+Before output, search for and REPLACE any:
+❌ 10-digit phone patterns → {{phone}}
+❌ @email.com addresses → {{email}}
+❌ Street addresses with numbers → {{address}}
+❌ Hex color codes (#fff, #000) → var(--color-*)
+❌ Tailwind colors (bg-blue-500) → var(--color-*)
+❌ Hardcoded company names → {{business_name}}
+❌ "XX years" claims → {{years_experience}} years
+
+═══════════════════════════════════════════════════════════════════════════════
+VALIDATION CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+[ ] Starts with <!DOCTYPE html> (no markdown)
+[ ] Page begins with hero <section> (no top bars)
+[ ] NO <header> or <footer> tags
+[ ] All business data uses Handlebars variables
+[ ] All colors use CSS custom properties
+[ ] All icons are inline SVG (complete path data)
+[ ] Phone buttons have tel: href, NO onclick
+[ ] Form CTAs use window.openLeadFormModal()
+[ ] All images have descriptive alt text (50-100 chars)
+[ ] Proper heading hierarchy (one H1, then H2s, H3s)
+[ ] Complete document from <!DOCTYPE html> to </html>`;
+
+// -----------------------------------------------------------------------------
+// STAGE 4: CSS STYLING
+// -----------------------------------------------------------------------------
+const stage4TaskWithImages = `🤖 AUTOMATION MODE: Output COMPLETE production-ready HTML with embedded CSS.
+
+OUTPUT FORMAT: Full HTML Document with <style> in <head>
+NO markdown code fences. NO explanatory text. RAW HTML ONLY.
 
 TASK:
-Build the complete HTML structure for this page. Follow all rules in the context. Use Handlebars variables for all dynamic data.
+1. Create responsive, mobile-first CSS for the provided HTML
+2. Use CSS variables from :root for ALL colors and design tokens
+3. Style all images with proper sizing, object-fit, border-radius
+4. Embed CSS in <style> tag within <head>
+5. Output the complete, final HTML file
 
-**CRITICAL IMAGE REQUIREMENTS:**
-- Include <img> tags with placeholder src attributes (e.g., src="placeholder-hero.jpg")
-- Write DETAILED, DESCRIPTIVE alt attributes (50-100 chars) for each image
-- Use .jpg for photos, .png for graphics/icons, .svg for logos
-- Place images in hero, services, team, process sections as identified in wireframe
+═══════════════════════════════════════════════════════════════════════════════
+CSS REQUIREMENTS
+═══════════════════════════════════════════════════════════════════════════════
 
-Output ONLY the HTML code, properly formatted and indented.
+REQUIRED CSS VARIABLES (reference, not redefine):
+var(--color-primary)    var(--color-secondary)    var(--color-accent)
+var(--radius-button)    var(--radius-card)
 
-CRITICAL COMPLETION REQUIREMENTS:
-- Complete the ENTIRE HTML document from <!DOCTYPE html> to </html>
-- Every opening tag MUST have a closing tag
-- Every section MUST be fully finished - no partial sections, no abrupt endings
-- This is an automation - you CANNOT stop mid-way or leave placeholders
-- The HTML must end with a proper footer and closing tags, not a "dull point"
-- ALL content sections from the wireframe must be present and complete
-- ALL identified image placeholders must be present with detailed alt text`;
+ACCORDION CSS (required):
+.accordion-content { 
+  max-height: 0; 
+  overflow: hidden; 
+  transition: max-height 0.3s ease; 
+}
+.accordion-content.active { 
+  max-height: 2000px; 
+}
+.accordion-header svg { 
+  transition: transform 0.3s ease; 
+}
 
-const stage4TaskWithImages = `🤖 AUTOMATION MODE: This is the FINAL stage of an automated pipeline. Output the COMPLETE, production-ready HTML page with embedded CSS.
+BUTTON CSS (required):
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-button);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
 
-TASK:
-1. Create comprehensive, responsive, mobile-first CSS to style the provided HTML.
-2. Use the provided CSS variables from the DESIGN CONTEXT for all colors and design tokens.
-3. Follow all rules from the SYSTEM INSTRUCTIONS regarding CSS variables, Tailwind usage, and responsive design.
-4. Style all image elements with proper sizing, object-fit, borders, shadows as appropriate.
-5. Embed the generated CSS inside a <style> tag within the <head> section of the original HTML.
-6. Output ONLY the complete, final HTML file with the embedded CSS. Do not add any markdown or explanations.
+IMAGE CSS (required):
+img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: var(--radius-card);
+}
 
-CRITICAL COMPLETION REQUIREMENTS:
-- Output the ENTIRE styled HTML document from <!DOCTYPE html> to </html>
-- All CSS must be properly embedded in the <head> section
-- Every section must have complete styles - no missing or incomplete CSS rules
-- Image styling must be complete (responsive, proper aspect ratios, loading states)
-- This is an automation - this MUST be the final, complete, production-ready page
-- The output must end with a proper closing </html> tag, not a partial page
-- Double-check that ALL sections from previous stages are present and styled`;
+RESPONSIVE BREAKPOINTS:
+@media (min-width: 768px) { /* tablet */ }
+@media (min-width: 1024px) { /* desktop */ }
+@media (min-width: 1280px) { /* large */ }
+
+═══════════════════════════════════════════════════════════════════════════════
+VALIDATION CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+[ ] CSS embedded in <style> within <head>
+[ ] All colors use var(--color-*) (NO hex codes)
+[ ] Responsive media queries included
+[ ] Button hover/focus states defined
+[ ] Accordion CSS included (if accordions used)
+[ ] Image styling complete (responsive, object-fit)
+[ ] Complete document from <!DOCTYPE html> to </html>
+[ ] NO markdown code fences in output
+[ ] Ends with proper </html> tag`;
+
+// -----------------------------------------------------------------------------
+// EXPORTS
+// -----------------------------------------------------------------------------
+module.exports = {
+  stage1TaskWithImages,
+  stage2TaskWithImages,
+  stage3TaskWithImages,
+  stage4TaskWithImages,
+};
 
 // Stage-Specific Task Instructions - WITHOUT IMAGES (Icon & Copy Focused)
 const stage1TaskNoImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Complete your entire wireframe in one response - no partial outputs.
@@ -1065,45 +1277,42 @@ Execute sequentially. Do not proceed to next stage until current stage passes va
 
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { 
-      companyData, 
-      socialMedia, 
-      aiTraining, 
-      systemInstructions, 
-      userPrompt, 
+    const {
+      companyData,
+      socialMedia,
+      aiTraining,
+      systemInstructions,
+      userPrompt,
       supabaseData,
       includeImages = false,
       needsResearch = false,
       serviceInstructions, // Optional: MD instructions for service pages
       systemRevisionInstructions, // Optional: Modernization instructions for service pages
-      useTestWebhook = true // Default to test webhook
+      useTestWebhook = true, // Default to test webhook
     } = await req.json();
 
     // Get webhook URL from environment based on mode
-    const webhookUrl = useTestWebhook 
-      ? Deno.env.get('TEST_WEBHOOK_PAGE_BUILDER')
-      : Deno.env.get('PRODUCTION_WEBHOOK_PAGE_BUILDER');
-    
+    const webhookUrl = useTestWebhook
+      ? Deno.env.get("TEST_WEBHOOK_PAGE_BUILDER")
+      : Deno.env.get("PRODUCTION_WEBHOOK_PAGE_BUILDER");
+
     if (!webhookUrl) {
-      const webhookType = useTestWebhook ? 'test' : 'production';
+      const webhookType = useTestWebhook ? "test" : "production";
       console.error(`${webhookType.toUpperCase()}_WEBHOOK_PAGE_BUILDER secret not configured`);
-      return new Response(
-        JSON.stringify({ error: `${webhookType} webhook URL not configured` }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      );
+      return new Response(JSON.stringify({ error: `${webhookType} webhook URL not configured` }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Choose instructions based on includeImages flag
     const builderInstructions = includeImages ? stage1Instructions : stageInstructionsNoImages;
-    
+
     // Prepare webhook payload in exact format requested by user
     const webhookPayload = [
       {
@@ -1125,50 +1334,50 @@ serve(async (req) => {
             emergency_response: aiTraining?.emergency_response || "",
             service_area_coverage: aiTraining?.service_area_coverage || "",
             project_timeline: aiTraining?.project_timeline || "",
-            payment_options: aiTraining?.payment_options || ""
+            payment_options: aiTraining?.payment_options || "",
           },
           userPrompt: {
             content: userPrompt || "",
             type: "user_prompt",
-            length: userPrompt?.length || null
+            length: userPrompt?.length || null,
           },
           systemInstructions: {
             content: systemInstructions || "",
             type: "system_instructions",
-            length: systemInstructions?.length || null
+            length: systemInstructions?.length || null,
           },
           builderStageInstructions: {
             content: builderInstructions,
             type: "builder_stages",
-            length: builderInstructions?.length || null
+            length: builderInstructions?.length || null,
           },
           stage1Task: {
             content: includeImages ? stage1TaskWithImages : stage1TaskNoImages,
             type: "stage_1_task",
-            length: includeImages ? stage1TaskWithImages?.length || null : stage1TaskNoImages?.length || null
+            length: includeImages ? stage1TaskWithImages?.length || null : stage1TaskNoImages?.length || null,
           },
           stage2Task: {
             content: includeImages ? stage2TaskWithImages : stage2TaskNoImages,
             type: "stage_2_task",
-            length: includeImages ? stage2TaskWithImages?.length || null : stage2TaskNoImages?.length || null
+            length: includeImages ? stage2TaskWithImages?.length || null : stage2TaskNoImages?.length || null,
           },
           stage3Task: {
             content: includeImages ? stage3TaskWithImages : stage3TaskNoImages,
             type: "stage_3_task",
-            length: includeImages ? stage3TaskWithImages?.length || null : stage3TaskNoImages?.length || null
+            length: includeImages ? stage3TaskWithImages?.length || null : stage3TaskNoImages?.length || null,
           },
           stage4Task: {
             content: includeImages ? stage4TaskWithImages : stage4TaskNoImages,
             type: "stage_4_task",
-            length: includeImages ? stage4TaskWithImages?.length || null : stage4TaskNoImages?.length || null
+            length: includeImages ? stage4TaskWithImages?.length || null : stage4TaskNoImages?.length || null,
           },
           // Only include imageGenInstructions if images are enabled
           ...(includeImages && {
             imageGenInstructions: {
               content: imageGenInstructions || "",
               type: "image_generation",
-              length: imageGenInstructions?.length || null
-            }
+              length: imageGenInstructions?.length || null,
+            },
           }),
           supabaseData: {
             pageType: supabaseData?.pageType || "",
@@ -1178,10 +1387,11 @@ serve(async (req) => {
             pageId: supabaseData?.pageId || "",
             pageRowId: supabaseData?.pageRowId || "",
             field: supabaseData?.field || "",
-          includeImages: includeImages,
-          needsResearch: needsResearch
-        },
-        researchPrompt: needsResearch ? `You are a research assistant preparing context for a page builder automation.
+            includeImages: includeImages,
+            needsResearch: needsResearch,
+          },
+          researchPrompt: needsResearch
+            ? `You are a research assistant preparing context for a page builder automation.
 
 TASK:
 1. Examine the company data provided to understand the business, its services, brand voice, and positioning.
@@ -1203,15 +1413,16 @@ Your rebuilt prompt should include:
 - Structural recommendations (sections, layout suggestions)
 - Content themes and topics to cover
 - SEO considerations
-- Calls-to-action aligned with business objectives` : undefined,
-        output_tokens: 150000
-      }
-      }
+- Calls-to-action aligned with business objectives`
+            : undefined,
+          output_tokens: 150000,
+        },
+      },
     ];
 
-    console.log('Sending webhook to n8n:', {
-      webhookType: useTestWebhook ? 'TEST' : 'PRODUCTION',
-      url: webhookUrl.substring(0, 50) + '...',
+    console.log("Sending webhook to n8n:", {
+      webhookType: useTestWebhook ? "TEST" : "PRODUCTION",
+      url: webhookUrl.substring(0, 50) + "...",
       hasCompanyData: !!companyData,
       hasSocialMedia: !!socialMedia,
       hasAiTraining: !!aiTraining,
@@ -1220,61 +1431,60 @@ Your rebuilt prompt should include:
       needsResearch,
       hasResearchPrompt: needsResearch,
       supabaseData,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     // Send to Make.com webhook
     const webhookResponse = await fetch(webhookUrl, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(webhookPayload)
+      body: JSON.stringify(webhookPayload),
     });
 
     if (!webhookResponse.ok) {
       const errorText = await webhookResponse.text();
-      console.error('Webhook failed:', webhookResponse.status, errorText);
+      console.error("Webhook failed:", webhookResponse.status, errorText);
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: `Webhook failed with status ${webhookResponse.status}`,
-          details: errorText 
+          details: errorText,
         }),
-        { 
-          status: 502, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
+        {
+          status: 502,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
     const responseData = await webhookResponse.json().catch(() => ({}));
 
-    const webhookType = useTestWebhook ? 'test' : 'production';
+    const webhookType = useTestWebhook ? "test" : "production";
     console.log(`Webhook sent successfully to ${webhookType} endpoint`);
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         success: true,
         message: `Webhook sent to ${webhookType} endpoint successfully`,
         webhookType,
-        response: responseData
+        response: responseData,
       }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
-
   } catch (error) {
-    console.error('Error in send-makecom-webhook:', error);
+    console.error("Error in send-makecom-webhook:", error);
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : 'Unknown error occurred' 
+      JSON.stringify({
+        error: error instanceof Error ? error.message : "Unknown error occurred",
       }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 });
