@@ -642,15 +642,7 @@ VALIDATION CHECKLIST
 [ ] NO markdown code fences in output
 [ ] Ends with proper </html> tag`;
 
-// -----------------------------------------------------------------------------
-// EXPORTS
-// -----------------------------------------------------------------------------
-module.exports = {
-  stage1TaskWithImages,
-  stage2TaskWithImages,
-  stage3TaskWithImages,
-  stage4TaskWithImages,
-};
+// These constants are used within this file - no export needed
 
 // Stage-Specific Task Instructions - WITHOUT IMAGES (Icon & Copy Focused)
 const stage1TaskNoImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Complete your entire wireframe in one response - no partial outputs.
