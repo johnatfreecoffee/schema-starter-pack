@@ -365,23 +365,23 @@ Create comprehensive, responsive CSS to style the HTML. Use provided CSS variabl
 
 Execute sequentially. Do not proceed to next stage until current stage passes validation.`;
 
-// Stage-Specific Task Instructions
-const stage1Task = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Complete your entire wireframe in one response - no partial outputs.
+// Stage-Specific Task Instructions - WITH IMAGES
+const stage1TaskWithImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Complete your entire wireframe in one response - no partial outputs.
 
 TASK:
 Based on all the context provided, create a detailed wireframe and content structure for the web page requested by the user. Your output must include:
 
 1. PAGE LAYOUT STRUCTURE
-2. CONTENT BLOCKS
+2. CONTENT BLOCKS (identify where IMAGE PLACEHOLDERS will be needed)
 3. INFORMATION HIERARCHY
 4. CALL-TO-ACTION STRATEGY
 5. NAVIGATION STRUCTURE
 
 Format your response as a structured wireframe document.
 
-CRITICAL: Complete ALL 5 sections fully. This is an automation - you cannot stop mid-way or ask for more information.`;
+CRITICAL: Complete ALL 5 sections fully. Specify image placement strategy - hero images, service photos, team photos, process diagrams, etc. This is an automation - you cannot stop mid-way or ask for more information.`;
 
-const stage2Task = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Write ALL copy completely in one response - no partial outputs or placeholders.
+const stage2TaskWithImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Write ALL copy completely in one response - no partial outputs or placeholders.
 
 TASK:
 Write all copy for this web page based on the approved wireframe and all the provided context. Provide:
@@ -391,15 +391,22 @@ Write all copy for this web page based on the approved wireframe and all the pro
 3. CALLS-TO-ACTION
 4. NAVIGATION & UI TEXT
 5. META CONTENT
+6. IMAGE ALT TEXT SUGGESTIONS (for every image placeholder identified in wireframe)
 
 Format each piece of copy clearly labeled by section and element type.
 
-CRITICAL: Provide complete, polished copy for EVERY section from the wireframe. This is an automation - you cannot stop mid-way or use placeholders.`;
+CRITICAL: Provide complete, polished copy for EVERY section from the wireframe, including detailed alt text descriptions for all images. This is an automation - you cannot stop mid-way or use placeholders.`;
 
-const stage3Task = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Build the COMPLETE HTML from <!DOCTYPE html> to </html> in one response.
+const stage3TaskWithImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Build the COMPLETE HTML from <!DOCTYPE html> to </html> in one response.
 
 TASK:
 Build the complete HTML structure for this page. Follow all rules in the context. Use Handlebars variables for all dynamic data.
+
+**CRITICAL IMAGE REQUIREMENTS:**
+- Include <img> tags with placeholder src attributes (e.g., src="placeholder-hero.jpg")
+- Write DETAILED, DESCRIPTIVE alt attributes (50-100 chars) for each image
+- Use .jpg for photos, .png for graphics/icons, .svg for logos
+- Place images in hero, services, team, process sections as identified in wireframe
 
 Output ONLY the HTML code, properly formatted and indented.
 
@@ -409,21 +416,96 @@ CRITICAL COMPLETION REQUIREMENTS:
 - Every section MUST be fully finished - no partial sections, no abrupt endings
 - This is an automation - you CANNOT stop mid-way or leave placeholders
 - The HTML must end with a proper footer and closing tags, not a "dull point"
-- ALL content sections from the wireframe must be present and complete`;
+- ALL content sections from the wireframe must be present and complete
+- ALL identified image placeholders must be present with detailed alt text`;
 
-const stage4Task = `🤖 AUTOMATION MODE: This is the FINAL stage of an automated pipeline. Output the COMPLETE, production-ready HTML page with embedded CSS.
+const stage4TaskWithImages = `🤖 AUTOMATION MODE: This is the FINAL stage of an automated pipeline. Output the COMPLETE, production-ready HTML page with embedded CSS.
 
 TASK:
 1. Create comprehensive, responsive, mobile-first CSS to style the provided HTML.
 2. Use the provided CSS variables from the DESIGN CONTEXT for all colors and design tokens.
 3. Follow all rules from the SYSTEM INSTRUCTIONS regarding CSS variables, Tailwind usage, and responsive design.
-4. Embed the generated CSS inside a <style> tag within the <head> section of the original HTML.
-5. Output ONLY the complete, final HTML file with the embedded CSS and replaced image URLs. Do not add any markdown or explanations.
+4. Style all image elements with proper sizing, object-fit, borders, shadows as appropriate.
+5. Embed the generated CSS inside a <style> tag within the <head> section of the original HTML.
+6. Output ONLY the complete, final HTML file with the embedded CSS. Do not add any markdown or explanations.
 
 CRITICAL COMPLETION REQUIREMENTS:
 - Output the ENTIRE styled HTML document from <!DOCTYPE html> to </html>
 - All CSS must be properly embedded in the <head> section
 - Every section must have complete styles - no missing or incomplete CSS rules
+- Image styling must be complete (responsive, proper aspect ratios, loading states)
+- This is an automation - this MUST be the final, complete, production-ready page
+- The output must end with a proper closing </html> tag, not a partial page
+- Double-check that ALL sections from previous stages are present and styled`;
+
+// Stage-Specific Task Instructions - WITHOUT IMAGES (Icon & Copy Focused)
+const stage1TaskNoImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Complete your entire wireframe in one response - no partial outputs.
+
+TASK:
+Based on all the context provided, create a detailed wireframe and content structure for the web page requested by the user. Your output must include:
+
+1. PAGE LAYOUT STRUCTURE
+2. CONTENT BLOCKS (identify where ICONS and EMOJIS will enhance content - NO image placeholders)
+3. INFORMATION HIERARCHY
+4. CALL-TO-ACTION STRATEGY (emphasize icon usage in CTAs)
+5. NAVIGATION STRUCTURE
+
+Format your response as a structured wireframe document.
+
+CRITICAL: Complete ALL 5 sections fully. Focus on ICON STRATEGY and EMOJI PLACEMENT instead of images. Specify which sections use Lucide icons. This is an automation - you cannot stop mid-way or ask for more information.`;
+
+const stage2TaskNoImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Write ALL copy completely in one response - no partial outputs or placeholders.
+
+TASK:
+Write all copy for this web page based on the approved wireframe and all the provided context. Provide:
+
+1. HEADLINES (include emoji placement - NOT in hero H1, but in section titles)
+2. BODY COPY (rich, engaging paragraphs with strategic emoji use)
+3. CALLS-TO-ACTION (with emoji suggestions for buttons where appropriate)
+4. NAVIGATION & UI TEXT
+5. META CONTENT
+
+Format each piece of copy clearly labeled by section and element type.
+
+CRITICAL: Provide complete, polished copy for EVERY section from the wireframe. Use 2-4 emojis throughout for visual interest. This is an automation - you cannot stop mid-way or use placeholders.`;
+
+const stage3TaskNoImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Build the COMPLETE HTML from <!DOCTYPE html> to </html> in one response.
+
+TASK:
+Build the complete HTML structure for this page. Follow all rules in the context. Use Handlebars variables for all dynamic data.
+
+**CRITICAL NO-IMAGE REQUIREMENTS:**
+- **DO NOT** include any <img> tags for photos or placeholders
+- **USE** Lucide icons extensively via data-lucide attributes or inline SVG
+- **INCLUDE** emojis from Stage 2 copy in the HTML
+- **FOCUS** on icon-driven design and compelling copy instead of images
+
+Output ONLY the HTML code, properly formatted and indented.
+
+CRITICAL COMPLETION REQUIREMENTS:
+- Complete the ENTIRE HTML document from <!DOCTYPE html> to </html>
+- Every opening tag MUST have a closing tag
+- Every section MUST be fully finished - no partial sections, no abrupt endings
+- This is an automation - you CANNOT stop mid-way or leave placeholders
+- The HTML must end with a proper footer and closing tags, not a "dull point"
+- ALL content sections from the wireframe must be present and complete
+- NO <img> tags present anywhere`;
+
+const stage4TaskNoImages = `🤖 AUTOMATION MODE: This is the FINAL stage of an automated pipeline. Output the COMPLETE, production-ready HTML page with embedded CSS.
+
+TASK:
+1. Create comprehensive, responsive, mobile-first CSS to style the provided HTML.
+2. Use the provided CSS variables from the DESIGN CONTEXT for all colors and design tokens.
+3. Follow all rules from the SYSTEM INSTRUCTIONS regarding CSS variables, Tailwind usage, and responsive design.
+4. Style all icon elements with backgrounds, shadows, gradients to make them visually prominent.
+5. Embed the generated CSS inside a <style> tag within the <head> section of the original HTML.
+6. Output ONLY the complete, final HTML file with the embedded CSS. Do not add any markdown or explanations.
+
+CRITICAL COMPLETION REQUIREMENTS:
+- Output the ENTIRE styled HTML document from <!DOCTYPE html> to </html>
+- All CSS must be properly embedded in the <head> section
+- Every section must have complete styles - no missing or incomplete CSS rules
+- Icon styling must be prominent and attractive (replace visual weight of images)
 - This is an automation - this MUST be the final, complete, production-ready page
 - The output must end with a proper closing </html> tag, not a partial page
 - Double-check that ALL sections from previous stages are present and styled`;
@@ -1059,24 +1141,24 @@ serve(async (req) => {
             length: builderInstructions?.length || null
           },
           stage1Task: {
-            content: stage1Task,
+            content: includeImages ? stage1TaskWithImages : stage1TaskNoImages,
             type: "stage_1_task",
-            length: stage1Task?.length || null
+            length: includeImages ? stage1TaskWithImages?.length || null : stage1TaskNoImages?.length || null
           },
           stage2Task: {
-            content: stage2Task,
+            content: includeImages ? stage2TaskWithImages : stage2TaskNoImages,
             type: "stage_2_task",
-            length: stage2Task?.length || null
+            length: includeImages ? stage2TaskWithImages?.length || null : stage2TaskNoImages?.length || null
           },
           stage3Task: {
-            content: stage3Task,
+            content: includeImages ? stage3TaskWithImages : stage3TaskNoImages,
             type: "stage_3_task",
-            length: stage3Task?.length || null
+            length: includeImages ? stage3TaskWithImages?.length || null : stage3TaskNoImages?.length || null
           },
           stage4Task: {
-            content: stage4Task,
+            content: includeImages ? stage4TaskWithImages : stage4TaskNoImages,
             type: "stage_4_task",
-            length: stage4Task?.length || null
+            length: includeImages ? stage4TaskWithImages?.length || null : stage4TaskNoImages?.length || null
           },
           // Only include imageGenInstructions if images are enabled
           ...(includeImages && {
