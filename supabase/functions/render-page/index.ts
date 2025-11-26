@@ -475,9 +475,43 @@ serve(async (req) => {
       );
     }
 
-    // Check if we have cached HTML
-    const needsRegeneration = !page.rendered_html || page.needs_regeneration;
+    // PHASE 4: Check for published HTML first (pre-baked pages)
+    let publishedHtml = null;
+    
+    if (citySlug && page.service?.template?.published_html) {
+      // For city-specific pages, use template's published HTML
+      publishedHtml = page.service.template.published_html;
+    } else if (!citySlug && page.service?.template?.published_html) {
+      // For service overview pages, use template's published HTML
+      publishedHtml = page.service.template.published_html;
+    }
 
+    // If we have published HTML, serve it directly (no processing needed)
+    if (publishedHtml) {
+      console.log('✅ Serving pre-baked published HTML');
+      
+      // Increment view count
+      if (citySlug && page.id) {
+        await supabase
+          .from('generated_pages')
+          .update({
+            view_count: (page.view_count || 0) + 1,
+            last_viewed_at: new Date().toISOString()
+          })
+          .eq('id', page.id);
+      }
+
+      return new Response(publishedHtml, {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'text/html',
+          'Cache-Control': 'public, max-age=3600, s-maxage=86400',
+        },
+      });
+    }
+
+    // FALLBACK: Old template rendering (for unpublished pages)
+    const needsRegeneration = !page.rendered_html || page.needs_regeneration;
     let finalHtml = page.rendered_html;
 
     // Fetch company settings for rendering

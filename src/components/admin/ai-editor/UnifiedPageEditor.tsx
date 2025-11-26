@@ -2410,83 +2410,50 @@ Return the modernized instructions maintaining the EXACT same structure and form
     });
   };
 
-  // Publish function - copies draft to live
+  // Publish function - calls new publish-page edge function
   const handlePublish = async () => {
     if (isPublishing) return;
     
-    console.log('Publishing...', { currentHtml: currentHtml?.substring(0, 100), pageType, pageId, templateId: template?.id });
     setIsPublishing(true);
     try {
-      if (pageType === 'static' && pageId) {
-        // Get the slug for cache invalidation
-        const { data: pageData } = await supabase
-          .from('static_pages')
-          .select('slug')
-          .eq('id', pageId)
-          .single();
+      // Call the publish-page edge function
+      console.log('Publishing page...', {
+        pageId: template?.id || pageId,
+        pageType: pageType === 'service' ? 'service' : 'static'
+      });
 
-        const {
-          error
-        } = await supabase.from('static_pages').update({
-          content_html: currentHtml,
-          content_html_draft: currentHtml,
-          published_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }).eq('id', pageId);
-        if (error) throw error;
-        
-        // Invalidate the frontend cache for this specific page
-        if (pageData?.slug) {
-          await CacheHelper.invalidatePage(pageData.slug, 'static');
-          // Also invalidate the React Query cache that StaticPage uses
-          queryClient.invalidateQueries({
-            queryKey: ['static-page', pageData.slug]
-          });
+      const result = await callEdgeFunction({
+        name: 'publish-page',
+        body: {
+          pageId: template?.id || pageId,
+          pageType: pageType === 'service' ? 'service' : 'static'
         }
-        
-        setPublishedHtml(currentHtml);
-        queryClient.invalidateQueries({
-          queryKey: ['static-pages', pageId]
-        });
-        toast({
-          title: 'Published successfully',
-          description: 'Your changes are now live.'
-        });
-      } else if (template?.id) {
-        const {
-          error
-        } = await supabase.from('templates').update({
-          template_html: currentHtml,
-          template_html_draft: currentHtml,
-          published_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }).eq('id', template.id);
-        if (error) throw error;
-        setPublishedHtml(currentHtml);
-        if (service) {
-          await supabase.from('generated_pages').update({
-            needs_regeneration: true
-          }).eq('service_id', service.id);
-        }
-        queryClient.invalidateQueries({
-          queryKey: ['service-template', service?.id]
-        });
-        // Invalidate all rendered pages since they may use this template
-        queryClient.invalidateQueries({
-          queryKey: ['rendered-page']
-        });
-        toast({
-          title: 'Published successfully',
-          description: 'Your changes are now live.'
-        });
+      });
+
+      console.log('Publish result:', result);
+
+      // Update the published HTML state
+      setPublishedHtml(currentHtml);
+
+      toast({
+        title: '✅ Page Published',
+        description: 'Your page is now live with all variables replaced and SEO tags added!',
+      });
+
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['ai-editor-template'] });
+      if (pageType === 'service') {
+        queryClient.invalidateQueries({ queryKey: ['service-for-editor'] });
+      } else {
+        queryClient.invalidateQueries({ queryKey: ['static-page'] });
       }
-      setOriginalHtml(currentHtml);
-    } catch (error: any) {
+
+    } catch (error) {
       console.error('Publish error:', error);
       toast({
-        title: 'Publish failed',
-        description: error.message,
-        variant: 'destructive'
+        title: 'Publish Failed',
+        description: error instanceof Error ? error.message : 'Failed to publish page',
+        variant: 'destructive',
       });
     } finally {
       setIsPublishing(false);
