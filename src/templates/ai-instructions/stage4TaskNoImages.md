@@ -4,7 +4,7 @@
 
 ## CSS CUSTOM PROPERTIES (use in :root)
 
-\`\`\`css
+```css
 :root {
 --color-primary: {{siteSettings.primary_color}};
 --color-secondary: {{siteSettings.secondary_color}};
@@ -12,13 +12,13 @@
 --radius-button: {{siteSettings.button_border_radius}};
 --radius-card: {{siteSettings.card_border_radius}};
 }
-\`\`\`
+```
 
 ## REQUIRED STYLES
 
 ### Icon Styling (replace image visual weight)
 
-\`\`\`css
+```css
 .icon-wrapper {
 display: inline-flex;
 align-items: center;
@@ -34,11 +34,11 @@ width: 1.5rem;
 height: 1.5rem;
 stroke: white;
 }
-\`\`\`
+```
 
 ### Button Styling
 
-\`\`\`css
+```css
 .btn {
 display: inline-flex;
 align-items: center;
@@ -57,11 +57,11 @@ color: white;
 transform: translateY(-2px);
 box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
-\`\`\`
+```
 
 ### Accordion Styling
 
-\`\`\`css
+```css
 .accordion-content {
 max-height: 0;
 overflow: hidden;
@@ -76,7 +76,7 @@ transition: transform 0.3s ease;
 .accordion-header.active svg {
 transform: rotate(180deg);
 }
-\`\`\`
+```
 
 ## TASK
 
