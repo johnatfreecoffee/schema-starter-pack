@@ -12,7 +12,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 import { Loader2, Send, Sparkles, Eye, Code, Trash2, AlertCircle, Copy, Check, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import VariablePicker from './VariablePicker';
@@ -2540,107 +2539,104 @@ You are building a **TEMPLATE ENGINE**, not a static website:
               </div>
               
             <div className="space-y-2">
-              {/* Images Section */}
-              <div className="p-2 bg-muted/50 rounded border space-y-1.5">
-                <Label className="text-[10px] font-semibold">Images</Label>
-                <RadioGroup 
-                  value={includeImages && needsResearch ? 'with-research' : includeImages ? 'with' : 'without'}
-                  onValueChange={(value) => {
-                    if (value === 'without') {
-                      setIncludeImages(false);
-                      setNeedsResearch(false);
-                    } else if (value === 'with') {
-                      setIncludeImages(true);
-                      setNeedsResearch(false);
-                    } else if (value === 'with-research') {
-                      setIncludeImages(true);
-                      setNeedsResearch(true);
-                    }
+              {/* Compact Controls Grid - only show when Fix Mode is OFF */}
+              {!fixMode && (
+                <div className="grid grid-cols-3 gap-1 p-1.5 bg-muted/50 rounded border">
+                  <div className="flex flex-col items-center justify-center gap-0.5 p-1">
+                    <Label htmlFor="include-images" className="text-[9px] font-medium cursor-pointer text-center">
+                      📸 Images
+                    </Label>
+                    <Switch
+                      id="include-images"
+                      checked={includeImages}
+                      onCheckedChange={setIncludeImages}
+                      className="data-[state=checked]:bg-primary scale-75"
+                    />
+                  </div>
+                  
+                  <div className="flex flex-col items-center justify-center gap-0.5 p-1">
+                    <Label htmlFor="needs-research" className="text-[9px] font-medium cursor-pointer text-center">
+                      🔍 Research
+                    </Label>
+                    <Switch
+                      id="needs-research"
+                      checked={needsResearch}
+                      onCheckedChange={setNeedsResearch}
+                      className="data-[state=checked]:bg-primary scale-75"
+                    />
+                  </div>
+                  
+                  <div className="flex flex-col items-center justify-center gap-0.5 p-1">
+                    <Label htmlFor="use-test-webhook" className="text-[9px] font-medium cursor-pointer text-center">
+                      {useTestWebhook ? '🧪 Test' : '🚀 Prod'}
+                    </Label>
+                    <Switch
+                      id="use-test-webhook"
+                      checked={useTestWebhook}
+                      onCheckedChange={(checked) => {
+                        setUseTestWebhook(checked);
+                        updateWebhookPreferenceMutation.mutate(checked);
+                      }}
+                      className="data-[state=checked]:bg-primary scale-75"
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {needsResearch && !fixMode && (
+                <div className="p-1.5 bg-blue-500/10 border border-blue-500/20 rounded">
+                  <p className="text-[10px] text-blue-700 dark:text-blue-400">
+                    💡 AI will research your topic and build a detailed page
+                  </p>
+                </div>
+              )}
+
+              {/* Fix Mode Toggle */}
+              <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">
+                <Label htmlFor="fix-mode" className="text-[10px] font-medium cursor-pointer">
+                  Fix Mode: {fixMode ? '🔧 On' : '✏️ Off'}
+                </Label>
+                <Switch
+                  id="fix-mode"
+                  checked={fixMode}
+                  onCheckedChange={(checked) => {
+                    setFixMode(checked);
+                    if (!checked) setFixSource(null);
                   }}
-                  className="space-y-1"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="without" id="images-without" />
-                    <Label htmlFor="images-without" className="text-xs font-normal cursor-pointer">Without</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="with" id="images-with" />
-                    <Label htmlFor="images-with" className="text-xs font-normal cursor-pointer">With</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="with-research" id="images-with-research" />
-                    <Label htmlFor="images-with-research" className="text-xs font-normal cursor-pointer">With Research</Label>
-                  </div>
-                </RadioGroup>
+                  className="data-[state=checked]:bg-primary scale-75"
+                />
               </div>
 
-              {/* Webhook Section */}
-              <div className="p-2 bg-muted/50 rounded border space-y-1.5">
-                <Label className="text-[10px] font-semibold">Webhook</Label>
-                <RadioGroup 
-                  value={useTestWebhook ? 'test' : 'production'}
-                  onValueChange={(value) => {
-                    const isTest = value === 'test';
-                    setUseTestWebhook(isTest);
-                    updateWebhookPreferenceMutation.mutate(isTest);
-                  }}
-                  className="space-y-1"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="test" id="webhook-test" />
-                    <Label htmlFor="webhook-test" className="text-xs font-normal cursor-pointer">Test</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="production" id="webhook-production" />
-                    <Label htmlFor="webhook-production" className="text-xs font-normal cursor-pointer">Production</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              {/* Fix Mode Section */}
-              <div className="p-2 bg-muted/50 rounded border space-y-1.5">
-                <Label className="text-[10px] font-semibold">Fix Mode</Label>
-                <RadioGroup 
-                  value={fixMode ? 'on' : 'off'}
-                  onValueChange={(value) => {
-                    if (value === 'off') {
-                      setFixMode(false);
-                      setFixSource(null);
-                    } else {
-                      setFixMode(true);
-                    }
-                  }}
-                  className="space-y-1"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="off" id="fixmode-off" />
-                    <Label htmlFor="fixmode-off" className="text-xs font-normal cursor-pointer">Off</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="on" id="fixmode-on" />
-                    <Label htmlFor="fixmode-on" className="text-xs font-normal cursor-pointer">On</Label>
-                  </div>
-                </RadioGroup>
-                
-                {fixMode && (
-                  <div className="mt-2 pt-2 border-t space-y-1">
-                    <RadioGroup 
-                      value={fixSource || 'none'}
-                      onValueChange={(value) => setFixSource(value as 'draft' | 'published')}
-                      className="space-y-1"
+              {fixMode && (
+                <div className="p-1.5 bg-amber-500/10 border border-amber-500/20 rounded">
+                  <p className="text-[10px] text-amber-700 dark:text-amber-400 mb-2">
+                    🔧 Select version to fix:
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant={fixSource === 'draft' ? 'default' : 'outline'}
+                      onClick={() => setFixSource('draft')}
+                      className="text-[10px] h-6 flex-1"
                     >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="draft" id="fixsource-draft" />
-                        <Label htmlFor="fixsource-draft" className="text-xs font-normal cursor-pointer">📝 Draft</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="published" id="fixsource-published" />
-                        <Label htmlFor="fixsource-published" className="text-xs font-normal cursor-pointer">📄 Published</Label>
-                      </div>
-                    </RadioGroup>
+                      📝 Draft
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={fixSource === 'published' ? 'default' : 'outline'}
+                      onClick={() => setFixSource('published')}
+                      className="text-[10px] h-6 flex-1"
+                    >
+                      📄 Published
+                    </Button>
                   </div>
-                )}
-              </div>
+                  {fixSource && (
+                    <p className="text-[10px] text-amber-700 dark:text-amber-400 mt-2">
+                      ✓ Using: {fixSource === 'draft' ? 'Draft' : 'Published'}
+                    </p>
+                  )}
+                </div>
+              )}
               
               {inputTokenCount >= 150000 && inputTokenCount < TOKEN_SOFT_LIMIT && (
                 <div className="p-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded">
