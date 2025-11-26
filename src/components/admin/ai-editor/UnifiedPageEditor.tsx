@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 import { Loader2, Send, Sparkles, Eye, Code, Trash2, AlertCircle, Copy, Check, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import VariablePicker from './VariablePicker';
@@ -2542,115 +2543,101 @@ You are building a **TEMPLATE ENGINE**, not a static website:
               {/* Images Section */}
               <div className="p-2 bg-muted/50 rounded border space-y-1.5">
                 <Label className="text-[10px] font-semibold">Images</Label>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant={!includeImages ? 'default' : 'outline'}
-                    onClick={() => {
+                <RadioGroup 
+                  value={includeImages && needsResearch ? 'with-research' : includeImages ? 'with' : 'without'}
+                  onValueChange={(value) => {
+                    if (value === 'without') {
                       setIncludeImages(false);
                       setNeedsResearch(false);
-                    }}
-                    className="text-[10px] h-7 flex-1"
-                  >
-                    Without
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={includeImages && !needsResearch ? 'default' : 'outline'}
-                    onClick={() => {
+                    } else if (value === 'with') {
                       setIncludeImages(true);
                       setNeedsResearch(false);
-                    }}
-                    className="text-[10px] h-7 flex-1"
-                  >
-                    With
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={includeImages && needsResearch ? 'default' : 'outline'}
-                    onClick={() => {
+                    } else if (value === 'with-research') {
                       setIncludeImages(true);
                       setNeedsResearch(true);
-                    }}
-                    className="text-[10px] h-7 flex-1"
-                  >
-                    With Research
-                  </Button>
-                </div>
+                    }
+                  }}
+                  className="space-y-1"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="without" id="images-without" />
+                    <Label htmlFor="images-without" className="text-xs font-normal cursor-pointer">Without</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="with" id="images-with" />
+                    <Label htmlFor="images-with" className="text-xs font-normal cursor-pointer">With</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="with-research" id="images-with-research" />
+                    <Label htmlFor="images-with-research" className="text-xs font-normal cursor-pointer">With Research</Label>
+                  </div>
+                </RadioGroup>
               </div>
 
               {/* Webhook Section */}
               <div className="p-2 bg-muted/50 rounded border space-y-1.5">
                 <Label className="text-[10px] font-semibold">Webhook</Label>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant={useTestWebhook ? 'default' : 'outline'}
-                    onClick={() => {
-                      setUseTestWebhook(true);
-                      updateWebhookPreferenceMutation.mutate(true);
-                    }}
-                    className="text-[10px] h-7 flex-1"
-                  >
-                    Test
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={!useTestWebhook ? 'default' : 'outline'}
-                    onClick={() => {
-                      setUseTestWebhook(false);
-                      updateWebhookPreferenceMutation.mutate(false);
-                    }}
-                    className="text-[10px] h-7 flex-1"
-                  >
-                    Production
-                  </Button>
-                </div>
+                <RadioGroup 
+                  value={useTestWebhook ? 'test' : 'production'}
+                  onValueChange={(value) => {
+                    const isTest = value === 'test';
+                    setUseTestWebhook(isTest);
+                    updateWebhookPreferenceMutation.mutate(isTest);
+                  }}
+                  className="space-y-1"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="test" id="webhook-test" />
+                    <Label htmlFor="webhook-test" className="text-xs font-normal cursor-pointer">Test</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="production" id="webhook-production" />
+                    <Label htmlFor="webhook-production" className="text-xs font-normal cursor-pointer">Production</Label>
+                  </div>
+                </RadioGroup>
               </div>
 
               {/* Fix Mode Section */}
               <div className="p-2 bg-muted/50 rounded border space-y-1.5">
                 <Label className="text-[10px] font-semibold">Fix Mode</Label>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant={!fixMode ? 'default' : 'outline'}
-                    onClick={() => {
+                <RadioGroup 
+                  value={fixMode ? 'on' : 'off'}
+                  onValueChange={(value) => {
+                    if (value === 'off') {
                       setFixMode(false);
                       setFixSource(null);
-                    }}
-                    className="text-[10px] h-7 flex-1"
-                  >
-                    Off
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant={fixMode ? 'default' : 'outline'}
-                    onClick={() => setFixMode(true)}
-                    className="text-[10px] h-7 flex-1"
-                  >
-                    On
-                  </Button>
-                </div>
+                    } else {
+                      setFixMode(true);
+                    }
+                  }}
+                  className="space-y-1"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="off" id="fixmode-off" />
+                    <Label htmlFor="fixmode-off" className="text-xs font-normal cursor-pointer">Off</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="on" id="fixmode-on" />
+                    <Label htmlFor="fixmode-on" className="text-xs font-normal cursor-pointer">On</Label>
+                  </div>
+                </RadioGroup>
                 
                 {fixMode && (
-                  <div className="flex gap-2 pt-1">
-                    <Button
-                      size="sm"
-                      variant={fixSource === 'draft' ? 'default' : 'outline'}
-                      onClick={() => setFixSource('draft')}
-                      className="text-[10px] h-7 flex-1"
+                  <div className="mt-2 pt-2 border-t space-y-1">
+                    <RadioGroup 
+                      value={fixSource || 'none'}
+                      onValueChange={(value) => setFixSource(value as 'draft' | 'published')}
+                      className="space-y-1"
                     >
-                      📝 Draft
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant={fixSource === 'published' ? 'default' : 'outline'}
-                      onClick={() => setFixSource('published')}
-                      className="text-[10px] h-7 flex-1"
-                    >
-                      📄 Published
-                    </Button>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="draft" id="fixsource-draft" />
+                        <Label htmlFor="fixsource-draft" className="text-xs font-normal cursor-pointer">📝 Draft</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="published" id="fixsource-published" />
+                        <Label htmlFor="fixsource-published" className="text-xs font-normal cursor-pointer">📄 Published</Label>
+                      </div>
+                    </RadioGroup>
                   </div>
                 )}
               </div>
