@@ -53,6 +53,17 @@ verify_jwt = true
 [functions.verify-email-change]
 verify_jwt = false
 
+[functions.republish-all-pages]
+verify_jwt = true
+request_timeout = 900
+
+[functions.publish-page]
+verify_jwt = true
+request_timeout = 120
+
+[functions.send-team-invitation]
+verify_jwt = true
+
 # URL Rewrites for Service Pages
 [[edge_runtime.rewrites]]
 source = "/services/:serviceSlug"
