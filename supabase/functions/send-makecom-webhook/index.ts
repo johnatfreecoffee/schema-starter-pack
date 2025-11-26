@@ -645,76 +645,278 @@ VALIDATION CHECKLIST
 // These constants are used within this file - no export needed
 
 // Stage-Specific Task Instructions - WITHOUT IMAGES (Icon & Copy Focused)
-const stage1TaskNoImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Complete your entire wireframe in one response - no partial outputs.
+// Optimized version - uses canonical variables and inline SVG only
 
-TASK:
-Based on all the context provided, create a detailed wireframe and content structure for the web page requested by the user. Your output must include:
+// ============================================================================
+// STAGE 1: WIREFRAME & CONTENT PLANNING
+// ============================================================================
+const stage1TaskNoImages = `🤖 AUTOMATION MODE: Complete entire wireframe in ONE response.
+
+TASK: Create a detailed wireframe for the requested page. Include ALL 5 sections:
 
 1. PAGE LAYOUT STRUCTURE
-2. CONTENT BLOCKS (identify where ICONS and EMOJIS will enhance content - NO image placeholders)
+   - Hero section (NO centered icon containers at top)
+   - Main content sections (3-5 minimum)
+   - CTA placements throughout
+
+2. CONTENT BLOCKS
+   - Name and purpose of each block
+   - Icon placement strategy (inline SVG only)
+   - NO image placeholders
+
 3. INFORMATION HIERARCHY
-4. CALL-TO-ACTION STRATEGY (emphasize icon usage in CTAs)
+   - Primary message first
+   - Supporting content prioritized
+   - Emoji placement (section titles only, NOT hero H1)
+
+4. CALL-TO-ACTION STRATEGY
+   - Primary CTA with phone button
+   - Secondary CTAs with form triggers
+   - All CTAs require inline SVG icons
+
 5. NAVIGATION STRUCTURE
+   - Main nav items
+   - NO header/footer (system injects separately)
 
-Format your response as a structured wireframe document.
+OUTPUT: Structured wireframe document with all 5 sections complete.`;
 
-CRITICAL: Complete ALL 5 sections fully. Focus on ICON STRATEGY and EMOJI PLACEMENT instead of images. Specify which sections use Lucide icons. This is an automation - you cannot stop mid-way or ask for more information.`;
+// ============================================================================
+// STAGE 2: COPYWRITING
+// ============================================================================
+const stage2TaskNoImages = `🤖 AUTOMATION MODE: Write ALL copy in ONE response.
 
-const stage2TaskNoImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Write ALL copy completely in one response - no partial outputs or placeholders.
+TASK: Write complete copy for every wireframe section. Provide:
 
-TASK:
-Write all copy for this web page based on the approved wireframe and all the provided context. Provide:
+1. HEADLINES
+   - H1: Compelling, keyword-rich (NO emoji at start)
+   - H2s: Section titles (emoji OK at end: "Our Services ✨")
+   - H3s: Subheadings as needed
 
-1. HEADLINES (include emoji placement - NOT in hero H1, but in section titles)
-2. BODY COPY (rich, engaging paragraphs with strategic emoji use)
-3. CALLS-TO-ACTION (with emoji suggestions for buttons where appropriate)
+2. BODY COPY
+   - Complete paragraphs for each content block
+   - Match brand voice from context
+   - 2-4 emojis per section (NOT in buttons)
+
+3. CALLS-TO-ACTION
+   - Button text (NO emojis in buttons)
+   - Primary: "Call Now" / "Get Free Quote"
+   - Secondary: "Schedule Service" / "Learn More"
+
 4. NAVIGATION & UI TEXT
+   - Menu labels
+   - Form field labels
+
 5. META CONTENT
+   - Page title: [Keyword] | {{business_name}}
+   - Meta description: 150-160 characters
 
-Format each piece of copy clearly labeled by section and element type.
+OUTPUT: Complete copy labeled by section. Use {{business_name}} for company references.`;
 
-CRITICAL: Provide complete, polished copy for EVERY section from the wireframe. Use 2-4 emojis throughout for visual interest. This is an automation - you cannot stop mid-way or use placeholders.`;
+// ============================================================================
+// STAGE 3: HTML STRUCTURE
+// ============================================================================
+const stage3TaskNoImages = `🤖 AUTOMATION MODE: Build COMPLETE HTML from <!DOCTYPE html> to </html>.
 
-const stage3TaskNoImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Build the COMPLETE HTML from <!DOCTYPE html> to </html> in one response.
+## CANONICAL VARIABLES (use these EXACTLY)
+| Variable | Purpose |
+|----------|---------|
+| {{business_name}} | Company name |
+| {{phone}} | Phone number |
+| {{email}} | Email address |
+| {{address}} | Full address |
+| {{years_experience}} | Years in business |
+| {{description}} | Company description |
 
-TASK:
-Build the complete HTML structure for this page. Follow all rules in the context. Use Handlebars variables for all dynamic data.
+## CRITICAL REQUIREMENTS
 
-**CRITICAL NO-IMAGE REQUIREMENTS:**
-- **DO NOT** include any <img> tags for photos or placeholders
-- **USE** Lucide icons extensively via data-lucide attributes or inline SVG
-- **INCLUDE** emojis from Stage 2 copy in the HTML
-- **FOCUS** on icon-driven design and compelling copy instead of images
+### NO IMAGES
+- Zero <img> tags anywhere
+- Use inline SVG icons for visual interest
+- Focus on typography and spacing
 
-Output ONLY the HTML code, properly formatted and indented.
+### INLINE SVG ICONS ONLY
+❌ FORBIDDEN: data-lucide, Font Awesome, Material Icons, any CDN
+✅ REQUIRED pattern:
+\`\`\`html
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="...complete path data..."/>
+</svg>
+\`\`\`
 
-CRITICAL COMPLETION REQUIREMENTS:
-- Complete the ENTIRE HTML document from <!DOCTYPE html> to </html>
-- Every opening tag MUST have a closing tag
-- Every section MUST be fully finished - no partial sections, no abrupt endings
-- This is an automation - you CANNOT stop mid-way or leave placeholders
-- The HTML must end with a proper footer and closing tags, not a "dull point"
-- ALL content sections from the wireframe must be present and complete
-- NO <img> tags present anywhere`;
+### BUTTON STRUCTURE (mandatory)
+\`\`\`html
+<a href="tel:{{phone}}" class="btn btn-primary inline-flex items-center gap-2 text-base">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+  </svg>
+  Call {{phone}}
+</a>
+\`\`\`
+- ALL buttons: inline-flex, items-center, gap-2, text-base
+- Phone numbers MUST be buttons with phone icon
+- NO emojis in button text
 
-const stage4TaskNoImages = `🤖 AUTOMATION MODE: This is the FINAL stage of an automated pipeline. Output the COMPLETE, production-ready HTML page with embedded CSS.
+### FORM HANDLING
+- NEVER build custom <form> elements
+- ALL form CTAs use: onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Text')"
+\`\`\`html
+<button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Free Quote')" class="btn btn-primary inline-flex items-center gap-2 text-base">
+  <svg><!-- clipboard/document icon --></svg>
+  Get Free Quote
+</button>
+\`\`\`
 
-TASK:
-1. Create comprehensive, responsive, mobile-first CSS to style the provided HTML.
-2. Use the provided CSS variables from the DESIGN CONTEXT for all colors and design tokens.
-3. Follow all rules from the SYSTEM INSTRUCTIONS regarding CSS variables, Tailwind usage, and responsive design.
-4. Style all icon elements with backgrounds, shadows, gradients to make them visually prominent.
-5. Embed the generated CSS inside a <style> tag within the <head> section of the original HTML.
-6. Output ONLY the complete, final HTML file with the embedded CSS. Do not add any markdown or explanations.
+### PAGE STRUCTURE
+- Start with hero <section> (NO top banners/alerts)
+- NO <header> or <footer> (system injects separately)
+- Semantic HTML5: <main>, <section>, <article>
+- One <h1> only, proper heading hierarchy
 
-CRITICAL COMPLETION REQUIREMENTS:
-- Output the ENTIRE styled HTML document from <!DOCTYPE html> to </html>
-- All CSS must be properly embedded in the <head> section
-- Every section must have complete styles - no missing or incomplete CSS rules
-- Icon styling must be prominent and attractive (replace visual weight of images)
-- This is an automation - this MUST be the final, complete, production-ready page
-- The output must end with a proper closing </html> tag, not a partial page
-- Double-check that ALL sections from previous stages are present and styled`;
+## ANTI-HALLUCINATION CHECK
+Before outputting, scan for and REPLACE:
+- ❌ Any 10-digit phone → {{phone}}
+- ❌ Any @email.com → {{email}}
+- ❌ Any street address → {{address}}
+- ❌ Any company name → {{business_name}}
+- ❌ Any hex colors → var(--color-*)
+
+OUTPUT: Complete HTML document, properly indented, from <!DOCTYPE html> to </html>.`;
+
+// ============================================================================
+// STAGE 4: CSS STYLING
+// ============================================================================
+const stage4TaskNoImages = `🤖 AUTOMATION MODE: Output COMPLETE production-ready HTML with embedded CSS.
+
+## CSS CUSTOM PROPERTIES (use in :root)
+\`\`\`css
+:root {
+  --color-primary: {{siteSettings.primary_color}};
+  --color-secondary: {{siteSettings.secondary_color}};
+  --color-accent: {{siteSettings.accent_color}};
+  --radius-button: {{siteSettings.button_border_radius}};
+  --radius-card: {{siteSettings.card_border_radius}};
+}
+\`\`\`
+
+## REQUIRED STYLES
+
+### Icon Styling (replace image visual weight)
+\`\`\`css
+.icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.icon-wrapper svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  stroke: white;
+}
+\`\`\`
+
+### Button Styling
+\`\`\`css
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--radius-button);
+  transition: all 0.3s ease;
+}
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+\`\`\`
+
+### Accordion Styling
+\`\`\`css
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.accordion-content.active {
+  max-height: 2000px;
+}
+.accordion-header svg {
+  transition: transform 0.3s ease;
+}
+.accordion-header.active svg {
+  transform: rotate(180deg);
+}
+\`\`\`
+
+## TASK
+1. Create responsive, mobile-first CSS
+2. Use CSS variables for ALL colors (no hex codes)
+3. Style icons prominently (backgrounds, shadows, gradients)
+4. Embed CSS in <style> within <head>
+5. Ensure visual hierarchy without images
+
+## ANTI-HALLUCINATION CHECK
+Scan CSS for and REPLACE:
+- ❌ #ffffff, #000000, any hex → var(--color-*)
+- ❌ bg-blue-500, text-red-600 → var(--color-*)
+
+OUTPUT: Complete styled HTML from <!DOCTYPE html> to </html>. No markdown, no explanations.`;
+
+// ============================================================================
+// VALIDATION CHECKLISTS (for automation pipeline)
+// ============================================================================
+const validationChecklist = {
+  stage1: [
+    "All 5 sections present",
+    "3+ main content sections defined",
+    "Icon strategy outlined (inline SVG)",
+    "No image placeholders",
+    "Primary CTA identified",
+  ],
+  stage2: [
+    "Copy for every wireframe section",
+    "H1 has no leading emoji",
+    "Button text has no emojis",
+    "Uses {{business_name}} not hardcoded names",
+    "Meta description 150-160 chars",
+  ],
+  stage3: [
+    "Starts with <!DOCTYPE html>",
+    "Zero <img> tags",
+    "All icons are inline SVG (no data-lucide)",
+    "Buttons use inline-flex gap-2 text-base",
+    "Phone is button with icon",
+    "Forms use if(window.openLeadFormModal) window.openLeadFormModal()",
+    "No hardcoded business data",
+    "No <header> or <footer>",
+  ],
+  stage4: [
+    "CSS uses var(--color-*) only",
+    "No hex color codes",
+    "Icon styling is prominent",
+    "Responsive breakpoints included",
+    "Complete document with </html>",
+  ],
+};
+
+module.exports = {
+  stage1TaskNoImages,
+  stage2TaskNoImages,
+  stage3TaskNoImages,
+  stage4TaskNoImages,
+  validationChecklist,
+};
 
 // Stage 1: Wireframe Planning Instructions
 const stage1Instructions = `# STAGE 1: WIREFRAME & CONTENT PLANNING
