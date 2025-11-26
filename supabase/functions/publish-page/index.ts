@@ -57,21 +57,47 @@ function getFormPopupScript(): string {
     }
   });
 
-  // Handle accordion clicks
+  // Handle accordion clicks - support multiple patterns
   document.addEventListener('click', function(e) {
-    const header = e.target.closest('.accordion-header');
-    if (header) {
+    // Pattern 1: .accordion-header (service pages)
+    const accordionHeader = e.target.closest('.accordion-header');
+    if (accordionHeader) {
       e.preventDefault();
-      const parent = header.parentElement;
-      const content = parent.querySelector('.accordion-content');
-      const icon = header.querySelector('svg');
+      const accordionItem = accordionHeader.parentElement;
+      const content = accordionItem.querySelector('.accordion-content');
+      const icon = accordionHeader.querySelector('svg');
       
       if (content) {
-        const isActive = parent.classList.contains('active');
-        parent.classList.toggle('active');
-        content.style.maxHeight = isActive ? '0' : content.scrollHeight + 'px';
-        if (icon) icon.style.transform = isActive ? 'rotate(0deg)' : 'rotate(180deg)';
+        const isOpen = content.classList.contains('active');
+        
+        // Close all other accordions in same container
+        const container = accordionItem.parentElement;
+        container.querySelectorAll('.accordion-content.active').forEach(c => c.classList.remove('active'));
+        container.querySelectorAll('.accordion-header svg').forEach(svg => svg.style.transform = 'rotate(0deg)');
+        
+        // Toggle clicked accordion
+        if (!isOpen) {
+          content.classList.add('active');
+          if (icon) icon.style.transform = 'rotate(180deg)';
+        }
       }
+      return;
+    }
+    
+    // Pattern 2: .faq-item button (static pages with FAQ)
+    const faqButton = e.target.closest('.faq-item button, .faq-item .faq-header');
+    if (faqButton) {
+      e.preventDefault();
+      const faqAnswer = faqButton.nextElementSibling;
+      const icon = faqButton.querySelector('svg');
+      
+      if (faqAnswer && faqAnswer.classList.contains('faq-answer')) {
+        const isOpen = faqAnswer.classList.contains('open');
+        faqButton.classList.toggle('active');
+        faqAnswer.classList.toggle('open');
+        if (icon) icon.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+      }
+      return;
     }
   });
 
