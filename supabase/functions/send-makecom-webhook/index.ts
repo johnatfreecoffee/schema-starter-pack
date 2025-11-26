@@ -1168,22 +1168,6 @@ serve(async (req) => {
               length: imageGenInstructions?.length || null
             }
           }),
-          // Include serviceInstructions if provided (for service pages)
-          ...(serviceInstructions && {
-            serviceInstructions: {
-              content: serviceInstructions,
-              type: "service_instructions",
-              length: serviceInstructions?.length || null
-            }
-          }),
-          // Include systemRevisionInstructions if provided (for service pages)
-          ...(systemRevisionInstructions && {
-            systemRevisionInstructions: {
-              content: systemRevisionInstructions,
-              type: "system_revision_instructions",
-              length: systemRevisionInstructions?.length || null
-            }
-          }),
           supabaseData: {
             pageType: supabaseData?.pageType || "",
             pageTitle: supabaseData?.pageTitle || "",
@@ -1230,8 +1214,6 @@ Your rebuilt prompt should include:
       hasSocialMedia: !!socialMedia,
       hasAiTraining: !!aiTraining,
       hasSystemInstructions: !!systemInstructions,
-      hasServiceInstructions: !!serviceInstructions,
-      hasSystemRevisionInstructions: !!systemRevisionInstructions,
       includeImages,
       needsResearch,
       hasResearchPrompt: needsResearch,
