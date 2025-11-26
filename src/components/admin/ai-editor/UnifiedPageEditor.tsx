@@ -41,7 +41,6 @@ interface ChatMessage {
   suggestion?: string;
 }
 type EditorMode = 'chat' | 'build';
-type AIMode = 'build' | 'edit';
 const TOKEN_SOFT_LIMIT = 800000;
 const TOKEN_HARD_LIMIT = 1000000;
 
@@ -167,7 +166,6 @@ const UnifiedPageEditor = ({
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [editorMode, setEditorMode] = useState<EditorMode>(aiEditorPreferences.editorMode || 'build');
-  const [aiMode, setAiMode] = useState<AIMode>('build');
   const [includeImages, setIncludeImages] = useState(false);
   const [needsResearch, setNeedsResearch] = useState(false);
   const [fixMode, setFixMode] = useState(false);
@@ -1328,85 +1326,6 @@ You are building a **TEMPLATE ENGINE**, not a static website:
       const pipelineId = `pipeline_${Date.now()}_${Math.random().toString(36).substring(7)}`;
       console.log(`🆔 Pipeline ID: ${pipelineId}`);
       
-      // Check if using local AI edit mode
-      if (aiMode === 'edit') {
-        console.log('🔧 Using local AI edit mode');
-        
-        try {
-          const editPayload = {
-            currentHtml,
-            userPrompt: currentCommand,
-            companyInfo: companySettings,
-            systemInstructions: aiTraining,
-            colors: siteSettings
-          };
-
-          console.log('Sending to local AI edit:', {
-            htmlLength: currentHtml.length,
-            promptLength: currentCommand.length
-          });
-
-          const response = await callEdgeFunction<{
-            success: boolean;
-            updatedHtml: string;
-            explanation?: string;
-            error?: string;
-          }>({
-            name: 'ai-local-edit',
-            body: editPayload,
-            timeoutMs: 120000, // 2 minutes
-          });
-
-          if (!response.success || response.error) {
-            throw new Error(response.error || 'Local AI edit failed');
-          }
-
-          // Update the HTML
-          setPreviousHtml(currentHtml);
-          setCurrentHtml(response.updatedHtml);
-          setIsShowingPrevious(false);
-
-          // Add assistant message
-          const assistantMessage: ChatMessage = {
-            role: 'assistant',
-            content: response.explanation || 'Local edit completed successfully'
-          };
-          setChatMessages(prev => [...prev, assistantMessage]);
-
-          toast({
-            title: 'Changes Applied',
-            description: 'Local AI edit completed successfully',
-          });
-
-        } catch (error: any) {
-          console.error('Local AI edit error:', error);
-          
-          let errorMessage = 'Failed to process local AI edit';
-          if (error.message.includes('Rate limit')) {
-            errorMessage = 'Rate limit exceeded. Please wait and try again.';
-          } else if (error.message.includes('usage limit')) {
-            errorMessage = 'AI usage limit reached. Please add credits.';
-          } else if (error.message) {
-            errorMessage = error.message;
-          }
-
-          toast({
-            variant: 'destructive',
-            title: 'Edit Failed',
-            description: errorMessage,
-          });
-
-          const assistantError: ChatMessage = {
-            role: 'assistant',
-            content: `## ❌ Local Edit Error\n\n**${errorMessage}**`
-          };
-          setChatMessages(prev => [...prev, assistantError]);
-        } finally {
-          setIsAiLoading(false);
-        }
-        return;
-      }
-      
       // Send payload externally (for full page builds)
       if (selectedModel === 'makecom') {
         console.log('🌐 Sending request to AI Builder');
@@ -2058,9 +1977,9 @@ You are building a **TEMPLATE ENGINE**, not a static website:
 
       // Token tracking removed - now using live input token counter
 
-      // In build mode, auto-apply changes immediately
+      // Auto-apply changes immediately
       const newHtml = data?.updatedHtml ?? data?.html;
-      if (editorMode === 'build' && newHtml) {
+      if (newHtml) {
         setPreviousHtml(currentHtml);
         setCurrentHtml(newHtml);
         setIsShowingPrevious(false);
@@ -2655,32 +2574,13 @@ You are building a **TEMPLATE ENGINE**, not a static website:
                 </div>
               </div>
               
-              {/* AI Mode Toggle */}
-              <div className="flex items-center gap-1 p-1 bg-muted/50 rounded border">
-                <Button 
-                  variant={aiMode === 'build' ? 'default' : 'outline'} 
-                  size="sm" 
-                  onClick={() => setAiMode('build')} 
-                  className="text-[10px] h-6 flex-1"
-                >
-                  Build New
-                </Button>
-                <Button 
-                  variant={aiMode === 'edit' ? 'default' : 'outline'} 
-                  size="sm" 
-                  onClick={() => setAiMode('edit')} 
-                  className="text-[10px] h-6 flex-1"
-                >
-                  Edit
-                </Button>
-              </div>
-              
-              {/* Image Toggle - only show in build mode when Fix Mode is OFF */}
-              {aiMode === 'build' && !fixMode && (
-                <>
-                  <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">
-                    <Label htmlFor="include-images" className="text-[10px] font-medium cursor-pointer">
-                      Images: {includeImages ? '📸 On' : '✨ Off'}
+            <div className="space-y-2">
+              {/* Compact Controls Grid - only show when Fix Mode is OFF */}
+              {!fixMode && (
+                <div className="grid grid-cols-3 gap-1 p-1.5 bg-muted/50 rounded border">
+                  <div className="flex flex-col items-center justify-center gap-0.5 p-1">
+                    <Label htmlFor="include-images" className="text-[9px] font-medium cursor-pointer text-center">
+                      📸
                     </Label>
                     <Switch
                       id="include-images"
@@ -2689,10 +2589,10 @@ You are building a **TEMPLATE ENGINE**, not a static website:
                       className="data-[state=checked]:bg-primary scale-75"
                     />
                   </div>
-
-                  <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">
-                    <Label htmlFor="needs-research" className="text-[10px] font-medium cursor-pointer">
-                      AI Research: {needsResearch ? '🔍 On' : '✏️ Off'}
+                  
+                  <div className="flex flex-col items-center justify-center gap-0.5 p-1">
+                    <Label htmlFor="needs-research" className="text-[9px] font-medium cursor-pointer text-center">
+                      🔍
                     </Label>
                     <Switch
                       id="needs-research"
@@ -2702,70 +2602,9 @@ You are building a **TEMPLATE ENGINE**, not a static website:
                     />
                   </div>
                   
-                  {needsResearch && (
-                    <div className="p-1.5 bg-blue-500/10 border border-blue-500/20 rounded">
-                      <p className="text-[10px] text-blue-700 dark:text-blue-400">
-                        💡 AI will research your topic and build a detailed page
-                      </p>
-                    </div>
-                  )}
-                </>
-              )}
-
-              {/* Fix Mode Toggle - only show in build mode */}
-              {aiMode === 'build' && (
-                <>
-                  <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">
-                    <Label htmlFor="fix-mode" className="text-[10px] font-medium cursor-pointer">
-                      Fix Mode: {fixMode ? '🔧 On' : '✏️ Off'}
-                    </Label>
-                    <Switch
-                      id="fix-mode"
-                      checked={fixMode}
-                      onCheckedChange={(checked) => {
-                        setFixMode(checked);
-                        if (!checked) setFixSource(null);
-                      }}
-                      className="data-[state=checked]:bg-primary scale-75"
-                    />
-                  </div>
-
-                  {fixMode && (
-                    <>
-                      <div className="p-1.5 bg-amber-500/10 border border-amber-500/20 rounded">
-                        <p className="text-[10px] text-amber-700 dark:text-amber-400 mb-2">
-                          🔧 Select which version to fix:
-                        </p>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant={fixSource === 'draft' ? 'default' : 'outline'}
-                            onClick={() => setFixSource('draft')}
-                            className="text-[10px] h-6 flex-1"
-                          >
-                            📝 Draft
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant={fixSource === 'published' ? 'default' : 'outline'}
-                            onClick={() => setFixSource('published')}
-                            className="text-[10px] h-6 flex-1"
-                          >
-                            📄 Published
-                          </Button>
-                        </div>
-                        {fixSource && (
-                          <p className="text-[10px] text-amber-700 dark:text-amber-400 mt-2">
-                            ✓ Using: {fixSource === 'draft' ? 'Draft' : 'Published'}
-                          </p>
-                        )}
-                      </div>
-                    </>
-                  )}
-
-                  <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">
-                    <Label htmlFor="use-test-webhook" className="text-[10px] font-medium cursor-pointer">
-                      {useTestWebhook ? '🧪 Test' : '🚀 Prod'}
+                  <div className="flex flex-col items-center justify-center gap-0.5 p-1">
+                    <Label htmlFor="use-test-webhook" className="text-[9px] font-medium cursor-pointer text-center">
+                      {useTestWebhook ? '🧪' : '🚀'}
                     </Label>
                     <Switch
                       id="use-test-webhook"
@@ -2777,7 +2616,62 @@ You are building a **TEMPLATE ENGINE**, not a static website:
                       className="data-[state=checked]:bg-primary scale-75"
                     />
                   </div>
-                </>
+                </div>
+              )}
+              
+              {needsResearch && !fixMode && (
+                <div className="p-1.5 bg-blue-500/10 border border-blue-500/20 rounded">
+                  <p className="text-[10px] text-blue-700 dark:text-blue-400">
+                    💡 AI will research your topic and build a detailed page
+                  </p>
+                </div>
+              )}
+
+              {/* Fix Mode Toggle */}
+              <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">
+                <Label htmlFor="fix-mode" className="text-[10px] font-medium cursor-pointer">
+                  Fix Mode: {fixMode ? '🔧 On' : '✏️ Off'}
+                </Label>
+                <Switch
+                  id="fix-mode"
+                  checked={fixMode}
+                  onCheckedChange={(checked) => {
+                    setFixMode(checked);
+                    if (!checked) setFixSource(null);
+                  }}
+                  className="data-[state=checked]:bg-primary scale-75"
+                />
+              </div>
+
+              {fixMode && (
+                <div className="p-1.5 bg-amber-500/10 border border-amber-500/20 rounded">
+                  <p className="text-[10px] text-amber-700 dark:text-amber-400 mb-2">
+                    🔧 Select version to fix:
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant={fixSource === 'draft' ? 'default' : 'outline'}
+                      onClick={() => setFixSource('draft')}
+                      className="text-[10px] h-6 flex-1"
+                    >
+                      📝 Draft
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={fixSource === 'published' ? 'default' : 'outline'}
+                      onClick={() => setFixSource('published')}
+                      className="text-[10px] h-6 flex-1"
+                    >
+                      📄 Published
+                    </Button>
+                  </div>
+                  {fixSource && (
+                    <p className="text-[10px] text-amber-700 dark:text-amber-400 mt-2">
+                      ✓ Using: {fixSource === 'draft' ? 'Draft' : 'Published'}
+                    </p>
+                  )}
+                </div>
               )}
               
               {inputTokenCount >= 150000 && inputTokenCount < TOKEN_SOFT_LIMIT && (
