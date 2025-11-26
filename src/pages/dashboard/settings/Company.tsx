@@ -9,7 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Loader2, Sparkles, RefreshCw } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
+import { UpdatePageDataButton } from '@/components/admin/settings/UpdatePageDataButton';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
@@ -66,44 +67,6 @@ const CompanySettings = () => {
   const [uploadingType, setUploadingType] = useState<'logo' | 'icon' | null>(null);
   const [showAIGuide, setShowAIGuide] = useState(false);
   const [currentTab, setCurrentTab] = useState('basic');
-  const [isRepublishing, setIsRepublishing] = useState(false);
-
-  const handleRepublishAll = async () => {
-    if (!confirm('Are you sure you want to republish all pages? This will update all static pages and service templates with current company data.')) {
-      return;
-    }
-
-    setIsRepublishing(true);
-    try {
-      const result = await callEdgeFunction({
-        name: 'republish-all-pages',
-        body: {}
-      });
-
-      toast({
-        title: '✅ Republish Complete',
-        description: `Successfully republished ${result.summary.total_success} out of ${result.summary.total_pages} pages`,
-      });
-
-      if (result.summary.total_failed > 0) {
-        console.error('Failed pages:', result.results.errors);
-      }
-
-      // Invalidate all page queries
-      queryClient.invalidateQueries({ queryKey: ['static-page'] });
-      queryClient.invalidateQueries({ queryKey: ['service-template'] });
-      queryClient.invalidateQueries({ queryKey: ['rendered-page'] });
-    } catch (error) {
-      console.error('Republish error:', error);
-      toast({
-        title: 'Republish Failed',
-        description: error instanceof Error ? error.message : 'Failed to republish pages',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsRepublishing(false);
-    }
-  };
 
   useEffect(() => {
     if (company) {
@@ -358,14 +321,17 @@ const CompanySettings = () => {
     <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-4xl font-bold">Company Settings</h1>
-          <Button
-            onClick={() => setShowAIGuide(true)}
-            className="gap-2"
-            variant="default"
-          >
-            <Sparkles className="h-4 w-4" />
-            AI Guide
-          </Button>
+          <div className="flex gap-3 items-center">
+            <UpdatePageDataButton />
+            <Button
+              onClick={() => setShowAIGuide(true)}
+              className="gap-2"
+              variant="default"
+            >
+              <Sparkles className="h-4 w-4" />
+              AI Guide
+            </Button>
+          </div>
         </div>
         
         <Tabs defaultValue="basic" value={currentTab} onValueChange={setCurrentTab} className="space-y-6">
@@ -846,40 +812,6 @@ const CompanySettings = () => {
             </Card>
           </TabsContent>
         </Tabs>
-
-        {/* Republish All Pages Button */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Website Pages Management</CardTitle>
-            <CardDescription>
-              Republish all pages with current company data and settings
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              When you update company information (name, phone, email, colors, etc.), 
-              click this button to update all published pages with the new data.
-            </p>
-            <Button 
-              onClick={handleRepublishAll} 
-              disabled={isRepublishing}
-              variant="outline"
-              className="gap-2"
-            >
-              {isRepublishing ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Republishing...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="h-4 w-4" />
-                  Republish All Pages
-                </>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
 
         {/* Auto-save indicator */}
         {(isSaving || uploading) && (

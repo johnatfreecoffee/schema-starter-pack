@@ -11,6 +11,7 @@ import { toast } from '@/hooks/use-toast';
 import { cacheInvalidation } from '@/lib/cacheInvalidation';
 import { useState } from 'react';
 import { Eye, Pencil, Archive, Plus, LayoutGrid, List, Settings, FileText } from 'lucide-react';
+import { UpdatePageDataButton } from '@/components/admin/settings/UpdatePageDataButton';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import ServiceAreaForm from '@/components/admin/settings/service-areas/ServiceAreaForm';
@@ -193,10 +194,13 @@ const ServiceAreas = () => {
     <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-4xl font-bold">Service Areas Management</h1>
-          <Button onClick={() => { setSelectedArea(null); setIsFormOpen(true); }}>
-            <Plus className="mr-2 h-4 w-4" />
-            Create New Service Area
-          </Button>
+          <div className="flex gap-3 items-center">
+            <UpdatePageDataButton />
+            <Button onClick={() => { setSelectedArea(null); setIsFormOpen(true); }}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create New Service Area
+            </Button>
+          </div>
         </div>
 
         <div className="flex gap-4 mb-6 flex-wrap">

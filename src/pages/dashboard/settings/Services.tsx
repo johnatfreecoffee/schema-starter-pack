@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Eye, Edit, Archive, Plus, LayoutGrid, List, Sparkles, ArchiveRestore } from 'lucide-react';
+import { UpdatePageDataButton } from '@/components/admin/settings/UpdatePageDataButton';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import ServiceForm from '@/components/admin/settings/services/ServiceForm';
@@ -153,10 +154,13 @@ const ServicesSettings = () => {
     <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-4xl font-bold">Services Management</h1>
-          <Button onClick={() => { setSelectedService(null); setIsFormOpen(true); }}>
-            <Plus className="mr-2 h-4 w-4" />
-            Create New Service
-          </Button>
+          <div className="flex gap-3 items-center">
+            <UpdatePageDataButton />
+            <Button onClick={() => { setSelectedService(null); setIsFormOpen(true); }}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create New Service
+            </Button>
+          </div>
         </div>
 
         <div className="flex gap-4 mb-6 flex-wrap">
