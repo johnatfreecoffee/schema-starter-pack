@@ -6,37 +6,38 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Simple Handlebars-like variable replacement
+// Simple Handlebars-like variable replacement with deep nested object support
 function replaceVariables(html: string, data: Record<string, any>): string {
   let result = html;
   
-  Object.keys(data).forEach(key => {
-    const value = data[key];
-    
-    if (Array.isArray(value)) {
-      // Handle arrays with {{#key}}...{{/key}} syntax
-      const listRegex = new RegExp(`{{#${key}}}([\\s\\S]*?){{/${key}}}`, 'g');
-      result = result.replace(listRegex, (_, template) => {
-        return value.map(item => template.replace(/{{this}}/g, String(item))).join('');
-      });
+  // Helper function to recursively handle nested objects
+  function processNestedObject(obj: any, prefix: string = '') {
+    Object.keys(obj).forEach(key => {
+      const value = obj[key];
+      const fullKey = prefix ? `${prefix}.${key}` : key;
       
-      // Simple {{key}} replacement
-      const simpleRegex = new RegExp(`{{${key}}}`, 'g');
-      result = result.replace(simpleRegex, value.join(', '));
-    } else if (typeof value === 'object' && value !== null) {
-      // Handle nested objects like {{brand.colors.primary}}
-      Object.keys(value).forEach(nestedKey => {
-        const nestedValue = value[nestedKey];
-        const nestedRegex = new RegExp(`{{${key}\\.${nestedKey}}}`, 'g');
-        result = result.replace(nestedRegex, String(nestedValue || ''));
-      });
-    } else {
-      // Handle simple variables
-      const regex = new RegExp(`{{${key}}}`, 'g');
-      result = result.replace(regex, String(value || ''));
-    }
-  });
+      if (Array.isArray(value)) {
+        // Handle arrays with {{#key}}...{{/key}} syntax
+        const listRegex = new RegExp(`{{#${fullKey}}}([\\s\\S]*?){{/${fullKey}}}`, 'g');
+        result = result.replace(listRegex, (_, template) => {
+          return value.map(item => template.replace(/{{this}}/g, String(item))).join('');
+        });
+        
+        // Simple {{key}} replacement
+        const simpleRegex = new RegExp(`{{${fullKey}}}`, 'g');
+        result = result.replace(simpleRegex, value.join(', '));
+      } else if (typeof value === 'object' && value !== null) {
+        // Recursively handle nested objects
+        processNestedObject(value, fullKey);
+      } else {
+        // Handle simple variables
+        const regex = new RegExp(`{{${fullKey}}}`, 'g');
+        result = result.replace(regex, String(value || ''));
+      }
+    });
+  }
   
+  processNestedObject(data);
   return result;
 }
 
@@ -174,6 +175,28 @@ serve(async (req) => {
           secondary: siteData.secondary_color || '#003366',
           accent: siteData.accent_color || '#ff6600',
         }
+      },
+      siteSettings: {
+        primary_color: siteData.primary_color || '#0066cc',
+        secondary_color: siteData.secondary_color || '#003366',
+        accent_color: siteData.accent_color || '#ff6600',
+        success_color: siteData.success_color || '#22c55e',
+        warning_color: siteData.warning_color || '#eab308',
+        info_color: siteData.info_color || '#3b82f6',
+        danger_color: siteData.danger_color || '#ef4444',
+        bg_primary_color: siteData.bg_primary_color || '#ffffff',
+        bg_secondary_color: siteData.bg_secondary_color || '#f8f9fa',
+        bg_tertiary_color: siteData.bg_tertiary_color || '#e9ecef',
+        text_primary_color: siteData.text_primary_color || '#212529',
+        text_secondary_color: siteData.text_secondary_color || '#495057',
+        text_muted_color: siteData.text_muted_color || '#6c757d',
+        border_color: siteData.border_color || '#dee2e6',
+        card_bg_color: siteData.card_bg_color || '#ffffff',
+        feature_color: siteData.feature_color || '#0066cc',
+        cta_color: siteData.cta_color || '#ff6600',
+        button_border_radius: siteData.button_border_radius || '8',
+        card_border_radius: siteData.card_border_radius || '12',
+        icon_stroke_width: siteData.icon_stroke_width || '2'
       }
     };
 
@@ -231,69 +254,12 @@ serve(async (req) => {
     }
 
     // Replace all variables in draft HTML
-    const processedHtml = replaceVariables(draftHtml, variableData);
+    let processedHtml = replaceVariables(draftHtml, variableData);
 
-    // Wrap with full HTML document including SEO tags
-    const domain = 'https://clearhome.pro';
-    const fullHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${pageTitle}</title>
-  <meta name="description" content="${metaDescription}">
-  ${canonicalUrl ? `<link rel="canonical" href="${canonicalUrl}">` : ''}
-  <meta name="robots" content="index, follow">
-  
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="${pageTitle}">
-  <meta property="og:description" content="${metaDescription}">
-  ${canonicalUrl ? `<meta property="og:url" content="${canonicalUrl}">` : ''}
-  <meta property="og:site_name" content="${variableData.business_name}">
-  ${variableData.logo_url ? `<meta property="og:image" content="${variableData.logo_url}">` : ''}
-  <meta property="og:locale" content="en_US">
-  
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${pageTitle}">
-  <meta name="twitter:description" content="${metaDescription}">
-  ${variableData.logo_url ? `<meta name="twitter:image" content="${variableData.logo_url}">` : ''}
-  
-  <!-- Favicon -->
-  ${variableData.icon_url ? `<link rel="icon" href="${variableData.icon_url}">` : ''}
-  
-  <!-- JSON-LD Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "${variableData.business_name}",
-    "description": "${variableData.description || metaDescription}",
-    "url": "${domain}",
-    "logo": "${variableData.logo_url}",
-    "telephone": "${variableData.phone}",
-    "email": "${variableData.email}",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "${variableData.address_street}",
-      "addressLocality": "${variableData.address_city}",
-      "addressRegion": "${variableData.address_state}",
-      "postalCode": "${variableData.address_zip}",
-      "addressCountry": "US"
-    }
-  }
-  </script>
-  
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  ${getFormPopupScript()}
-</head>
-<body>
-  ${processedHtml}
-</body>
-</html>`;
+    // The draft HTML is already a complete document with SEO tags and CSS
+    // Just inject the form popup script before </body> tag
+    const scriptInjection = getFormPopupScript();
+    const fullHtml = processedHtml.replace('</body>', `${scriptInjection}\n</body>`);
 
     // Save published HTML to database
     const updateData: any = {};
