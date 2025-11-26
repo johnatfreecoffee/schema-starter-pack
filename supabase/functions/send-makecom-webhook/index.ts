@@ -913,555 +913,281 @@ const validationChecklist = {
 // Instructions are used in the webhook payload below
 
 // Stage 1: Wireframe Planning Instructions
-const stage1Instructions = `# STAGE 1: WIREFRAME & CONTENT PLANNING
+const stage1Instructions = `# MULTI-STAGE WEB PAGE BUILDER (WITH IMAGES)
 
-## Your Role
-You are creating the structural blueprint for a web page. DO NOT write any code in this stage.
+## ROLE
+You are building production-ready web pages in a 4-stage pipeline. Each stage builds on the previous. Output must use Handlebars variables for ALL business data and CSS custom properties for ALL styling. Zero hardcoding allowed.
 
-## Input Context
-You will receive:
-- Company information (name, industry, services)
-- Brand voice and target audience
-- User's page request
-- System instructions for reference
-
-## Your Task
-Create a detailed wireframe that includes:
-
-### MODEL INPUT FORMAT:
-\`\`\`
-CONTEXT:
-Company Name: {companyData.company_name}
-Industry: {companyData.industry}
-Brand Voice: {aiTraining.brand_voice}
-Target Audience: {aiTraining.target_audience}
-Key Services/Products: {companyData.services}
-
-USER REQUEST:
-{userPrompt}
-
-SYSTEM INSTRUCTIONS:
-{systemInstructions}
-
-TASK:
-Create a detailed wireframe and content structure for this web page. Your output must include:
-
-1. PAGE LAYOUT STRUCTURE
-   - Header design and navigation placement
-   - Hero/banner section layout
-   - Main content sections (list each with purpose)
-   - Sidebar elements (if applicable)
-   - Footer structure
-
-2. CONTENT BLOCKS
-   - Name each content block
-   - Define the purpose of each block
-   - Specify what information goes in each block
-   - Note any special features (forms, galleries, etc.)
-
-3. INFORMATION HIERARCHY
-   - What's the primary message?
-   - What are secondary messages?
-   - What supporting details are needed?
-   - Priority order of content sections
-
-4. CALL-TO-ACTION STRATEGY
-   - Primary CTA placement and purpose
-   - Secondary CTAs (if any)
-   - Contact points locations
-
-5. NAVIGATION STRUCTURE
-   - Main navigation items
-   - Footer navigation items
-   - Any special navigation features
-
-Format your response as a structured wireframe document.
-\`\`\`
-
-### VALIDATION CHECKLIST:
-- [ ] All 5 required sections are present (Layout, Blocks, Hierarchy, CTA, Navigation)
-- [ ] At least 3 main content sections are defined
-- [ ] Each content block has a clear purpose stated
-- [ ] At least one primary CTA is identified with placement
-- [ ] Information hierarchy prioritizes most important content first
-- [ ] Layout addresses the user's specific request
-
-### ON VALIDATION FAILURE:
-Send follow-up prompt: "The wireframe is missing {specific_missing_elements}. Please provide these details."
-
-### ON VALIDATION SUCCESS:
-Store entire response as STAGE_1_WIREFRAME and proceed to Stage 2.
+## OUTPUT FORMAT
+- **Stages 1-2**: Structured text documents
+- **Stages 3-4**: Raw HTML starting with `<!DOCTYPE html>` — NO markdown code fences
 
 ---
 
-## STAGE 2: Copywriting
+## CANONICAL VARIABLE REFERENCE
 
-### MODEL INPUT FORMAT:
-\`\`\`
-CONTEXT:
-Company Name: {companyData.company_name}
-Industry: {companyData.industry}
-Brand Voice: {aiTraining.brand_voice}
-Target Audience: {aiTraining.target_audience}
-Tone: {aiTraining.tone}
-Key Messages: {aiTraining.key_messages}
+| Variable | Purpose |
+|----------|---------|
+| `{{business_name}}` | Company name |
+| `{{business_slogan}}` | Tagline |
+| `{{phone}}` | Phone number |
+| `{{email}}` | Email address |
+| `{{address}}` | Full address |
+| `{{address_street}}` | Street only |
+| `{{address_city}}` | City only |
+| `{{address_state}}` | State abbreviation |
+| `{{address_zip}}` | ZIP code |
+| `{{website_url}}` | Website URL |
+| `{{years_experience}}` | Years in business |
+| `{{description}}` | Company description |
+| `{{logo_url}}` | Logo URL |
 
-APPROVED WIREFRAME FROM STAGE 1:
-{STAGE_1_WIREFRAME}
+### Service Page Variables
+| `{{service_name}}` | Service name |
+| `{{service_slug}}` | URL-friendly service name |
+| `{{service_description}}` | Service description |
+| `{{service_starting_price}}` | Starting price |
 
-USER REQUEST:
-{userPrompt}
-
-TASK:
-Write all copy for this web page based on the approved wireframe. Provide:
-
-1. HEADLINES
-   - Main H1 headline
-   - Section headlines (H2s)
-   - Sub-headlines (H3s) where needed
-
-2. BODY COPY
-   - Write complete copy for each content block identified in the wireframe
-   - Match the brand voice and tone specified
-   - Address the target audience appropriately
-   - Include key messages naturally
-
-3. CALLS-TO-ACTION
-   - Primary CTA button text
-   - Secondary CTA text (if applicable)
-   - Supporting CTA microcopy
-
-4. NAVIGATION & UI TEXT
-   - Navigation menu labels
-   - Button labels
-   - Form field labels and placeholders
-   - Footer text
-
-5. META CONTENT
-   - Page title (for browser tab)
-   - Meta description (150-160 characters)
-
-Format each piece of copy clearly labeled by section and element type.
-\`\`\`
-
-### VALIDATION CHECKLIST:
-- [ ] Copy provided for every content block from Stage 1 wireframe
-- [ ] H1 headline is compelling and includes primary keyword
-- [ ] Body copy matches specified brand voice/tone
-- [ ] At least one clear, action-oriented CTA is written
-- [ ] Navigation labels are clear and concise
-- [ ] Meta description is 150-160 characters
-- [ ] Copy addresses target audience appropriately
-
-### ON VALIDATION FAILURE:
-Send follow-up prompt: "Please revise the copy for {specific_sections}. It needs to {specific_requirement}."
-
-### ON VALIDATION SUCCESS:
-Store entire response as STAGE_2_COPY and proceed to Stage 3.
+### Location Page Variables
+| `{{city}}` | City/area name |
+| `{{city_slug}}` | URL-friendly city name |
+| `{{state}}` | State name |
+| `{{zip}}` | ZIP/postal code |
+| `{{country}}` | Country name |
 
 ---
 
-## STAGE 3: HTML Structure
+## CSS CUSTOM PROPERTIES
 
-### MODEL INPUT FORMAT:
-\`\`\`
-CONTEXT:
-{systemInstructions}
+| Property | Purpose |
+|----------|---------|
+| `var(--color-primary)` | Primary brand color |
+| `var(--color-secondary)` | Secondary brand color |
+| `var(--color-accent)` | Accent color |
+| `var(--color-cta)` | CTA button color |
+| `var(--radius-button)` | Button border radius |
+| `var(--radius-card)` | Card border radius |
 
-APPROVED WIREFRAME:
-{STAGE_1_WIREFRAME}
+**NEVER use hex codes or Tailwind color classes (e.g., `bg-blue-500`)**
 
-APPROVED COPY:
-{STAGE_2_COPY}
+---
 
-TEMPLATE VARIABLES AVAILABLE:
-{{company_name}}, {{phone}}, {{email}}, {{address}}, {{city}}, {{state}}, {{zip}}, {{country}}
-{{facebook_url}}, {{twitter_url}}, {{linkedin_url}}, {{instagram_url}}, {{youtube_url}}
-(Use these variables in HTML where dynamic company data should appear)
+## STAGE 1: WIREFRAME & CONTENT PLANNING
 
-TASK:
-Build the complete HTML structure for this page. Requirements:
+### Task
+Create a structural blueprint. NO code in this stage.
 
-1. PAGE STRUCTURE (CRITICAL - STRICTLY ENFORCE):
-   - **FIRST element** inside <body> MUST be the hero <section>
-   - **NEVER** start page with a top CTA bar, emergency banner, or announcement section
-   - **NO** sticky alerts, warning banners, or promotional bars before hero
-   - **NO** "emergency-alert" divs or similar sections at the top
-   - Page must begin directly with main hero content
-   - NO header elements before the hero section
+### Required Sections
+1. **PAGE LAYOUT**: Hero section, main content sections (3-5 minimum), CTA placements
+2. **CONTENT BLOCKS**: Name, purpose, and information for each block; note image placement locations
+3. **INFORMATION HIERARCHY**: Primary message, secondary messages, priority order
+4. **CTA STRATEGY**: Primary CTA placement/purpose, secondary CTAs, contact points
+5. **IMAGE STRATEGY**: Hero image, service photos, team photos, process/before-after images
 
-2. SEMANTIC HTML5
-   - Use proper semantic elements (<header>, <main>, <section>, <article>, <aside>, <footer>, <nav>)
-   - One <h1> element only
-   - Proper heading hierarchy (h1 → h2 → h3, no skipping levels)
+### Validation
+- [ ] All 5 sections present
+- [ ] At least 3 main content sections defined
+- [ ] Image placements identified for each major section
+- [ ] At least one primary CTA identified
 
-3. CONTENT INTEGRATION
-   - Place ALL copy from Stage 2 in appropriate HTML elements
-   - Follow the wireframe structure exactly
-   - Use template variables where company data should appear dynamically
-   - Example: <span>{{company_name}}</span> instead of hardcoding "Acme Corp"
+---
 
-4. ACCESSIBILITY
-   - All images must have descriptive alt attributes
-   - Form inputs must have associated labels
-   - Use ARIA labels where appropriate
-   - Ensure logical tab order
+## STAGE 2: COPYWRITING
 
-5. FORM HANDLING (CRITICAL - NEVER BUILD FORMS):
-   - **NEVER** create custom HTML forms with <form> tags
-   - **NEVER EMBED OR INJECT FORMS DIRECTLY ON THE PAGE**
-   - **ALL forms must ONLY appear behind buttons in modal popups**
-   
-   **BUTTON-TRIGGERED FORMS (ONLY WAY TO DISPLAY FORMS):**
-   - Use onclick="window.openLeadFormModal('Button Text')" for all form CTAs
-   - Default: Button opens universal lead form in modal popup
-   - Place buttons throughout page for conversion: hero, sections, footer, etc.
-   - If user specifies a particular form (e.g., "emergency contact form"), tag appropriately with data attributes
-   
-   **WHAT NOT TO DO:**
-   - ❌ NEVER use <div data-form-embed="..."> or similar iframe-like injections
-   - ❌ NEVER build custom <form> elements with inputs/textareas
-   - ❌ NEVER try to embed forms directly on the page
-   - ❌ NEVER create multi-field forms even if user specifies field count
-   - Forms are managed in dashboard, not by AI
+### Task
+Write all copy based on approved wireframe.
 
-6. BUTTON STRUCTURE (CRITICAL - STRICTLY ENFORCE):
-   - ALL buttons MUST have SVG icons with w-6 h-6 sizing (NO exceptions)
-   - ABSOLUTELY NO EMOJIS in button text
-   - Icon appears BEFORE button text
-   - Consistent icon sizing creates professional design
-   
-   **BUTTON ICON VALIDATION:**
-   - [ ] Every button has an SVG icon
-   - [ ] All button icons are exactly w-6 h-6
-   - [ ] Zero emojis in any button text
-   - [ ] Icons appear before text
+### Required Deliverables
+1. **HEADLINES**: H1, section H2s, sub-headlines H3s
+2. **BODY COPY**: Complete copy for each content block, matching brand voice
+3. **CTAs**: Primary and secondary button text
+4. **META CONTENT**: Page title, meta description (150-160 chars)
+5. **IMAGE ALT TEXT**: Detailed descriptions for all identified image placements (50-100 chars each)
 
-7. STRUCTURE
-   - Add class names for styling (use semantic, BEM-style naming)
-   - Include all sections from the wireframe
-   - Add container divs for layout purposes
-   - Include proper meta tags in <head>
+### Alt Text Guidelines
+Include: subject, setting, mood, composition, lighting
+- ✅ "Professional roofer inspecting shingles on residential home under clear blue sky"
+- ✅ "Close-up of hands installing metal roofing panels with power drill, safety gloves visible"
 
-6. CRITICAL: PHONE LINKS VS. LEAD FORM CTAs (STRICTLY ENFORCE)
-   
-   **PHONE NUMBER LINKS (tel: links):**
-   - Must include SVG phone icon (w-6 h-6)
-   - NO emojis in button text
-   - **ABSOLUTELY NO onclick ATTRIBUTE** - Phone links must be pure tel: links
-   - **DO NOT ADD window.openLeadFormModal()** - This prevents calls from working
-   - Phone links should ONLY initiate phone calls, nothing else
-   - Example CORRECT: 
-     \`\`\`html
-     <a href="tel:{{phone}}" class="btn-consistent text-white" style="background: var(--color-cta); border-radius: var(--radius-button);">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-       </svg>
-       Call: {{phone}}
-     </a>
-     \`\`\`
-   - Example WRONG: <a href="tel:{{phone}}" onclick="...">📞 Call Us</a> ❌ (has emoji and onclick)
-   
-   **LEAD FORM CTA BUTTONS (NOT phone links):**
-   - Must include relevant SVG icon (w-6 h-6) - calendar, document, clipboard, etc.
-   - NO emojis in button text
-   - Use onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Name')"
-   - ONLY on explicit form CTAs: "Get Quote", "Request Service", "Schedule Inspection", "Book Now"
-   - These should be <button> or <a> WITHOUT href="tel:" or href="mailto:"
-   - Example CORRECT:
-     \`\`\`html
-     <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Quote')" class="btn-consistent text-white" style="background: var(--color-cta); border-radius: var(--radius-button);">
-       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-       </svg>
-       Get Free Quote
-     </button>
-     \`\`\`
-   - Example WRONG: <button onclick="...">📝 Get Free Quote</button> ❌ (has emoji, missing icon)
+### Validation
+- [ ] Copy for every content block from Stage 1
+- [ ] H1 includes primary keyword
+- [ ] Alt text for all images (50-100 chars each)
+- [ ] Meta description 150-160 characters
 
-6. IMAGES (CRITICAL REQUIREMENTS)
-   - **ABSOLUTELY NO EXTERNAL URLS**: Do NOT use Google Drive URLs, Unsplash URLs, Pexels, or any external image services
-   - **ONLY LOCAL PLACEHOLDERS**: Use ONLY local placeholder filenames
-   - **NO CENTER-ALIGNED IMAGES AT PAGE TOP**: Do not place hero images in centered standalone containers before headlines
-   - **FILE EXTENSIONS - CRITICAL**:
-     * .jpg ONLY for photos of people, buildings, landscapes, real-world scenes
-     * .png ONLY for graphics, icons, illustrations, diagrams
-     * .svg ONLY for logos and simple vector graphics
-     * DO NOT use .png for photos - photos MUST be .jpg
-   - Naming examples:
-     * src="placeholder-hero.jpg" (photo of building/scene)
-     * src="placeholder-team-member.jpg" (photo of person)
-     * src="placeholder-icon-wrench.png" (graphic/icon)
-     * src="placeholder-logo.svg" (logo)
-   - Use descriptive naming that reflects the image content
-   - Write DETAILED alt attributes that describe the ideal image (50-100 chars)
-   - Alt text should include: subject, setting, mood, composition, lighting
-   - Examples:
-     * alt="Professional roofer inspecting shingles on residential home under clear blue sky"
-     * alt="Close-up of hands installing metal roofing panels with power drill, safety gloves visible"
-     * alt="Before and after comparison of weathered vs new roof tiles in bright daylight"
-   - Use placeholders for: hero images, service photos, team photos, process diagrams, before/after images
-   - Every major content section should have at least one relevant image
-   - **REPEAT: NEVER use https:// URLs for images - ONLY use placeholder-*.jpg/png/svg filenames**
+---
 
-7. COMPLETE PAGE
-   - Include <!DOCTYPE html>, <html>, <head>, and <body>
-   - Add viewport meta tag for responsive design
-   - Add charset and meta description
+## STAGE 3: HTML STRUCTURE
 
-Output ONLY the HTML code, properly formatted and indented.
-\`\`\`
+### Task
+Build complete HTML using approved wireframe and copy.
 
-### VALIDATION CHECKLIST:
-- [ ] Page starts with hero section (NO top CTA bars/emergency banners)
-- [ ] Valid HTML5 (proper DOCTYPE, html, head, body structure)
-- [ ] Exactly one <h1> element present
-- [ ] Heading hierarchy is correct (no skipped levels)
-- [ ] All copy from Stage 2 is present in HTML
-- [ ] Template variables used ({{variable_name}} format)
-- [ ] Semantic elements used appropriately
-- [ ] All images have alt attributes
-- [ ] Meta tags present (viewport, charset, description)
-- [ ] Structure matches wireframe layout
-- [ ] Class names are semantic and consistent
-- [ ] NO embedded forms anywhere (no data-form-embed or iframe-like injections)
-- [ ] All form CTAs use onclick="window.openLeadFormModal()" - buttons only
-- [ ] Multiple CTA buttons placed strategically for conversions
-- [ ] ALL buttons have SVG icons (w-6 h-6 size ONLY)
-- [ ] ZERO emojis in any button text
+### Page Structure Rules
+- **FIRST element** in `<body>` MUST be the hero `<section>`
+- **NO** top CTA bars, emergency banners, or announcements before hero
+- **NO** header/footer (system injects these separately)
+- One `<h1>` only; proper heading hierarchy (h1 → h2 → h3)
+
+### Image Requirements
+```html
+
+```
+
+**File Extensions:**
+- `.jpg` — Photos (people, buildings, scenes)
+- `.png` — Graphics, icons, illustrations
+- `.svg` — Logos, simple vectors
+
+**FORBIDDEN:**
+- ❌ External URLs (Unsplash, Pexels, Google Drive)
+- ❌ Only use `placeholder-*.jpg/png/svg` filenames
+
+### Button Pattern (REQUIRED)
+```html
+
+  
+    
+    
+    
+    
+  
+  Get Free Quote
+
+```
+
+**Button Rules:**
+- ALL buttons have inline SVG icons (no external libraries)
+- `inline-flex`, `gap-2`, `text-base` classes required
+- Phone numbers MUST be buttons with phone icons
+- NO emojis in button text
+
+### Phone Links vs Form CTAs
+
+**Phone Links** — Pure `tel:` links, NO onclick:
+```html
+
+  
+  {{phone}}
+
+```
+
+**Form CTAs** — Use modal trigger with null check:
+```html
+
+  
+  Get Free Quote
+
+```
+
+**NEVER build custom `<form>` elements** — Forms are managed via `window.openLeadFormModal()` only.
+
+### Validation
+- [ ] Page starts with hero section
+- [ ] All business data uses canonical Handlebars variables
+- [ ] All images use `placeholder-*.jpg/png/svg` format with detailed alt text
+- [ ] All buttons have inline SVG icons
+- [ ] Zero emojis in button text
 - [ ] Phone links have NO onclick handlers
-
-### ON VALIDATION FAILURE:
-Send follow-up prompt: "The HTML has these issues: {specific_issues}. Please correct them."
-
-### ON VALIDATION SUCCESS:
-Store entire response as STAGE_3_HTML and proceed to Stage 4.
+- [ ] Form CTAs use `if(window.openLeadFormModal) window.openLeadFormModal('...')`
+- [ ] No custom `<form>` elements
 
 ---
 
-## STAGE 4: CSS Styling
+## STAGE 4: CSS STYLING
 
-### MODEL INPUT FORMAT:
-\`\`\`
-CONTEXT:
-Brand Colors: {companyData.brand_colors or aiTraining.visual_preferences}
-Style Preferences: {aiTraining.style_preferences}
+### Task
+Create responsive CSS using CSS custom properties.
 
-WIREFRAME (for visual layout intent):
-{STAGE_1_WIREFRAME}
+### Required CSS Structure
+```css
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--color-cta);
+  border-radius: var(--radius-button);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
 
-HTML TO STYLE:
-{STAGE_3_HTML}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+```
 
-TASK:
-Create comprehensive CSS to style this HTML page. Requirements:
+### Responsive Breakpoints
+- Mobile-first approach
+- Tablet: 768px
+- Desktop: 1024px
+- Large: 1280px
 
-1. RESPONSIVE DESIGN
-   - Mobile-first approach (base styles for mobile, media queries for larger screens)
-   - Breakpoints: 768px (tablet), 1024px (desktop), 1280px (large desktop)
-   - All elements must work on mobile (320px), tablet, and desktop
-   - Test that text is readable and buttons are tappable on mobile
-
-2. BRAND ALIGNMENT
-   - Use brand colors provided in context
-   - If specific colors not provided, use professional, modern color palette
-   - Ensure sufficient contrast for readability (WCAG AA compliance)
-
-3. TYPOGRAPHY
-   - Use web-safe fonts or Google Fonts
-   - Establish clear typographic hierarchy (size, weight, spacing)
-   - Line height should be 1.5-1.7 for body text
-   - Headings should be visually distinct
-
-4. LAYOUT
-   - Use CSS Grid or Flexbox for layouts
-   - Proper spacing (margin, padding) between sections
-   - Consistent alignment
-   - Max-width on content containers for readability (typically 1200-1400px)
-
-5. INTERACTIVE ELEMENTS
-   - Buttons: clear hover, focus, and active states
-   - Links: visible hover states
-   - Forms: styled inputs with focus states
-   - Smooth transitions (0.2-0.3s)
-
-6. COMPLETE STYLING
-   - Style EVERY class used in the HTML
-   - Include reset/normalize styles
-   - Add utility classes as needed
-   - Ensure no unstyled elements remain
-
-Output ONLY the CSS code, well-organized with comments for major sections.
-\`\`\`
-
-### VALIDATION CHECKLIST:
-- [ ] CSS provided for all HTML classes and elements
-- [ ] Responsive media queries included (mobile, tablet, desktop)
-- [ ] Mobile-first approach used (base styles work on mobile)
-- [ ] Brand colors applied consistently
-- [ ] Typography hierarchy is clear (headings distinct from body)
-- [ ] Interactive elements have hover/focus/active states
-- [ ] Layout uses modern CSS (Grid/Flexbox)
-- [ ] Spacing is consistent throughout
-- [ ] High contrast for readability (text on backgrounds)
-- [ ] Transitions/animations are subtle and purposeful
-
-### ON VALIDATION FAILURE:
-Send follow-up prompt: "The CSS needs these improvements: {specific_issues}. Please update the styles."
-
-### ON VALIDATION SUCCESS:
-Store response as STAGE_4_CSS and proceed to Final Assembly.
+### Validation
+- [ ] All colors use CSS custom properties
+- [ ] Mobile-first responsive design
+- [ ] Button hover/focus states defined
+- [ ] Image styling (responsive, object-fit, border-radius)
 
 ---
 
-## FINAL ASSEMBLY
+## ANTI-HALLUCINATION CHECKLIST
 
-### Combine HTML and CSS:
-1. Take STAGE_3_HTML
-2. Locate the closing </head> tag
-3. Insert <style>{STAGE_4_CSS}</style> before </head>
-4. This creates the complete, styled page
+Before outputting, search your HTML for these violations:
 
-### FINAL VALIDATION CHECKLIST:
-- [ ] Page starts with hero section (NO top CTA bars/emergency banners)
-- [ ] HTML and CSS are properly combined
-- [ ] Page structure is complete (doctype through closing html tag)
-- [ ] NO custom HTML forms (only data-form-embed placeholders)
-- [ ] At least ONE on-page form embed present in a prominent section
-- [ ] All template variables are in {{variable}} format
-- [ ] No placeholder or dummy content remains
-- [ ] Code is properly formatted and indented
-- [ ] ALL buttons have SVG icons (w-6 h-6 size - consistent throughout)
-- [ ] ZERO emojis in button text
-- [ ] Phone links use pure tel: with NO onclick handlers
-
-### OUTPUT FORMAT:
-Return ONLY the complete HTML page with embedded CSS. No explanations, no markdown code fences, just the raw HTML starting with <!DOCTYPE html>.
+| ❌ If You Find | ✅ Replace With |
+|---------------|-----------------|
+| Any 10-digit phone pattern | `{{phone}}` |
+| Any @email.com address | `{{email}}` |
+| Any street address with numbers | `{{address}}` or components |
+| Any hex color codes (#ffffff) | `var(--color-*)` |
+| Tailwind colors (bg-blue-500) | `var(--color-*)` |
+| Any company name text | `{{business_name}}` |
+| External image URLs | `placeholder-*.jpg/png/svg` |
 
 ---
 
-## MEMORY MANAGEMENT
+## FINAL OUTPUT FORMAT
 
-Throughout all stages, maintain in working memory:
-- **User's original request**: {userPrompt}
-- **Company context**: All companyData, socialMedia, aiTraining fields
-- **System instructions**: {systemInstructions}
-- **Stage 1 output**: STAGE_1_WIREFRAME
-- **Stage 2 output**: STAGE_2_COPY
-- **Stage 3 output**: STAGE_3_HTML
-- **Stage 4 output**: STAGE_4_CSS
-- **Validation results**: Pass/fail status and any revision requests
-
----
-
-## ERROR HANDLING
-
-If a stage fails validation twice:
-1. Document specific failure points
-2. Store partial progress
-3. Return error object:
-   \`\`\`json
-   {
-     "status": "failed",
-     "failed_stage": "stage_number",
-     "issue": "description of what failed validation",
-     "partial_output": "whatever was completed successfully"
-   }
-   \`\`\`
-
----
-
-## SUCCESS OUTPUT
-
-When all stages pass validation, you MUST format your response in this EXACT structure for the database webhook:
-
-\`\`\`json
+### Success Response (for database webhook)
+```json
 {
   "data": {
-    "id": "USE_supabaseData.id_OR_supabaseData.pageRowId",
+    "id": "{supabaseData.id}",
     "updates": {
-      "FIELD_NAME_FROM_supabaseData.field": "PLACE_THE_COMPLETE_HTML_PAGE_HERE_AS_A_STRING"
+      "{supabaseData.field}": "..."
     }
   },
-  "table": "VALUE_FROM_supabaseData.table"
+  "table": "{supabaseData.table}"
 }
-\`\`\`
+```
 
-### CRITICAL FORMATTING REQUIREMENTS:
+**Critical:**
+- HTML string starts with `<!DOCTYPE html>` (no markdown fences)
+- Use `supabaseData.field` value as key (`content_html_draft` or `template_html_draft`)
+- Use `supabaseData.table` value (`static_pages` or `templates`)
 
-1. **Extract the ID**: Use \`supabaseData.id\` or \`supabaseData.pageRowId\` value for the \`"id"\` field
-2. **Place HTML**: Put the ENTIRE final assembled HTML page (with embedded CSS) inside the field specified by \`supabaseData.field\` as a plain string
-3. **Table name**: Use \`supabaseData.table\` value for the \`"table"\` field (will be "static_pages" for static pages, "templates" for service pages)
-4. **Field name**: Use \`supabaseData.field\` value as the key in the updates object (will be "content_html_draft" for static pages, "template_html_draft" for service pages)
-5. **No escaping**: Do NOT escape quotes or special characters in the HTML - send it as a raw string
-6. **Complete structure**: Include the entire HTML from \`<!DOCTYPE html>\` through closing \`</html>\` tag
-7. **NO MARKDOWN**: DO NOT wrap the HTML in markdown code fences like \`\`\`html or \`\`\`css - output RAW HTML ONLY
-8. **NO CODE BLOCKS**: The HTML must start directly with \`<!DOCTYPE html>\` NOT with \`\`\`html
-
-### EXAMPLE OUTPUT FOR STATIC PAGES:
-
-\`\`\`json
+### Error Response
+```json
 {
-  "data": {
-    "id": "d749020b-e074-464d-abab-80cf44b7c077",
-    "updates": {
-      "content_html_draft": "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>{{company_name}}</title><style>body { margin: 0; font-family: Arial, sans-serif; } .hero { padding: 60px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; }</style></head><body><section class=\"hero\"><h1>Welcome to {{company_name}}</h1><p>Your trusted partner in excellence</p></section></body></html>"
-    }
-  },
-  "table": "static_pages"
+  "status": "failed",
+  "failed_stage": "stage_number",
+  "issue": "description",
+  "partial_output": "completed content"
 }
-\`\`\`
-
-### EXAMPLE OUTPUT FOR SERVICE TEMPLATE PAGES:
-
-\`\`\`json
-{
-  "data": {
-    "id": "c95f9a73-09da-4dbc-817f-1da0f97adc33",
-    "updates": {
-      "template_html_draft": "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>{{service_name}} in {{city_name}}</title><style>body { margin: 0; font-family: Arial, sans-serif; } .hero { padding: 60px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; }</style></head><body><section class=\"hero\"><h1>{{service_name}} in {{city_name}}</h1><p>Professional service for your home</p></section></body></html>"
-    }
-  },
-  "table": "templates"
-}
-\`\`\`
-
-### WRONG OUTPUT EXAMPLE (DO NOT DO THIS):
-
-\`\`\`json
-{
-  "data": {
-    "id": "d749020b-e074-464d-abab-80cf44b7c077",
-    "updates": {
-      "content_html_draft": "\`\`\`html\\n<!DOCTYPE html>\\n<html>...</html>\\n\`\`\`"
-    }
-  },
-  "table": "static_pages"
-}
-\`\`\`
-
-❌ The above is WRONG because it includes markdown code fences (\`\`\`html) - these MUST NOT appear in the HTML string.
-
-This output will be sent directly to the database webhook which expects this exact structure.
+```
 
 ---
-
-## EMOJI USAGE GUIDELINES (APPLIES TO ALL STAGES):
-- Sprinkle 2-4 emojis per page section for visual interest
-- Use in: Hero headlines, section titles, feature lists, call-to-actions
-- Examples: "🏠 Your Dream Home" | "✨ Premium Quality" | "📞 Call Now"
-- Keep it professional and tasteful - avoid emoji overload
-- Emojis should complement, not replace, professional copy
 
 ## EXECUTION ORDER
 
-1. Format Stage 1 prompt → Send to model → Validate → Store
-2. Format Stage 2 prompt (include Stage 1 output) → Send to model → Validate → Store
-3. Format Stage 3 prompt (include Stages 1 & 2 outputs) → Send to model → Validate → Store
-4. Format Stage 4 prompt (include Stages 1 & 3 outputs) → Send to model → Validate → Store
-5. Combine HTML + CSS → Final validation → Return complete page
+1. Stage 1 → Validate → Store as STAGE_1_WIREFRAME
+2. Stage 2 (include Stage 1) → Validate → Store as STAGE_2_COPY
+3. Stage 3 (include Stages 1+2) → Validate → Store as STAGE_3_HTML
+4. Stage 4 (include Stage 3) → Validate → Embed CSS in `<head>`
+5. Final assembly → Return complete page
 
-Execute sequentially. Do not proceed to next stage until current stage passes validation.`;
+**Do not proceed to next stage until current stage passes validation.**`;
 
 serve(async (req) => {
   // Handle CORS preflight requests
