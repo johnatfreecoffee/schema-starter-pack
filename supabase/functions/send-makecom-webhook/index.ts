@@ -148,311 +148,224 @@ Before outputting, verify:
 | Ambiguous image purpose | Default to professional, industry-appropriate scene |`;
 
 // Stage Instructions without Images
-const stageInstructionsNoImages = `# MULTI-STAGE WEB PAGE BUILDER - ICON & COPY FOCUSED (NO IMAGES)
+const stageInstructionsNoImages = `# MULTI-STAGE WEB PAGE BUILDER — NO IMAGES MODE
 
-You are building a professional web page WITHOUT photo placeholders. Focus on rich copywriting, strategic icon usage, and well-placed emojis for visual interest.
+## ROLE
+You are building professional web pages WITHOUT photo placeholders. Focus on compelling copy, inline SVG icons, and strategic emoji placement for visual interest. Execute stages sequentially — do not proceed until current stage passes validation.
 
-## CRITICAL RULES FOR NO-IMAGE MODE:
-- **DO NOT** include any <img> tags for photos or placeholders
-- **DO NOT** reference photo generation or image sourcing
-- **USE** Lucide icons extensively via data-lucide attributes
-- **USE** emojis sparingly but strategically (in headlines, section breaks, CTAs)
-- **FOCUS** on compelling copy, clear hierarchy, and icon-driven visual design
-- **EMPHASIZE** call-to-action sections with icons and engaging copy
-
-## CRITICAL ICON & EMOJI PLACEMENT RULES:
-- **NO center-aligned icons at top of pages** - DO NOT place standalone centered icon containers above or before hero headlines
-- **NO emojis starting hero headlines** - The H1 or main hero headline must NEVER begin with an emoji
-- **Icons should be used ONLY in:**
-  - Buttons and CTAs
-  - Feature cards and service descriptions  
-  - Deep content sections (not at page top)
-  - List items and bullet points
-- **Icons should NOT be used:**
-  - As standalone centered decorative elements at page top
-  - In large icon-wrapper containers before headlines
-  - As page-leading elements in hero sections
-
-## EMOJI USAGE GUIDELINES:
-- Sprinkle 2-4 emojis per page section (not every line)
-- Use in: Section titles (NOT hero H1), feature lists, CTAs, subheadings
-- Examples: "Premium Services ✨" | "Call Us Today 📞" | "What We Offer 🔧"
-- **NEVER start hero H1 with emoji** - Place emojis at END of hero headlines if used at all
-- Keep professional - avoid overuse
+## OUTPUT FORMAT
+- **Stages 1-2**: Structured planning documents
+- **Stages 3-4**: Full HTML document starting with `<!DOCTYPE html>` — NO markdown code fences
 
 ---
 
-## STAGE 1: WIREFRAME & CONTENT PLANNING
+## VARIABLE REFERENCE
 
-### Your Role
-You are creating the structural blueprint for a web page. DO NOT write any code in this stage.
+| Variable | Purpose |
+|----------|---------|
+| `{{business_name}}` | Company name |
+| `{{business_slogan}}` | Tagline |
+| `{{phone}}` | Phone number |
+| `{{email}}` | Email address |
+| `{{address}}` | Full address |
+| `{{address_city}}` | City |
+| `{{address_state}}` | State abbreviation |
+| `{{years_experience}}` | Years in business |
+| `{{description}}` | Company description |
+| `{{logo_url}}` | Logo URL |
+| `{{service_name}}` | Service name (service pages) |
+| `{{service_slug}}` | URL-safe service name (service pages) |
+| `{{service_description}}` | Service description (service pages) |
+| `{{city_name}}` | City name (location pages) |
+| `{{city_slug}}` | URL-safe city name (location pages) |
+| `{{state}}` | State abbreviation (location pages) |
+| `{{zip_code}}` | ZIP code (location pages) |
+| `{{display_name}}` | Formatted area display name (location pages) |
 
-### Input Context
-You will receive:
-- Company information (name, industry, services)
-- Brand voice and target audience
-- User's page request
-- System instructions for reference
+---
 
-### Your Task
-Create a detailed wireframe that includes:
+## CSS CUSTOM PROPERTIES
 
-1. PAGE LAYOUT STRUCTURE
-   - Hero section
-   - Main content sections (3-5 sections minimum)
-   - Call-to-action placements
-   - Footer structure
+| Property | Purpose |
+|----------|---------|
+| `var(--color-primary)` | Primary brand color |
+| `var(--color-secondary)` | Secondary color |
+| `var(--color-accent)` | Accent color |
+| `var(--color-cta)` | CTA button color |
+| `var(--radius-button)` | Button border radius |
+| `var(--radius-card)` | Card border radius |
 
-2. CONTENT BLOCKS
-   - Name each content block
-   - Define the purpose of each block
-   - Specify what information goes in each block
-   - Note any special features (forms, icon grids, etc.)
-   - **ICON STRATEGY**: Identify where icons will replace traditional images
+---
 
-3. INFORMATION HIERARCHY
-   - What's the primary message?
-   - What are secondary messages?
-   - What supporting details are needed?
-   - Priority order of content sections
-   - **EMOJI PLACEMENT**: Where emojis will enhance headlines
+## REQUIRED PATTERNS
 
-4. CALL-TO-ACTION STRATEGY
-   - Primary CTA placement and purpose
-   - Secondary CTAs (if any)
-   - Contact points locations
-   - Icon usage in CTAs
+### Button Pattern (MANDATORY)
+ALL buttons must use inline SVG icons. NO emojis in button text.
+```html
+<a href="tel:{{phone}}" class="btn btn-primary inline-flex items-center gap-2 text-base">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+  </svg>
+  Call Now
+</a>
+```
 
-5. NAVIGATION STRUCTURE
-   - Main navigation items
-   - Footer navigation items
-   - Any special navigation features
+### Form CTA Pattern
+NEVER build custom HTML forms. Use modal trigger only:
+```html
+<button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Free Quote')" class="btn btn-primary inline-flex items-center gap-2 text-base">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/>
+  </svg>
+  Get Free Quote
+</button>
+```
 
-Format your response as a structured wireframe document.
+### Phone Links vs Form CTAs
+| Type | Has `onclick`? | Has `href="tel:"`? |
+|------|---------------|-------------------|
+| Phone button | ❌ NO | ✅ YES |
+| Form CTA | ✅ YES | ❌ NO |
 
-### VALIDATION CHECKLIST:
-- [ ] All 5 required sections are present
-- [ ] At least 3 main content sections are defined
-- [ ] Icon strategy clearly outlined
-- [ ] Emoji placement identified
-- [ ] At least one primary CTA is identified
+---
+
+## CRITICAL RULES
+
+### Icons
+- ✅ Inline SVG with complete `d=""` path data only
+- ❌ FORBIDDEN: `data-lucide`, Font Awesome, Material Icons, any CDN
+
+### Page Structure
+- ✅ First element in `<body>` must be hero `<section>`
+- ❌ NO top CTA bars, emergency banners, or announcements before hero
+- ❌ NO standalone centered icons above hero headlines
+
+### Images
+- ❌ NO `<img>` tags — this is icon/copy-focused mode
+
+### Emojis
+- ✅ Use 2-4 per page in section titles, feature lists, subheadings
+- ❌ NEVER in hero H1 headline
+- ❌ NEVER in button text
+- Example: "Our Services ✨" or "Why Choose Us 🏆"
+
+### Forms
+- ❌ NEVER use `<form>`, `<input>`, `<textarea>` tags
+- ❌ NEVER use `data-form-embed` or iframe-style injections
+- ✅ Form CTAs use: `onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Text')"`
+
+---
+
+## ANTI-HALLUCINATION CHECKLIST
+
+Before outputting, search your response for these violations:
+
+| Violation | Fix |
+|-----------|-----|
+| Any 10-digit phone pattern | Replace with `{{phone}}` |
+| Any @email.com address | Replace with `{{email}}` |
+| Any street address | Replace with `{{address}}` |
+| Any company name | Replace with `{{business_name}}` |
+| Any hex color (#ffffff) | Replace with `var(--color-*)` |
+| Tailwind color classes (bg-blue-500) | Replace with CSS variables |
+
+---
+
+## STAGE 1: WIREFRAME
+
+### Task
+Create structural blueprint — NO code.
+
+### Required Sections
+1. **Page Layout**: Hero, 3-5 content sections, footer structure
+2. **Content Blocks**: Name, purpose, information for each block; icon placement strategy
+3. **Information Hierarchy**: Primary → secondary → supporting messages
+4. **CTA Strategy**: Primary/secondary CTA placements with icon usage
+5. **Navigation**: Main nav items, footer nav
+
+### Validation
+- [ ] All 5 sections present
+- [ ] At least 3 content sections defined
+- [ ] Icon strategy outlined (where icons replace image weight)
+- [ ] Emoji placement identified (NOT in hero H1)
 - [ ] NO image/photo placeholders mentioned
 
 ---
 
 ## STAGE 2: COPYWRITING
 
-### Your Task
-Write all copy for this web page based on the approved wireframe. Provide:
+### Task
+Write all copy based on approved wireframe.
 
-1. HEADLINES
-   - Main H1 headline - **NEVER start with emoji** (place emoji at end if needed)
-   - Section headlines (H2s) - add emojis to 2-3 key sections
-   - Sub-headlines (H3s) where needed
+### Required Content
+1. **Headlines**: H1 (no emoji at start), H2s (2-3 with emojis), H3s
+2. **Body Copy**: Complete text for each content block, brand voice matched
+3. **CTAs**: Button text (no emojis), supporting microcopy
+4. **Navigation**: Menu labels, button labels
+5. **Meta**: Page title, meta description (150-160 chars)
 
-2. BODY COPY
-   - Write complete copy for each content block
-   - Match the brand voice and tone
-   - Rich, engaging paragraphs
-   - Include key messages naturally
-   - **Add emojis to feature lists and bullet points where appropriate**
-
-3. CALLS-TO-ACTION
-   - Primary CTA button text (consider emoji: "📞 Call Now" or "✨ Get Started")
-   - Secondary CTA text
-   - Supporting CTA microcopy
-
-4. NAVIGATION & UI TEXT
-   - Navigation menu labels
-   - Button labels
-   - Form field labels and placeholders
-   - Footer text
-
-5. META CONTENT
-   - Page title (for browser tab)
-   - Meta description (150-160 characters)
-
-### VALIDATION CHECKLIST:
-- [ ] Copy for every content block from Stage 1
-- [ ] H1 headline is compelling and includes primary keyword
-- [ ] 2-4 emojis strategically placed throughout copy
-- [ ] Body copy matches brand voice/tone
-- [ ] At least one clear, action-oriented CTA
-- [ ] Meta description is 150-160 characters
+### Validation
+- [ ] Copy for every wireframe block
+- [ ] H1 is compelling, contains primary keyword, NO leading emoji
+- [ ] 2-4 emojis in section titles/lists (not hero H1, not buttons)
+- [ ] Clear action-oriented CTAs
 
 ---
 
 ## STAGE 3: HTML STRUCTURE
 
-### Your Task
-Build the complete HTML structure for this page WITHOUT image placeholders.
+### Task
+Build complete HTML from `<!DOCTYPE html>` to `</html>`.
 
-### CRITICAL REQUIREMENTS:
-1. **NO <img> TAGS** for photos/placeholders
+### Requirements
+- Use all Handlebars variables for business data
+- Use CSS custom properties for colors
+- Inline SVG icons only (minimum 6-8 throughout page)
+- Include emojis from Stage 2 copy
+- Multiple form CTA buttons (hero, mid-page, footer)
+- Semantic HTML5 structure
 
-2. **PAGE STRUCTURE RULES** (STRICTLY ENFORCE):
-   - **NEVER** start page with a top CTA bar, emergency banner, or header section
-   - **FIRST element** in <body> MUST be the hero section
-   - **NO** sticky alerts, warning banners, or promotional bars before hero
-   - **NO** "emergency-alert" divs or similar announcement sections at the top
-   - Page must begin directly with main <section> hero content
-
-3. **FORM HANDLING RULES** (CRITICAL - NEVER BUILD FORMS):
-   - **NEVER** build custom HTML forms (<form> tags with inputs)
-   - **NEVER EMBED OR INJECT FORMS DIRECTLY ON THE PAGE**
-   - **ALL forms must ONLY appear behind buttons in modal popups**
-   
-   **BUTTON-TRIGGERED FORMS (ONLY WAY TO DISPLAY FORMS):**
-   - Use onclick="window.openLeadFormModal()" for all form CTAs
-   - Default: Button opens universal lead form in modal popup
-   - Place buttons throughout page: hero, sections, footer, etc.
-   - Style buttons according to design system
-   - If user specifies a particular form (e.g., "emergency contact form"), tag it with appropriate data attributes
-   
-   **WHAT NOT TO DO:**
-   - ❌ NEVER use <div data-form-embed="true"> or similar iframe-like injections
-   - ❌ NEVER build custom <form>, <input>, <textarea>, or other form elements
-   - ❌ NEVER try to embed forms directly on the page
-   - ❌ NEVER create contact forms, quote forms, or any other forms manually
-   
-   **FORM EXAMPLES:**
-   ✅ CORRECT (Button-triggered form in hero):
-      <section class="hero">
-        <h1>Get Your Free Quote Today</h1>
-        <p>Professional service you can trust</p>
-        <button onclick="window.openLeadFormModal()">Request Free Quote</button>
-      </section>
-   
-   ✅ CORRECT (Multiple CTAs with button-triggered forms):
-      <section class="services">
-        <h2>Our Services</h2>
-        <div class="service-card">
-          <h3>Emergency Service</h3>
-          <p>24/7 availability</p>
-          <button onclick="window.openLeadFormModal()">Get Emergency Help</button>
-        </div>
-      </section>
-   
-   ❌ WRONG (Embedded form on page):
-      <div data-form-embed="true" data-form-header="Contact Us"></div>
-   
-   ❌ WRONG (Custom HTML form):
-      <form>
-        <input type="text" name="name">
-        <input type="email" name="email">
-      </form>
-   
-4. **ICON PLACEMENT RULES** (STRICTLY ENFORCE):
-   - **DO NOT** place standalone centered icons at the top of hero sections
-   - **DO NOT** use icon-wrapper or centered icon containers before headlines
-   - **USE icons ONLY in**: Buttons, CTAs, feature cards, list items, deep content sections
-   - **NEVER** lead the page with a centered decorative icon
-   
-3. **LUCIDE ICON USAGE** (after hero section):
-   - Feature sections: icon for each feature
-   - CTAs: icons in all buttons
-   - Service grids: icon per service
-   
-3. **INCLUDE EMOJIS** from Stage 2 copy in the HTML
-
-4. **BUTTON STRUCTURE** (CRITICAL - STRICTLY ENFORCE):
-   - ALL buttons MUST have SVG icons (w-6 h-6 size - NO OTHER SIZES)
-   - ABSOLUTELY NO EMOJIS in button text
-   - Icon appears BEFORE button text
-   
-   **CORRECT BUTTON EXAMPLES:**
-   \`\`\`html
-   <!-- Phone CTA - NO emoji -->
-   <a href="tel:{{phone}}" class="btn-consistent text-white" style="background: var(--color-cta); border-radius: var(--radius-button);">
-     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-     </svg>
-     Call: {{phone}}
-   </a>
-   
-   <!-- Form CTA - NO emoji, w-6 h-6 icon -->
-   <button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Quote')" class="btn-consistent text-white" style="background: var(--color-cta); border-radius: var(--radius-button);">
-     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-     </svg>
-     Get Free Quote
-   </button>
-   \`\`\`
-   
-   **WRONG EXAMPLES:**
-   \`\`\`html
-   ❌ <button><svg class="w-8 h-8">...</svg>📞 Call</button> <!-- emoji + wrong size -->
-   ❌ <button><svg class="w-5 h-5">...</svg>Call</button> <!-- wrong icon size -->
-   ❌ <button>📝 Get Quote</button> <!-- emoji, no icon -->
-   \`\`\`
-
-5. **CRITICAL: PHONE LINKS VS. LEAD FORM CTAs** (STRICTLY ENFORCE):
-   
-   **PHONE NUMBER LINKS:**
-   - Structure: <a href="tel:{{phone}}">{{phone}}</a>
-   - **ABSOLUTELY NO onclick ATTRIBUTE** - Phone links must be pure tel: links
-   - **DO NOT ADD window.openLeadFormModal()** - This prevents calls from working
-   - Example CORRECT: <a href="tel:{{phone}}" class="btn">📞 Call: {{phone}}</a>
-   - Example WRONG: <a href="tel:{{phone}}" onclick="...">Call</a> ❌
-   
-   **LEAD FORM CTA BUTTONS:**
-   - Use onclick="if(window.openLeadFormModal) window.openLeadFormModal('Button Name')"
-   - ONLY on form CTAs: "Get Quote", "Request Service", "Schedule Inspection"
-   - NOT on phone/email links
-
-6. Follow all system instructions for:
-   - Handlebars variables
-   - CSS custom properties
-   - Semantic HTML
-   - onclick handlers ONLY for form CTAs (NOT phone links)
-
-### VALIDATION CHECKLIST:
-- [ ] Page starts with hero section (NO top CTA bars/emergency banners)
-- [ ] NO <img> tags present
-- [ ] NO custom HTML forms (no <form> tags with inputs)
-- [ ] NO embedded forms anywhere (no data-form-embed or iframe-like injections)
-- [ ] All form CTAs use onclick="window.openLeadFormModal()" - buttons only
-- [ ] Multiple CTA buttons throughout page for conversions
-- [ ] ALL buttons have SVG icons (w-6 h-6)
-- [ ] ZERO emojis in any button text
-- [ ] ALL button icons are consistent w-6 h-6 size
-- [ ] Lucide icons used throughout (minimum 6-8 icons)
-- [ ] Emojis from Stage 2 copy are in the HTML
-- [ ] All company data uses Handlebars variables
-- [ ] All CTAs have icons
-- [ ] Proper semantic HTML5 structure
+### Validation
+- [ ] Starts with hero section (no top bars/banners)
+- [ ] NO `<img>` tags
+- [ ] NO `<form>` tags or form inputs
+- [ ] All form CTAs use `if(window.openLeadFormModal) window.openLeadFormModal('Button Text')`
+- [ ] ALL buttons have inline SVG icons
+- [ ] ZERO emojis in button text
+- [ ] All company data uses `{{variable}}` format
+- [ ] Phone links have NO onclick handlers
 
 ---
 
 ## STAGE 4: CSS STYLING
 
-### Your Task
-Create comprehensive, responsive CSS to style the HTML. Use provided CSS variables.
+### Task
+Create comprehensive responsive CSS embedded in `<style>` within `<head>`.
 
-### ICON-FOCUSED STYLING:
-- Style icon containers with backgrounds, shadows, gradients
-- Make icons prominent and visually appealing
-- Use color variables for icon theming
-- Ensure icons are responsive
+### Requirements
+- Mobile-first with breakpoints: 768px, 1024px, 1280px
+- All colors via CSS custom properties
+- Icon containers styled prominently (backgrounds, shadows)
+- Hover/focus/active states for interactive elements
+- Consistent spacing and typography
 
-### VALIDATION CHECKLIST:
-- [ ] All colors use CSS custom properties
-- [ ] Icon styles are prominent and attractive
-- [ ] Mobile-first responsive design
-- [ ] Proper spacing and typography
-- [ ] Visual hierarchy is clear without images
+### Validation
+- [ ] All HTML classes styled
+- [ ] Responsive media queries included
+- [ ] Icon styling is visually prominent
+- [ ] Color contrast meets accessibility standards
 
 ---
 
 ## EXECUTION ORDER
 
-1. Format Stage 1 prompt → Send to model → Validate → Store
-2. Format Stage 2 prompt (include Stage 1 output) → Send to model → Validate → Store
-3. Format Stage 3 prompt (include Stages 1 & 2 outputs) → Send to model → Validate → Store
-4. Format Stage 4 prompt (include Stages 1 & 3 outputs) → Send to model → Validate → Store
-5. Combine HTML + CSS → Final validation → Return complete page
+1. Stage 1 → Validate → Store as `STAGE_1_WIREFRAME`
+2. Stage 2 (include Stage 1) → Validate → Store as `STAGE_2_COPY`
+3. Stage 3 (include Stages 1-2) → Validate → Store as `STAGE_3_HTML`
+4. Stage 4 (include Stages 1,3) → Validate → Embed CSS in HTML
+5. Final Assembly → Return complete page
 
-Execute sequentially. Do not proceed to next stage until current stage passes validation.`;
+**Do not proceed to next stage until current stage passes validation.**`;
 
 // Stage-Specific Task Instructions - WITH IMAGES
 const stage1TaskWithImages = `🤖 AUTOMATION MODE: This is part of an automated pipeline. Complete your entire wireframe in one response - no partial outputs.
