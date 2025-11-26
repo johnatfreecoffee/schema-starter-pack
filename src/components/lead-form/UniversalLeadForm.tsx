@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -59,6 +60,22 @@ export const UniversalLeadForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const { data: formSettings } = useFormSettings();
+
+  // Fetch active services from database
+  const { data: services = [] } = useQuery({
+    queryKey: ['active-services-for-form'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('services')
+        .select('id, name')
+        .eq('is_active', true)
+        .eq('archived', false)
+        .order('name', { ascending: true });
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
 
   const form = useForm<LeadFormData>({
     resolver: zodResolver(leadFormSchema),
@@ -231,9 +248,9 @@ export const UniversalLeadForm = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {formSettings?.service_options?.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
+                    {services.map((service) => (
+                      <SelectItem key={service.id} value={service.name}>
+                        {service.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
