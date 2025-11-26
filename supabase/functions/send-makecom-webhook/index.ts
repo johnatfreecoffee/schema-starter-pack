@@ -920,7 +920,7 @@ You are building production-ready web pages in a 4-stage pipeline. Each stage bu
 
 ## OUTPUT FORMAT
 - **Stages 1-2**: Structured text documents
-- **Stages 3-4**: Raw HTML starting with `<!DOCTYPE html>` — NO markdown code fences
+- **Stages 3-4**: Raw HTML starting with \`<!DOCTYPE html>\` — NO markdown code fences
 
 ---
 
@@ -928,32 +928,32 @@ You are building production-ready web pages in a 4-stage pipeline. Each stage bu
 
 | Variable | Purpose |
 |----------|---------|
-| `{{business_name}}` | Company name |
-| `{{business_slogan}}` | Tagline |
-| `{{phone}}` | Phone number |
-| `{{email}}` | Email address |
-| `{{address}}` | Full address |
-| `{{address_street}}` | Street only |
-| `{{address_city}}` | City only |
-| `{{address_state}}` | State abbreviation |
-| `{{address_zip}}` | ZIP code |
-| `{{website_url}}` | Website URL |
-| `{{years_experience}}` | Years in business |
-| `{{description}}` | Company description |
-| `{{logo_url}}` | Logo URL |
+| \`{{business_name}}\` | Company name |
+| \`{{business_slogan}}\` | Tagline |
+| \`{{phone}}\` | Phone number |
+| \`{{email}}\` | Email address |
+| \`{{address}}\` | Full address |
+| \`{{address_street}}\` | Street only |
+| \`{{address_city}}\` | City only |
+| \`{{address_state}}\` | State abbreviation |
+| \`{{address_zip}}\` | ZIP code |
+| \`{{website_url}}\` | Website URL |
+| \`{{years_experience}}\` | Years in business |
+| \`{{description}}\` | Company description |
+| \`{{logo_url}}\` | Logo URL |
 
 ### Service Page Variables
-| `{{service_name}}` | Service name |
-| `{{service_slug}}` | URL-friendly service name |
-| `{{service_description}}` | Service description |
-| `{{service_starting_price}}` | Starting price |
+| \`{{service_name}}\` | Service name |
+| \`{{service_slug}}\` | URL-friendly service name |
+| \`{{service_description}}\` | Service description |
+| \`{{service_starting_price}}\` | Starting price |
 
 ### Location Page Variables
-| `{{city}}` | City/area name |
-| `{{city_slug}}` | URL-friendly city name |
-| `{{state}}` | State name |
-| `{{zip}}` | ZIP/postal code |
-| `{{country}}` | Country name |
+| \`{{city}}\` | City/area name |
+| \`{{city_slug}}\` | URL-friendly city name |
+| \`{{state}}\` | State name |
+| \`{{zip}}\` | ZIP/postal code |
+| \`{{country}}\` | Country name |
 
 ---
 
@@ -961,14 +961,14 @@ You are building production-ready web pages in a 4-stage pipeline. Each stage bu
 
 | Property | Purpose |
 |----------|---------|
-| `var(--color-primary)` | Primary brand color |
-| `var(--color-secondary)` | Secondary brand color |
-| `var(--color-accent)` | Accent color |
-| `var(--color-cta)` | CTA button color |
-| `var(--radius-button)` | Button border radius |
-| `var(--radius-card)` | Card border radius |
+| \`var(--color-primary)\` | Primary brand color |
+| \`var(--color-secondary)\` | Secondary brand color |
+| \`var(--color-accent)\` | Accent color |
+| \`var(--color-cta)\` | CTA button color |
+| \`var(--radius-button)\` | Button border radius |
+| \`var(--radius-card)\` | Card border radius |
 
-**NEVER use hex codes or Tailwind color classes (e.g., `bg-blue-500`)**
+**NEVER use hex codes or Tailwind color classes (e.g., \`bg-blue-500\`)**
 
 ---
 
@@ -1023,73 +1023,78 @@ Include: subject, setting, mood, composition, lighting
 Build complete HTML using approved wireframe and copy.
 
 ### Page Structure Rules
-- **FIRST element** in `<body>` MUST be the hero `<section>`
+- **FIRST element** in \`<body>\` MUST be the hero \`<section>\`
 - **NO** top CTA bars, emergency banners, or announcements before hero
 - **NO** header/footer (system injects these separately)
-- One `<h1>` only; proper heading hierarchy (h1 → h2 → h3)
+- One \`<h1>\` only; proper heading hierarchy (h1 → h2 → h3)
 
 ### Image Requirements
-```html
-
-```
+\`\`\`html
+<img src="placeholder-hero.jpg" alt="Professional roofer inspecting shingles on residential home under clear blue sky">
+\`\`\`
 
 **File Extensions:**
-- `.jpg` — Photos (people, buildings, scenes)
-- `.png` — Graphics, icons, illustrations
-- `.svg` — Logos, simple vectors
+- \`.jpg\` — Photos (people, buildings, scenes)
+- \`.png\` — Graphics, icons, illustrations
+- \`.svg\` — Logos, simple vectors
 
 **FORBIDDEN:**
 - ❌ External URLs (Unsplash, Pexels, Google Drive)
-- ❌ Only use `placeholder-*.jpg/png/svg` filenames
+- ❌ Only use \`placeholder-*.jpg/png/svg\` filenames
 
 ### Button Pattern (REQUIRED)
-```html
-
-  
-    
-    
-    
-    
-  
+\`\`\`html
+<button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Free Quote')" class="btn btn-primary inline-flex items-center gap-2 text-base">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <line x1="16" y1="13" x2="8" y2="13"/>
+    <line x1="16" y1="17" x2="8" y2="17"/>
+  </svg>
   Get Free Quote
-
-```
+</button>
+\`\`\`
 
 **Button Rules:**
 - ALL buttons have inline SVG icons (no external libraries)
-- `inline-flex`, `gap-2`, `text-base` classes required
+- \`inline-flex\`, \`gap-2\`, \`text-base\` classes required
 - Phone numbers MUST be buttons with phone icons
 - NO emojis in button text
 
 ### Phone Links vs Form CTAs
 
-**Phone Links** — Pure `tel:` links, NO onclick:
-```html
-
-  
+**Phone Links** — Pure \`tel:\` links, NO onclick:
+\`\`\`html
+<a href="tel:{{phone}}" class="btn btn-primary inline-flex items-center gap-2 text-base">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+  </svg>
   {{phone}}
-
-```
+</a>
+\`\`\`
 
 **Form CTAs** — Use modal trigger with null check:
-```html
-
-  
+\`\`\`html
+<button onclick="if(window.openLeadFormModal) window.openLeadFormModal('Get Free Quote')" class="btn btn-primary inline-flex items-center gap-2 text-base">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+  </svg>
   Get Free Quote
+</button>
+\`\`\`
 
-```
-
-**NEVER build custom `<form>` elements** — Forms are managed via `window.openLeadFormModal()` only.
+**NEVER build custom \`<form>\` elements** — Forms are managed via \`window.openLeadFormModal()\` only.
 
 ### Validation
 - [ ] Page starts with hero section
 - [ ] All business data uses canonical Handlebars variables
-- [ ] All images use `placeholder-*.jpg/png/svg` format with detailed alt text
+- [ ] All images use \`placeholder-*.jpg/png/svg\` format with detailed alt text
 - [ ] All buttons have inline SVG icons
 - [ ] Zero emojis in button text
 - [ ] Phone links have NO onclick handlers
-- [ ] Form CTAs use `if(window.openLeadFormModal) window.openLeadFormModal('...')`
-- [ ] No custom `<form>` elements
+- [ ] Form CTAs use \`if(window.openLeadFormModal) window.openLeadFormModal('...')\`
+- [ ] No custom \`<form>\` elements
 
 ---
 
@@ -1099,7 +1104,7 @@ Build complete HTML using approved wireframe and copy.
 Create responsive CSS using CSS custom properties.
 
 ### Required CSS Structure
-```css
+\`\`\`css
 .btn {
   display: inline-flex;
   align-items: center;
@@ -1115,7 +1120,7 @@ Create responsive CSS using CSS custom properties.
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
-```
+\`\`\`
 
 ### Responsive Breakpoints
 - Mobile-first approach
@@ -1137,20 +1142,20 @@ Before outputting, search your HTML for these violations:
 
 | ❌ If You Find | ✅ Replace With |
 |---------------|-----------------|
-| Any 10-digit phone pattern | `{{phone}}` |
-| Any @email.com address | `{{email}}` |
-| Any street address with numbers | `{{address}}` or components |
-| Any hex color codes (#ffffff) | `var(--color-*)` |
-| Tailwind colors (bg-blue-500) | `var(--color-*)` |
-| Any company name text | `{{business_name}}` |
-| External image URLs | `placeholder-*.jpg/png/svg` |
+| Any 10-digit phone pattern | \`{{phone}}\` |
+| Any @email.com address | \`{{email}}\` |
+| Any street address with numbers | \`{{address}}\` or components |
+| Any hex color codes (#ffffff) | \`var(--color-*)\` |
+| Tailwind colors (bg-blue-500) | \`var(--color-*)\` |
+| Any company name text | \`{{business_name}}\` |
+| External image URLs | \`placeholder-*.jpg/png/svg\` |
 
 ---
 
 ## FINAL OUTPUT FORMAT
 
 ### Success Response (for database webhook)
-```json
+\`\`\`json
 {
   "data": {
     "id": "{supabaseData.id}",
@@ -1160,22 +1165,22 @@ Before outputting, search your HTML for these violations:
   },
   "table": "{supabaseData.table}"
 }
-```
+\`\`\`
 
 **Critical:**
-- HTML string starts with `<!DOCTYPE html>` (no markdown fences)
-- Use `supabaseData.field` value as key (`content_html_draft` or `template_html_draft`)
-- Use `supabaseData.table` value (`static_pages` or `templates`)
+- HTML string starts with \`<!DOCTYPE html>\` (no markdown fences)
+- Use \`supabaseData.field\` value as key (\`content_html_draft\` or \`template_html_draft\`)
+- Use \`supabaseData.table\` value (\`static_pages\` or \`templates\`)
 
 ### Error Response
-```json
+\`\`\`json
 {
   "status": "failed",
   "failed_stage": "stage_number",
   "issue": "description",
   "partial_output": "completed content"
 }
-```
+\`\`\`
 
 ---
 
@@ -1184,7 +1189,7 @@ Before outputting, search your HTML for these violations:
 1. Stage 1 → Validate → Store as STAGE_1_WIREFRAME
 2. Stage 2 (include Stage 1) → Validate → Store as STAGE_2_COPY
 3. Stage 3 (include Stages 1+2) → Validate → Store as STAGE_3_HTML
-4. Stage 4 (include Stage 3) → Validate → Embed CSS in `<head>`
+4. Stage 4 (include Stage 3) → Validate → Embed CSS in \`<head>\`
 5. Final assembly → Return complete page
 
 **Do not proceed to next stage until current stage passes validation.**`;
