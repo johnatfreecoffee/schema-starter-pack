@@ -2539,85 +2539,107 @@ You are building a **TEMPLATE ENGINE**, not a static website:
               </div>
               
             <div className="space-y-2">
-              {/* Compact Controls Grid - only show when Fix Mode is OFF */}
-              {!fixMode && (
-                <div className="grid grid-cols-3 gap-1 p-1.5 bg-muted/50 rounded border">
-                  <div className="flex flex-col items-center justify-center gap-0.5 p-1">
-                    <Label htmlFor="include-images" className="text-[9px] font-medium cursor-pointer text-center">
-                      📸 Images
-                    </Label>
-                    <Switch
-                      id="include-images"
-                      checked={includeImages}
-                      onCheckedChange={setIncludeImages}
-                      className="data-[state=checked]:bg-primary scale-75"
-                    />
-                  </div>
-                  
-                  <div className="flex flex-col items-center justify-center gap-0.5 p-1">
-                    <Label htmlFor="needs-research" className="text-[9px] font-medium cursor-pointer text-center">
-                      🔍 Research
-                    </Label>
-                    <Switch
-                      id="needs-research"
-                      checked={needsResearch}
-                      onCheckedChange={setNeedsResearch}
-                      className="data-[state=checked]:bg-primary scale-75"
-                    />
-                  </div>
-                  
-                  <div className="flex flex-col items-center justify-center gap-0.5 p-1">
-                    <Label htmlFor="use-test-webhook" className="text-[9px] font-medium cursor-pointer text-center">
-                      {useTestWebhook ? '🧪 Test' : '🚀 Prod'}
-                    </Label>
-                    <Switch
-                      id="use-test-webhook"
-                      checked={useTestWebhook}
-                      onCheckedChange={(checked) => {
-                        setUseTestWebhook(checked);
-                        updateWebhookPreferenceMutation.mutate(checked);
-                      }}
-                      className="data-[state=checked]:bg-primary scale-75"
-                    />
-                  </div>
+              {/* Images Section */}
+              <div className="p-2 bg-muted/50 rounded border space-y-1.5">
+                <Label className="text-[10px] font-semibold">Images</Label>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant={!includeImages ? 'default' : 'outline'}
+                    onClick={() => {
+                      setIncludeImages(false);
+                      setNeedsResearch(false);
+                    }}
+                    className="text-[10px] h-7 flex-1"
+                  >
+                    Without
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={includeImages && !needsResearch ? 'default' : 'outline'}
+                    onClick={() => {
+                      setIncludeImages(true);
+                      setNeedsResearch(false);
+                    }}
+                    className="text-[10px] h-7 flex-1"
+                  >
+                    With
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={includeImages && needsResearch ? 'default' : 'outline'}
+                    onClick={() => {
+                      setIncludeImages(true);
+                      setNeedsResearch(true);
+                    }}
+                    className="text-[10px] h-7 flex-1"
+                  >
+                    With Research
+                  </Button>
                 </div>
-              )}
-              
-              {needsResearch && !fixMode && (
-                <div className="p-1.5 bg-blue-500/10 border border-blue-500/20 rounded">
-                  <p className="text-[10px] text-blue-700 dark:text-blue-400">
-                    💡 AI will research your topic and build a detailed page
-                  </p>
-                </div>
-              )}
-
-              {/* Fix Mode Toggle */}
-              <div className="p-1.5 bg-muted/50 rounded border flex items-center justify-between gap-2">
-                <Label htmlFor="fix-mode" className="text-[10px] font-medium cursor-pointer">
-                  Fix Mode: {fixMode ? '🔧 On' : '✏️ Off'}
-                </Label>
-                <Switch
-                  id="fix-mode"
-                  checked={fixMode}
-                  onCheckedChange={(checked) => {
-                    setFixMode(checked);
-                    if (!checked) setFixSource(null);
-                  }}
-                  className="data-[state=checked]:bg-primary scale-75"
-                />
               </div>
 
-              {fixMode && (
-                <div className="p-1.5 bg-amber-500/10 border border-amber-500/20 rounded">
-                  <p className="text-[10px] text-amber-700 dark:text-amber-400 mb-2">
-                    🔧 Select version to fix:
-                  </p>
-                  <div className="flex gap-2">
+              {/* Webhook Section */}
+              <div className="p-2 bg-muted/50 rounded border space-y-1.5">
+                <Label className="text-[10px] font-semibold">Webhook</Label>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant={useTestWebhook ? 'default' : 'outline'}
+                    onClick={() => {
+                      setUseTestWebhook(true);
+                      updateWebhookPreferenceMutation.mutate(true);
+                    }}
+                    className="text-[10px] h-7 flex-1"
+                  >
+                    Test
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={!useTestWebhook ? 'default' : 'outline'}
+                    onClick={() => {
+                      setUseTestWebhook(false);
+                      updateWebhookPreferenceMutation.mutate(false);
+                    }}
+                    className="text-[10px] h-7 flex-1"
+                  >
+                    Production
+                  </Button>
+                </div>
+              </div>
+
+              {/* Fix Mode Section */}
+              <div className="p-2 bg-muted/50 rounded border space-y-1.5">
+                <Label className="text-[10px] font-semibold">Fix Mode</Label>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant={!fixMode ? 'default' : 'outline'}
+                    onClick={() => {
+                      setFixMode(false);
+                      setFixSource(null);
+                    }}
+                    className="text-[10px] h-7 flex-1"
+                  >
+                    Off
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={fixMode ? 'default' : 'outline'}
+                    onClick={() => setFixMode(true)}
+                    className="text-[10px] h-7 flex-1"
+                  >
+                    On
+                  </Button>
+                </div>
+                
+                {fixMode && (
+                  <div className="flex gap-2 pt-1">
                     <Button
                       size="sm"
                       variant={fixSource === 'draft' ? 'default' : 'outline'}
                       onClick={() => setFixSource('draft')}
-                      className="text-[10px] h-6 flex-1"
+                      className="text-[10px] h-7 flex-1"
                     >
                       📝 Draft
                     </Button>
@@ -2625,18 +2647,13 @@ You are building a **TEMPLATE ENGINE**, not a static website:
                       size="sm"
                       variant={fixSource === 'published' ? 'default' : 'outline'}
                       onClick={() => setFixSource('published')}
-                      className="text-[10px] h-6 flex-1"
+                      className="text-[10px] h-7 flex-1"
                     >
                       📄 Published
                     </Button>
                   </div>
-                  {fixSource && (
-                    <p className="text-[10px] text-amber-700 dark:text-amber-400 mt-2">
-                      ✓ Using: {fixSource === 'draft' ? 'Draft' : 'Published'}
-                    </p>
-                  )}
-                </div>
-              )}
+                )}
+              </div>
               
               {inputTokenCount >= 150000 && inputTokenCount < TOKEN_SOFT_LIMIT && (
                 <div className="p-1.5 bg-yellow-500/10 border border-yellow-500/20 rounded">
