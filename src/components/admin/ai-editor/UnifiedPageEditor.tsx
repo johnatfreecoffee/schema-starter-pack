@@ -40,7 +40,6 @@ interface ChatMessage {
   content: string;
   suggestion?: string;
 }
-type EditorMode = 'chat' | 'build';
 const TOKEN_SOFT_LIMIT = 800000;
 const TOKEN_HARD_LIMIT = 1000000;
 
@@ -165,7 +164,6 @@ const UnifiedPageEditor = ({
   const [renderedPreview, setRenderedPreview] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [editorMode, setEditorMode] = useState<EditorMode>(aiEditorPreferences.editorMode || 'build');
   const [includeImages, setIncludeImages] = useState(false);
   const [needsResearch, setNeedsResearch] = useState(false);
   const [fixMode, setFixMode] = useState(false);
@@ -274,14 +272,6 @@ const UnifiedPageEditor = ({
       queryClient.invalidateQueries({ queryKey: ['user-webhook-preference'] });
     }
   });
-
-  // Sync state with loaded preferences
-  useEffect(() => {
-    if (aiEditorPreferences.editorMode) {
-      setEditorMode(aiEditorPreferences.editorMode);
-    }
-  }, [aiEditorPreferences]);
-
 
   // Load template for service or static page
   const {
@@ -810,7 +800,7 @@ const UnifiedPageEditor = ({
     const requestBody = {
       command: {
         text: currentCommand,
-        mode: editorMode,
+        mode: 'build',
         model: selectedModel
       },
       pipeline: {
@@ -823,7 +813,7 @@ const UnifiedPageEditor = ({
         ],
         totalStages: 4
       },
-      conversationHistory: editorMode === 'chat' ? chatMessages : undefined,
+      conversationHistory: chatMessages.length > 0 ? chatMessages : undefined,
       context: {
         currentPage: {
           type: pageType,
@@ -1296,7 +1286,7 @@ You are building a **TEMPLATE ENGINE**, not a static website:
     // Show request data immediately in debug panel and reset pipeline stages
     const modelName = 'AI Builder';
     const baseDebug = {
-      fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nMode: ${editorMode}\nModel: ${modelName}\nPage Type: ${pageType}`,
+      fullPrompt: `Preparing prompt with:\n\nCommand: ${currentCommand}\nModel: ${modelName}\nPage Type: ${pageType}`,
       requestPayload: requestContext,
       responseData: { status: 'Waiting for Google Gemini 2.5 Pro response...' },
       generatedHtml: 'Waiting for response...'
@@ -2538,40 +2528,14 @@ You are building a **TEMPLATE ENGINE**, not a static website:
                 </div>
               )}
               
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <Sparkles className="h-3.5 w-3.5 text-primary" />
-                  <h3 className="text-xs font-semibold">AI Assistant</h3>
-                  {chatMessages.length > 0 && (
-                    <span className="text-[10px] text-muted-foreground">
-                      ({chatMessages.length})
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-1">
-                  <Button 
-                    variant={editorMode === 'chat' ? 'default' : 'outline'} 
-                    size="sm" 
-                    onClick={() => {
-                      setEditorMode('chat');
-                      saveAiEditorPreferences({ editorMode: 'chat' });
-                    }} 
-                    className="text-[10px] h-6 px-2"
-                  >
-                    Chat
-                  </Button>
-                  <Button 
-                    variant={editorMode === 'build' ? 'default' : 'outline'} 
-                    size="sm" 
-                    onClick={() => {
-                      setEditorMode('build');
-                      saveAiEditorPreferences({ editorMode: 'build' });
-                    }} 
-                    className="text-[10px] h-6 px-2"
-                  >
-                    Build
-                  </Button>
-                </div>
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                <h3 className="text-xs font-semibold">AI Assistant</h3>
+                {chatMessages.length > 0 && (
+                  <span className="text-[10px] text-muted-foreground">
+                    ({chatMessages.length})
+                  </span>
+                )}
               </div>
               
             <div className="space-y-2">
