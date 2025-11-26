@@ -628,6 +628,10 @@ serve(async (req) => {
     if (publishedHtml) {
       console.log('✅ Serving pre-baked published HTML');
       
+      // Replace city-specific variables in published HTML using pageData
+      const template = compileTemplate(publishedHtml);
+      const finalPublishedHtml = template(pageData);
+      
       // Increment view count
       if (citySlug && page.id) {
         await supabase
@@ -643,7 +647,7 @@ serve(async (req) => {
       if (req.method === 'POST') {
         return new Response(
           JSON.stringify({
-            content: publishedHtml,
+            content: finalPublishedHtml,
             pageData: pageData,
           }),
           {
@@ -658,7 +662,7 @@ serve(async (req) => {
       }
 
       // For GET requests (direct browser access): return raw HTML for SEO
-      return new Response(publishedHtml, {
+      return new Response(finalPublishedHtml, {
         headers: {
           ...corsHeaders,
           'Content-Type': 'text/html',
