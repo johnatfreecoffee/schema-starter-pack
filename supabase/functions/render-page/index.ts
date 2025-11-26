@@ -475,45 +475,7 @@ serve(async (req) => {
       );
     }
 
-    // PHASE 4: Check for published HTML first (pre-baked pages)
-    let publishedHtml = null;
-    
-    if (citySlug && page.service?.template?.published_html) {
-      // For city-specific pages, use template's published HTML
-      publishedHtml = page.service.template.published_html;
-    } else if (!citySlug && page.service?.template?.published_html) {
-      // For service overview pages, use template's published HTML
-      publishedHtml = page.service.template.published_html;
-    }
-
-    // If we have published HTML, serve it directly (no processing needed)
-    if (publishedHtml) {
-      console.log('✅ Serving pre-baked published HTML');
-      
-      // Increment view count
-      if (citySlug && page.id) {
-        await supabase
-          .from('generated_pages')
-          .update({
-            view_count: (page.view_count || 0) + 1,
-            last_viewed_at: new Date().toISOString()
-          })
-          .eq('id', page.id);
-      }
-
-      return new Response(publishedHtml, {
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'text/html',
-          'Cache-Control': 'public, max-age=3600, s-maxage=86400',
-        },
-      });
-    }
-
-    // FALLBACK: Old template rendering (for unpublished pages)
-    const needsRegeneration = !page.rendered_html || page.needs_regeneration;
-    let finalHtml = page.rendered_html;
-
+    // PHASE 4: Build pageData (needed for both published and unpublished pages)
     // Fetch company settings for rendering
     const { data: company } = await supabase
       .from('company_settings')
@@ -650,6 +612,64 @@ serve(async (req) => {
       address_city: pageData.address_city,
       urlPath: pageData.url_path
     });
+
+    // PHASE 5: Check for published HTML and serve it
+    let publishedHtml = null;
+    
+    if (citySlug && page.service?.template?.published_html) {
+      // For city-specific pages, use template's published HTML
+      publishedHtml = page.service.template.published_html;
+    } else if (!citySlug && page.service?.template?.published_html) {
+      // For service overview pages, use template's published HTML
+      publishedHtml = page.service.template.published_html;
+    }
+
+    // If we have published HTML, serve it (with different format based on request type)
+    if (publishedHtml) {
+      console.log('✅ Serving pre-baked published HTML');
+      
+      // Increment view count
+      if (citySlug && page.id) {
+        await supabase
+          .from('generated_pages')
+          .update({
+            view_count: (page.view_count || 0) + 1,
+            last_viewed_at: new Date().toISOString()
+          })
+          .eq('id', page.id);
+      }
+
+      // For POST requests (from React SPA): return JSON with pageData
+      if (req.method === 'POST') {
+        return new Response(
+          JSON.stringify({
+            content: publishedHtml,
+            pageData: pageData,
+          }),
+          {
+            status: 200,
+            headers: {
+              ...corsHeaders,
+              'Content-Type': 'application/json',
+              'Cache-Control': 'public, max-age=3600, s-maxage=86400',
+            },
+          }
+        );
+      }
+
+      // For GET requests (direct browser access): return raw HTML for SEO
+      return new Response(publishedHtml, {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'text/html',
+          'Cache-Control': 'public, max-age=3600, s-maxage=86400',
+        },
+      });
+    }
+
+    // FALLBACK: Old template rendering (for unpublished pages)
+    const needsRegeneration = !page.rendered_html || page.needs_regeneration;
+    let finalHtml = page.rendered_html;
 
     // Compile template content (separate from layout wrapping)
     const template = compileTemplate(page.service.template.template_html);
