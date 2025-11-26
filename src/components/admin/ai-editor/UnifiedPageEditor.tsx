@@ -2689,6 +2689,7 @@ You are building a **TEMPLATE ENGINE**, not a static website:
                 </div>
               )}
             </div>
+            </div>
 
             <ScrollArea className="flex-1 min-h-0 overflow-y-auto">
               <div className="space-y-4 p-4 pb-4 min-h-full">
