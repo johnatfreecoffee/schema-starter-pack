@@ -26,6 +26,7 @@ import ReviewsPage from "./pages/Reviews";
 import UpdateCommercialTemplate from "./pages/UpdateCommercialTemplate";
 import BulkTemplateUpdater from "./pages/BulkTemplateUpdater";
 import SitemapPage from "./pages/SitemapPage";
+import ContactPopup from "./pages/ContactPopup";
 import { AIEditorStaticPage, AIEditorServicePage } from "./pages/dashboard/AIEditorPage";
 
 // Lazy load heavy dashboard pages for better initial load time
@@ -55,6 +56,8 @@ const AppContent = () => {
             <Route path="/sitemap" element={<SitemapPage />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/accept-invite" element={<AcceptInvite />} />
+            {/* Contact popup route (for form popups from published pages) */}
+            <Route path="/contact-popup" element={<ContactPopup />} />
           <Route path="/update-commercial-template" element={<UpdateCommercialTemplate />} />
           <Route path="/bulk-template-updater" element={<BulkTemplateUpdater />} />
             <Route path="/:slug" element={<StaticPage />} />

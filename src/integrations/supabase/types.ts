@@ -3205,6 +3205,7 @@ export type Database = {
           meta_title: string | null
           parent_page_id: string | null
           published_at: string | null
+          published_html: string | null
           show_in_menu: boolean | null
           slug: string
           status: boolean | null
@@ -3227,6 +3228,7 @@ export type Database = {
           meta_title?: string | null
           parent_page_id?: string | null
           published_at?: string | null
+          published_html?: string | null
           show_in_menu?: boolean | null
           slug: string
           status?: boolean | null
@@ -3249,6 +3251,7 @@ export type Database = {
           meta_title?: string | null
           parent_page_id?: string | null
           published_at?: string | null
+          published_html?: string | null
           show_in_menu?: boolean | null
           slug?: string
           status?: boolean | null
@@ -3391,6 +3394,7 @@ export type Database = {
           meta_description: string | null
           name: string
           published_at: string | null
+          published_html: string | null
           template_html: string
           template_html_draft: string | null
           template_type: Database["public"]["Enums"]["template_type"]
@@ -3402,6 +3406,7 @@ export type Database = {
           meta_description?: string | null
           name: string
           published_at?: string | null
+          published_html?: string | null
           template_html: string
           template_html_draft?: string | null
           template_type: Database["public"]["Enums"]["template_type"]
@@ -3413,6 +3418,7 @@ export type Database = {
           meta_description?: string | null
           name?: string
           published_at?: string | null
+          published_html?: string | null
           template_html?: string
           template_html_draft?: string | null
           template_type?: Database["public"]["Enums"]["template_type"]
