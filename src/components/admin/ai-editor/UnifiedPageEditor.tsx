@@ -2544,7 +2544,7 @@ You are building a **TEMPLATE ENGINE**, not a static website:
                 <div className="grid grid-cols-3 gap-1 p-1.5 bg-muted/50 rounded border">
                   <div className="flex flex-col items-center justify-center gap-0.5 p-1">
                     <Label htmlFor="include-images" className="text-[9px] font-medium cursor-pointer text-center">
-                      📸
+                      📸 Images
                     </Label>
                     <Switch
                       id="include-images"
@@ -2556,7 +2556,7 @@ You are building a **TEMPLATE ENGINE**, not a static website:
                   
                   <div className="flex flex-col items-center justify-center gap-0.5 p-1">
                     <Label htmlFor="needs-research" className="text-[9px] font-medium cursor-pointer text-center">
-                      🔍
+                      🔍 Research
                     </Label>
                     <Switch
                       id="needs-research"
@@ -2568,7 +2568,7 @@ You are building a **TEMPLATE ENGINE**, not a static website:
                   
                   <div className="flex flex-col items-center justify-center gap-0.5 p-1">
                     <Label htmlFor="use-test-webhook" className="text-[9px] font-medium cursor-pointer text-center">
-                      {useTestWebhook ? '🧪' : '🚀'}
+                      {useTestWebhook ? '🧪 Test' : '🚀 Prod'}
                     </Label>
                     <Switch
                       id="use-test-webhook"
