@@ -44,6 +44,7 @@ serve(async (req) => {
       stage2TaskNoImages = "",
       stage3TaskNoImages = "",
       stage4TaskNoImages = "",
+      fixInstructions = "",
     } = instructions || {};
 
     // Get webhook URL from environment based on mode
@@ -60,9 +61,9 @@ serve(async (req) => {
       });
     }
 
-    // Choose instructions based on mode - use systemInstructions for Fix Mode since we don't have a separate fixInstructions file
+    // Choose instructions based on mode - use fixInstructions for Fix Mode
     const builderInstructions = fixMode 
-      ? systemInstructions // Use system instructions for fix mode
+      ? fixInstructions // Use dedicated fix instructions for Fix Mode
       : (includeImages ? builderStageInstructionsWithImages : builderStageInstructionsWithoutImages);
 
     // Prepare webhook payload based on mode
@@ -109,9 +110,9 @@ serve(async (req) => {
           ...(fixMode ? {
             // Fix Mode: Simple payload with fix instructions and existing HTML
             fixInstructions: {
-              content: systemInstructions || "", // Use system instructions for fix mode
+              content: fixInstructions || "", // Use dedicated fix instructions for Fix Mode
               type: "fix_instructions",
-              length: systemInstructions?.length || null,
+              length: fixInstructions?.length || null,
             },
             existingHtml: {
               content: existingHtml || "",

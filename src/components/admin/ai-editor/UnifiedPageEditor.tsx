@@ -38,6 +38,7 @@ import stage1TaskNoImages from '@/templates/ai-instructions/stage1TaskNoImages.m
 import stage2TaskNoImages from '@/templates/ai-instructions/stage2TaskNoImages.md?raw';
 import stage3TaskNoImages from '@/templates/ai-instructions/stage3TaskNoImages.md?raw';
 import stage4TaskNoImages from '@/templates/ai-instructions/stage4TaskNoImages.md?raw';
+import fixInstructions from '@/templates/ai-instructions/fixInstructions.md?raw';
 
 interface UnifiedPageEditorProps {
   open: boolean;
@@ -1038,6 +1039,7 @@ const UnifiedPageEditor = ({
               stage2TaskNoImages,
               stage3TaskNoImages,
               stage4TaskNoImages,
+              fixInstructions,
             }
           };
           
