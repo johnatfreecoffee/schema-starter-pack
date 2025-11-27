@@ -306,7 +306,7 @@ const UnifiedPageEditor = ({
           const {
             data,
             error
-          } = await supabase.from('static_pages').select('id, title, content_html_draft, content_html, url_path, updated_at').eq('id', pageId).single();
+          } = await supabase.from('static_pages').select('id, title, content_html_draft, content_html, published_html, url_path, updated_at').eq('id', pageId).single();
           if (error) {
             console.warn('Static page fetch error, falling back to initialHtml:', error.message);
           }
@@ -314,8 +314,8 @@ const UnifiedPageEditor = ({
             // Set page URL
             setPageUrl(data.url_path || '');
             
-            // Always use DB content_html as the published version (never use initialHtml)
-            const publishedCandidate = data.content_html || '';
+            // Use published_html as the actual published version (falls back to content_html for legacy)
+            const publishedCandidate = data.published_html || data.content_html || '';
             
             // For draft: use content_html_draft if it exists, otherwise use published as fallback
             const draftRaw = data.content_html_draft ?? '';
