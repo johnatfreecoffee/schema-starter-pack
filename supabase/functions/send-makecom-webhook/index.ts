@@ -36,6 +36,7 @@ serve(async (req) => {
       builderStageInstructionsWithImages = "",
       builderStageInstructionsWithoutImages = "",
       researchPrompt = "",
+      fixResearchPrompt = "", // Fix-mode-aware research prompt
       stage1TaskWithImages = "",
       stage2TaskWithImages = "",
       stage3TaskWithImages = "",
@@ -169,8 +170,9 @@ serve(async (req) => {
             fixMode: fixMode,
             htmlSource: htmlSource || "",
           },
+          // Use fix-mode-aware research prompt when in fix mode
           researchPrompt: needsResearch
-            ? researchPrompt || ""
+            ? (fixMode ? (fixResearchPrompt || researchPrompt || "") : (researchPrompt || ""))
             : undefined,
           output_tokens: 150000,
       }
