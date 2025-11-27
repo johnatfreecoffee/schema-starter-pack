@@ -1654,6 +1654,17 @@ const UnifiedPageEditor = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
+  // DEBUG: Track publish button state
+  useEffect(() => {
+    console.log('🔴 Publish button state check:', {
+      isPublishing,
+      currentHtmlLength: currentHtml?.length || 0,
+      publishedHtmlLength: publishedHtml?.length || 0,
+      areEqual: currentHtml === publishedHtml,
+      buttonShouldBeDisabled: isPublishing || currentHtml === publishedHtml
+    });
+  }, [currentHtml, publishedHtml, isPublishing]);
+
   // Auto-scroll chat to bottom when messages change or AI state updates
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({
@@ -1751,7 +1762,13 @@ const UnifiedPageEditor = ({
                 </Button>
               )}
               
-              <Button onClick={handlePublish} disabled={isPublishing || currentHtml === publishedHtml} size="sm" variant="default" className="gap-2">
+              <Button 
+                onClick={handlePublish} 
+                disabled={isPublishing || currentHtml === publishedHtml} 
+                size="sm" 
+                variant="default" 
+                className="gap-2"
+              >
                 {isPublishing ? <>
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Publishing...
@@ -2136,6 +2153,10 @@ const UnifiedPageEditor = ({
                       defaultLanguage="html"
                       value={displayedHtml}
                       onChange={value => {
+                        console.log('🟢 Monaco onChange fired:', { 
+                          valueLength: value?.length, 
+                          isShowingPrevious 
+                        });
                         if (!isShowingPrevious && value !== undefined) {
                           setCurrentHtml(value);
                           setRenderedPreview(value);
