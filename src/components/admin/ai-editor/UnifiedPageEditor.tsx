@@ -24,6 +24,21 @@ import { WorkflowVisualizer } from './WorkflowVisualizer';
 import { renderTemplate } from '@/lib/templateEngine';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
 
+// Import AI instruction markdown files
+import systemInstructions from '@/templates/ai-instructions/systemInstructions.md?raw';
+import imageGenInstructions from '@/templates/ai-instructions/imageGenInstructions.md?raw';
+import builderStageInstructionsWithImages from '@/templates/ai-instructions/builderStageInstructionsWithImages.md?raw';
+import builderStageInstructionsWithoutImages from '@/templates/ai-instructions/builderStageInstructionsWithoutImages.md?raw';
+import researchPrompt from '@/templates/ai-instructions/researchPrompt.md?raw';
+import stage1TaskWithImages from '@/templates/ai-instructions/stage1TaskWithImages.md?raw';
+import stage2TaskWithImages from '@/templates/ai-instructions/stage2TaskWithImages.md?raw';
+import stage3TaskWithImages from '@/templates/ai-instructions/stage3TaskWithImages.md?raw';
+import stage4TaskWithImages from '@/templates/ai-instructions/stage4TaskWithImages.md?raw';
+import stage1TaskNoImages from '@/templates/ai-instructions/stage1TaskNoImages.md?raw';
+import stage2TaskNoImages from '@/templates/ai-instructions/stage2TaskNoImages.md?raw';
+import stage3TaskNoImages from '@/templates/ai-instructions/stage3TaskNoImages.md?raw';
+import stage4TaskNoImages from '@/templates/ai-instructions/stage4TaskNoImages.md?raw';
+
 interface UnifiedPageEditorProps {
   open: boolean;
   onClose: () => void;
@@ -1844,7 +1859,22 @@ You are building a **TEMPLATE ENGINE**, not a static website:
             needsResearch: fixMode ? false : needsResearch,
             fixMode,
             htmlSource: fixSource,
-            existingHtml
+            existingHtml,
+            // AI instruction files
+            instructions: {
+              imageGenInstructions,
+              builderStageInstructionsWithImages,
+              builderStageInstructionsWithoutImages,
+              researchPrompt,
+              stage1TaskWithImages,
+              stage2TaskWithImages,
+              stage3TaskWithImages,
+              stage4TaskWithImages,
+              stage1TaskNoImages,
+              stage2TaskNoImages,
+              stage3TaskNoImages,
+              stage4TaskNoImages,
+            }
           };
           
           // Get webhook URL from secrets
