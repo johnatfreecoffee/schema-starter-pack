@@ -1803,49 +1803,51 @@ const UnifiedPageEditor = ({
               </div>
               
             <div className="space-y-2">
-              {/* Compact Controls Grid - only show when Fix Mode is OFF */}
-              {!fixMode && (
-                <div className="grid grid-cols-3 gap-1 p-1.5 bg-muted/50 rounded border">
-                  <div className="flex flex-col items-center justify-center gap-0.5 p-1">
-                    <Label htmlFor="include-images" className="text-[9px] font-medium cursor-pointer text-center">
-                      📸 Images
-                    </Label>
-                    <Switch
-                      id="include-images"
-                      checked={includeImages}
-                      onCheckedChange={setIncludeImages}
-                      className="data-[state=checked]:bg-primary scale-75"
-                    />
-                  </div>
-                  
-                  <div className="flex flex-col items-center justify-center gap-0.5 p-1">
-                    <Label htmlFor="needs-research" className="text-[9px] font-medium cursor-pointer text-center">
-                      🔍 Research
-                    </Label>
-                    <Switch
-                      id="needs-research"
-                      checked={needsResearch}
-                      onCheckedChange={setNeedsResearch}
-                      className="data-[state=checked]:bg-primary scale-75"
-                    />
-                  </div>
-                  
-                  <div className="flex flex-col items-center justify-center gap-0.5 p-1">
-                    <Label htmlFor="use-test-webhook" className="text-[9px] font-medium cursor-pointer text-center">
-                      {useTestWebhook ? '🧪 Test' : '🚀 Prod'}
-                    </Label>
-                    <Switch
-                      id="use-test-webhook"
-                      checked={useTestWebhook}
-                      onCheckedChange={(checked) => {
-                        setUseTestWebhook(checked);
-                        updateWebhookPreferenceMutation.mutate(checked);
-                      }}
-                      className="data-[state=checked]:bg-primary scale-75"
-                    />
-                  </div>
+              {/* Compact Controls Grid - Images and Research only show when Fix Mode is OFF */}
+              <div className={`grid ${fixMode ? 'grid-cols-1' : 'grid-cols-3'} gap-1 p-1.5 bg-muted/50 rounded border`}>
+                {!fixMode && (
+                  <>
+                    <div className="flex flex-col items-center justify-center gap-0.5 p-1">
+                      <Label htmlFor="include-images" className="text-[9px] font-medium cursor-pointer text-center">
+                        📸 Images
+                      </Label>
+                      <Switch
+                        id="include-images"
+                        checked={includeImages}
+                        onCheckedChange={setIncludeImages}
+                        className="data-[state=checked]:bg-primary scale-75"
+                      />
+                    </div>
+                    
+                    <div className="flex flex-col items-center justify-center gap-0.5 p-1">
+                      <Label htmlFor="needs-research" className="text-[9px] font-medium cursor-pointer text-center">
+                        🔍 Research
+                      </Label>
+                      <Switch
+                        id="needs-research"
+                        checked={needsResearch}
+                        onCheckedChange={setNeedsResearch}
+                        className="data-[state=checked]:bg-primary scale-75"
+                      />
+                    </div>
+                  </>
+                )}
+                
+                <div className="flex flex-col items-center justify-center gap-0.5 p-1">
+                  <Label htmlFor="use-test-webhook" className="text-[9px] font-medium cursor-pointer text-center">
+                    {useTestWebhook ? '🧪 Test' : '🚀 Prod'}
+                  </Label>
+                  <Switch
+                    id="use-test-webhook"
+                    checked={useTestWebhook}
+                    onCheckedChange={(checked) => {
+                      setUseTestWebhook(checked);
+                      updateWebhookPreferenceMutation.mutate(checked);
+                    }}
+                    className="data-[state=checked]:bg-primary scale-75"
+                  />
                 </div>
-              )}
+              </div>
               
               {needsResearch && !fixMode && (
                 <div className="p-1.5 bg-blue-500/10 border border-blue-500/20 rounded">
