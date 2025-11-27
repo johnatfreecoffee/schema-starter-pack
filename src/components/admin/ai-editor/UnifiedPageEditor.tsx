@@ -30,7 +30,6 @@ import imageGenInstructions from '@/templates/ai-instructions/imageGenInstructio
 import builderStageInstructionsWithImages from '@/templates/ai-instructions/builderStageInstructionsWithImages.md?raw';
 import builderStageInstructionsWithoutImages from '@/templates/ai-instructions/builderStageInstructionsWithoutImages.md?raw';
 import researchPrompt from '@/templates/ai-instructions/researchPrompt.md?raw';
-import fixResearchPrompt from '@/templates/ai-instructions/fixResearchPrompt.md?raw';
 import stage1TaskWithImages from '@/templates/ai-instructions/stage1TaskWithImages.md?raw';
 import stage2TaskWithImages from '@/templates/ai-instructions/stage2TaskWithImages.md?raw';
 import stage3TaskWithImages from '@/templates/ai-instructions/stage3TaskWithImages.md?raw';
@@ -1032,7 +1031,6 @@ const UnifiedPageEditor = ({
               builderStageInstructionsWithImages,
               builderStageInstructionsWithoutImages,
               researchPrompt,
-              fixResearchPrompt,
               stage1TaskWithImages,
               stage2TaskWithImages,
               stage3TaskWithImages,
