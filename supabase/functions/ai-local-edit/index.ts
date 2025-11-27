@@ -13,13 +13,13 @@ serve(async (req) => {
   }
 
   try {
-    const { currentHtml, userPrompt, companyInfo, systemInstructions, colors } = await req.json();
+    const { currentHtml, userPrompt, companyInfo, aiLocalEditInstructions, colors } = await req.json();
 
     console.log('Local AI Edit Request:', {
       htmlLength: currentHtml?.length,
       promptLength: userPrompt?.length,
       hasCompanyInfo: !!companyInfo,
-      hasSystemInstructions: !!systemInstructions,
+      hasAiLocalEditInstructions: !!aiLocalEditInstructions,
       hasColors: !!colors
     });
 
@@ -29,30 +29,17 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    // Build comprehensive system prompt for editing
-    const systemPrompt = `You are an expert HTML editor specializing in making precise, targeted changes to existing pages.
-
-## CRITICAL RULES:
-- Make ONLY the specific changes requested
-- Preserve all existing structure and content unless explicitly asked to change
-- Maintain all Handlebars variables ({{business_name}}, {{phone}}, etc.)
-- Preserve all CSS custom properties (var(--color-primary), etc.)
-- Keep all onclick handlers and lead form integrations
-- Maintain responsive design and accessibility
-- DO NOT rebuild the entire page - edit only what's needed
-
-## COMPANY INFORMATION:
-${companyInfo?.companyData ? `
+    // Use instructions from frontend, with dynamic company info and colors
+    const companyInfoText = companyInfo?.companyData ? `
 - Business: ${companyInfo.companyData.business_name}
 - Slogan: ${companyInfo.companyData.business_slogan}
 - Phone: ${companyInfo.companyData.phone}
 - Email: ${companyInfo.companyData.email}
 - Address: ${companyInfo.companyData.address}
 - Years Experience: ${companyInfo.companyData.years_experience}
-` : ''}
+` : '';
 
-## COMPLETE 17-COLOR PALETTE SYSTEM (must be preserved):
-${colors ? `
+    const colorPaletteText = colors ? `
 ### Brand Colors:
 - Primary: ${colors.primary_color}
 - Secondary: ${colors.secondary_color}
@@ -75,46 +62,11 @@ ${colors ? `
 - Card BG: ${colors.card_bg_color || '#ffffff'}
 - Feature: ${colors.feature_color || '#0d6efd'}
 - CTA: ${colors.cta_color || '#198754'}
-` : ''}
+` : '';
 
-## DESIGN TOKENS (must use these CSS variables):
-### Brand Identity:
-- var(--color-primary) - Main brand color
-- var(--color-secondary) - Supporting color
-- var(--color-accent) - Accent/highlights
-
-### State & Feedback:
-- var(--color-success) - Success states
-- var(--color-warning) - Warning states
-- var(--color-info) - Info states
-- var(--color-danger) - Error/danger states
-
-### Backgrounds (for layering/depth):
-- var(--color-bg-primary) - Main background
-- var(--color-bg-secondary) - Secondary sections
-- var(--color-bg-tertiary) - Subtle backgrounds
-
-### Typography:
-- var(--color-text-primary) - Main text
-- var(--color-text-secondary) - Supporting text
-- var(--color-text-muted) - Subtle text
-
-### UI Elements:
-- var(--color-border) - Borders & dividers
-- var(--color-card-bg) - Card backgrounds
-- var(--color-feature) - Feature highlights
-- var(--color-cta) - Call-to-action buttons
-
-### Spacing:
-- var(--radius-button) - Button border radius
-- var(--radius-card) - Card border radius
-
-## OUTPUT REQUIREMENTS:
-- Return complete, valid HTML document
-- Include all original DOCTYPE, head, and body tags
-- Preserve all CSS custom property definitions
-- Keep all Handlebars variable syntax intact
-- Ensure all tags are properly closed`;
+    const systemPrompt = (aiLocalEditInstructions || '')
+      .replace('{{COMPANY_INFO}}', companyInfoText)
+      .replace('{{COLOR_PALETTE}}', colorPaletteText);
 
     // Build the messages for Gemini
     const messages = [
