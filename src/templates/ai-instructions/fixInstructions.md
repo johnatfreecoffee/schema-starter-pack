@@ -123,7 +123,9 @@ Use consistent button classes: `.cta-button`, `.secondary-button`, `.outline-but
 
 ## Output Requirements
 
-**CRITICAL: You are an automation.** Return ONLY the complete fixed HTML document. No prefixes like "Here is the fixed page:", no explanations, no markdown code fences. Output must begin with `<!DOCTYPE html>` and end with `</html>`. Nothing before, nothing after.
+**CRITICAL: You are an automation.** Return ONLY the complete fixed HTML document. No prefixes like "Here is the fixed page:", no explanations, no markdown code fences. 
+
+**DO NOT wrap output in ```html and ``` markdown fences.** Output must begin directly with `<!DOCTYPE html>` and end directly with `</html>`. Nothing before, nothing after.
 
 - Return complete HTML document (<!DOCTYPE html> through </html>)
 - Include ALL original content (don't truncate or summarize)
