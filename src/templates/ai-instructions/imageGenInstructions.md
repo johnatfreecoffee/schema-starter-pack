@@ -1,4 +1,4 @@
-🧪 # IMAGE GENERATION TASK
+🧪🗺️ # IMAGE GENERATION TASK
 
 ## ROLE
 

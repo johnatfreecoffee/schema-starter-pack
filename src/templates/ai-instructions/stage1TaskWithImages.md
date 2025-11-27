@@ -1,4 +1,4 @@
-🧪 # STAGE 1: WIREFRAME & CONTENT PLANNING
+🧪🗺️ # STAGE 1: WIREFRAME & CONTENT PLANNING
 
 🤖 AUTOMATION MODE: Complete entire wireframe in ONE response.
 
