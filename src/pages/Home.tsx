@@ -82,8 +82,12 @@ const Home = () => {
 
   // If a homepage static page exists, render it
   if (homepage) {
-    let renderedContent = homepage.content_html;
-    if (companySettings) {
+    // Use published_html if available (pre-baked with variables replaced), otherwise fall back to content_html (template with Handlebars)
+    const usePublishedHtml = !!homepage.published_html;
+    let renderedContent = homepage.published_html || homepage.content_html;
+    
+    // Only run template rendering if we're using content_html (not pre-baked published_html)
+    if (!usePublishedHtml && companySettings) {
       try {
       const templateData = {
         // Common company variables
@@ -159,7 +163,7 @@ const Home = () => {
     }
 
     // Decide rendering mode: use iframe when Tailwind CDN or full doc is present
-    const needsIframe = /cdn\.tailwindcss\.com/i.test(homepage.content_html) || /<!DOCTYPE|<html/i.test(homepage.content_html);
+    const needsIframe = /cdn\.tailwindcss\.com/i.test(renderedContent) || /<!DOCTYPE|<html/i.test(renderedContent);
 
     if (!needsIframe) {
       // Lazy-load images
