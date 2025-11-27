@@ -165,11 +165,11 @@ serve(async (req) => {
             pageRowId: supabaseData?.pageRowId || "",
             field: supabaseData?.field || "",
             includeImages: fixMode ? false : includeImages,
-            needsResearch: fixMode ? false : needsResearch,
+            needsResearch,
             fixMode: fixMode,
             htmlSource: htmlSource || "",
           },
-          researchPrompt: (needsResearch && !fixMode)
+          researchPrompt: needsResearch
             ? researchPrompt || ""
             : undefined,
           output_tokens: 150000,
@@ -189,8 +189,8 @@ serve(async (req) => {
       htmlSource: fixMode ? htmlSource : undefined,
       hasExistingHtml: fixMode ? !!existingHtml : undefined,
       includeImages: fixMode ? false : includeImages,
-      needsResearch: fixMode ? false : needsResearch,
-      hasResearchPrompt: needsResearch && !fixMode,
+      needsResearch,
+      hasResearchPrompt: needsResearch,
       supabaseData,
       timestamp: new Date().toISOString(),
     });
