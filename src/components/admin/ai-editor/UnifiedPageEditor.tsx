@@ -1021,7 +1021,7 @@ const UnifiedPageEditor = ({
             userPrompt: currentCommand,
             supabaseData,
             includeImages: fixMode ? false : includeImages,
-            needsResearch: fixMode ? false : needsResearch,
+            needsResearch,
             fixMode,
             htmlSource: fixSource,
             existingHtml,
@@ -1803,35 +1803,33 @@ const UnifiedPageEditor = ({
               </div>
               
             <div className="space-y-2">
-              {/* Compact Controls Grid - Images and Research only show when Fix Mode is OFF */}
-              <div className={`grid ${fixMode ? 'grid-cols-1' : 'grid-cols-3'} gap-1 p-1.5 bg-muted/50 rounded border`}>
+              {/* Compact Controls Grid - Images only shows when Fix Mode is OFF, Research and Test/Prod always visible */}
+              <div className={`grid ${fixMode ? 'grid-cols-2' : 'grid-cols-3'} gap-1 p-1.5 bg-muted/50 rounded border`}>
                 {!fixMode && (
-                  <>
-                    <div className="flex flex-col items-center justify-center gap-0.5 p-1">
-                      <Label htmlFor="include-images" className="text-[9px] font-medium cursor-pointer text-center">
-                        📸 Images
-                      </Label>
-                      <Switch
-                        id="include-images"
-                        checked={includeImages}
-                        onCheckedChange={setIncludeImages}
-                        className="data-[state=checked]:bg-primary scale-75"
-                      />
-                    </div>
-                    
-                    <div className="flex flex-col items-center justify-center gap-0.5 p-1">
-                      <Label htmlFor="needs-research" className="text-[9px] font-medium cursor-pointer text-center">
-                        🔍 Research
-                      </Label>
-                      <Switch
-                        id="needs-research"
-                        checked={needsResearch}
-                        onCheckedChange={setNeedsResearch}
-                        className="data-[state=checked]:bg-primary scale-75"
-                      />
-                    </div>
-                  </>
+                  <div className="flex flex-col items-center justify-center gap-0.5 p-1">
+                    <Label htmlFor="include-images" className="text-[9px] font-medium cursor-pointer text-center">
+                      📸 Images
+                    </Label>
+                    <Switch
+                      id="include-images"
+                      checked={includeImages}
+                      onCheckedChange={setIncludeImages}
+                      className="data-[state=checked]:bg-primary scale-75"
+                    />
+                  </div>
                 )}
+                
+                <div className="flex flex-col items-center justify-center gap-0.5 p-1">
+                  <Label htmlFor="needs-research" className="text-[9px] font-medium cursor-pointer text-center">
+                    🔍 Research
+                  </Label>
+                  <Switch
+                    id="needs-research"
+                    checked={needsResearch}
+                    onCheckedChange={setNeedsResearch}
+                    className="data-[state=checked]:bg-primary scale-75"
+                  />
+                </div>
                 
                 <div className="flex flex-col items-center justify-center gap-0.5 p-1">
                   <Label htmlFor="use-test-webhook" className="text-[9px] font-medium cursor-pointer text-center">
@@ -1849,7 +1847,7 @@ const UnifiedPageEditor = ({
                 </div>
               </div>
               
-              {needsResearch && !fixMode && (
+              {needsResearch && (
                 <div className="p-1.5 bg-blue-500/10 border border-blue-500/20 rounded">
                   <p className="text-[10px] text-blue-700 dark:text-blue-400">
                     💡 AI will research your topic and build a detailed page
