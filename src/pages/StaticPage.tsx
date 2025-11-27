@@ -92,8 +92,12 @@ const StaticPage = () => {
   // Replace Handlebars variables in content using template engine
   // Static pages use ONLY company variables (no service/area variables)
   // Reference: src/templates/STATIC_PAGES_TEMPLATE_GUIDE.md
-  let renderedContent = page.content_html;
-  if (companySettings) {
+  // Use published_html if available (pre-baked with variables replaced), otherwise fall back to content_html (template with Handlebars)
+  const usePublishedHtml = !!page.published_html;
+  let renderedContent = page.published_html || page.content_html;
+  
+  // Only run template rendering if we're using content_html (not pre-baked published_html)
+  if (!usePublishedHtml && companySettings) {
     try {
       const templateData = {
         // Common company variables (both short and prefixed versions for compatibility)
@@ -179,7 +183,7 @@ const StaticPage = () => {
   }
 
   // Decide rendering mode: use iframe when Tailwind CDN or full doc is present
-  const needsIframe = /cdn\.tailwindcss\.com/i.test(page.content_html) || /<!DOCTYPE|<html/i.test(page.content_html);
+  const needsIframe = /cdn\.tailwindcss\.com/i.test(renderedContent) || /<!DOCTYPE|<html/i.test(renderedContent);
 
   if (!needsIframe) {
     // Extract body content from full HTML documents for inline rendering
