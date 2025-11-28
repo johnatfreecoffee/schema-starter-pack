@@ -64,6 +64,9 @@ request_timeout = 120
 [functions.send-team-invitation]
 verify_jwt = true
 
+[functions.render-static-page]
+verify_jwt = false
+
 # URL Rewrites for Service Pages
 [[edge_runtime.rewrites]]
 source = "/services/:serviceSlug"
